@@ -1,42 +1,115 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Detail Kontrak {{ $kontrak->contract_number }}">
-            <x-button href="{{ route('owner.kontrak.index') }}" type="secondary">Kembali</x-button>
+        <x-page-header title="Kontrak {{ $kontrak->contract_number }}" description="Detail kontrak sewa & tagihan terkait.">
+            <x-button href="{{ route('owner.kontrak.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
         </x-page-header>
     </x-slot>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-            <h3 class="text-lg font-semibold mb-4">Informasi Kontrak</h3>
-            <div class="grid grid-cols-2 gap-3 text-sm">
-                <div><span class="text-gray-500 dark:text-slate-400">Nomor:</span><p class="font-mono font-medium">{{ $kontrak->contract_number }}</p></div>
-                <div><span class="text-gray-500 dark:text-slate-400">Status:</span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $kontrak->status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300' : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100' }}">{{ ucfirst($kontrak->status) }}</span>
-                </div>
-                <div><span class="text-gray-500 dark:text-slate-400">Penghuni:</span><p class="font-medium">{{ $kontrak->penghuni->user->name }}</p></div>
-                <div><span class="text-gray-500 dark:text-slate-400">Kamar:</span><p class="font-medium">{{ $kontrak->kamar->room_number }}</p></div>
-                <div><span class="text-gray-500 dark:text-slate-400">Kos:</span><p class="font-medium">{{ $kontrak->kos->name }}</p></div>
-                <div><span class="text-gray-500 dark:text-slate-400">Tipe Sewa:</span><p class="font-medium">{{ ucfirst($kontrak->rental_type) }}</p></div>
-                <div><span class="text-gray-500 dark:text-slate-400">Mulai:</span><p class="font-medium">{{ $kontrak->start_date }}</p></div>
-                <div><span class="text-gray-500 dark:text-slate-400">Berakhir:</span><p class="font-medium">{{ $kontrak->end_date }}</p></div>
-                <div class="col-span-2"><span class="text-gray-500 dark:text-slate-400">Harga Sewa:</span><p class="font-medium text-lg">Rp {{ number_format($kontrak->rental_price, 0, ',', '.') }}</p></div>
+
+    <div class="space-y-6">
+        <x-alert />
+
+        {{-- Ringkasan status --}}
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nomor Kontrak</p>
+                <p class="mt-1 text-xl font-bold font-mono text-slate-900 dark:text-white">{{ $kontrak->contract_number }}</p>
+            </div>
+            <div class="flex items-center gap-2.5">
+                <x-status-badge :status="$kontrak->status" context="kontrak" />
+                @if($kontrak->status === 'active' && $kontrak->end_date && \Illuminate\Support\Carbon::parse($kontrak->end_date)->diffInDays(now()) <= 14)
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-300">
+                        <i class="ri-alarm-warning-line"></i> Berakhir dalam {{ \Illuminate\Support\Carbon::parse($kontrak->end_date)->diffInDays(now()) }} hari
+                    </span>
+                @endif
             </div>
         </div>
-        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-            <h3 class="text-lg font-semibold mb-4">Tagihan</h3>
-            @forelse($kontrak->tagihans as $t)
-                <div class="flex justify-between items-center p-3 border rounded-lg mb-2 text-sm">
-                    <div>
-                        <p class="font-mono text-xs">{{ $t->bill_number }}</p>
-                        <p class="text-gray-600 dark:text-slate-300">{{ $t->period_start }} s/d {{ $t->period_end }}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-medium">Rp {{ number_format($t->total, 0, ',', '.') }}</p>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ \PaymentLabels::tagihanBadge($t->status) }}">{{ \PaymentLabels::tagihanLabel($t->status) }}</span>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            {{-- Informasi kontrak --}}
+            <div class="lg:col-span-3 space-y-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <i class="ri-file-text-line text-primary-500"></i> Informasi Kontrak
+                    </h3>
+                    <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                        <div class="flex items-start gap-2.5">
+                            <i class="ri-user-star-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Penghuni</dt>
+                                <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->penghuni->user->name }}</dd>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                                <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->kamar->room_number }} · {{ $kontrak->kos->name }}</dd>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="ri-play-circle-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mulai</dt>
+                                <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($kontrak->start_date)->translatedFormat('d F Y') }}</dd>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="ri-flag-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Berakhir</dt>
+                                <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($kontrak->end_date)->translatedFormat('d F Y') }}</dd>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <i class="ri-repeat-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tipe Sewa</dt>
+                                <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($kontrak->rental_type) }}</dd>
+                            </div>
+                        </div>
+                    </dl>
+
+                    {{-- Total nilai kontrak --}}
+                    <div class="mx-6 mb-6 flex items-center justify-between rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/50 dark:bg-primary-500/[0.06] px-4 py-3.5">
+                        <span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400"><i class="ri-money-dollar-circle-line"></i> Harga Sewa / Periode</span>
+                        <span class="font-bold text-primary-700 dark:text-primary-300 whitespace-nowrap">Rp {{ number_format($kontrak->rental_price, 0, ',', '.') }}</span>
                     </div>
                 </div>
-            @empty
-                <p class="text-sm text-gray-500 dark:text-slate-400">Belum ada tagihan.</p>
-            @endforelse
+            </div>
+
+            {{-- Tagihan --}}
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden h-full">
+                    <h3 class="flex items-center justify-between text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                        <span class="flex items-center gap-2"><i class="ri-bill-line text-primary-500"></i> Riwayat Tagihan</span>
+                        @if($kontrak->tagihans->count())
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">{{ $kontrak->tagihans->count() }} tagihan</span>
+                        @endif
+                    </h3>
+
+                    <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[26rem] overflow-y-auto scrollbar-thin">
+                        @forelse($kontrak->tagihans as $t)
+                            <a href="{{ route('owner.tagihan.show', $t) }}" class="flex items-center justify-between gap-4 px-6 py-3.5 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                                <div class="min-w-0">
+                                    <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $t->bill_number }}</p>
+                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ \Carbon\Carbon::parse($t->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($t->period_end)->format('d M Y') }}</p>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-white whitespace-nowrap">Rp {{ number_format($t->total, 0, ',', '.') }}</p>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium {{ \PaymentLabels::tagihanBadge($t->status) }}">{{ \PaymentLabels::tagihanLabel($t->status) }}</span>
+                                </div>
+                            </a>
+                        @empty
+                            <div class="py-8 text-center">
+                                <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                    <i class="ri-bill-line text-lg text-slate-300 dark:text-slate-600"></i>
+                                </span>
+                                <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Belum ada tagihan.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

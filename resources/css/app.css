@@ -1,3 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    ::selection {
+        @apply bg-primary-500/20 text-primary-900 dark:text-primary-100;
+    }
+
+    /* Konsistensi focus state keyboard (accessibility) */
+    a:focus-visible,
+    button:focus-visible,
+    [role='button']:focus-visible {
+        @apply outline-none ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-slate-950 rounded-lg;
+    }
+
+    input[type='file']::file-selector-button {
+        @apply mr-3 py-1.5 px-3 rounded-lg border-0 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600 transition;
+    }
+}
+
+@layer utilities {
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.slate.300') transparent;
+    }
+
+    .dark .scrollbar-thin {
+        scrollbar-color: theme('colors.slate.600') transparent;
+    }
+}

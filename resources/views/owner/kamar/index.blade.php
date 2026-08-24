@@ -1,93 +1,140 @@
 <x-app-layout>
     @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $canManage = Auth::user()->hasRole('owner', 'super_admin'); @endphp
     <x-slot name="header">
-        <x-page-header title="Manajemen Kamar" description="Kelola data kamar.">
+        <x-page-header title="Manajemen Kamar" description="Kelola data kamar di seluruh properti Anda.">
             @if($canManage)
-                <x-button href="{{ route('owner.kamar.create') }}" type="primary">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    Tambah Kamar
+                <x-button href="{{ route('owner.kamar.create', array_filter(['kos_id' => request('kos_id')])) }}" type="primary">
+                    <i class="ri-add-line text-base"></i> Tambah Kamar
                 </x-button>
             @endif
         </x-page-header>
     </x-slot>
 
-    <x-alert />
+    <div class="space-y-6">
+        <x-alert />
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
-        <div class="p-4 border-b border-gray-200 dark:border-slate-700">
-            <form method="GET" class="flex flex-col sm:flex-row gap-3">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kamar..."
-                       class="flex-1 rounded-lg border-gray-300 dark:border-slate-600 focus:border-blue-500 focus:ring-blue-500 text-sm">
-                <select name="kos_id" class="rounded-lg border-gray-300 dark:border-slate-600 text-sm">
-                    <option value="">Semua Kos</option>
-                    @foreach($kosList as $k)
-                        <option value="{{ $k->id }}" {{ request('kos_id') == $k->id ? 'selected' : '' }}>{{ $k->name }}</option>
-                    @endforeach
-                </select>
-                <select name="status" class="rounded-lg border-gray-300 dark:border-slate-600 text-sm">
-                    <option value="">Semua Status</option>
-                    @foreach(['available', 'booked', 'occupied', 'maintenance'] as $s)
-                        <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
-                    @endforeach
-                </select>
-                <button type="submit" class="px-4 py-2 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 rounded-lg text-sm font-medium">Filter</button>
-            </form>
-        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            {{-- Filter bar --}}
+            <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+                <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
+                    <div class="relative flex-1 min-w-0">
+                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor atau nama kamar..." aria-label="Cari kamar"
+                               class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                    </div>
+                    <select name="kos_id" aria-label="Filter kos"
+                            class="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
+                        <option value="">Semua Kos</option>
+                        @foreach($kosList as $k)
+                            <option value="{{ $k->id }}" {{ request('kos_id') == $k->id ? 'selected' : '' }}>{{ $k->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="status" aria-label="Filter status kamar"
+                            class="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
+                        <option value="">Semua Status</option>
+                        @foreach(['available', 'booked', 'occupied', 'maintenance'] as $s)
+                            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ \StatusLabels::kamarLabel($s) }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap">
+                        <i class="ri-filter-3-line"></i> Terapkan
+                    </button>
+                </form>
+            </div>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 dark:bg-slate-800/60 text-gray-600 dark:text-slate-300">
-                    <tr>
-                        <th class="px-4 py-3 text-left font-medium">No. Kamar</th>
-                        <th class="px-4 py-3 text-left font-medium">Nama</th>
-                        <th class="px-4 py-3 text-left font-medium">Kos</th>
-                        <th class="px-4 py-3 text-left font-medium">Tipe</th>
-                        <th class="px-4 py-3 text-right font-medium">Harga/Bulan</th>
-                        <th class="px-4 py-3 text-center font-medium">Status</th>
-                        <th class="px-4 py-3 text-right font-medium">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-slate-800">
-                    @forelse($kamars as $kamar)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-slate-800">
-                            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ $kamar->room_number }}</td>
-                            <td class="px-4 py-3 text-gray-600 dark:text-slate-300">{{ $kamar->room_name }}</td>
-                            <td class="px-4 py-3 text-gray-600 dark:text-slate-300">{{ $kamar->kos->name }}</td>
-                            <td class="px-4 py-3 text-gray-600 dark:text-slate-300">{{ $kamar->room_type }}</td>
-                            <td class="px-4 py-3 text-right text-gray-600 dark:text-slate-300">Rp {{ number_format($kamar->monthly_price, 0, ',', '.') }}</td>
-                            <td class="px-4 py-3 text-center">
-                                @php
-                                    $statusColors = [
-                                        'available' => 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300',
-                                        'booked' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-300',
-                                        'occupied' => 'bg-blue-100 text-blue-800 dark:bg-blue-500/10 dark:text-blue-300',
-                                        'maintenance' => 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-300',
-                                    ];
-                                @endphp
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$kamar->status] ?? 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-100' }}">
-                                    {{ ucfirst($kamar->status) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route("$prefix.kamar.show", $kamar) }}" class="text-blue-600 hover:text-blue-800 text-xs">Detail</a>
-                                    @if($canManage)
-                                        <a href="{{ route("$prefix.kamar.edit", $kamar) }}" class="text-yellow-600 hover:text-yellow-800 text-xs">Edit</a>
-                                        <form method="POST" action="{{ route("$prefix.kamar.destroy", $kamar) }}" onsubmit="return confirm('Yakin?')">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800 text-xs">Hapus</button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </td>
+            {{-- Table --}}
+            <div class="overflow-x-auto scrollbar-thin">
+                <table class="w-full text-sm">
+                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-3.5 text-left font-semibold">Kamar</th>
+                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden md:table-cell">Kos</th>
+                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Harga/Bulan</th>
+                            <th scope="col" class="px-4 py-3.5 text-center font-semibold">Status</th>
+                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Aksi</th>
                         </tr>
-                    @empty
-                        <tr><td colspan="7" class="px-4 py-3"><x-empty-state icon="ri-door-open-line" title="Belum ada data kamar." /></td></tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                        @forelse($kamars as $kamar)
+                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                                <td class="px-4 py-3.5">
+                                    <div class="flex items-center gap-3 min-w-[10rem]">
+                                        <span class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                                            <i class="ri-door-open-line text-base text-primary-500"></i>
+                                        </span>
+                                        <div class="min-w-0">
+                                            <p class="font-semibold text-slate-900 dark:text-white">{{ $kamar->room_number }}</p>
+                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[12rem]">{{ $kamar->room_name }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3.5 text-slate-600 dark:text-slate-300 hidden md:table-cell">
+                                    {{ $kamar->kos->name }}
+                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ $kamar->room_type }}</p>
+                                </td>
+                                <td class="px-4 py-3.5 text-right">
+                                    <p class="font-semibold text-slate-900 dark:text-white">Rp {{ number_format($kamar->monthly_price, 0, ',', '.') }}</p>
+                                    <p class="text-xs text-slate-400 dark:text-slate-500">Rp {{ number_format($kamar->daily_price, 0, ',', '.') }}/hari</p>
+                                </td>
+                                <td class="px-4 py-3.5 text-center"><x-status-badge :status="$kamar->status" context="kamar" /></td>
+                                <td class="px-4 py-3.5">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <a href="{{ route("$prefix.kamar.show", $kamar) }}"
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail kamar {{ $kamar->room_number }}">
+                                            <i class="ri-eye-line"></i>
+                                        </a>
+                                        @if($canManage)
+                                            <a href="{{ route("$prefix.kamar.edit", $kamar) }}"
+                                               class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit" aria-label="Edit kamar {{ $kamar->room_number }}">
+                                                <i class="ri-edit-line"></i>
+                                            </a>
 
-        <div class="p-4 border-t border-gray-200 dark:border-slate-700">{{ $kamars->links() }}</div>
+                                            <x-confirm-dialog
+                                                title="Hapus kamar ini?"
+                                                description="Kamar &ldquo;{{ $kamar->room_number }}&rdquo; akan dihapus permanen. Tindakan ini tidak dapat dibatalkan."
+                                                confirmText="Ya, Hapus"
+                                                triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                aria-label="Hapus kamar {{ $kamar->room_number }}"
+                                            >
+                                                <x-slot name="slot"><i class="ri-delete-bin-line"></i></x-slot>
+                                                <x-slot name="content">
+                                                    <form method="POST" action="{{ route("$prefix.kamar.destroy", $kamar) }}" id="delete-kamar-{{ $kamar->id }}">
+                                                        @csrf @method('DELETE')
+                                                    </form>
+                                                </x-slot>
+                                                <x-slot name="actions">
+                                                    <button type="submit" form="delete-kamar-{{ $kamar->id }}"
+                                                            class="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition">
+                                                        Ya, Hapus
+                                                    </button>
+                                                </x-slot>
+                                            </x-confirm-dialog>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5">
+                                    <x-empty-state icon="ri-door-open-line" title="Belum ada data kamar"
+                                                   description="Tambahkan kamar untuk mulai menerima booking penghuni.">
+                                        @if($canManage)
+                                            <x-button href="{{ route('owner.kamar.create') }}" type="primary"><i class="ri-add-line"></i> Tambah Kamar</x-button>
+                                        @endif
+                                    </x-empty-state>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($kamars->hasPages())
+                <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+                    {{ $kamars->links() }}
+                </div>
+            @endif
+        </div>
     </div>
 </x-app-layout>

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Laporan" description="Laporan operasional kos." />
+        <x-page-header title="Laporan" description="Rekap operasional & keuangan, siap diekspor." />
     </x-slot>
 
     @php
@@ -8,71 +8,107 @@
         $laporanPrefix = $currentUser->isSuperAdmin() ? 'super-admin' : ($currentUser->isAdmin() ? 'admin' : 'owner');
     @endphp
 
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6 mb-6">
-        <form id="filterForm" class="flex flex-col sm:flex-row gap-3 items-end">
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Tanggal Mulai</label>
-                <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="w-full rounded-lg border-gray-300 dark:border-slate-600 text-sm">
-            </div>
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Tanggal Akhir</label>
-                <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="w-full rounded-lg border-gray-300 dark:border-slate-600 text-sm">
-            </div>
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-slate-200 mb-1">Kos</label>
-                <select name="kos_id" id="kos_id" class="w-full rounded-lg border-gray-300 dark:border-slate-600 text-sm">
-                    <option value="">Semua Kos</option>
-                    @foreach($kosList as $k)
-                        <option value="{{ $k->id }}">{{ $k->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </form>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        @php
-            $reports = [
-                ['type' => 'pendapatan', 'title' => 'Laporan Pendapatan', 'desc' => 'Total pendapatan dari seluruh kos', 'color' => 'blue', 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                ['type' => 'penghuni', 'title' => 'Laporan Penghuni', 'desc' => 'Data penghuni aktif per kos', 'color' => 'green', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
-                ['type' => 'booking', 'title' => 'Laporan Booking', 'desc' => 'Riwayat booking dan status', 'color' => 'yellow', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
-                ['type' => 'kamar', 'title' => 'Laporan Kamar', 'desc' => 'Status kamar per kos', 'color' => 'purple', 'icon' => 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z'],
-                ['type' => 'tagihan', 'title' => 'Laporan Tagihan', 'desc' => 'Status tagihan dan pembayaran', 'color' => 'red', 'icon' => 'M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z'],
-            ];
-            $colorMap = [
-                'blue' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-600', 'btnBg' => 'bg-blue-600', 'btnHover' => 'hover:bg-blue-700'],
-                'green' => ['bg' => 'bg-green-100', 'text' => 'text-green-600', 'btnBg' => 'bg-green-600', 'btnHover' => 'hover:bg-green-700'],
-                'yellow' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-600', 'btnBg' => 'bg-yellow-600', 'btnHover' => 'hover:bg-yellow-700'],
-                'purple' => ['bg' => 'bg-purple-100', 'text' => 'text-purple-600', 'btnBg' => 'bg-purple-600', 'btnHover' => 'hover:bg-purple-700'],
-                'red' => ['bg' => 'bg-red-100', 'text' => 'text-red-600', 'btnBg' => 'bg-red-600', 'btnHover' => 'hover:bg-red-700'],
-            ];
-        @endphp
-
-        @foreach($reports as $report)
-            @php $c = $colorMap[$report['color']]; @endphp
-            <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-lg {{ $c['bg'] }} flex items-center justify-center">
-                        <svg class="w-6 h-6 {{ $c['text'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $report['icon'] }}"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ $report['title'] }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-slate-400">{{ $report['desc'] }}</p>
-                    </div>
+    <div class="space-y-6">
+        {{-- Filter periode --}}
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 sm:p-6">
+            <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                    <i class="ri-filter-3-line text-primary-600 dark:text-primary-400"></i>
                 </div>
-                <div class="flex gap-2">
-                    <a href="{{ route($laporanPrefix.'.laporan.export-pdf', $report['type']) }}?{{ http_build_query(request()->only('start_date', 'end_date', 'kos_id')) }}"
-                       class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-white {{ $c['btnBg'] }} rounded-lg {{ $c['btnHover'] }}">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        PDF
-                    </a>
-                    <a href="{{ route($laporanPrefix.'.laporan.export-excel', $report['type']) }}?{{ http_build_query(request()->only('start_date', 'end_date', 'kos_id')) }}"
-                       class="flex-1 inline-flex items-center justify-center gap-1 px-3 py-2 text-xs font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Excel
-                    </a>
+                <div>
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm">Filter Periode</h3>
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Filter diterapkan pada semua ekspor laporan di bawah.</p>
                 </div>
             </div>
-        @endforeach
+
+            <form method="GET" action="{{ route($laporanPrefix.'.laporan.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label for="start_date" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Tanggal Mulai</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}"
+                           class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label for="end_date" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Tanggal Akhir</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}"
+                           class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label for="kos_id" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Kos</label>
+                    <select name="kos_id" id="kos_id"
+                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                        <option value="">Semua Kos</option>
+                        @foreach($kosList as $k)
+                            <option value="{{ $k->id }}" {{ (string) request('kos_id') === (string) $k->id ? 'selected' : '' }}>{{ $k->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex gap-2 sm:justify-end">
+                    <button type="submit"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                        <i class="ri-search-line"></i> Terapkan
+                    </button>
+                    <a href="{{ route($laporanPrefix.'.laporan.index') }}"
+                       class="inline-flex items-center justify-center px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Reset filter">
+                        <i class="ri-refresh-line"></i>
+                    </a>
+                </div>
+            </form>
+
+            @if(request()->anyFilled(['start_date', 'end_date', 'kos_id']))
+                <p class="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary-600 dark:text-primary-300 bg-primary-50 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20 px-3 py-1.5 rounded-lg">
+                    <i class="ri-information-line"></i> Filter aktif pada hasil ekspor
+                </p>
+            @endif
+        </div>
+
+        {{-- Kartu laporan --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            @php
+                $reports = [
+                    ['type' => 'pendapatan', 'title' => 'Laporan Pendapatan', 'desc' => 'Total pendapatan dari seluruh kos', 'icon' => 'ri-money-dollar-circle-line', 'tone' => 'primary'],
+                    ['type' => 'penghuni', 'title' => 'Laporan Penghuni', 'desc' => 'Data penghuni aktif per kos', 'icon' => 'ri-user-star-line', 'tone' => 'green'],
+                    ['type' => 'booking', 'title' => 'Laporan Booking', 'desc' => 'Riwayat booking dan statusnya', 'icon' => 'ri-calendar-check-line', 'tone' => 'amber'],
+                    ['type' => 'kamar', 'title' => 'Laporan Kamar', 'desc' => 'Status kamar per kos', 'icon' => 'ri-door-open-line', 'tone' => 'purple'],
+                    ['type' => 'tagihan', 'title' => 'Laporan Tagihan', 'desc' => 'Status tagihan dan pembayaran', 'icon' => 'ri-file-list-3-line', 'tone' => 'blue'],
+                ];
+                $tones = [
+                    'primary' => 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400',
+                    'green' => 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400',
+                    'amber' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400',
+                    'purple' => 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400',
+                    'blue' => 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400',
+                ];
+            @endphp
+
+            @foreach($reports as $report)
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 flex flex-col">
+                    <div class="flex items-start gap-4 mb-5">
+                        <div class="w-11 h-11 rounded-xl {{ $tones[$report['tone']] }} flex items-center justify-center shrink-0">
+                            <i class="{{ $report['icon'] }} text-xl"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h3 class="font-bold text-slate-900 dark:text-white">{{ $report['title'] }}</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{{ $report['desc'] }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-auto grid grid-cols-2 gap-2">
+                        <a href="{{ route($laporanPrefix.'.laporan.export-pdf', $report['type']) }}?{{ http_build_query(request()->only('start_date', 'end_date', 'kos_id')) }}"
+                           class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+                            <i class="ri-file-pdf-line text-base"></i> PDF
+                        </a>
+                        <a href="{{ route($laporanPrefix.'.laporan.export-excel', $report['type']) }}?{{ http_build_query(request()->only('start_date', 'end_date', 'kos_id')) }}"
+                           class="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+                            <i class="ri-file-excel-line text-base"></i> Excel
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+
+            <div class="rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center justify-center text-center min-h-[12rem]">
+                <i class="ri-download-cloud-2-line text-3xl text-slate-300 dark:text-slate-600"></i>
+                <p class="mt-3 text-sm font-semibold text-slate-500 dark:text-slate-400">Ekspor mengikuti filter</p>
+                <p class="mt-1 text-xs text-slate-400 dark:text-slate-500 max-w-[16rem] leading-relaxed">Atur periode dan kos di panel filter agar file yang diunduh sesuai kebutuhan Anda.</p>
+            </div>
+        </div>
     </div>
 </x-app-layout>

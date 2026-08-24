@@ -43,8 +43,8 @@
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Kamar Saya</p>
                             <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['kamar_number'] ?? '-' }}</p>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
-                            <i class="ri-door-open-line text-2xl text-blue-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
+                            <i class="ri-door-open-line text-2xl text-blue-600 dark:text-blue-400"></i>
                         </div>
                     </div>
                     <p class="mt-3 text-xs text-slate-400 dark:text-slate-500">{{ $stats['kos_name'] ?? '-' }}</p>
@@ -58,19 +58,19 @@
                                 @php
                                     $kStatus = $stats['kontrak_status'] ?? '-';
                                     $kColor = match($kStatus) {
-                                        'active' => 'bg-green-100 text-green-700',
-                                        'expired' => 'bg-red-100 text-red-700',
+                                        'active' => 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300',
+                                        'expired' => 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300',
                                         'completed' => 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300',
                                         default => 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400',
                                     };
                                 @endphp
                                 <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold {{ $kColor }}">
-                                    {{ ucfirst($kStatus) }}
+                                    {{ \StatusLabels::kontrakLabel($kStatus) }}
                                 </span>
                             </div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition">
-                            <i class="ri-file-text-line text-2xl text-indigo-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition">
+                            <i class="ri-file-text-line text-2xl text-indigo-600 dark:text-indigo-400"></i>
                         </div>
                     </div>
                     @if(!empty($stats['kontrak_end']))
@@ -90,8 +90,8 @@
                                 @endif
                             </p>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition">
-                            <i class="ri-calendar-deadline-line text-2xl text-orange-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-100 dark:group-hover:bg-orange-500/20 transition">
+                            <i class="ri-calendar-deadline-line text-2xl text-orange-600 dark:text-orange-400"></i>
                         </div>
                     </div>
                 </div>
@@ -102,8 +102,8 @@
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Tagihan Belum Bayar</p>
                             <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['tagihan_pending'] ?? 0 }}</p>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition">
-                            <i class="ri-file-list-3-line text-2xl text-amber-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-500/20 transition">
+                            <i class="ri-file-list-3-line text-2xl text-amber-600 dark:text-amber-400"></i>
                         </div>
                     </div>
                     @if(($stats['total_belum_dibayar'] ?? 0) > 0)
@@ -122,8 +122,8 @@
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Menunggu Verifikasi</p>
                             <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['tagihan_pending_verification'] ?? 0 }}</p>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center group-hover:bg-yellow-100 transition">
-                            <i class="ri-time-line text-2xl text-yellow-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-yellow-50 dark:bg-yellow-500/10 flex items-center justify-center group-hover:bg-yellow-100 dark:group-hover:bg-yellow-500/20 transition">
+                            <i class="ri-time-line text-2xl text-yellow-600 dark:text-yellow-400"></i>
                         </div>
                     </div>
                     @if(($stats['tagihan_pending_verification'] ?? 0) > 0)
@@ -141,8 +141,8 @@
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Tagihan Overdue</p>
                             <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['tagihan_overdue'] ?? 0 }}</p>
                         </div>
-                        <div class="w-12 h-12 rounded-xl {{ ($stats['tagihan_overdue'] ?? 0) > 0 ? 'bg-red-100' : 'bg-slate-100 dark:bg-slate-800' }} flex items-center justify-center group-hover:scale-105 transition">
-                            <i class="ri-error-warning-line text-2xl {{ ($stats['tagihan_overdue'] ?? 0) > 0 ? 'text-red-600' : 'text-slate-400 dark:text-slate-500' }}"></i>
+                        <div class="w-12 h-12 rounded-xl {{ ($stats['tagihan_overdue'] ?? 0) > 0 ? 'bg-red-100 dark:bg-red-500/10' : 'bg-slate-100 dark:bg-slate-800' }} flex items-center justify-center group-hover:scale-105 transition">
+                            <i class="ri-error-warning-line text-2xl {{ ($stats['tagihan_overdue'] ?? 0) > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-400 dark:text-slate-500' }}"></i>
                         </div>
                     </div>
                     @if(($stats['tagihan_overdue'] ?? 0) > 0)
@@ -163,8 +163,8 @@
                                 <p class="text-lg font-bold text-slate-400 dark:text-slate-500 mt-1">Belum ada</p>
                             @endif
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition">
-                            <i class="ri-wallet-3-line text-2xl text-emerald-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-500/20 transition">
+                            <i class="ri-wallet-3-line text-2xl text-emerald-600 dark:text-emerald-400"></i>
                         </div>
                     </div>
                 </div>
@@ -173,8 +173,8 @@
             {{-- Quick Actions --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <a href="{{ route('tenant.booking.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
-                        <i class="ri-calendar-check-line text-2xl text-blue-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
+                        <i class="ri-calendar-check-line text-2xl text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
                         <p class="font-bold text-slate-900 dark:text-white">Booking Saya</p>
@@ -183,8 +183,8 @@
                     <i class="ri-arrow-right-s-line text-slate-300 ml-auto group-hover:text-blue-500 transition"></i>
                 </a>
                 <a href="{{ route('tenant.tagihan.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition">
-                        <i class="ri-file-list-3-line text-2xl text-amber-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-500/20 transition">
+                        <i class="ri-file-list-3-line text-2xl text-amber-600 dark:text-amber-400"></i>
                     </div>
                     <div>
                         <p class="font-bold text-slate-900 dark:text-white">Tagihan Saya</p>
@@ -193,8 +193,8 @@
                     <i class="ri-arrow-right-s-line text-slate-300 ml-auto group-hover:text-blue-500 transition"></i>
                 </a>
                 <a href="{{ route('tenant.pembayaran.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition">
-                        <i class="ri-money-dollar-circle-line text-2xl text-green-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-100 dark:group-hover:bg-green-500/20 transition">
+                        <i class="ri-money-dollar-circle-line text-2xl text-green-600 dark:text-green-400"></i>
                     </div>
                     <div>
                         <p class="font-bold text-slate-900 dark:text-white">Pembayaran Saya</p>
@@ -204,8 +204,8 @@
                 </a>
                 @if($pendingCheckout)
                     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-amber-200 dark:border-amber-500/20 p-5 flex items-center gap-4" title="Pengajuan check-out Anda sedang menunggu persetujuan">
-                        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center">
-                            <i class="ri-time-line text-2xl text-amber-600"></i>
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                            <i class="ri-time-line text-2xl text-amber-600 dark:text-amber-400"></i>
                         </div>
                         <div>
                             <p class="font-bold text-slate-900 dark:text-white">Check-Out Diproses</p>
@@ -217,8 +217,8 @@
                           onsubmit="return confirm('Ajukan check-out dari kamar {{ $stats['kamar_number'] ?? '' }}?')" class="contents">
                         @csrf
                         <button type="submit" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md hover:border-red-200 transition group flex items-center gap-4 text-left w-full cursor-pointer">
-                            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition">
-                                <i class="ri-logout-box-r-line text-2xl text-red-600"></i>
+                            <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition">
+                                <i class="ri-logout-box-r-line text-2xl text-red-600 dark:text-red-400"></i>
                             </div>
                             <div>
                                 <p class="font-bold text-slate-900 dark:text-white">Ajukan Check-Out</p>

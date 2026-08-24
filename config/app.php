@@ -4,6 +4,7 @@ use App\Providers\AppServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\RouteServiceProvider;
 use App\Support\PaymentLabels;
+use App\Support\StatusLabels;
 use Illuminate\Auth\AuthServiceProvider;
 use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
 use Illuminate\Broadcasting\BroadcastServiceProvider;
@@ -236,6 +237,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'PaymentLabels' => PaymentLabels::class,
+        'StatusLabels' => StatusLabels::class,
     ])->toArray(),
 
 ];

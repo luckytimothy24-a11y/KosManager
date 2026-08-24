@@ -18,11 +18,11 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Users</p>
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Pengguna</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ number_format($stats['total_users']) }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition">
-                        <i class="ri-team-line text-2xl text-purple-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 transition">
+                        <i class="ri-team-line text-2xl text-purple-600 dark:text-purple-400"></i>
                     </div>
                 </div>
                 <div class="mt-3 flex items-center gap-2 text-xs">
@@ -36,8 +36,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Kos</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ number_format($stats['total_kos']) }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition">
-                        <i class="ri-building-2-line text-2xl text-indigo-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition">
+                        <i class="ri-building-2-line text-2xl text-indigo-600 dark:text-indigo-400"></i>
                     </div>
                 </div>
                 <a href="{{ route('owner.kos.index') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition">
@@ -51,8 +51,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Kamar</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ number_format($stats['total_kamar']) }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
-                        <i class="ri-door-open-line text-2xl text-blue-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
+                        <i class="ri-door-open-line text-2xl text-blue-600 dark:text-blue-400"></i>
                     </div>
                 </div>
                 <div class="mt-3 flex items-center gap-2 text-xs">
@@ -80,8 +80,8 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-                        <i class="ri-user-star-line text-green-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center">
+                        <i class="ri-user-star-line text-green-600 dark:text-green-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Penghuni Aktif</p>
@@ -91,8 +91,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
-                        <i class="ri-calendar-todo-line text-orange-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center">
+                        <i class="ri-calendar-todo-line text-orange-600 dark:text-orange-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Booking Pending</p>
@@ -102,8 +102,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                        <i class="ri-checkbox-circle-line text-emerald-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                        <i class="ri-checkbox-circle-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Kamar Tersedia</p>
@@ -113,8 +113,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <i class="ri-lock-line text-blue-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                        <i class="ri-lock-line text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Kamar Terisi</p>
@@ -141,8 +141,8 @@
         {{-- Quick Links --}}
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <a href="{{ route('super-admin.users.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition">
-                    <i class="ri-team-line text-2xl text-purple-600"></i>
+                <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-100 dark:group-hover:bg-purple-500/20 transition">
+                    <i class="ri-team-line text-2xl text-purple-600 dark:text-purple-400"></i>
                 </div>
                 <div>
                     <p class="font-bold text-slate-900 dark:text-white">Manajemen User</p>
@@ -151,8 +151,8 @@
                 <i class="ri-arrow-right-s-line text-slate-300 ml-auto group-hover:text-blue-500 transition"></i>
             </a>
             <a href="{{ route('super-admin.laporan.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
-                    <i class="ri-bar-chart-grouped-line text-2xl text-blue-600"></i>
+                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
+                    <i class="ri-bar-chart-grouped-line text-2xl text-blue-600 dark:text-blue-400"></i>
                 </div>
                 <div>
                     <p class="font-bold text-slate-900 dark:text-white">Laporan</p>

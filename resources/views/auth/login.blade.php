@@ -32,7 +32,7 @@
                 <input id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password"
                        class="w-full pl-10 pr-11 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition bg-slate-50 dark:bg-slate-800/50"
                        placeholder="Masukkan password">
-                <button type="button" @click="show = !show"
+                <button type="button" @click="show = !show" aria-label="Tampilkan/sembunyikan password"
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition"
                         tabindex="-1">
                     <i class="ri-eye-off-line text-base" x-show="!show"></i>

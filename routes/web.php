@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\Kamar;
-use App\Models\Kos;
-use App\Models\User;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Owner\BookingController;
 use App\Http\Controllers\Owner\CheckInController;
 use App\Http\Controllers\Owner\CheckOutController;
@@ -20,9 +18,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdmin\FasilitasController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
 use App\Http\Controllers\SuperAdmin\UserController;
+use App\Models\AuditLog;
+use App\Models\Kamar;
+use App\Models\Kos;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function (\Illuminate\Http\Request $request) {
+Route::get('/', function (Request $request) {
     $q = trim((string) $request->query('q', ''));
 
     $kosQuery = Kos::where('status', 'active')
@@ -57,10 +60,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllRead'])
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])
         ->name('notifications.markAllRead');
 
-    Route::get('/pembayaran/{pembayaran}/proof', [\App\Http\Controllers\Owner\PembayaranController::class, 'downloadProof'])
+    Route::get('/pembayaran/{pembayaran}/proof', [PembayaranController::class, 'downloadProof'])
         ->name('pembayaran.proof');
 });
 
@@ -74,7 +77,8 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::get('laporan/export-excel/{type}', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
 
     Route::get('audit-log', function () {
-        $logs = \App\Models\AuditLog::with('user')->latest()->paginate(20);
+        $logs = AuditLog::with('user')->latest()->paginate(20);
+
         return view('super-admin.audit-log.index', compact('logs'));
     })->name('audit-log.index');
 });

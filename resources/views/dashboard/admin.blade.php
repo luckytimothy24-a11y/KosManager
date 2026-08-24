@@ -21,8 +21,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Booking Pending</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['pending_bookings'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center group-hover:bg-orange-100 transition">
-                        <i class="ri-calendar-check-line text-2xl text-orange-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-100 dark:group-hover:bg-orange-500/20 transition">
+                        <i class="ri-calendar-check-line text-2xl text-orange-600 dark:text-orange-400"></i>
                     </div>
                 </div>
                 @if($stats['pending_bookings'] > 0)
@@ -38,8 +38,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pembayaran Pending</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['pending_payments'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-100 transition">
-                        <i class="ri-money-dollar-circle-line text-2xl text-amber-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-500/20 transition">
+                        <i class="ri-money-dollar-circle-line text-2xl text-amber-600 dark:text-amber-400"></i>
                     </div>
                 </div>
                 @if($stats['pending_payments'] > 0)
@@ -55,8 +55,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Penghuni Aktif</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['total_penghunis'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition">
-                        <i class="ri-user-star-line text-2xl text-green-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-100 dark:group-hover:bg-green-500/20 transition">
+                        <i class="ri-user-star-line text-2xl text-green-600 dark:text-green-400"></i>
                     </div>
                 </div>
                 <a href="{{ route('admin.penghuni.index') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition">
@@ -70,8 +70,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Tagihan Overdue</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['tagihan_overdue'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition">
-                        <i class="ri-error-warning-line text-2xl text-red-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition">
+                        <i class="ri-error-warning-line text-2xl text-red-600 dark:text-red-400"></i>
                     </div>
                 </div>
                 @if($stats['tagihan_overdue'] > 0)
@@ -86,8 +86,8 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <i class="ri-login-box-line text-blue-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                        <i class="ri-login-box-line text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Check-in Hari Ini</p>
@@ -97,8 +97,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
-                        <i class="ri-logout-box-line text-purple-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center">
+                        <i class="ri-logout-box-line text-purple-600 dark:text-purple-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Check-out Hari Ini</p>
@@ -108,8 +108,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                        <i class="ri-checkbox-circle-line text-emerald-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                        <i class="ri-checkbox-circle-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Kamar Tersedia</p>
@@ -119,8 +119,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <i class="ri-lock-line text-blue-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                        <i class="ri-lock-line text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Kamar Terisi</p>
@@ -134,8 +134,8 @@
         @if($stats['pending_bookings'] > 0 || $stats['pending_payments'] > 0 || $stats['tagihan_overdue'] > 0)
             <div class="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-2xl p-5">
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-                        <i class="ri-alarm-warning-line text-amber-600"></i>
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center shrink-0">
+                        <i class="ri-alarm-warning-line text-amber-600 dark:text-amber-400"></i>
                     </div>
                     <div class="flex-1">
                         <h3 class="text-sm font-semibold text-amber-800">Butuh Perhatian</h3>

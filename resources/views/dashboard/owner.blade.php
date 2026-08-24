@@ -29,8 +29,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Kos</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['total_kos'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
-                        <i class="ri-building-2-line text-2xl text-blue-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
+                        <i class="ri-building-2-line text-2xl text-blue-600 dark:text-blue-400"></i>
                     </div>
                 </div>
                 <a href="{{ route('owner.kos.index') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition">
@@ -44,8 +44,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Kamar</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['total_kamar'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition">
-                        <i class="ri-door-open-line text-2xl text-indigo-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition">
+                        <i class="ri-door-open-line text-2xl text-indigo-600 dark:text-indigo-400"></i>
                     </div>
                 </div>
                 <a href="{{ route('owner.kamar.index') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition">
@@ -59,8 +59,8 @@
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Penghuni Aktif</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['total_penghunis'] }}</p>
                     </div>
-                    <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition">
-                        <i class="ri-user-star-line text-2xl text-green-600"></i>
+                    <div class="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-100 dark:group-hover:bg-green-500/20 transition">
+                        <i class="ri-user-star-line text-2xl text-green-600 dark:text-green-400"></i>
                     </div>
                 </div>
                 <a href="{{ route('owner.penghuni.index') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition">
@@ -86,8 +86,8 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-                        <i class="ri-checkbox-circle-line text-emerald-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                        <i class="ri-checkbox-circle-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Tersedia</p>
@@ -97,8 +97,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <i class="ri-lock-line text-blue-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                        <i class="ri-lock-line text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Terisi</p>
@@ -108,8 +108,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
-                        <i class="ri-tools-line text-amber-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                        <i class="ri-tools-line text-amber-600 dark:text-amber-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Maintenance</p>
@@ -119,8 +119,8 @@
             </div>
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center">
-                        <i class="ri-calendar-todo-line text-orange-600"></i>
+                    <div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center">
+                        <i class="ri-calendar-todo-line text-orange-600 dark:text-orange-400"></i>
                     </div>
                     <div>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Booking Pending</p>
@@ -134,8 +134,8 @@
         @if($stats['total_pending_bookings'] > 0 || ($stats['pending_payments'] ?? 0) > 0)
             <div class="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 rounded-2xl p-5">
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                        <i class="ri-alert-line text-orange-600"></i>
+                    <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center shrink-0">
+                        <i class="ri-alert-line text-orange-600 dark:text-orange-400"></i>
                     </div>
                     <div>
                         <h3 class="text-sm font-semibold text-orange-800">Perhatian Diperlukan</h3>

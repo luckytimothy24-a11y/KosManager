@@ -13,31 +13,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=lato:300,400,700,900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Lato', 'sans-serif'] },
-                    colors: {
-                        primary: {
-                            50:  '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#2563eb',
-                            600: '#1d4ed8',
-                            700: '#1e40af',
-                            800: '#1e3a8a',
-                            900: '#172554',
-                        },
-                    },
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         html { scroll-behavior: smooth; }
         .fade-in { animation: fadeIn 0.5s ease forwards; }
@@ -255,18 +231,18 @@
         </div>
 
         <div class="max-w-[1170px] mx-auto px-4 sm:px-6 pb-12">
-            <div class="border-y border-gray-100 dark:border-slate-800 py-6 flex items-center justify-center gap-8 sm:gap-14">
-                <div class="text-center">
+            <div class="border-y border-slate-100 dark:border-slate-800 py-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-14">
+                <div class="text-center min-w-20">
                     <p class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">{{ $stats['kos'] }}</p>
                     <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1 font-semibold uppercase tracking-wider">Kos Aktif</p>
                 </div>
-                <div class="w-px h-10 bg-gray-200 dark:bg-slate-800"></div>
-                <div class="text-center">
+                <div class="w-px h-10 bg-gray-200 dark:bg-slate-800 hidden sm:block"></div>
+                <div class="text-center min-w-20">
                     <p class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">{{ $stats['kamar'] }}</p>
                     <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1 font-semibold uppercase tracking-wider">Kamar Tersedia</p>
                 </div>
-                <div class="w-px h-10 bg-gray-200 dark:bg-slate-800"></div>
-                <div class="text-center">
+                <div class="w-px h-10 bg-gray-200 dark:bg-slate-800 hidden sm:block"></div>
+                <div class="text-center min-w-20">
                     <p class="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white">{{ $stats['owners'] }}</p>
                     <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1 font-semibold uppercase tracking-wider">Pemilik Kos</p>
                 </div>
@@ -581,6 +557,20 @@
                 document.querySelectorAll('details[data-dd]').forEach(function (d) {
                     if (! d.contains(e.target)) { d.removeAttribute('open'); }
                 });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('details[data-dd]').forEach(function (d) {
+                        d.removeAttribute('open');
+                    });
+                    var menu = document.getElementById('mobile-menu');
+                    if (menu && !menu.classList.contains('hidden')) {
+                        menu.classList.add('hidden');
+                        var b = document.getElementById('mobile-menu-button');
+                        if (b) { b.setAttribute('aria-expanded', 'false'); }
+                    }
+                }
             });
         })();
     </script>
