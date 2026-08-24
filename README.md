@@ -1,5 +1,7 @@
 # KosManager
 
+[![CI](https://github.com/luckytimothy24-a11y/KosManager/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/luckytimothy24-a11y/KosManager/actions/workflows/ci.yml)
+
 Sistem manajemen kos (boarding house) berbasis web yang dibangun dengan **Laravel 10**. KosManager mengelola seluruh siklus bisnis kos dalam satu aplikasi: dari pencarian kamar, booking, check-in, tagihan bulanan, verifikasi pembayaran, hingga check-out — dengan pemisahan peran yang jelas antara pemilik kos, admin operasional, dan penyewa.
 
 ## Tentang Project
