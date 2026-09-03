@@ -7,6 +7,20 @@
     <div class="space-y-6">
         <x-alert />
 
+        @if($errors->any())
+            <div class="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] p-4" role="alert">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center shrink-0">
+                        <i class="ri-error-warning-line text-red-600 dark:text-red-400"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-red-800 dark:text-red-200">Data check-in belum lengkap</p>
+                        <p class="mt-1 text-xs text-red-700/80 dark:text-red-300/80">Periksa kembali isian pada form booking yang ingin diproses, lalu kirim ulang.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Booking Siap Check-In --}}
         @if($readyBookings->isNotEmpty())
             <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 sm:p-6">
@@ -23,9 +37,9 @@
 
                 <div class="space-y-3">
                     @foreach($readyBookings as $rb)
-                        <div x-data="{ open: {{ $errors->any() ? 'true' : 'false' }} }" class="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden transition-colors" :class="open && 'border-primary-200 dark:border-primary-500/30'">
+                        <div x-data="{ open: false }" class="border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden transition-colors" :class="open && 'border-primary-200 dark:border-primary-500/30'">
                             <button type="button" @click="open = !open"
-                                    class="w-full flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition"
+                                    class="group w-full flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition"
                                     :aria-expanded="open.toString()" aria-controls="checkin-form-{{ $rb->id }}">
                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm min-w-0">
                                     <span class="font-mono text-xs font-semibold text-slate-400 dark:text-slate-500">{{ $rb->booking_code }}</span>
@@ -74,9 +88,6 @@
                                                    placeholder="Opsional">
                                         </div>
                                     </div>
-                                    @error('identity_number') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
-                                    @error('phone') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
-                                    @error('address') <p class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                                     <div class="flex flex-wrap items-center justify-end gap-3 mt-5">
                                         <a href="{{ route("$prefix.booking.show", $rb) }}"
                                            class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">Detail Booking</a>

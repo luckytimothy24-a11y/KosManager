@@ -22,9 +22,10 @@ class KontrakController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('contract_number', 'like', '%'.$request->search.'%')
-                    ->orWhereHas('penghuni', fn ($pq) => $pq->whereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$request->search.'%')));
+            $search = addcslashes($request->search, '%_');
+            $query->where(function ($q) use ($search) {
+                $q->where('contract_number', 'like', '%'.$search.'%')
+                    ->orWhereHas('penghuni', fn ($pq) => $pq->whereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$search.'%')));
             });
         }
 

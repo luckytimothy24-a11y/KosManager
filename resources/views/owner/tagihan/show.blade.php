@@ -142,7 +142,7 @@
                                     <select id="payment_method" name="payment_method" required
                                             class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
                                         <option value="transfer_bank">Transfer Bank</option>
-                                        <option value="e_wallet">QRIS / E-Wallet</option>
+                                        <option value="e_wallet">E-Wallet / QRIS</option>
                                         <option value="cash">Tunai</option>
                                     </select>
                                 </div>

@@ -47,7 +47,7 @@ class BookingUncheckedInExpireTest extends TestCase
         $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'available']);
 
         Mail::assertQueued(KosManagerMail::class, function ($mail) use ($tenant) {
-            return $mail->mailSubject === 'Booking Expired'
+            return $mail->mailSubject === 'Booking Kedaluwarsa'
                 && $mail->to[0]['address'] === $tenant->email;
         });
     }

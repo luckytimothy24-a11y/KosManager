@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
+use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kos;
+use App\Models\Penghuni;
 use App\Services\AuditLogService;
+use App\Services\BookingService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class TenantBookingController extends Controller
 {
@@ -28,119 +30,100 @@ class TenantBookingController extends Controller
     {
         $kos = Kos::where('status', 'active')->get();
         $kamar = collect();
+        $selectedKos = null;
 
         if ($request->filled('kos_id')) {
+            $selectedKos = $kos->firstWhere('id', (int) $request->kos_id);
             $kamar = Kamar::where('kos_id', $request->kos_id)
                 ->where('status', 'available')
                 ->get();
         }
 
-        return view('tenant.booking.create', compact('kos', 'kamar'));
+        return view('tenant.booking.create', compact('kos', 'kamar', 'selectedKos'));
     }
 
-    public function store(StoreBookingRequest $request)
+    public function store(StoreBookingRequest $request, BookingService $bookingService)
     {
-        $booking = \DB::transaction(function () use ($request) {
-            $kamar = Kamar::whereKey($request->kamar_id)->lockForUpdate()->firstOrFail();
+        $result = $bookingService->create([
+            'kamar_id' => $request->kamar_id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'rental_type' => $request->rental_type,
+            'notes' => $request->notes,
+        ], $request->user()->id);
 
-            if ($kamar->status !== 'available' || $kamar->kos->status !== 'active') {
-                return null;
-            }
+        if (! $result['ok']) {
+            $message = match ($result['error']) {
+                'conflict' => 'Kamar sudah dibooking pada periode tersebut.',
+                'no_price' => 'Harga kamar tidak tersedia.',
+                default => 'Kamar tidak tersedia untuk dibooking.',
+            };
 
-            $hasConflict = Booking::where('kamar_id', $kamar->id)
-                ->whereIn('status', ['pending', 'approved'])
-                ->where('start_date', '<', $request->end_date)
-                ->where('end_date', '>', $request->start_date)
-                ->exists();
-
-            if ($hasConflict) {
-                return 'conflict';
-            }
-
-            $price = $request->rental_type === 'daily' ? $kamar->daily_price : $kamar->monthly_price;
-
-            if (! $price) {
-                return 'no_price';
-            }
-
-            return Booking::create([
-                'booking_code' => 'BK-'.strtoupper(Str::random(8)),
-                'user_id' => $request->user()->id,
-                'kos_id' => $kamar->kos_id,
-                'kamar_id' => $kamar->id,
-                'booking_date' => now(),
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'rental_type' => $request->rental_type,
-                'price' => $price,
-                'status' => 'pending',
-                'notes' => $request->notes,
-            ]);
-        });
-
-        if ($booking === null) {
             return redirect()->route('tenant.booking.create', ['kos_id' => $request->kos_id])
-                ->withErrors(['kamar_id' => 'Kamar tidak tersedia untuk dibooking.'])->withInput();
+                ->withErrors(['kamar_id' => $message])->withInput();
         }
 
-        if ($booking === 'conflict') {
-            return redirect()->route('tenant.booking.create', ['kos_id' => $request->kos_id])
-                ->withErrors(['kamar_id' => 'Kamar sudah dibooking pada periode tersebut.'])->withInput();
-        }
-
-        if ($booking === 'no_price') {
-            return redirect()->route('tenant.booking.create', ['kos_id' => $request->kos_id])
-                ->withErrors(['kamar_id' => 'Harga kamar tidak tersedia.'])->withInput();
-        }
-
-        try {
-            NotificationService::bookingNew($booking->kos->owner_id, $request->user()->name, $booking->kamar->room_number);
-            AuditLogService::create('Booking', "Booking baru {$request->user()->name} untuk kamar {$booking->kamar->room_number}", ['kos_id' => $booking->kos_id, 'kamar_id' => $booking->kamar_id]);
-        } catch (\Exception $e) {
-            \Log::warning('Booking notification/audit failed: '.$e->getMessage());
-        }
-
-        return redirect()->route('tenant.booking.index')->with('success', 'Booking berhasil dibuat. Menunggu persetujuan.');
+        return redirect()->route('tenant.booking.success', $result['booking'])
+            ->with('success', 'Booking berhasil! Kamar telah dipesan untuk Anda.');
     }
 
-    public function cancel(Booking $booking)
+    public function success(Booking $booking)
+    {
+        $this->authorize('view', $booking);
+        $booking->load(['user', 'kos', 'kamar']);
+
+        return view('tenant.booking.success', compact('booking'));
+    }
+
+    public function show(Booking $booking)
+    {
+        $this->authorize('view', $booking);
+        $booking->load(['user', 'kos', 'kamar']);
+
+        $hasCheckOut = false;
+        $kontrak = null;
+        $tagihan = null;
+
+        if ($booking->status === 'completed') {
+            $penghuni = Penghuni::where('user_id', $booking->user_id)
+                ->where('kamar_id', $booking->kamar_id)
+                ->latest()
+                ->first();
+            $hasCheckOut = $penghuni
+                ? CheckOut::where('penghuni_id', $penghuni->id)->where('status', 'approved')->exists()
+                : false;
+
+            // Jembatan kontrak & tagihan untuk booking yang sudah selesai (G3).
+            $bridgePenghuni = Penghuni::where('user_id', $booking->user_id)
+                ->where('kamar_id', $booking->kamar_id)
+                ->first();
+
+            if ($bridgePenghuni) {
+                $kontrak = $bridgePenghuni->kontraks()->latest()->first();
+                $tagihan = $kontrak ? $kontrak->tagihans()->latest()->first() : null;
+            }
+        }
+
+        return view('tenant.booking.show', compact('booking', 'hasCheckOut', 'kontrak', 'tagihan'));
+    }
+
+    public function cancel(Booking $booking, BookingService $bookingService)
     {
         $this->authorize('cancel', $booking);
 
-        $cancelled = \DB::transaction(function () use ($booking) {
-            $locked = Booking::whereKey($booking->id)->lockForUpdate()->first();
-
-            if (! $locked || ! in_array($locked->status, ['pending', 'approved'])) {
-                return false;
-            }
-
-            $wasApproved = $locked->status === 'approved';
-            $locked->update(['status' => 'cancelled']);
-
-            if ($wasApproved) {
-                $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->first();
-
-                if ($kamar && $kamar->status === 'booked') {
-                    $stillReserved = Booking::where('kamar_id', $kamar->id)
-                        ->whereKeyNot($locked->id)
-                        ->where('status', 'approved')
-                        ->whereDate('end_date', '>=', today())
-                        ->exists();
-
-                    if (! $stillReserved) {
-                        $kamar->update(['status' => 'available']);
-                    }
-                }
-            }
-
-            return true;
-        });
+        $cancelled = $bookingService->cancel($booking->id);
 
         if (! $cancelled) {
             return back()->with('error', 'Booking sudah diproses sebelumnya.');
         }
 
-        AuditLogService::reject('Booking', "Booking {$booking->booking_code} dibatalkan oleh pengguna", ['booking_id' => $booking->id]);
+        try {
+            AuditLogService::reject('Booking', "Booking {$booking->booking_code} dibatalkan oleh pengguna", ['booking_id' => $booking->id]);
+
+            NotificationService::bookingCancelledByTenant($booking->kos->owner_id, $booking->user->name, $booking->booking_code);
+        } catch (\Exception $e) {
+            \Log::warning('Booking cancel notification/audit failed: '.$e->getMessage());
+        }
 
         return redirect()->route('tenant.booking.index')->with('success', 'Booking berhasil dibatalkan.');
     }

@@ -1,5 +1,6 @@
 <x-app-layout>
     <div class="space-y-6">
+        <x-alert />
 
         {{-- Welcome Banner --}}
         <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
@@ -92,11 +93,11 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center">
-                        <i class="ri-calendar-todo-line text-orange-600 dark:text-orange-400"></i>
+                        <i class="ri-login-box-line text-orange-600 dark:text-orange-400"></i>
                     </div>
                     <div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Booking Pending</p>
-                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_pending_bookings']) }}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Perlu Check-in</p>
+                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_active_bookings']) }}</p>
                     </div>
                 </div>
             </div>

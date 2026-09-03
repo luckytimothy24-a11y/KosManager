@@ -4,81 +4,80 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePembayaranRequest;
-use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
+use App\Services\PaymentService;
+use Illuminate\Http\Request;
 
 class TenantPembayaranController extends Controller
 {
-    public function store(StorePembayaranRequest $request)
+    /**
+     * Buat pembayaran online via payment gateway (verifikasi otomatis).
+     */
+    public function gatewayStore(Request $request, PaymentService $paymentService)
     {
         $user = $request->user();
         $penghuni = Penghuni::where('user_id', $user->id)->where('status', 'active')->first();
         abort_unless($penghuni, 403);
 
         $tagihan = Tagihan::findOrFail($request->tagihan_id);
-        abort_unless($tagihan->penghuni_id === $penghuni->id, 403);
+        abort_unless((int) $tagihan->penghuni_id === (int) $penghuni->id, 403);
 
-        if (! in_array($tagihan->status, ['unpaid', 'overdue'])) {
+        $result = $paymentService->createGateway([
+            'penghuni' => $penghuni,
+            'tagihan' => $tagihan,
+        ]);
+
+        if (! $result['ok']) {
             return back()->withErrors([
-                'amount' => 'Tagihan ini tidak dapat dibayar (sudah dibayar atau menunggu verifikasi).',
+                'amount' => $result['message'],
             ]);
         }
 
-        if ((float) $request->amount !== (float) $tagihan->total) {
+        $tagihan = $result['tagihan'];
+        $pembayaran = $result['pembayaran'];
+
+        $kosOwner = $tagihan->kamar->kos->owner_id;
+        NotificationService::paymentSubmitted($kosOwner, $user->name, $tagihan->bill_number);
+        AuditLogService::create('Pembayaran', "Pembayaran online untuk tagihan {$tagihan->bill_number} dibuat oleh {$user->name}", ['tagihan_id' => $tagihan->id, 'gateway_reference' => $pembayaran->gateway_reference]);
+
+        return redirect()->route('tenant.pembayaran.show', $pembayaran)->with('success', 'Pembayaran online berhasil dibuat. Selesaikan pembayaran Anda lalu sistem akan memverifikasi otomatis.');
+    }
+
+    public function store(StorePembayaranRequest $request, PaymentService $paymentService)
+    {
+        $user = $request->user();
+        $penghuni = Penghuni::where('user_id', $user->id)->where('status', 'active')->first();
+        abort_unless($penghuni, 403);
+
+        $tagihan = $paymentService->resolveOwnTagihan((int) $request->tagihan_id, $user->id);
+        abort_unless($tagihan, 403);
+
+        if (round((float) $request->amount, 2) !== round((float) $tagihan->total, 2)) {
             return back()->withErrors([
                 'amount' => 'Nominal pembayaran harus sesuai total tagihan (Rp '.number_format((float) $tagihan->total, 0, ',', '.').').',
             ])->withInput();
         }
 
-        $proofPath = $request->hasFile('proof_file')
-            ? $request->file('proof_file')->store('bukti-pembayaran')
-            : null;
+        $result = $paymentService->createManual([
+            'penghuni' => $penghuni,
+            'tagihan' => $tagihan,
+            'amount' => $request->amount,
+            'payment_method' => $request->payment_method,
+            'proof_file' => $request->hasFile('proof_file')
+                ? $request->file('proof_file')->store('bukti-pembayaran')
+                : null,
+        ]);
 
-        $savedTagihan = \DB::transaction(function () use ($request, $tagihan, $penghuni, $proofPath) {
-            $locked = Tagihan::whereKey($tagihan->id)->lockForUpdate()->first();
-
-            if (! $locked || ! in_array($locked->status, ['unpaid', 'overdue'])) {
-                return null;
-            }
-
-            $hasActivePayment = Pembayaran::where('tagihan_id', $locked->id)
-                ->whereIn('verification_status', ['pending', 'approved'])
-                ->exists();
-
-            if ($hasActivePayment) {
-                return null;
-            }
-
-            Pembayaran::create([
-                'payment_number' => 'PY-'.strtoupper(uniqid()),
-                'tagihan_id' => $locked->id,
-                'penghuni_id' => $penghuni->id,
-                'amount' => $request->amount,
-                'payment_date' => now(),
-                'payment_method' => $request->payment_method,
-                'proof_file' => $proofPath,
-                'verification_status' => 'pending',
-            ]);
-
-            $locked->update(['status' => 'pending_verification']);
-
-            return $locked;
-        });
-
-        if (! $savedTagihan) {
-            if ($proofPath) {
-                \Storage::delete($proofPath);
-            }
-
+        if (! $result['ok']) {
             return back()->withErrors([
-                'amount' => 'Tagihan ini tidak dapat dibayar (sudah dibayar atau menunggu verifikasi).',
+                'amount' => $result['message'],
             ]);
         }
 
-        $tagihan = $savedTagihan;
+        $tagihan = $result['tagihan'];
 
         $kosOwner = $tagihan->kamar->kos->owner_id;
         NotificationService::paymentSubmitted($kosOwner, $user->name, $tagihan->bill_number);

@@ -98,16 +98,15 @@
                                                 aria-label="Hapus kamar {{ $kamar->room_number }}"
                                             >
                                                 <x-slot name="slot"><i class="ri-delete-bin-line"></i></x-slot>
-                                                <x-slot name="content">
-                                                    <form method="POST" action="{{ route("$prefix.kamar.destroy", $kamar) }}" id="delete-kamar-{{ $kamar->id }}">
-                                                        @csrf @method('DELETE')
-                                                    </form>
-                                                </x-slot>
                                                 <x-slot name="actions">
-                                                    <button type="submit" form="delete-kamar-{{ $kamar->id }}"
-                                                            class="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition">
-                                                        Ya, Hapus
-                                                    </button>
+                                                    <form method="POST" action="{{ route("$prefix.kamar.destroy", $kamar) }}" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" :disabled="submitting"
+                                                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            <span x-show="!submitting">Ya, Hapus</span>
+                                                            <span x-show="submitting" x-cloak>Menghapus...</span>
+                                                        </button>
+                                                    </form>
                                                 </x-slot>
                                             </x-confirm-dialog>
                                         @endif

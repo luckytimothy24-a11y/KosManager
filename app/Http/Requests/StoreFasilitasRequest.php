@@ -16,8 +16,16 @@ class StoreFasilitasRequest extends FormRequest
         $fasilitasId = $this->route('fasilitas')?->id;
 
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:fasilitas,name'.($fasilitasId ? ','.$fasilitasId : '')],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:fasilitas,name,'.($fasilitasId ?? 'NULL').',id,type,'.($this->input('type', 'kamar')),
+            ],
             'icon' => ['nullable', 'string', 'max:255'],
+            'type' => ['sometimes', 'in:kos,kamar'],
+            'description' => ['nullable', 'string'],
+            'is_active' => ['sometimes', 'boolean'],
         ];
     }
 }

@@ -22,9 +22,10 @@ class PenghuniController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('identity_number', 'like', '%'.$request->search.'%')
-                    ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$request->search.'%'));
+            $search = addcslashes($request->search, '%_');
+            $query->where(function ($q) use ($search) {
+                $q->where('identity_number', 'like', '%'.$search.'%')
+                    ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$search.'%'));
             });
         }
 

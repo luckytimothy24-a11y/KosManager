@@ -2,6 +2,8 @@
     <div class="space-y-6">
         <x-page-header title="Profil Saya" description="Kelola informasi akun, keamanan, dan preferensi Anda." />
 
+        <x-alert />
+
         <div class="grid gap-6">
             {{-- Informasi Profile --}}
             <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8">

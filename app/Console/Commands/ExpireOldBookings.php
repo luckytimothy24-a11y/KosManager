@@ -10,55 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 class ExpireOldBookings extends Command
 {
-    protected $signature = 'booking:expire-old {--days=3 : Batas hari pending sebelum expired}';
+    protected $signature = 'booking:expire-old';
 
-    protected $description = 'Kedaluwarsakan booking pending yang lama tidak diproses dan booking approved yang sudah melewati tanggal selesai tanpa check-in';
+    protected $description = 'Kedaluwarsakan booking approved yang sudah melewati tanggal selesai tanpa check-in';
 
     public function handle(): int
     {
-        $days = (int) $this->option('days');
+        $expiredApproved = $this->expireUncheckedInApprovedBookings();
 
-        [$expiredPending, $expiredApproved] = [
-            $this->expireStalePendingBookings($days),
-            $this->expireUncheckedInApprovedBookings(),
-        ];
-
-        $this->info("{$expiredPending} booking pending ditandai expired. {$expiredApproved} booking approved tanpa check-in ditandai expired.");
+        $this->info("{$expiredApproved} booking approved tanpa check-in ditandai expired.");
 
         return self::SUCCESS;
-    }
-
-    private function expireStalePendingBookings(int $days): int
-    {
-        $expiredCount = 0;
-
-        $bookingIds = Booking::where('status', 'pending')
-            ->where(function ($q) use ($days) {
-                $q->whereDate('start_date', '<', today())
-                    ->orWhere('created_at', '<', now()->subDays($days));
-            })
-            ->pluck('id');
-
-        foreach ($bookingIds as $bookingId) {
-            $expired = DB::transaction(function () use ($bookingId) {
-                $booking = Booking::whereKey($bookingId)->lockForUpdate()->first();
-
-                if (! $booking || $booking->status !== 'pending') {
-                    return null;
-                }
-
-                $booking->update(['status' => 'expired']);
-
-                return $booking;
-            });
-
-            if ($expired) {
-                $expiredCount++;
-                NotificationService::bookingExpired($expired->user_id, $expired->booking_code);
-            }
-        }
-
-        return $expiredCount;
     }
 
     private function expireUncheckedInApprovedBookings(): int
@@ -70,39 +32,43 @@ class ExpireOldBookings extends Command
             ->pluck('id');
 
         foreach ($bookingIds as $bookingId) {
-            $expired = DB::transaction(function () use ($bookingId) {
-                $booking = Booking::whereKey($bookingId)->lockForUpdate()->first();
+            try {
+                $expired = DB::transaction(function () use ($bookingId) {
+                    $booking = Booking::whereKey($bookingId)->lockForUpdate()->first();
 
-                if (! $booking || $booking->status !== 'approved') {
-                    return null;
-                }
-
-                if (! $booking->end_date->copy()->startOfDay()->lt(today())) {
-                    return null;
-                }
-
-                $kamar = Kamar::whereKey($booking->kamar_id)->lockForUpdate()->first();
-
-                $booking->update(['status' => 'expired']);
-
-                if ($kamar && $kamar->status === 'booked') {
-                    $stillReserved = Booking::where('kamar_id', $kamar->id)
-                        ->whereKeyNot($booking->id)
-                        ->where('status', 'approved')
-                        ->whereDate('end_date', '>=', today())
-                        ->exists();
-
-                    if (! $stillReserved) {
-                        $kamar->update(['status' => 'available']);
+                    if (! $booking || $booking->status !== 'approved') {
+                        return null;
                     }
+
+                    if (! $booking->end_date->copy()->startOfDay()->lt(today())) {
+                        return null;
+                    }
+
+                    $kamar = Kamar::whereKey($booking->kamar_id)->lockForUpdate()->first();
+
+                    $booking->update(['status' => 'expired']);
+
+                    if ($kamar && $kamar->status === 'booked') {
+                        $stillReserved = Booking::where('kamar_id', $kamar->id)
+                            ->whereKeyNot($booking->id)
+                            ->where('status', 'approved')
+                            ->whereDate('end_date', '>=', today())
+                            ->exists();
+
+                        if (! $stillReserved) {
+                            $kamar->update(['status' => 'available']);
+                        }
+                    }
+
+                    return $booking;
+                });
+
+                if ($expired) {
+                    $expiredCount++;
+                    NotificationService::bookingExpired($expired->user_id, $expired->booking_code, "booking-expired:{$expired->id}");
                 }
-
-                return $booking;
-            });
-
-            if ($expired) {
-                $expiredCount++;
-                NotificationService::bookingExpired($expired->user_id, $expired->booking_code);
+            } catch (\Exception $e) {
+                \Log::warning("booking:expire-old failed for booking {$bookingId}: {$e->getMessage()}");
             }
         }
 

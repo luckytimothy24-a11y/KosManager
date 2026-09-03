@@ -77,12 +77,32 @@
                 @endif
 
                 {{-- Fasilitas umum --}}
-                @if($kos->general_facilities)
+                @php
+                    $kosFacilities = $kos->fasilitas->isNotEmpty()
+                        ? $kos->fasilitas
+                        : collect();
+                @endphp
+                @if($kosFacilities->isNotEmpty() || $kos->general_facilities)
                     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
                         <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
                             <i class="ri-sofa-line text-primary-500"></i> Fasilitas Umum
                         </h3>
-                        <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ $kos->general_facilities }}</p>
+                        @if($kosFacilities->isNotEmpty())
+                            <ul class="mt-3 flex flex-wrap gap-2">
+                                @foreach($kosFacilities as $f)
+                                    <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-3 py-1.5 rounded-lg">
+                                        @if($f->icon)
+                                            <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-primary-500"></i>
+                                        @else
+                                            <i class="ri-check-line text-green-600 dark:text-green-400"></i>
+                                        @endif
+                                        {{ $f->name }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @elseif($kos->general_facilities)
+                            <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ $kos->general_facilities }}</p>
+                        @endif
                     </div>
                 @endif
 

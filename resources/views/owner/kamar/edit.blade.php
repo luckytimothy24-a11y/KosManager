@@ -1,5 +1,5 @@
 <x-app-layout>
-    @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $showUrl = route("$prefix.kamar.show", $kamar); $indexUrl = route("$prefix.kamar.index"); @endphp
+    @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $showUrl = route("$prefix.kamar.show", $kamar); $indexUrl = route("$prefix.kamar.index"); $hasExistingPhoto = !empty($kamar->photo) && file_exists(public_path('storage/'.$kamar->photo)); @endphp
     <x-slot name="header">
         <x-page-header title="Edit Kamar {{ $kamar->room_number }}" description="{{ $kamar->room_name }} · {{ $kamar->kos->name }}">
             <div class="flex items-center gap-2">
@@ -11,7 +11,7 @@
 
     <div class="max-w-2xl">
         <x-alert />
-        <form method="POST" action="{{ route("$prefix.kamar.update", $kamar) }}" enctype="multipart/form-data" class="space-y-6" x-data="{ photoPreview: null }">
+        <form method="POST" action="{{ route("$prefix.kamar.update", $kamar) }}" enctype="multipart/form-data" class="space-y-6" x-data="{ photoPreview: null, submitting: false }" x-on:submit="submitting = true">
             @csrf @method('PUT')
 
             {{-- Section: Informasi Kamar --}}
@@ -139,10 +139,10 @@
                     <template x-if="photoPreview">
                         <img :src="photoPreview" alt="Preview foto kamar baru" class="max-h-40 rounded-xl object-cover shadow-sm">
                     </template>
-                    <template x-if="!photoPreview && $kamar->photo && @file_exists(public_path('storage/'.$kamar->photo))">
+                    <template x-if="!photoPreview && {{ $hasExistingPhoto ? 'true' : 'false' }}">
                         <img src="{{ asset('storage/'.$kamar->photo) }}" alt="Foto kamar saat ini" class="max-h-40 rounded-xl object-cover shadow-sm">
                     </template>
-                    <template x-if="!photoPreview && (!$kamar->photo || !@file_exists(public_path('storage/'.$kamar->photo)))">
+                    <template x-if="!photoPreview && {{ $hasExistingPhoto ? 'false' : 'true' }}">
                         <span class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-500/10 transition">
                             <i class="ri-upload-cloud-2-line text-xl text-slate-400 dark:text-slate-500"></i>
                         </span>
@@ -159,9 +159,9 @@
             <div class="flex items-center justify-end gap-3">
                 <a href="{{ route("$prefix.kamar.show", $kamar) }}"
                    class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
-                <button type="submit"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-                    <i class="ri-save-line"></i> Simpan Perubahan
+                <button type="submit" :disabled="submitting"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="ri-save-line"></i> <span x-show="!submitting">Simpan Perubahan</span><span x-show="submitting" x-cloak>Menyimpan...</span>
                 </button>
             </div>
         </form>

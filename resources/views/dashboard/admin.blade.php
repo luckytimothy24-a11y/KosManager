@@ -1,5 +1,6 @@
 <x-app-layout>
     <div class="space-y-6">
+        <x-alert />
 
         {{-- Welcome Banner --}}
         <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
@@ -18,16 +19,16 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 hover:shadow-md transition-shadow group">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Booking Pending</p>
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Booking Perlu Check-in</p>
                         <p class="text-3xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['pending_bookings'] }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-100 dark:group-hover:bg-orange-500/20 transition">
-                        <i class="ri-calendar-check-line text-2xl text-orange-600 dark:text-orange-400"></i>
+                        <i class="ri-login-box-line text-2xl text-orange-600 dark:text-orange-400"></i>
                     </div>
                 </div>
                 @if($stats['pending_bookings'] > 0)
-                    <a href="{{ route('admin.booking.index') }}?status=pending" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-orange-600 hover:text-orange-700 transition">
-                        Review sekarang <i class="ri-arrow-right-s-line"></i>
+                    <a href="{{ route('admin.checkin.index') }}" class="mt-3 inline-flex items-center gap-1 text-xs font-medium text-orange-600 hover:text-orange-700 transition">
+                        Proses check-in <i class="ri-arrow-right-s-line"></i>
                     </a>
                 @endif
             </div>
@@ -141,8 +142,8 @@
                         <h3 class="text-sm font-semibold text-amber-800">Butuh Perhatian</h3>
                         <div class="flex flex-wrap gap-2 mt-2">
                             @if($stats['pending_bookings'] > 0)
-                                <a href="{{ route('admin.booking.index') }}?status=pending" class="inline-flex items-center px-3 py-1.5 bg-white dark:bg-slate-900 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/30 rounded-lg text-xs font-semibold hover:bg-orange-50 dark:hover:bg-orange-500/10 transition">
-                                    <i class="ri-calendar-check-line mr-1"></i> {{ $stats['pending_bookings'] }} Booking Pending
+                                <a href="{{ route('admin.checkin.index') }}" class="inline-flex items-center px-3 py-1.5 bg-white dark:bg-slate-900 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/30 rounded-lg text-xs font-semibold hover:bg-orange-50 dark:hover:bg-orange-500/10 transition">
+                                    <i class="ri-login-box-line mr-1"></i> {{ $stats['pending_bookings'] }} Booking Perlu Check-in
                                 </a>
                             @endif
                             @if($stats['pending_payments'] > 0)
@@ -164,8 +165,8 @@
         {{-- Workflow Guide --}}
         <x-workflow-guide title="Panduan Alur Kerja Admin" :steps="[
             ['title' => 'Pantau Kamar', 'desc' => 'Cek status kamar: tersedia, terisi, atau maintenance'],
-            ['title' => 'Setujui Booking', 'desc' => 'Tinjau permintaan sewa yang masuk'],
-            ['title' => 'Proses Check-in / Check-out', 'desc' => 'Kelola kedatangan dan kepergian penghuni'],
+            ['title' => 'Proses Check-in', 'desc' => 'Aktifkan penghuni dari booking yang sudah terkonfirmasi'],
+            ['title' => 'Proses Check-out', 'desc' => 'Kelola kepergian penghuni dan kembalikan status kamar'],
             ['title' => 'Buat Tagihan', 'desc' => 'Kirim tagihan sewa bulanan ke penghuni aktif'],
             ['title' => 'Verifikasi Pembayaran', 'desc' => 'Konfirmasi bukti bayar yang diupload penghuni'],
         ]"/>

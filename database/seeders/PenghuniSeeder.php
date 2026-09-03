@@ -26,15 +26,17 @@ class PenghuniSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        $pendingBooking = Booking::where('status', 'pending')->first();
+        $pendingBooking = Booking::where('status', 'approved')->skip(1)->first();
 
-        Penghuni::create([
-            'user_id' => $tenant->id,
-            'kos_id' => $pendingBooking->kos_id,
-            'kamar_id' => $pendingBooking->kamar_id,
-            'identity_number' => '3201234567890002',
-            'phone' => $tenant->phone,
-            'status' => 'active',
-        ]);
+        if ($pendingBooking) {
+            Penghuni::create([
+                'user_id' => $tenant->id,
+                'kos_id' => $pendingBooking->kos_id,
+                'kamar_id' => $pendingBooking->kamar_id,
+                'identity_number' => '3201234567890002',
+                'phone' => $tenant->phone,
+                'status' => 'active',
+            ]);
+        }
     }
 }

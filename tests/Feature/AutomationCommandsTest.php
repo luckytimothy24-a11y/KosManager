@@ -82,42 +82,26 @@ class AutomationCommandsTest extends TestCase
         Mail::assertNothingQueued();
     }
 
-    public function test_expire_command_expires_pending_booking_with_past_start_date(): void
+    public function test_expire_command_expires_approved_booking_past_end_date_without_checkin(): void
     {
         Mail::fake();
 
         $booking = Booking::factory()->create([
-            'status' => 'pending',
-            'start_date' => today()->subDay(),
-            'end_date' => today()->addMonth(),
+            'status' => 'approved',
+            'start_date' => today()->subMonths(2),
+            'end_date' => today()->subDay(),
         ]);
 
         $this->artisan('booking:expire-old')->assertSuccessful();
 
         $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'expired']);
         Mail::assertQueued(KosManagerMail::class, function ($mail) use ($booking) {
-            return $mail->mailSubject === 'Booking Expired'
+            return $mail->mailSubject === 'Booking Kedaluwarsa'
                 && str_contains($mail->bodyMessage, $booking->booking_code);
         });
     }
 
-    public function test_expire_command_expires_stale_pending_booking(): void
-    {
-        Mail::fake();
-
-        $booking = Booking::factory()->create([
-            'status' => 'pending',
-            'start_date' => today()->addDays(10),
-            'end_date' => today()->addDays(40),
-            'created_at' => now()->subDays(5),
-        ]);
-
-        $this->artisan('booking:expire-old')->assertSuccessful();
-
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'expired']);
-    }
-
-    public function test_expire_command_ignores_approved_booking(): void
+    public function test_expire_command_ignores_active_approved_booking(): void
     {
         Mail::fake();
 

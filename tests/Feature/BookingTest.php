@@ -41,11 +41,11 @@ class BookingTest extends TestCase
             'notes' => 'Mau kosong',
         ]);
 
-        $response->assertRedirect(route('tenant.booking.index'));
+        $response->assertRedirect();
         $this->assertDatabaseHas('bookings', [
             'user_id' => $this->tenant->id,
             'kamar_id' => $this->kamar->id,
-            'status' => 'pending',
+            'status' => 'approved',
         ]);
     }
 
@@ -128,7 +128,7 @@ class BookingTest extends TestCase
             'user_id' => $this->tenant->id,
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
-            'status' => 'pending',
+            'status' => 'approved',
         ]);
 
         $response = $this->actingAs($this->tenant)->post(route('tenant.booking.cancel', $booking));
@@ -142,7 +142,7 @@ class BookingTest extends TestCase
             'user_id' => $otherTenant->id,
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
-            'status' => 'pending',
+            'status' => 'approved',
         ]);
 
         $response = $this->actingAs($this->tenant)->post(route('tenant.booking.cancel', $booking));

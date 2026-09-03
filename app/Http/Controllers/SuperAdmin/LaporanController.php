@@ -147,26 +147,33 @@ class LaporanController extends Controller
         $query = Pembayaran::with(['penghuni.user', 'tagihan.kamar.kos'])
             ->where('verification_status', 'approved');
 
+        $statsQuery = Pembayaran::where('verification_status', 'approved');
+
         if ($start) {
             $query->whereDate('payment_date', '>=', $start);
+            $statsQuery->whereDate('payment_date', '>=', $start);
         }
         if ($end) {
             $query->whereDate('payment_date', '<=', $end);
+            $statsQuery->whereDate('payment_date', '<=', $end);
         }
 
         if ($kosId) {
             $query->whereHas('penghuni.kos', fn ($q) => $q->where('id', $kosId));
+            $statsQuery->whereHas('penghuni.kos', fn ($q) => $q->where('id', $kosId));
         } elseif ($kosIds !== null) {
             $query->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds));
+            $statsQuery->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds));
         }
 
         $items = $query->latest('payment_date')->get();
+        $stats = $statsQuery->selectRaw('COUNT(*) as count, COALESCE(SUM(amount), 0) as total')->first();
 
         return [
             'items' => $items,
             'summary' => [
-                'Total Pendapatan' => 'Rp '.number_format($items->sum('amount'), 0, ',', '.'),
-                'Jumlah Transaksi' => $items->count(),
+                'Total Pendapatan' => 'Rp '.number_format($stats->total, 0, ',', '.'),
+                'Jumlah Transaksi' => $stats->count,
             ],
         ];
     }
@@ -175,19 +182,24 @@ class LaporanController extends Controller
     {
         $query = Penghuni::with(['user', 'kos', 'kamar']);
 
+        $statsQuery = Penghuni::query();
+
         if ($kosId) {
             $query->where('kos_id', $kosId);
+            $statsQuery->where('kos_id', $kosId);
         } elseif ($kosIds !== null) {
             $query->whereIn('kos_id', $kosIds);
+            $statsQuery->whereIn('kos_id', $kosIds);
         }
 
         $items = $query->get();
+        $stats = $statsQuery->selectRaw("SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_count, SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as inactive_count")->first();
 
         return [
             'items' => $items,
             'summary' => [
-                'Total Penghuni Aktif' => $items->where('status', 'active')->count(),
-                'Total Penghuni Inactive' => $items->where('status', 'inactive')->count(),
+                'Total Penghuni Aktif' => (int) $stats->active_count,
+                'Total Penghuni Inactive' => (int) $stats->inactive_count,
             ],
         ];
     }
@@ -196,28 +208,35 @@ class LaporanController extends Controller
     {
         $query = Booking::with(['user', 'kos', 'kamar']);
 
+        $statsQuery = Booking::query();
+
         if ($start) {
             $query->whereDate('booking_date', '>=', $start);
+            $statsQuery->whereDate('booking_date', '>=', $start);
         }
         if ($end) {
             $query->whereDate('booking_date', '<=', $end);
+            $statsQuery->whereDate('booking_date', '<=', $end);
         }
 
         if ($kosId) {
             $query->where('kos_id', $kosId);
+            $statsQuery->where('kos_id', $kosId);
         } elseif ($kosIds !== null) {
             $query->whereIn('kos_id', $kosIds);
+            $statsQuery->whereIn('kos_id', $kosIds);
         }
 
         $items = $query->latest('booking_date')->get();
+        $stats = $statsQuery->selectRaw("COUNT(*) as total, SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending, SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved, SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected")->first();
 
         return [
             'items' => $items,
             'summary' => [
-                'Total Booking' => $items->count(),
-                'Pending' => $items->where('status', 'pending')->count(),
-                'Approved' => $items->where('status', 'approved')->count(),
-                'Rejected' => $items->where('status', 'rejected')->count(),
+                'Total Booking' => $stats->total,
+                'Pending' => (int) $stats->pending,
+                'Approved' => (int) $stats->approved,
+                'Rejected' => (int) $stats->rejected,
             ],
         ];
     }
@@ -226,22 +245,27 @@ class LaporanController extends Controller
     {
         $query = Kamar::with('kos');
 
+        $statsQuery = Kamar::query();
+
         if ($kosId) {
             $query->where('kos_id', $kosId);
+            $statsQuery->where('kos_id', $kosId);
         } elseif ($kosIds !== null) {
             $query->whereIn('kos_id', $kosIds);
+            $statsQuery->whereIn('kos_id', $kosIds);
         }
 
         $items = $query->get();
+        $stats = $statsQuery->selectRaw("COUNT(*) as total, SUM(CASE WHEN status = 'available' THEN 1 ELSE 0 END) as available, SUM(CASE WHEN status = 'booked' THEN 1 ELSE 0 END) as booked, SUM(CASE WHEN status = 'occupied' THEN 1 ELSE 0 END) as occupied, SUM(CASE WHEN status = 'maintenance' THEN 1 ELSE 0 END) as maintenance")->first();
 
         return [
             'items' => $items,
             'summary' => [
-                'Total Kamar' => $items->count(),
-                'Available' => $items->where('status', 'available')->count(),
-                'Booked' => $items->where('status', 'booked')->count(),
-                'Occupied' => $items->where('status', 'occupied')->count(),
-                'Maintenance' => $items->where('status', 'maintenance')->count(),
+                'Total Kamar' => $stats->total,
+                'Available' => (int) $stats->available,
+                'Booked' => (int) $stats->booked,
+                'Occupied' => (int) $stats->occupied,
+                'Maintenance' => (int) $stats->maintenance,
             ],
         ];
     }
@@ -250,28 +274,35 @@ class LaporanController extends Controller
     {
         $query = Tagihan::with(['penghuni.user', 'kamar.kos']);
 
+        $statsQuery = Tagihan::query();
+
         if ($start) {
             $query->whereDate('due_date', '>=', $start);
+            $statsQuery->whereDate('due_date', '>=', $start);
         }
         if ($end) {
             $query->whereDate('due_date', '<=', $end);
+            $statsQuery->whereDate('due_date', '<=', $end);
         }
 
         if ($kosId) {
             $query->whereHas('kamar.kos', fn ($q) => $q->where('id', $kosId));
+            $statsQuery->whereHas('kamar.kos', fn ($q) => $q->where('id', $kosId));
         } elseif ($kosIds !== null) {
             $query->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds));
+            $statsQuery->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds));
         }
 
         $items = $query->latest('due_date')->get();
+        $stats = $statsQuery->selectRaw("COUNT(*) as total, COALESCE(SUM(total), 0) as sum_total, SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) as paid, SUM(CASE WHEN status = 'unpaid' THEN 1 ELSE 0 END) as unpaid, SUM(CASE WHEN status = 'overdue' THEN 1 ELSE 0 END) as overdue")->first();
 
         return [
             'items' => $items,
             'summary' => [
-                'Total Tagihan' => 'Rp '.number_format($items->sum('total'), 0, ',', '.'),
-                'Sudah Dibayar' => $items->where('status', 'paid')->count(),
-                'Belum Dibayar' => $items->where('status', 'unpaid')->count(),
-                'Overdue' => $items->where('status', 'overdue')->count(),
+                'Total Tagihan' => 'Rp '.number_format($stats->sum_total, 0, ',', '.'),
+                'Sudah Dibayar' => (int) $stats->paid,
+                'Belum Dibayar' => (int) $stats->unpaid,
+                'Overdue' => (int) $stats->overdue,
             ],
         ];
     }

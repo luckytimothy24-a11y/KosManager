@@ -18,7 +18,6 @@ class StoreTagihanRequest extends FormRequest
             'bill_type' => ['required', 'string', 'max:100'],
             'period_start' => ['required', 'date'],
             'period_end' => ['required', 'date', 'after:period_start'],
-            'subtotal' => ['nullable', 'numeric', 'min:0'],
             'discount' => ['nullable', 'numeric', 'min:0'],
             'penalty' => ['nullable', 'numeric', 'min:0'],
             'due_date' => ['required', 'date'],

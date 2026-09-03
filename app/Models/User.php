@@ -96,4 +96,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(AuditLog::class);
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function hasFavorited(int $kosId): bool
+    {
+        return $this->favorites()->where('kos_id', $kosId)->exists();
+    }
 }

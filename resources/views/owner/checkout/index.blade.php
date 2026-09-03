@@ -46,24 +46,38 @@
                                 <td class="px-4 py-3.5">
                                     @if($co->status === 'pending' && !Auth::user()->isTenant())
                                         <div class="flex items-center justify-end gap-1.5">
-                                            <form method="POST" action="{{ route("$prefix.checkout.approve", $co) }}">
-                                                @csrf
-                                                <button type="submit"
-                                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
-                                                        title="Setujui check-out" aria-label="Setujui check-out {{ $co->penghuni->user->name }}"
-                                                        x-data @click.prevent="$el.closest('form').requestSubmit()">
-                                                    <i class="ri-check-line"></i>
-                                                </button>
-                                            </form>
-                                            <form method="POST" action="{{ route("$prefix.checkout.reject", $co) }}">
-                                                @csrf
-                                                <button type="submit"
-                                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
-                                                        title="Tolak check-out" aria-label="Tolak check-out {{ $co->penghuni->user->name }}"
-                                                        x-data @click.prevent="$el.closest('form').requestSubmit()">
-                                                    <i class="ri-close-line"></i>
-                                                </button>
-                                            </form>
+                                            <x-confirm-dialog title="Setujui Check-Out?" description="Setujui check-out untuk {{ $co->penghuni->user->name }}? Penghuni akan dikeluarkan dari kamar."
+                                                               confirmText="Setujui" confirmClass="bg-green-600 hover:bg-green-700 text-white"
+                                                               triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
+                                                               aria-label="Setujui check-out {{ $co->penghuni->user->name }}">
+                                                <x-slot name="slot"><i class="ri-check-line"></i></x-slot>
+                                                <x-slot name="actions">
+                                                    <form method="POST" action="{{ route("$prefix.checkout.approve", $co) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                                                        @csrf
+                                                        <button type="submit" :disabled="submitting"
+                                                                 class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-green-600 hover:bg-green-700 transition shadow-sm shadow-green-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            <span x-show="!submitting">Setujui</span>
+                                                            <span x-show="submitting" x-cloak>Memproses...</span>
+                                                        </button>
+                                                    </form>
+                                                </x-slot>
+                                            </x-confirm-dialog>
+                                            <x-confirm-dialog title="Tolak Check-Out?" description="Tolak check-out untuk {{ $co->penghuni->user->name }}?"
+                                                               confirmText="Tolak"
+                                                               triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                               aria-label="Tolak check-out {{ $co->penghuni->user->name }}">
+                                                <x-slot name="slot"><i class="ri-close-line"></i></x-slot>
+                                                <x-slot name="actions">
+                                                    <form method="POST" action="{{ route("$prefix.checkout.reject", $co) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                                                        @csrf
+                                                        <button type="submit" :disabled="submitting"
+                                                                 class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                            <span x-show="!submitting">Tolak</span>
+                                                            <span x-show="submitting" x-cloak>Memproses...</span>
+                                                        </button>
+                                                    </form>
+                                                </x-slot>
+                                            </x-confirm-dialog>
                                         </div>
                                     @elseif($co->status !== 'pending')
                                         <span class="text-xs text-slate-400 dark:text-slate-500">—</span>

@@ -92,7 +92,10 @@
                         <div class="flex flex-wrap gap-2 mt-4">
                             @foreach($kamar->fasilitas as $f)
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
-                                    {!! $f->icon !!} {{ $f->name }}
+                                    @if($f->icon)
+                                        <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-xs"></i>
+                                    @endif
+                                    {{ $f->name }}
                                 </span>
                             @endforeach
                         </div>
@@ -134,11 +137,11 @@
                         <i class="ri-flashlight-line text-primary-500"></i> Aksi Cepat
                     </h3>
                     <div class="space-y-2">
-                        <a href="{{ route('owner.booking.index') }}"
+                        <a href="{{ route("$prefix.booking.index") }}"
                            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-300 transition">
                             <i class="ri-calendar-check-line text-lg"></i> Lihat Booking
                         </a>
-                        <a href="{{ route('owner.checkin.index') }}"
+                        <a href="{{ route("$prefix.checkin.index") }}"
                            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-300 transition">
                             <i class="ri-login-box-line text-lg"></i> Proses Check-in
                         </a>

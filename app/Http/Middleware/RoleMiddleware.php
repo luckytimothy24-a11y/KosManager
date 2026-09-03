@@ -14,6 +14,10 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
+        if (($inactive = IsActive::guardActive($request)) !== null) {
+            return $inactive;
+        }
+
         if (! in_array(auth()->user()->role, $roles)) {
             abort(403, 'Unauthorized access.');
         }

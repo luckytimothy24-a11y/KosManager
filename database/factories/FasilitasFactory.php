@@ -17,11 +17,16 @@ class FasilitasFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->randomElement([
+            'WiFi', 'AC', 'Kamar Mandi Dalam', 'Lemari', 'Kasur',
+            'Meja', 'Kursi', 'Parkir', 'CCTV', 'Water Heater',
+        ]);
+
         return [
-            'name' => fake()->randomElement([
-                'WiFi', 'AC', 'Kamar Mandi Dalam', 'Lemari', 'Kasur',
-                'Meja', 'Kursi', 'Parkir', 'CCTV', 'Water Heater',
-            ]),
+            'name' => $name,
+            'type' => 'kamar',
+            'category' => null,
+            'is_active' => true,
         ];
     }
 }

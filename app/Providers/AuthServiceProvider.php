@@ -8,6 +8,7 @@ use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
+use App\Models\Notification;
 use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
@@ -17,6 +18,7 @@ use App\Policies\CheckOutPolicy;
 use App\Policies\KamarPolicy;
 use App\Policies\KontrakPolicy;
 use App\Policies\KosPolicy;
+use App\Policies\NotificationPolicy;
 use App\Policies\PembayaranPolicy;
 use App\Policies\PenghuniPolicy;
 use App\Policies\TagihanPolicy;
@@ -34,6 +36,7 @@ class AuthServiceProvider extends ServiceProvider
         Pembayaran::class => PembayaranPolicy::class,
         CheckIn::class => CheckInPolicy::class,
         CheckOut::class => CheckOutPolicy::class,
+        Notification::class => NotificationPolicy::class,
     ];
 
     public function boot(): void

@@ -11,6 +11,10 @@
     @endphp
 
     <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Pembayaran', 'url' => route('tenant.pembayaran.index')],
+            ['label' => 'Detail'],
+        ]" />
         <x-alert />
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -57,15 +61,47 @@
                             <p class="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-300 mb-1.5"><i class="ri-error-warning-line mr-1"></i>Alasan Penolakan</p>
                             <p class="text-sm text-red-700 dark:text-red-200 leading-relaxed whitespace-pre-line">{{ $pembayaran->admin_notes }}</p>
                         </div>
+                    @endif
+                    {{-- Gateway online (verifikasi otomatis) --}}
+                    @if($pembayaran->isFromGateway() && $pembayaran->verification_status === 'pending' && $pembayaran->gateway_instructions)
+                        <div class="p-4 rounded-xl bg-primary-50/70 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20">
+                            <p class="text-xs font-bold uppercase tracking-wider text-primary-700 dark:text-primary-300 mb-1.5"><i class="ri-qr-code-line mr-1"></i>Instruksi Pembayaran Online</p>
+                            <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line">{{ $pembayaran->gateway_instructions }}</p>
+                            @if($pembayaran->gateway_expires_at)
+                                <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                    <i class="ri-time-line"></i> Berlaku hingga {{ $pembayaran->gateway_expires_at->translatedFormat('d M Y H:i') }} WIB
+                                </p>
+                            @endif
+                            <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                <i class="ri-checkbox-circle-line"></i> Setelah Anda membayar, sistem akan <strong>memverifikasi otomatis</strong>.
+                            </p>
+                        </div>
+                    @elseif($pembayaran->isFromGateway() && $pembayaran->verification_status === 'pending')
+                        <div class="p-4 rounded-xl bg-yellow-50/70 dark:bg-yellow-500/[0.06] border border-yellow-100 dark:border-yellow-500/20 text-sm text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
+                            <i class="ri-time-line mt-0.5 shrink-0"></i>
+                            <div>
+                                <p class="font-semibold">Pembayaran Online Menunggu</p>
+                                <p class="mt-0.5 text-xs opacity-80">Selesaikan pembayaran untuk diverifikasi otomatis.</p>
+                            </div>
+                        </div>
                     @elseif($pembayaran->verification_status === 'pending')
                         <div class="p-4 rounded-xl bg-yellow-50/70 dark:bg-yellow-500/[0.06] border border-yellow-100 dark:border-yellow-500/20 text-sm text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
-                            <i class="ri-time-line mt-0.5"></i>
-                            <span>Pembayaran sedang <strong>diperiksa pengelola</strong>. Mohon tunggu konfirmasi (maksimal 1&times;24 jam).</span>
+                            <i class="ri-time-line mt-0.5 shrink-0"></i>
+                            <div>
+                                <p class="font-semibold">Bukti Pembayaran Terkirim</p>
+                                <p class="mt-0.5 text-xs opacity-80">Pembayaran kamu sedang diperiksa oleh pengelola kos.</p>
+                            </div>
                         </div>
                     @elseif($pembayaran->verification_status === 'approved')
                         <div class="p-4 rounded-xl bg-green-50/70 dark:bg-green-500/[0.06] border border-green-100 dark:border-green-500/20 text-sm text-green-800 dark:text-green-300 flex items-start gap-2">
                             <i class="ri-checkbox-circle-line mt-0.5"></i>
-                            <span>Pembayaran telah <strong>Terverifikasi</strong> oleh pengelola pada {{ $pembayaran->verified_at?->translatedFormat('d M Y H:i') ?? '-' }}.</span>
+                            <span>
+                                Pembayaran telah <strong>Terverifikasi</strong>
+                                @if($pembayaran->isFromGateway())
+                                    secara otomatis
+                                @endif
+                                pada {{ $pembayaran->verified_at?->translatedFormat('d M Y H:i') ?? '-' }}.
+                            </span>
                         </div>
                     @endif
 
@@ -91,6 +127,12 @@
                                 <img src="{{ route('pembayaran.proof', $pembayaran) }}" alt="Bukti pembayaran"
                                      class="w-full max-h-[420px] object-contain rounded-xl border border-slate-200 dark:border-slate-700 bg-white group-hover:opacity-90 transition-opacity">
                             </a>
+                        @elseif($ext === 'pdf')
+                            <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40">
+                                <iframe src="{{ route('pembayaran.proof', $pembayaran) }}#toolbar=0&navpanes=0"
+                                        class="w-full h-96" title="Pratinjau bukti pembayaran PDF"></iframe>
+                            </div>
+                            <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1"><i class="ri-file-pdf-line"></i> Pratinjau PDF — jika tidak tampil, gunakan tombol unduh di bawah.</p>
                         @else
                             <div class="flex-1 flex flex-col items-center justify-center gap-3 p-10 text-center rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
                                 <i class="ri-file-pdf-line text-4xl text-red-500"></i>

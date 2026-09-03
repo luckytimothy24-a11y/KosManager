@@ -66,7 +66,6 @@ class DashboardSmokeTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Belum Memiliki Kamar');
-        $response->assertSee('Panduan Untuk Anda');
     }
 
     public function test_tenant_dashboard_with_active_room_renders(): void

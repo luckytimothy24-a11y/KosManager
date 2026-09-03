@@ -8,6 +8,7 @@
         $routeName = optional(request()->route())->getName();
         $titleMap = [
             'dashboard' => 'Dashboard',
+            'notifications.index' => 'Notifikasi',
             'profile.edit' => 'Profil Saya',
             'super-admin.users.index' => 'Manajemen User', 'super-admin.users.create' => 'Tambah User', 'super-admin.users.edit' => 'Edit User',
             'super-admin.fasilitas.index' => 'Fasilitas', 'super-admin.fasilitas.create' => 'Tambah Fasilitas', 'super-admin.fasilitas.edit' => 'Edit Fasilitas',
@@ -30,7 +31,9 @@
             'admin.checkin.index' => 'Check-in', 'admin.checkout.index' => 'Check-out',
             'admin.laporan.index' => 'Laporan',
             'tenant.kos.index' => 'Cari Kos', 'tenant.kos.show' => 'Detail Kos',
-            'tenant.booking.index' => 'Booking Saya', 'tenant.booking.create' => 'Booking Kamar',
+            'tenant.favorites.index' => 'Kos Favorit',
+            'tenant.booking.index' => 'Booking Saya', 'tenant.booking.create' => 'Booking Kamar', 'tenant.booking.show' => 'Detail Booking', 'tenant.booking.success' => 'Booking Berhasil',
+            'tenant.kontrak.index' => 'Kontrak Saya', 'tenant.kontrak.show' => 'Detail Kontrak',
             'tenant.tagihan.index' => 'Tagihan Saya', 'tenant.tagihan.show' => 'Detail Tagihan',
             'tenant.pembayaran.index' => 'Pembayaran Saya', 'tenant.pembayaran.show' => 'Detail Pembayaran',
         ];
@@ -41,7 +44,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=lato:300,400,700,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
@@ -53,20 +56,25 @@
     </script>
     <style>
         [x-cloak] { display: none !important; }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
     </style>
 </head>
 <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-500 focus:text-white focus:text-sm focus:font-semibold"
+       aria-label="Lewati ke konten utama">Lewati ke konten utama</a>
     <div class="min-h-screen flex" x-data="{ sidebarOpen: false }">
         @include('layouts.sidebar')
 
-        <div class="flex-1 flex flex-col min-h-screen lg:ml-64 transition-all duration-300">
+        <div class="flex-1 min-w-0 flex flex-col min-h-screen lg:ml-64 transition-all duration-300">
 
             {{-- TOPBAR --}}
             <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800 sticky top-0 z-30">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-3">
                         <button @click="sidebarOpen = !sidebarOpen"
-                                class="lg:hidden p-2 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                class="lg:hidden p-2 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                aria-label="Buka menu navigasi" :aria-expanded="sidebarOpen.toString()">
                             <i class="ri-menu-line text-xl"></i>
                         </button>
                         <div class="hidden lg:block">
@@ -78,7 +86,7 @@
 
                     <div class="flex items-center gap-2">
                         @php
-                            $unreadCount = Auth::user()->notifications()->where('is_read', false)->count();
+                            $unreadCount = $sidebarBadges['unreadNotif'] ?? 0;
                         @endphp
 
                         <button x-data
@@ -87,14 +95,15 @@
                                     localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
                                 "
                                 class="p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                                title="Ganti tema">
+                                title="Ganti tema" aria-label="Ganti tema terang/gelap">
                             <i class="ri-moon-line text-xl dark:hidden"></i>
                             <i class="ri-sun-line text-xl hidden dark:block"></i>
                         </button>
 
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open"
-                                    class="relative p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                    class="relative p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                    aria-label="Notifikasi" :aria-expanded="open.toString()">
                                 <i class="ri-notification-3-line text-xl"></i>
                                 @if($unreadCount > 0)
                                     <span class="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full ring-2 ring-white"></span>
@@ -143,6 +152,10 @@
                                         </div>
                                     @endforelse
                                 </div>
+                                <a href="{{ route('notifications.index') }}"
+                                   class="flex items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-t border-slate-100 dark:border-slate-800">
+                                    <i class="ri-inbox-2-line"></i> Lihat Semua Notifikasi
+                                </a>
                             </div>
                         </div>
 
@@ -150,7 +163,8 @@
 
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open"
-                                    class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                    class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                    aria-label="Menu akun" :aria-expanded="open.toString()">
                                 <div class="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center text-white font-bold text-xs">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                 </div>
@@ -191,11 +205,12 @@
                 </div>
             </header>
 
-            <main class="flex-1 p-4 sm:p-6 lg:p-8">
+            <main id="main-content" tabindex="-1" class="focus:outline-none flex-1 p-4 sm:p-6 lg:p-8">
                 {{ $slot }}
             </main>
         </div>
     </div>
+    <x-tenant-bottom-nav />
     @stack('scripts')
 </body>
 </html>

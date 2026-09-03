@@ -139,4 +139,49 @@ class PaymentSecurityTest extends TestCase
             'status' => 'unpaid',
         ]);
     }
+
+    public function test_owner_a_cannot_download_owner_b_payment_proof(): void
+    {
+        Storage::put('bukti-pembayaran/owner-b-proof.pdf', 'proof-content');
+
+        $pembayaran = Pembayaran::factory()->create([
+            'tagihan_id' => $this->tagihan->id,
+            'penghuni_id' => $this->penghuni->id,
+            'verification_status' => 'pending',
+            'proof_file' => 'bukti-pembayaran/owner-b-proof.pdf',
+        ]);
+
+        $ownerB = User::factory()->create(['role' => 'owner']);
+
+        $this->actingAs($ownerB)->get(route('pembayaran.proof', $pembayaran))->assertForbidden();
+        $this->actingAs($ownerB)->get(route('owner.pembayaran.show', $pembayaran))->assertForbidden();
+
+        $this->actingAs($this->owner)->get(route('pembayaran.proof', $pembayaran))->assertOk();
+    }
+
+    public function test_tenant_can_download_own_payment_proof(): void
+    {
+        Storage::put('bukti-pembayaran/own-proof.pdf', 'proof-content');
+
+        $pembayaran = Pembayaran::factory()->create([
+            'tagihan_id' => $this->tagihan->id,
+            'penghuni_id' => $this->penghuni->id,
+            'verification_status' => 'pending',
+            'proof_file' => 'bukti-pembayaran/own-proof.pdf',
+        ]);
+
+        $this->actingAs($this->tenant)->get(route('pembayaran.proof', $pembayaran))->assertOk();
+    }
+
+    public function test_missing_proof_file_returns_404(): void
+    {
+        $pembayaran = Pembayaran::factory()->create([
+            'tagihan_id' => $this->tagihan->id,
+            'penghuni_id' => $this->penghuni->id,
+            'verification_status' => 'pending',
+            'proof_file' => null,
+        ]);
+
+        $this->actingAs($this->owner)->get(route('pembayaran.proof', $pembayaran))->assertNotFound();
+    }
 }

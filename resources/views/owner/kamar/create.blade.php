@@ -7,7 +7,7 @@
 
     <div class="max-w-2xl">
         <x-alert />
-        <form method="POST" action="{{ route('owner.kamar.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="{ photoPreview: null }">
+        <form method="POST" action="{{ route('owner.kamar.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="{ photoPreview: null, submitting: false }" x-on:submit="submitting = true">
             @csrf
 
             {{-- Section: Informasi Kamar --}}
@@ -157,9 +157,9 @@
             <div class="flex items-center justify-end gap-3">
                 <a href="{{ route('owner.kamar.index') }}"
                    class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
-                <button type="submit"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-                    <i class="ri-save-line"></i> Simpan Kamar
+                <button type="submit" :disabled="submitting"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="ri-save-line"></i> <span x-show="!submitting">Simpan Kamar</span><span x-show="submitting" x-cloak>Menyimpan...</span>
                 </button>
             </div>
         </form>

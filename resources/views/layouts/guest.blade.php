@@ -10,7 +10,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=lato:300,400,700,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
@@ -27,6 +27,9 @@
     </style>
 </head>
 <body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 min-h-screen">
+    <a href="#main-content"
+       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-500 focus:text-white focus:text-sm focus:font-semibold"
+       aria-label="Lewati ke konten utama">Lewati ke konten utama</a>
 
     <div class="min-h-screen flex">
         {{-- Panel Branding (kiri, hanya layar besar) --}}
@@ -99,11 +102,11 @@
             </div>
 
             {{-- Konten --}}
-            <div class="flex-1 flex items-center justify-center px-5 pb-16">
+            <main id="main-content" tabindex="-1" class="focus:outline-none flex-1 flex items-center justify-center px-5 pb-16">
                 <div class="w-full max-w-sm fade-up">
                     {{ $slot }}
                 </div>
-            </div>
+            </main>
 
             <p class="lg:hidden pb-6 text-center text-[11px] text-slate-400 dark:text-slate-500 tracking-wide">&copy; {{ date('Y') }} KosManager</p>
         </div>

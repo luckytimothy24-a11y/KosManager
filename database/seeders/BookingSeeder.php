@@ -10,9 +10,6 @@ use Illuminate\Database\Seeder;
 
 class BookingSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $tenant = User::where('email', 'tenant@example.com')->first();
@@ -29,8 +26,9 @@ class BookingSeeder extends Seeder
             'end_date' => now()->addMonths(3),
             'rental_type' => 'monthly',
             'price' => $kamars[0]->monthly_price,
-            'status' => 'pending',
+            'status' => 'approved',
         ]);
+        $kamars[0]->update(['status' => 'booked']);
 
         Booking::create([
             'booking_code' => 'BK000002',
@@ -42,8 +40,9 @@ class BookingSeeder extends Seeder
             'end_date' => now()->addMonths(3),
             'rental_type' => 'monthly',
             'price' => $kamars[1]->monthly_price,
-            'status' => 'pending',
+            'status' => 'approved',
         ]);
+        $kamars[1]->update(['status' => 'booked']);
 
         Booking::create([
             'booking_code' => 'BK000003',
@@ -57,6 +56,7 @@ class BookingSeeder extends Seeder
             'price' => $kamars[2]->monthly_price,
             'status' => 'approved',
         ]);
+        $kamars[2]->update(['status' => 'occupied']);
 
         Booking::create([
             'booking_code' => 'BK000004',
@@ -68,7 +68,7 @@ class BookingSeeder extends Seeder
             'end_date' => now()->addMonths(3),
             'rental_type' => 'monthly',
             'price' => $kamars[3]->monthly_price,
-            'status' => 'rejected',
+            'status' => 'cancelled',
         ]);
 
         Booking::create([

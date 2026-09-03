@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
@@ -20,51 +21,70 @@ class ExpireOldKontraks extends Command
     {
         $expiredCount = 0;
         $autoCheckoutCount = 0;
+        $notifications = [];
 
         $kontrakIds = Kontrak::where('status', 'active')
             ->whereDate('end_date', '<', today())
             ->pluck('id');
 
         foreach ($kontrakIds as $kontrakId) {
-            $autoCheckedOut = DB::transaction(function () use ($kontrakId) {
-                $kontrak = Kontrak::whereKey($kontrakId)->lockForUpdate()->first();
+            try {
+                $result = DB::transaction(function () use ($kontrakId) {
+                    $kontrak = Kontrak::whereKey($kontrakId)->lockForUpdate()->first();
 
-                if (! $kontrak || $kontrak->status !== 'active') {
-                    return false;
+                    if (! $kontrak || $kontrak->status !== 'active') {
+                        return false;
+                    }
+
+                    $kontrak->update(['status' => 'expired']);
+
+                    return $this->autoCheckoutPenghuni($kontrak);
+                });
+
+                if ($result !== false) {
+                    $expiredCount++;
                 }
 
-                $kontrak->update(['status' => 'expired']);
-
-                return $this->autoCheckoutPenghuni($kontrak);
-            });
-
-            $expiredCount++;
-
-            if ($autoCheckedOut) {
-                $autoCheckoutCount++;
+                if ($result) {
+                    $autoCheckoutCount++;
+                    $notifications[] = $result;
+                }
+            } catch (\Exception $e) {
+                \Log::warning("kontrak:expire-old failed for kontrak {$kontrakId}: {$e->getMessage()}");
             }
         }
 
-        // Sweep lanjutan: kontrak yang sudah expired pada run sebelumnya tetapi
-        // penghuninya belum dapat di-check-out karena masih memiliki tunggakan.
         $retryIds = Kontrak::where('status', 'expired')
             ->whereDate('end_date', '<', today())
             ->whereHas('penghuni', fn ($q) => $q->where('status', 'active'))
             ->pluck('id');
 
         foreach ($retryIds as $kontrakId) {
-            $autoCheckedOut = DB::transaction(function () use ($kontrakId) {
-                $kontrak = Kontrak::whereKey($kontrakId)->lockForUpdate()->first();
+            try {
+                $result = DB::transaction(function () use ($kontrakId) {
+                    $kontrak = Kontrak::whereKey($kontrakId)->lockForUpdate()->first();
 
-                if (! $kontrak || $kontrak->status !== 'expired') {
-                    return false;
+                    if (! $kontrak || $kontrak->status !== 'expired') {
+                        return false;
+                    }
+
+                    return $this->autoCheckoutPenghuni($kontrak);
+                });
+
+                if ($result) {
+                    $autoCheckoutCount++;
+                    $notifications[] = $result;
                 }
+            } catch (\Exception $e) {
+                \Log::warning("kontrak:expire-old retry failed for kontrak {$kontrakId}: {$e->getMessage()}");
+            }
+        }
 
-                return $this->autoCheckoutPenghuni($kontrak);
-            });
-
-            if ($autoCheckedOut) {
-                $autoCheckoutCount++;
+        foreach ($notifications as $notif) {
+            try {
+                NotificationService::checkoutApproved($notif['user_id'], $notif['room_number'], "checkout-auto:{$notif['penghuni_id']}");
+            } catch (\Exception $e) {
+                \Log::warning("kontrak:expire-old notification failed for penghuni {$notif['penghuni_id']}: {$e->getMessage()}");
             }
         }
 
@@ -73,7 +93,7 @@ class ExpireOldKontraks extends Command
         return self::SUCCESS;
     }
 
-    private function autoCheckoutPenghuni(Kontrak $kontrak): bool
+    private function autoCheckoutPenghuni(Kontrak $kontrak): array|false
     {
         $penghuni = $kontrak->penghuni;
 
@@ -82,12 +102,18 @@ class ExpireOldKontraks extends Command
         }
 
         $hasBlockingBills = Tagihan::where('penghuni_id', $penghuni->id)
-            ->whereIn('status', ['unpaid', 'overdue', 'pending_verification'])
+            ->outstanding()
             ->exists();
 
         if ($hasBlockingBills) {
-            // Penghuni masih menunggak: biarkan tetap menghuni. Setelah semua
-            // tagihan lunas, run berikutnya akan menyelesaikan check-out otomatis.
+            return false;
+        }
+
+        $hasExistingCheckout = CheckOut::where('penghuni_id', $penghuni->id)
+            ->active()
+            ->exists();
+
+        if ($hasExistingCheckout) {
             return false;
         }
 
@@ -96,7 +122,15 @@ class ExpireOldKontraks extends Command
         $penghuni->update(['status' => 'inactive']);
 
         if ($kamar && $kamar->status === 'occupied') {
-            $kamar->update(['status' => 'available']);
+            // Konsisten dengan flow check-out: bila masih ada booking approved
+            // yang mencakup periode masa depan pada kamar ini, kamar kembali ke
+            // status 'booked', bukan 'available'.
+            $stillReserved = Booking::where('kamar_id', $kamar->id)
+                ->where('status', 'approved')
+                ->whereDate('end_date', '>=', today())
+                ->exists();
+
+            $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
         }
 
         CheckOut::create([
@@ -109,8 +143,6 @@ class ExpireOldKontraks extends Command
             'status' => 'approved',
         ]);
 
-        NotificationService::checkoutApproved($penghuni->user_id, $kamar?->room_number ?? '-');
-
-        return true;
+        return ['user_id' => $penghuni->user_id, 'penghuni_id' => $penghuni->id, 'room_number' => $kamar?->room_number ?? '-'];
     }
 }

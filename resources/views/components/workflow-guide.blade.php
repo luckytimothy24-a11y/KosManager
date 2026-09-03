@@ -2,8 +2,8 @@
 
 <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6">
     <div class="flex items-center gap-2 mb-4">
-        <div class="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-            <i class="ri-map-2-line text-primary-600"></i>
+        <div class="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
+            <i class="ri-map-2-line text-primary-600 dark:text-primary-400"></i>
         </div>
         <div>
             <h3 class="font-bold text-slate-900 dark:text-white text-sm">{{ $title }}</h3>

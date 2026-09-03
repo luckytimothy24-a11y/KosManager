@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Fasilitas;
 use App\Models\Kamar;
 use App\Models\Kos;
 use Illuminate\Database\Seeder;
@@ -23,7 +24,7 @@ class KamarSeeder extends Seeder
         $areas = ['12m2', '16m2', '20m2', '24m2'];
 
         $kosList = Kos::all();
-
+        $allFacilities = Fasilitas::all();
         $prefixes = ['A', 'B', 'C'];
 
         foreach ($kosList as $index => $kos) {
@@ -38,7 +39,7 @@ class KamarSeeder extends Seeder
                     default => rand(1000000, 5000000),
                 };
 
-                Kamar::create([
+                $kamar = Kamar::create([
                     'kos_id' => $kos->id,
                     'room_number' => $roomNumber,
                     'room_name' => 'Kamar '.$roomNumber,
@@ -49,6 +50,17 @@ class KamarSeeder extends Seeder
                     'area' => $areas[array_rand($areas)],
                     'status' => 'available',
                 ]);
+
+                $facilityCount = match ($type) {
+                    'Standard' => 3,
+                    'Deluxe' => 5,
+                    'VIP' => 7,
+                    default => 4,
+                };
+
+                $kamar->fasilitas()->sync(
+                    $allFacilities->random(min($facilityCount, $allFacilities->count()))->pluck('id')->toArray()
+                );
             }
         }
     }

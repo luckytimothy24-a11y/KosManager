@@ -25,9 +25,10 @@ class BookingController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('booking_code', 'like', '%'.$request->search.'%')
-                    ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$request->search.'%'));
+            $search = addcslashes($request->search, '%_');
+            $query->where(function ($q) use ($search) {
+                $q->where('booking_code', 'like', '%'.$search.'%')
+                    ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$search.'%'));
             });
         }
 
@@ -52,53 +53,63 @@ class BookingController extends Controller
     {
         $this->authorize('approve', $booking);
 
-        $conflict = \DB::transaction(function () use ($booking) {
-            $booking = Booking::whereKey($booking->id)->lockForUpdate()->firstOrFail();
+        $result = \DB::transaction(function () use ($booking) {
+            $locked = Booking::whereKey($booking->id)->lockForUpdate()->firstOrFail();
 
-            if ($booking->status !== 'pending') {
-                return 'status';
+            if ($locked->status !== 'pending') {
+                return ['type' => 'status'];
             }
 
-            $hasConflict = Booking::where('kamar_id', $booking->kamar_id)
-                ->whereKeyNot($booking->id)
+            // Kunci kamar TERLEBIH DAHULU sebelum pemeriksaan overlap agar dua
+            // proses persetujuan bersamaan untuk booking yang overlap pada kamar
+            // yang sama tidak bisa lolos bersama-sama. Setelah lock diperoleh,
+            // baca ulang status kamar terkini sesuai aturan bisnis existing.
+            $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->firstOrFail();
+
+            // Status 'occupied'/'maintenance' menandakan kamar tidak dapat
+            // di-booking. Status 'booked' tidak diblokir di sini karena overlap
+            // terhadap reservasi approved yang ada sudah diperiksa di bawah
+            // sambil lock kamar ditahan.
+            if (in_array($kamar->status, ['occupied', 'maintenance'])) {
+                return ['type' => 'kamar'];
+            }
+
+            $hasConflict = Booking::where('kamar_id', $locked->kamar_id)
+                ->whereKeyNot($locked->id)
                 ->where('status', 'approved')
-                ->where('start_date', '<', $booking->end_date)
-                ->where('end_date', '>', $booking->start_date)
+                ->where('start_date', '<', $locked->end_date)
+                ->where('end_date', '>', $locked->start_date)
                 ->exists();
 
             if ($hasConflict) {
-                return 'conflict';
+                return ['type' => 'conflict'];
             }
 
-            $kamar = Kamar::whereKey($booking->kamar_id)->lockForUpdate()->firstOrFail();
+            $locked->update(['status' => 'approved']);
 
-            if (in_array($kamar->status, ['occupied', 'maintenance'])) {
-                return 'kamar';
-            }
+            $kamar->update(['status' => 'booked']);
 
-            $booking->update(['status' => 'approved']);
-
-            if ($kamar->status === 'available') {
-                $kamar->update(['status' => 'booked']);
-            }
-
-            return null;
+            return ['type' => 'ok', 'booking' => $locked];
         });
 
-        if ($conflict === 'status') {
-            return redirect()->back()->with('error', 'Booking sudah diproses sebelumnya.');
+        if ($result['type'] !== 'ok') {
+            $errors = [
+                'status' => 'Booking sudah diproses sebelumnya.',
+                'conflict' => 'Booking tidak dapat disetujui. Sudah ada booking lain yang disetujui pada periode tersebut.',
+                'kamar' => 'Kamar sedang tidak dapat dibooking.',
+            ];
+
+            return redirect()->back()->with('error', $errors[$result['type']]);
         }
 
-        if ($conflict === 'conflict') {
-            return redirect()->back()->with('error', 'Booking tidak dapat disetujui. Sudah ada booking lain yang disetujui pada periode tersebut.');
-        }
+        $fresh = $result['booking'];
 
-        if ($conflict === 'kamar') {
-            return redirect()->back()->with('error', 'Kamar sedang tidak dapat dibooking.');
+        try {
+            NotificationService::bookingApproved($fresh->user_id, $fresh->booking_code);
+            AuditLogService::approve('Booking', "Booking {$fresh->booking_code} disetujui", ['booking_id' => $fresh->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Booking approval notification/audit failed: '.$e->getMessage());
         }
-
-        NotificationService::bookingApproved($booking->user_id, $booking->booking_code);
-        AuditLogService::approve('Booking', "Booking {$booking->booking_code} disetujui", ['booking_id' => $booking->id]);
 
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
 
@@ -125,8 +136,12 @@ class BookingController extends Controller
             return back()->with('error', 'Booking sudah diproses sebelumnya.');
         }
 
-        NotificationService::bookingRejected($booking->user_id, $booking->booking_code);
-        AuditLogService::reject('Booking', "Booking {$booking->booking_code} ditolak", ['booking_id' => $booking->id]);
+        try {
+            NotificationService::bookingRejected($booking->user_id, $booking->booking_code);
+            AuditLogService::reject('Booking', "Booking {$booking->booking_code} ditolak", ['booking_id' => $booking->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Booking rejection notification/audit failed: '.$e->getMessage());
+        }
 
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
 

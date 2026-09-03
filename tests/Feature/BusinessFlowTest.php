@@ -35,7 +35,7 @@ class BusinessFlowTest extends TestCase
             'daily_price' => 100000,
         ]);
 
-        // 1. Tenant booking
+        // 1. Tenant booking (instant approval)
         $this->actingAs($tenant)->post(route('tenant.booking.store'), [
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
@@ -43,16 +43,12 @@ class BusinessFlowTest extends TestCase
             'end_date' => now()->addMonth()->toDateString(),
             'rental_type' => 'monthly',
         ])->assertRedirect();
-        $this->assertDatabaseHas('bookings', ['user_id' => $tenant->id, 'status' => 'pending']);
-        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'available']);
-
-        // 2. Owner approve -> kamar booked
-        $booking = Booking::where('user_id', $tenant->id)->firstOrFail();
-        $this->actingAs($owner)->post(route('owner.booking.approve', $booking))->assertRedirect();
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('bookings', ['user_id' => $tenant->id, 'status' => 'approved']);
         $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'booked']);
 
-        // 3. Check-in -> penghuni aktif + kontrak aktif + kamar occupied + booking completed
+        $booking = Booking::where('user_id', $tenant->id)->firstOrFail();
+
+        // 2. Check-in -> penghuni aktif + kontrak aktif + kamar occupied + booking completed
         $this->actingAs($owner)->post(route('owner.checkin.process', $booking), [
             'identity_number' => '3201234567890001',
             'phone' => '081234567890',

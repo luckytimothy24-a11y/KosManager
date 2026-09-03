@@ -27,11 +27,16 @@ class RemindDueTagihans extends Command
                 continue;
             }
 
-            NotificationService::billDueSoon(
-                $tagihan->penghuni->user_id,
-                $tagihan->bill_number,
-                $tagihan->due_date->format('d/m/Y')
-            );
+            try {
+                NotificationService::billDueSoon(
+                    $tagihan->penghuni->user_id,
+                    $tagihan->bill_number,
+                    $tagihan->due_date->format('d/m/Y'),
+                    "bill-due:{$tagihan->id}"
+                );
+            } catch (\Exception $e) {
+                \Log::warning("tagihan:remind-due-soon notification failed for tagihan {$tagihan->id}: {$e->getMessage()}");
+            }
         }
 
         $this->info("{$tagihans->count()} pengingat tagihan dikirim.");

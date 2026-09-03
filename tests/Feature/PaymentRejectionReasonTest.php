@@ -84,7 +84,7 @@ class PaymentRejectionReasonTest extends TestCase
         $this->assertDatabaseHas('tagihans', ['id' => $this->tagihan->id, 'status' => 'unpaid']);
     }
 
-    public function test_rejection_without_reason_still_works_backward_compatible(): void
+    public function test_rejection_without_reason_fails_validation(): void
     {
         $pembayaran = Pembayaran::factory()->create([
             'tagihan_id' => $this->tagihan->id,
@@ -95,10 +95,30 @@ class PaymentRejectionReasonTest extends TestCase
 
         $response = $this->actingAs($this->owner)->post(route('owner.pembayaran.reject', $pembayaran));
 
-        $response->assertRedirect(route('owner.pembayaran.index'));
+        $response->assertSessionHasErrors('reason');
         $this->assertDatabaseHas('pembayarans', [
             'id' => $pembayaran->id,
-            'verification_status' => 'rejected',
+            'verification_status' => 'pending',
+        ]);
+    }
+
+    public function test_rejection_reason_longer_than_500_chars_fails_validation(): void
+    {
+        $pembayaran = Pembayaran::factory()->create([
+            'tagihan_id' => $this->tagihan->id,
+            'penghuni_id' => $this->penghuni->id,
+            'amount' => 1500000,
+            'verification_status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($this->owner)->post(route('owner.pembayaran.reject', $pembayaran), [
+            'reason' => str_repeat('a', 501),
+        ]);
+
+        $response->assertSessionHasErrors('reason');
+        $this->assertDatabaseHas('pembayarans', [
+            'id' => $pembayaran->id,
+            'verification_status' => 'pending',
         ]);
     }
 
@@ -144,7 +164,7 @@ class PaymentRejectionReasonTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $this->tagihan));
 
         $response->assertStatus(200);
-        $response->assertSee('Informasi Pembayaran');
+        $response->assertSee('Instruksi Pembayaran');
         $response->assertSee('Transfer Bank BCA 1234567890 a.n. Pemilik');
     }
 }

@@ -52,7 +52,7 @@ class BookingPolicy
     public function cancel(User $user, Booking $booking): bool
     {
         return $booking->user_id === $user->id
-            && in_array($booking->status, ['pending', 'approved']);
+            && in_array($booking->status, Booking::activeStatuses());
     }
 
     private function isKosOwner(User $user, $model): bool

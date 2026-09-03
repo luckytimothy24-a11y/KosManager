@@ -4,7 +4,9 @@ namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
+use App\Http\Middleware\IsActive;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Http\Middleware\PreventStaleFormCache;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\TrimStrings;
@@ -53,6 +55,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
+            PreventStaleFormCache::class,
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
@@ -86,6 +89,7 @@ class Kernel extends HttpKernel
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
+        'active' => IsActive::class,
         'role' => RoleMiddleware::class,
     ];
 }

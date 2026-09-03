@@ -9,7 +9,9 @@ use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TagihanController extends Controller
 {
@@ -29,8 +31,9 @@ class TagihanController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('bill_number', 'like', '%'.$request->search.'%');
+            $search = addcslashes($request->search, '%_');
+            $query->where(function ($q) use ($search) {
+                $q->where('bill_number', 'like', '%'.$search.'%');
             });
         }
 
@@ -46,7 +49,7 @@ class TagihanController extends Controller
     public function show(Tagihan $tagihan)
     {
         $this->authorize('view', $tagihan);
-        $tagihan->load(['penghuni.user', 'kontrak', 'kamar', 'pembayarans']);
+        $tagihan->load(['penghuni.user', 'kontrak', 'kamar.kos', 'pembayarans']);
         $user = request()->user();
 
         return view($user->isTenant() ? 'tenant.tagihan.show' : 'owner.tagihan.show', compact('tagihan'));
@@ -99,11 +102,18 @@ class TagihanController extends Controller
         }
 
         $total = max(0, round($subtotal - $discount + $penalty, 2));
-        $billNumber = 'TB-'.strtoupper(uniqid());
+        $billNumber = 'TB-'.strtoupper(Str::random(12));
         $duplicate = false;
+        $expired = false;
 
-        \DB::transaction(function () use ($kontrak, $request, $subtotal, $discount, $penalty, $total, $billNumber, &$duplicate) {
-            Kontrak::whereKey($kontrak->id)->lockForUpdate()->first();
+        \DB::transaction(function () use ($kontrak, $request, $subtotal, $discount, $penalty, $total, $billNumber, &$duplicate, &$expired) {
+            $lockedKontrak = Kontrak::whereKey($kontrak->id)->lockForUpdate()->first();
+
+            if (! $lockedKontrak || $lockedKontrak->status !== 'active') {
+                $expired = true;
+
+                return;
+            }
 
             $duplicate = Tagihan::where('kontrak_id', $kontrak->id)
                 ->where('period_start', $request->period_start)
@@ -114,46 +124,71 @@ class TagihanController extends Controller
                 return;
             }
 
-            Tagihan::create([
-                'bill_number' => $billNumber,
-                'penghuni_id' => $kontrak->penghuni_id,
-                'kontrak_id' => $kontrak->id,
-                'kamar_id' => $kontrak->kamar_id,
-                'bill_type' => $request->bill_type,
-                'period_start' => $request->period_start,
-                'period_end' => $request->period_end,
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'penalty' => $penalty,
-                'total' => $total,
-                'due_date' => $request->due_date,
-                'status' => 'unpaid',
-            ]);
+            try {
+                Tagihan::create([
+                    'bill_number' => $billNumber,
+                    'penghuni_id' => $kontrak->penghuni_id,
+                    'kontrak_id' => $kontrak->id,
+                    'kamar_id' => $kontrak->kamar_id,
+                    'bill_type' => $request->bill_type,
+                    'period_start' => $request->period_start,
+                    'period_end' => $request->period_end,
+                    'subtotal' => $subtotal,
+                    'discount' => $discount,
+                    'penalty' => $penalty,
+                    'total' => $total,
+                    'due_date' => $request->due_date,
+                    'status' => 'unpaid',
+                    'active_billing_key' => $this->billingKey($kontrak->id, $request->period_start, $request->period_end),
+                ]);
+            } catch (QueryException $e) {
+                // Backstop database-level: jika ada race yang lolos dari cek exists()
+                // di atas, unique(active_billing_key) menolak baris duplikat.
+                $duplicate = true;
+            }
         });
+
+        if ($expired) {
+            return back()->withErrors(['kontrak_id' => 'Kontrak tidak aktif. Tagihan tidak dapat dibuat.'])->withInput();
+        }
 
         if ($duplicate) {
             return back()->withErrors(['kontrak_id' => 'Tagihan untuk periode tersebut sudah ada.'])->withInput();
         }
 
-        NotificationService::billCreated($kontrak->penghuni->user_id, $billNumber, $request->due_date);
-        AuditLogService::create('Tagihan', "Tagihan baru {$billNumber} dibuat untuk {$kontrak->penghuni->user->name}", ['kontrak_id' => $kontrak->id]);
+        try {
+            NotificationService::billCreated($kontrak->penghuni->user_id, $billNumber, $request->due_date);
+            AuditLogService::create('Tagihan', "Tagihan baru {$billNumber} dibuat untuk {$kontrak->penghuni->user->name}", ['kontrak_id' => $kontrak->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Tagihan notification/audit failed: '.$e->getMessage());
+        }
 
         $prefix = $user->isTenant() ? 'tenant' : ($user->isAdmin() ? 'admin' : 'owner');
 
         return redirect()->route("$prefix.tagihan.index")->with('success', 'Tagihan berhasil dibuat.');
     }
 
+    /**
+     * Hitung jumlah bulan yang harus ditagih (ceiling months): setiap bulan
+     * kalender yang tersentuh oleh periode dihitung satu bulan penuh, tanpa
+     * pro-rata. Menggunakan aritmetika kalender agar hasil deterministik dan
+     * konsisten (tidak terpengaruh clamping/overflow tanggal akhir bulan pada
+     * Carbon::addMonth) serta selaras dengan preview klien dan rule bisnis.
+     */
     private function ceilingMonths(Carbon $start, Carbon $end): int
     {
-        $units = 0;
-        $cursor = $start->copy()->startOfDay();
-        $endDay = $end->copy()->startOfDay();
+        $months = ($end->year - $start->year) * 12 + ($end->month - $start->month) + 1;
 
-        while ($cursor->lte($endDay)) {
-            $units++;
-            $cursor->addMonth();
-        }
+        return max($months, 1);
+    }
 
-        return max($units, 1);
+    /**
+     * Kunci deterministik untuk satu tagihan aktif: kombinasi kontrak + periode.
+     * Di-per-se-kan ke kolom unik `active_billing_key` untuk mencegah duplikasi
+     * di level database (race-safe), lalu dikosongkan saat soft-delete.
+     */
+    private function billingKey(int $kontrakId, string $periodStart, string $periodEnd): string
+    {
+        return $kontrakId.':'.$periodStart.':'.$periodEnd;
     }
 }

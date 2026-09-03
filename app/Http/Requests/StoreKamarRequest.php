@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreKamarRequest extends FormRequest
 {
@@ -26,7 +27,10 @@ class StoreKamarRequest extends FormRequest
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'status' => ['sometimes', 'in:available,booked,occupied,maintenance'],
             'fasilitas' => ['nullable', 'array'],
-            'fasilitas.*' => ['exists:fasilitas,id'],
+            'fasilitas.*' => [
+                'exists:fasilitas,id',
+                Rule::exists('fasilitas', 'id')->where('type', 'kamar')->where('is_active', true),
+            ],
         ];
     }
 }

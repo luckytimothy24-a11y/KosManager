@@ -7,7 +7,7 @@
 
     <div class="max-w-2xl">
         <x-alert />
-        <form method="POST" action="{{ route('owner.kos.store') }}" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="{{ route('owner.kos.store') }}" enctype="multipart/form-data" class="space-y-6" x-data="{ submitting: false }" x-on:submit="submitting = true">
             @csrf
 
             {{-- Section: Informasi Dasar --}}
@@ -57,6 +57,20 @@
                         </select>
                     </div>
                 </div>
+
+                @if($owners->isNotEmpty())
+                    <div>
+                        <label for="owner_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Pemilik Kos <span class="text-red-500">*</span></label>
+                        <select id="owner_id" name="owner_id" required
+                                class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                            <option value="">-- Pilih pemilik kos --</option>
+                            @foreach($owners as $owner)
+                                <option value="{{ $owner->id }}" {{ old('owner_id') == $owner->id ? 'selected' : '' }}>{{ $owner->name }} ({{ $owner->email }})</option>
+                            @endforeach
+                        </select>
+                        @error('owner_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                @endif
             </section>
 
             {{-- Section: Foto --}}
@@ -88,15 +102,65 @@
             {{-- Section: Detail Tambahan --}}
             <section class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-5">
                 <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800">
+                    <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-map-pin-line text-primary-600 dark:text-primary-400"></i></span>
+                    Lokasi Kos
+                </h3>
+
+                <p class="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                    Masukkan koordinat lokasi kos. Koordinat dapat diperoleh dari
+                    <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:text-primary-600 underline">Google Maps</a>
+                    dengan klik kanan pada lokasi → koordinat.
+                </p>
+
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <div>
+                        <label for="latitude" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Latitude</label>
+                        <input id="latitude" type="number" step="any" name="latitude" value="{{ old('latitude') }}"
+                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 {{ $errors->has('latitude') ? 'border-red-400' : '' }}"
+                               placeholder="cth: -7.7955798" min="-90" max="90">
+                        @error('latitude') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label for="longitude" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Longitude</label>
+                        <input id="longitude" type="number" step="any" name="longitude" value="{{ old('longitude') }}"
+                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 {{ $errors->has('longitude') ? 'border-red-400' : '' }}"
+                               placeholder="cth: 110.4052787" min="-180" max="180">
+                        @error('longitude') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </section>
+
+            {{-- Section: Detail Tambahan --}}
+            <section class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-5">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-sofa-line text-primary-600 dark:text-primary-400"></i></span>
                     Fasilitas, Aturan &amp; Pembayaran
                 </h3>
 
                 <div>
-                    <label for="general_facilities" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Fasilitas Umum</label>
-                    <textarea id="general_facilities" name="general_facilities" rows="2"
-                              class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500"
-                              placeholder="cth: WiFi, Dapur bersama, Parkir motor">{{ old('general_facilities') }}</textarea>
+                    <span class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">Fasilitas Umum</span>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Pilih fasilitas yang tersedia untuk seluruh kos.</p>
+                    @if($fasilitasList->isEmpty())
+                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 p-4 text-sm text-slate-400 dark:text-slate-500">
+                            Belum ada fasilitas umum. Admin dapat menambahkannya pada master fasilitas.
+                        </div>
+                    @else
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            @foreach($fasilitasList as $f)
+                                <label class="relative flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-500/40 cursor-pointer transition group">
+                                    <input type="checkbox" name="fasilitas[]" value="{{ $f->id }}" {{ in_array($f->id, old('fasilitas', [])) ? 'checked' : '' }}
+                                           class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                                    @if($f->icon)
+                                        <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-slate-400 group-hover:text-primary-500 transition"></i>
+                                    @else
+                                        <i class="ri-checkbox-line text-slate-400 group-hover:text-primary-500 transition"></i>
+                                    @endif
+                                    <span class="text-sm text-slate-700 dark:text-slate-200">{{ $f->name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+                    @error('fasilitas') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
@@ -122,9 +186,9 @@
             <div class="flex items-center justify-end gap-3">
                 <a href="{{ route('owner.kos.index') }}"
                    class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
-                <button type="submit"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-                    <i class="ri-save-line"></i> Simpan Kos
+                <button type="submit" :disabled="submitting"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="ri-save-line"></i> <span x-show="!submitting">Simpan Kos</span><span x-show="submitting" x-cloak>Menyimpan...</span>
                 </button>
             </div>
         </form>

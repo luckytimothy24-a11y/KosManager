@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AuditLog;
 use App\Models\Fasilitas;
 use App\Models\Kos;
 use App\Models\User;
@@ -47,6 +48,39 @@ class SuperAdminSmokeTest extends TestCase
             }
             $response->assertStatus(200);
         }
+    }
+
+    public function test_super_admin_audit_log_lists_generated_activity(): void
+    {
+        $admin = User::factory()->create(['role' => 'super_admin']);
+        AuditLog::create([
+            'user_id' => $admin->id,
+            'action' => 'create',
+            'module' => 'facility',
+            'description' => 'Kolam Renang dibuat',
+        ]);
+
+        $response = $this->actingAs($admin)->get('/super-admin/audit-log');
+
+        $response->assertOk();
+        $response->assertSee('Kolam Renang dibuat');
+        $response->assertSee('create');
+    }
+
+    public function test_super_admin_users_page_lists_users(): void
+    {
+        $admin = User::factory()->create(['role' => 'super_admin']);
+        User::factory()->create([
+            'name' => 'Owner Terdaftar',
+            'email' => 'listed-owner@test.com',
+            'role' => 'owner',
+        ]);
+
+        $response = $this->actingAs($admin)->get('/super-admin/users');
+
+        $response->assertOk();
+        $response->assertSee('Owner Terdaftar');
+        $response->assertSee('listed-owner@test.com');
     }
 
     public function test_super_admin_user_crud_works(): void

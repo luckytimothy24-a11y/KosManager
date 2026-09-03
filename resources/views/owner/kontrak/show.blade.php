@@ -1,10 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <x-page-header title="Kontrak {{ $kontrak->contract_number }}" description="Detail kontrak sewa & tagihan terkait.">
-            <x-button href="{{ route('owner.kontrak.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
+            <x-button href="{{ route((Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin').'.kontrak.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
         </x-page-header>
     </x-slot>
 
+    @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; @endphp
     <div class="space-y-6">
         <x-alert />
 
@@ -89,7 +90,7 @@
 
                     <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[26rem] overflow-y-auto scrollbar-thin">
                         @forelse($kontrak->tagihans as $t)
-                            <a href="{{ route('owner.tagihan.show', $t) }}" class="flex items-center justify-between gap-4 px-6 py-3.5 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                            <a href="{{ route("$prefix.tagihan.show", $t) }}" class="flex items-center justify-between gap-4 px-6 py-3.5 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                                 <div class="min-w-0">
                                     <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $t->bill_number }}</p>
                                     <p class="text-xs text-slate-400 dark:text-slate-500">{{ \Carbon\Carbon::parse($t->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($t->period_end)->format('d M Y') }}</p>

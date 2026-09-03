@@ -1,6 +1,21 @@
 @php
     $user = Auth::user();
     $currentRoute = request()->route()->getName() ?? '';
+    $badges = $sidebarBadges ?? [];
+
+    $navItem = fn ($route, $label, $icon, $badge = null) => [
+        'route' => $route,
+        'label' => $label,
+        'icon' => $icon,
+        'badge' => $badge,
+    ];
+
+    $isActive = function ($route) use ($currentRoute) {
+        if (str_ends_with($route, '*')) {
+            return str_starts_with($currentRoute, rtrim($route, '*'));
+        }
+        return $currentRoute === $route;
+    };
 @endphp
 
 <aside class="fixed top-0 left-0 z-40 w-64 h-screen bg-slate-950 text-slate-300 transition-transform lg:translate-x-0 flex flex-col"
@@ -16,520 +31,186 @@
         </div>
     </div>
 
-    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-0.5">
+    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-0.5" aria-label="Navigasi sidebar">
 
-        <a href="{{ route('dashboard') }}"
-           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  {{ $currentRoute === 'dashboard'
-                      ? 'bg-white/5 text-white'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-            <span class="relative flex items-center justify-center w-5">
-                @if($currentRoute === 'dashboard')
-                    <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                @endif
-                <i class="ri-dashboard-3-line text-lg"></i>
-            </span>
-            Dashboard
-        </a>
-
-        @if($user->isSuperAdmin())
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Manajemen</p>
-            </div>
-
-            <a href="{{ route('super-admin.users.index') }}"
+        @if(!$user->isTenant())
+            <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'super-admin.users') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
+                      {{ $isActive('dashboard') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}"
+               @if($isActive('dashboard')) aria-current="page" @endif>
                 <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'super-admin.users'))
+                    @if($isActive('dashboard'))
                         <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
                     @endif
-                    <i class="ri-team-line text-lg"></i>
+                    <i class="ri-dashboard-3-line text-lg"></i>
                 </span>
-                Manajemen User
-            </a>
-
-            <a href="{{ route('owner.kos.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.kos') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.kos'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-building-2-line text-lg"></i>
-                </span>
-                Kelola Kos
-            </a>
-
-            <a href="{{ route('owner.kamar.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.kamar') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.kamar'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-door-open-line text-lg"></i>
-                </span>
-                Kelola Kamar
-            </a>
-
-            <a href="{{ route('super-admin.fasilitas.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'super-admin.fasilitas') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'super-admin.fasilitas'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-archive-drawer-line text-lg"></i>
-                </span>
-                Fasilitas
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Transaksi</p>
-            </div>
-
-            <a href="{{ route('owner.booking.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.booking') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.booking'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-calendar-check-line text-lg"></i>
-                </span>
-                Booking
-                @if(($sidebarBadges['bookingPending'] ?? 0) > 0)
-                    <span class="ml-auto text-[10px] font-bold text-white bg-primary-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $sidebarBadges['bookingPending'] }}</span>
-                @endif
-            </a>
-
-            <a href="{{ route('owner.penghuni.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.penghuni') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.penghuni'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-user-star-line text-lg"></i>
-                </span>
-                Penghuni
-            </a>
-
-            <a href="{{ route('owner.kontrak.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.kontrak') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.kontrak'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-text-line text-lg"></i>
-                </span>
-                Kontrak
-            </a>
-
-            <a href="{{ route('owner.checkin.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.checkin') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.checkin'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-login-box-line text-lg"></i>
-                </span>
-                Check-in
-            </a>
-
-            <a href="{{ route('owner.checkout.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.checkout') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.checkout'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-logout-box-line text-lg"></i>
-                </span>
-                Check-out
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Keuangan</p>
-            </div>
-
-            <a href="{{ route('owner.tagihan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.tagihan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.tagihan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-list-3-line text-lg"></i>
-                </span>
-                Tagihan
-            </a>
-
-            <a href="{{ route('owner.pembayaran.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.pembayaran') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.pembayaran'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-money-dollar-circle-line text-lg"></i>
-                </span>
-                Pembayaran
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Sistem</p>
-            </div>
-
-            <a href="{{ route('super-admin.laporan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'super-admin.laporan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'super-admin.laporan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-bar-chart-grouped-line text-lg"></i>
-                </span>
-                Laporan
-            </a>
-
-            <a href="{{ route('super-admin.audit-log.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'super-admin.audit-log') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'super-admin.audit-log'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-history-line text-lg"></i>
-                </span>
-                Activity Log
+                Dashboard
             </a>
         @endif
 
-        @if($user->isOwner())
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Manajemen</p>
-            </div>
+        @php
+            $tenantSections = $user->isTenant();
+        @endphp
 
-            <a href="{{ route('owner.kos.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.kos') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.kos'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-building-2-line text-lg"></i>
-                </span>
-                Kelola Kos
-            </a>
+        @if(!$tenantSections)
+            @php
+                $useOwnerPrefix = $user->isSuperAdmin() || $user->isOwner();
+                $prefix = $useOwnerPrefix ? 'owner' : 'admin';
 
-            <a href="{{ route('owner.kamar.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.kamar') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.kamar'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-door-open-line text-lg"></i>
-                </span>
-                Kelola Kamar
-            </a>
+                $groups = [];
 
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Transaksi</p>
-            </div>
+                if ($user->isSuperAdmin()) {
+                    $groups['Manajemen'] = [
+                        $navItem('super-admin.users.index', 'Manajemen User', 'ri-team-line'),
+                        $navItem('owner.kos.index', 'Kelola Kos', 'ri-building-2-line'),
+                        $navItem('owner.kamar.index', 'Kelola Kamar', 'ri-door-open-line'),
+                        $navItem('super-admin.fasilitas.index', 'Fasilitas', 'ri-archive-drawer-line'),
+                    ];
+                    $groups['Transaksi'] = [
+                        $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $badges['bookingPending'] ?? 0),
+                        $navItem('owner.penghuni.index', 'Penghuni', 'ri-user-star-line'),
+                        $navItem('owner.kontrak.index', 'Kontrak', 'ri-file-text-line'),
+                        $navItem('owner.checkin.index', 'Check-in', 'ri-login-box-line'),
+                        $navItem('owner.checkout.index', 'Check-out', 'ri-logout-box-line'),
+                    ];
+                    $groups['Keuangan'] = [
+                        $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
+                        $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                    ];
+                    $groups['Sistem'] = [
+                        $navItem('super-admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
+                        $navItem('super-admin.audit-log.index', 'Activity Log', 'ri-history-line'),
+                    ];
+                } elseif ($user->isOwner()) {
+                    $groups['Manajemen'] = [
+                        $navItem('owner.kos.index', 'Kelola Kos', 'ri-building-2-line'),
+                        $navItem('owner.kamar.index', 'Kelola Kamar', 'ri-door-open-line'),
+                    ];
+                    $groups['Transaksi'] = [
+                        $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $badges['bookingPending'] ?? 0),
+                        $navItem('owner.penghuni.index', 'Penghuni', 'ri-user-star-line'),
+                        $navItem('owner.kontrak.index', 'Kontrak', 'ri-file-text-line'),
+                        $navItem('owner.checkin.index', 'Check-in', 'ri-login-box-line'),
+                        $navItem('owner.checkout.index', 'Check-out', 'ri-logout-box-line'),
+                    ];
+                    $groups['Keuangan'] = [
+                        $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
+                        $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                    ];
+                    $groups['Lainnya'] = [
+                        $navItem('owner.laporan.index', 'Laporan', 'ri-file-chart-line'),
+                    ];
+                } else {
+                    $groups['Manajemen'] = [
+                        $navItem('admin.kamar.index', 'Kamar', 'ri-door-open-line'),
+                    ];
+                    $groups['Transaksi'] = [
+                        $navItem('admin.booking.index', 'Booking', 'ri-calendar-check-line', $badges['bookingPending'] ?? 0),
+                        $navItem('admin.penghuni.index', 'Penghuni', 'ri-user-star-line'),
+                        $navItem('admin.kontrak.index', 'Kontrak', 'ri-file-text-line'),
+                        $navItem('admin.checkin.index', 'Check-in', 'ri-login-box-line'),
+                        $navItem('admin.checkout.index', 'Check-out', 'ri-logout-box-line'),
+                    ];
+                    $groups['Keuangan'] = [
+                        $navItem('admin.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
+                        $navItem('admin.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                    ];
+                    $groups['Lainnya'] = [
+                        $navItem('admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
+                    ];
+                }
+            @endphp
 
-            <a href="{{ route('owner.booking.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.booking') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.booking'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-calendar-check-line text-lg"></i>
-                </span>
-                Booking
-                @if(($sidebarBadges['bookingPending'] ?? 0) > 0)
-                    <span class="ml-auto text-[10px] font-bold text-white bg-primary-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $sidebarBadges['bookingPending'] }}</span>
+            @foreach($groups as $groupLabel => $items)
+                @if(!empty($items))
+                    <div class="pt-6 pb-2 px-3">
+                        <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">{{ $groupLabel }}</p>
+                    </div>
                 @endif
-            </a>
 
-            <a href="{{ route('owner.penghuni.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.penghuni') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.penghuni'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-user-star-line text-lg"></i>
-                </span>
-                Penghuni
-            </a>
+                @foreach($items as $item)
+                    @php
+                        $active = $isActive($item['route'].'*') || $isActive($item['route']);
+                    @endphp
+                    <a href="{{ route($item['route']) }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                              {{ $active ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}"
+                       @if($active) aria-current="page" @endif>
+                        <span class="relative flex items-center justify-center w-5">
+                            @if($active)
+                                <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
+                            @endif
+                            <i class="{{ $item['icon'] }} text-lg"></i>
+                        </span>
+                        {{ $item['label'] }}
+                        @if(!empty($item['badge']) && $item['badge'] > 0)
+                            <span class="ml-auto text-[10px] font-bold text-white bg-primary-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $item['badge'] }}</span>
+                        @endif
+                    </a>
+                @endforeach
+            @endforeach
+        @else
+            {{-- ============ TENANT ============ --}}
+            @php
+                $groups = [
+                    'Utama' => [
+                        ['route' => 'dashboard*', 'label' => 'Dashboard', 'icon' => 'ri-dashboard-3-line', 'exact' => true],
+                        ['route' => 'tenant.kos*', 'label' => 'Cari Kos', 'icon' => 'ri-search-eye-line'],
+                        ['route' => 'tenant.favorites*', 'label' => 'Favorit', 'icon' => 'ri-heart-line'],
+                    ],
+                    'Aktivitas' => [
+                        ['route' => 'tenant.booking*', 'label' => 'Booking Saya', 'icon' => 'ri-calendar-check-line'],
+                        ['route' => 'tenant.kontrak*', 'label' => 'Kontrak', 'icon' => 'ri-file-text-line'],
+                        ['route' => 'tenant.tagihan*', 'label' => 'Tagihan', 'icon' => 'ri-file-list-3-line', 'badge' => $badges['tagihanBelum'] ?? 0, 'badgeClass' => 'bg-red-500'],
+                        ['route' => 'tenant.pembayaran*', 'label' => 'Pembayaran', 'icon' => 'ri-money-dollar-circle-line'],
+                    ],
+                ];
+            @endphp
 
-            <a href="{{ route('owner.kontrak.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.kontrak') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.kontrak'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-text-line text-lg"></i>
-                </span>
-                Kontrak
-            </a>
+            @foreach($groups as $groupLabel => $items)
+                <div class="pt-6 pb-2 px-3">
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">{{ $groupLabel }}</p>
+                </div>
+                @foreach($items as $item)
+                    @php
+                        $routeWithoutStar = rtrim($item['route'], '*');
+                        $active = $item['exact'] ?? false
+                            ? $currentRoute === $routeWithoutStar
+                            : str_starts_with($currentRoute, $routeWithoutStar);
+                        $routeName = $routeWithoutStar === 'dashboard' ? 'dashboard' : $routeWithoutStar.'.index';
+                    @endphp
+                    <a href="{{ route($routeName) }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                              {{ $active ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}"
+                       @if($active) aria-current="page" @endif>
+                        <span class="relative flex items-center justify-center w-5">
+                            @if($active)
+                                <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
+                            @endif
+                            <i class="{{ $item['icon'] }} text-lg"></i>
+                        </span>
+                        {{ $item['label'] }}
+                        @if(!empty($item['badge']) && $item['badge'] > 0)
+                            <span class="ml-auto text-[10px] font-bold text-white {{ $item['badgeClass'] ?? 'bg-primary-500' }} px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $item['badge'] }}</span>
+                        @endif
+                    </a>
+                @endforeach
+            @endforeach
 
-            <a href="{{ route('owner.checkin.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.checkin') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.checkin'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-login-box-line text-lg"></i>
-                </span>
-                Check-in
-            </a>
-
-            <a href="{{ route('owner.checkout.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.checkout') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.checkout'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-logout-box-line text-lg"></i>
-                </span>
-                Check-out
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Keuangan</p>
-            </div>
-
-            <a href="{{ route('owner.tagihan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.tagihan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.tagihan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-list-3-line text-lg"></i>
-                </span>
-                Tagihan
-            </a>
-
-            <a href="{{ route('owner.pembayaran.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.pembayaran') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.pembayaran'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-money-dollar-circle-line text-lg"></i>
-                </span>
-                Pembayaran
-            </a>
-
-            <a href="{{ route('owner.laporan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'owner.laporan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'owner.laporan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-chart-line text-lg"></i>
-                </span>
-                Laporan
-            </a>
-        @endif
-
-        @if($user->isAdmin())
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Manajemen</p>
-            </div>
-
-            <a href="{{ route('admin.kamar.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.kamar') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.kamar'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-door-open-line text-lg"></i>
-                </span>
-                Kamar
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Transaksi</p>
-            </div>
-
-            <a href="{{ route('admin.booking.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.booking') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.booking'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-calendar-check-line text-lg"></i>
-                </span>
-                Booking
-                @if(($sidebarBadges['bookingPending'] ?? 0) > 0)
-                    <span class="ml-auto text-[10px] font-bold text-white bg-primary-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $sidebarBadges['bookingPending'] }}</span>
-                @endif
-            </a>
-
-            <a href="{{ route('admin.penghuni.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.penghuni') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.penghuni'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-user-star-line text-lg"></i>
-                </span>
-                Penghuni
-            </a>
-
-            <a href="{{ route('admin.kontrak.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.kontrak') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.kontrak'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-text-line text-lg"></i>
-                </span>
-                Kontrak
-            </a>
-
-            <a href="{{ route('admin.checkin.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.checkin') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.checkin'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-login-box-line text-lg"></i>
-                </span>
-                Check-in
-            </a>
-
-            <a href="{{ route('admin.checkout.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.checkout') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.checkout'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-logout-box-line text-lg"></i>
-                </span>
-                Check-out
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Keuangan</p>
-            </div>
-
-            <a href="{{ route('admin.tagihan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.tagihan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.tagihan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-list-3-line text-lg"></i>
-                </span>
-                Tagihan
-            </a>
-
-            <a href="{{ route('admin.pembayaran.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.pembayaran') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.pembayaran'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-money-dollar-circle-line text-lg"></i>
-                </span>
-                Pembayaran
-            </a>
-
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Lainnya</p>
-            </div>
-
-            <a href="{{ route('admin.laporan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'admin.laporan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'admin.laporan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-bar-chart-grouped-line text-lg"></i>
-                </span>
-                Laporan
-            </a>
-        @endif
-
-        @if($user->isTenant())
-            <div class="pt-6 pb-2 px-3">
-                <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Menu Saya</p>
-            </div>
-
-            <a href="{{ route('tenant.kos.index') }}"
-class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-{{ str_starts_with($currentRoute, 'tenant.kos') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-<span class="relative flex items-center justify-center w-5">
-@if(str_starts_with($currentRoute, 'tenant.kos'))
-<span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-@endif
-<i class="ri-search-eye-line text-lg"></i>
-</span>
-Cari Kos
-</a>
-
-<a href="{{ route('tenant.booking.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'tenant.booking') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'tenant.booking'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-calendar-check-line text-lg"></i>
-                </span>
-                Booking Saya
-            </a>
-
-            <a href="{{ route('tenant.tagihan.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'tenant.tagihan') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'tenant.tagihan'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-file-list-3-line text-lg"></i>
-                </span>
-                Tagihan Saya
-                @if(($sidebarBadges['tagihanBelum'] ?? 0) > 0)
-                    <span class="ml-auto text-[10px] font-bold text-white bg-red-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $sidebarBadges['tagihanBelum'] }}</span>
-                @endif
-            </a>
-
-            <a href="{{ route('tenant.pembayaran.index') }}"
-               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                      {{ str_starts_with($currentRoute, 'tenant.pembayaran') ? 'bg-white/5 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]' }}">
-                <span class="relative flex items-center justify-center w-5">
-                    @if(str_starts_with($currentRoute, 'tenant.pembayaran'))
-                        <span class="absolute -left-3 w-[3px] h-4 bg-primary-500 rounded-full"></span>
-                    @endif
-                    <i class="ri-money-dollar-circle-line text-lg"></i>
-                </span>
-                Pembayaran Saya
-            </a>
+            {{-- Bantuan / Notifikasi --}}
+            @if(($badges['unreadNotif'] ?? 0) > 0)
+                <div class="pt-6 pb-2 px-3">
+                    <p class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-[0.2em]">Bantuan</p>
+                </div>
+                <a href="{{ route('notifications.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-500 dark:text-slate-400 hover:text-slate-300 hover:bg-white/[0.03]">
+                    <span class="relative flex items-center justify-center w-5">
+                        <i class="ri-notification-3-line text-lg"></i>
+                    </span>
+                    Notifikasi
+                    <span class="ml-auto text-[10px] font-bold text-white bg-primary-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center">{{ $badges['unreadNotif'] }}</span>
+                </a>
+            @endif
         @endif
     </nav>
 

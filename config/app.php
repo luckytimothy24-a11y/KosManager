@@ -72,6 +72,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Trusted Proxies
+    |--------------------------------------------------------------------------
+    |
+    | This value will be read by the App\Http\Middleware\TrustProxies
+    | middleware to know which proxies to trust when the application runs
+    | behind a load balancer / reverse proxy. Set it to "*" to trust all
+    | proxies, or a comma separated list of IP addresses / CIDR blocks.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES', ''),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |

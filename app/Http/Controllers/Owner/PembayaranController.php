@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
+use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -27,7 +28,8 @@ class PembayaranController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('payment_number', 'like', '%'.$request->search.'%');
+            $search = addcslashes($request->search, '%_');
+            $query->where('payment_number', 'like', '%'.$search.'%');
         }
 
         if ($request->filled('status')) {
@@ -36,7 +38,16 @@ class PembayaranController extends Controller
 
         $pembayarans = $query->latest()->paginate(10)->withQueryString();
 
-        $pendingCount = (clone $query)->where('verification_status', 'pending')->count();
+        $pendingQuery = Pembayaran::where('verification_status', Pembayaran::STATUS_PENDING);
+        if ($user->isOwner()) {
+            $pendingQuery->whereHas('penghuni.kos', fn ($q) => $q->where('owner_id', $user->id));
+        } elseif ($user->isAdmin()) {
+            $kosIds = $user->assignedKos()->pluck('kos.id');
+            $pendingQuery->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds));
+        } elseif ($user->isTenant()) {
+            $pendingQuery->whereIn('penghuni_id', $user->penghunis()->pluck('id'));
+        }
+        $pendingCount = $pendingQuery->count();
 
         return view($user->isTenant() ? 'tenant.pembayaran.index' : 'owner.pembayaran.index', compact('pembayarans', 'pendingCount'));
     }
@@ -63,24 +74,32 @@ class PembayaranController extends Controller
     public function verify(Pembayaran $pembayaran)
     {
         $this->authorize('verify', $pembayaran);
-        abort_unless($pembayaran->verification_status === 'pending', 400, 'Pembayaran sudah diverifikasi sebelumnya.');
+        $pembayaran->load(['penghuni', 'tagihan']);
+        abort_unless($pembayaran->verification_status === Pembayaran::STATUS_PENDING, 400, 'Pembayaran sudah diverifikasi sebelumnya.');
         abort_if(
-            (float) $pembayaran->amount !== (float) $pembayaran->tagihan->total,
+            round((float) $pembayaran->amount, 2) !== round((float) $pembayaran->tagihan->total, 2),
             400,
             'Nominal pembayaran tidak sesuai total tagihan.'
         );
 
         \DB::transaction(function () use ($pembayaran) {
-            $pembayaran->update([
-                'verification_status' => 'approved',
+            $locked = Pembayaran::whereKey($pembayaran->id)->lockForUpdate()->first();
+            abort_unless($locked && $locked->verification_status === Pembayaran::STATUS_PENDING, 400, 'Pembayaran sudah diverifikasi sebelumnya.');
+
+            $locked->update([
+                'verification_status' => Pembayaran::STATUS_APPROVED,
                 'verified_by' => auth()->id(),
                 'verified_at' => now(),
             ]);
-            $pembayaran->tagihan->update(['status' => 'paid']);
+            $locked->tagihan->update(['status' => Tagihan::STATUS_PAID]);
         });
 
-        NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
-        AuditLogService::approve('Pembayaran', "Pembayaran {$pembayaran->payment_number} disetujui", ['pembayaran_id' => $pembayaran->id]);
+        try {
+            NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
+            AuditLogService::approve('Pembayaran', "Pembayaran {$pembayaran->payment_number} disetujui", ['pembayaran_id' => $pembayaran->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Payment verification notification/audit failed: '.$e->getMessage());
+        }
 
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
 
@@ -91,31 +110,41 @@ class PembayaranController extends Controller
     {
         $this->authorize('verify', $pembayaran);
 
-        $request->validate([
-            'reason' => ['nullable', 'string', 'max:500'],
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:500'],
         ]);
 
-        abort_unless($pembayaran->verification_status === 'pending', 400, 'Pembayaran sudah diverifikasi sebelumnya.');
+        abort_unless($pembayaran->verification_status === Pembayaran::STATUS_PENDING, 400, 'Pembayaran sudah diverifikasi sebelumnya.');
 
-        \DB::transaction(function () use ($request, $pembayaran) {
-            $pembayaran->update([
-                'verification_status' => 'rejected',
+        \DB::transaction(function () use ($validated, $pembayaran) {
+            $locked = Pembayaran::whereKey($pembayaran->id)->lockForUpdate()->first();
+            abort_unless($locked && $locked->verification_status === Pembayaran::STATUS_PENDING, 400, 'Pembayaran sudah diverifikasi sebelumnya.');
+
+            $locked->update([
+                'verification_status' => Pembayaran::STATUS_REJECTED,
                 'verified_by' => auth()->id(),
                 'verified_at' => now(),
-                'admin_notes' => $request->filled('reason') ? $request->input('reason') : $pembayaran->admin_notes,
+                'admin_notes' => $validated['reason'],
+                'active_payment_key' => null,
             ]);
 
-            if ($pembayaran->tagihan->status === 'pending_verification') {
-                $pembayaran->tagihan->update(['status' => 'unpaid']);
+            if ($locked->tagihan->status === Tagihan::STATUS_PAYMENT_PENDING) {
+                $restoredStatus = $locked->tagihan->due_date && $locked->tagihan->due_date->startOfDay()->lt(now()->startOfDay())
+                    ? Tagihan::STATUS_OVERDUE
+                    : Tagihan::STATUS_UNPAID;
+                $locked->tagihan->update(['status' => $restoredStatus]);
             }
         });
 
-        AuditLogService::reject('Pembayaran', "Pembayaran {$pembayaran->payment_number} ditolak", ['pembayaran_id' => $pembayaran->id]);
-
-        NotificationService::paymentRejected($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
+        try {
+            AuditLogService::reject('Pembayaran', "Pembayaran {$pembayaran->payment_number} ditolak", ['pembayaran_id' => $pembayaran->id]);
+            NotificationService::paymentRejected($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
+        } catch (\Exception $e) {
+            \Log::warning('Payment rejection notification/audit failed: '.$e->getMessage());
+        }
 
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
 
-        return redirect()->route("$prefix.pembayaran.index")->with('success', 'Pembayaran ditolak.'.($request->filled('reason') ? ' Alasan: '.$request->input('reason') : ''));
+        return redirect()->route("$prefix.pembayaran.index")->with('success', 'Pembayaran ditolak. Alasan: '.$validated['reason']);
     }
 }

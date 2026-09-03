@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Fasilitas;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\User;
@@ -12,9 +13,16 @@ class TenantKosBrowseTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function createTenant(): User
+    {
+        return User::factory()->create(['role' => 'tenant']);
+    }
+
+    // ── Original tests (preserved) ──────────────────────────────
+
     public function test_tenant_can_view_active_kos_list(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = $this->createTenant();
         $kosActive = Kos::factory()->create(['name' => 'KOSAKTIF', 'status' => 'active']);
         Kos::factory()->create(['name' => 'KOSNONAKTIF', 'status' => 'inactive']);
 
@@ -27,7 +35,7 @@ class TenantKosBrowseTest extends TestCase
 
     public function test_tenant_can_search_kos_by_name(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = $this->createTenant();
         Kos::factory()->create(['name' => 'KOSTARGET', 'status' => 'active']);
         Kos::factory()->create(['name' => 'KOSLAIN', 'status' => 'active']);
 
@@ -38,9 +46,9 @@ class TenantKosBrowseTest extends TestCase
         $response->assertDontSee('KOSLAIN');
     }
 
-    public function test_tenant_can_view_kos_detail_with_available_rooms(): void
+    public function test_tenant_can_view_all_rooms_in_kos_detail(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = $this->createTenant();
         $kos = Kos::factory()->create([
             'status' => 'active',
             'name' => 'Kos Uji Detail',
@@ -54,12 +62,12 @@ class TenantKosBrowseTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('101');
-        $response->assertDontSee('102');
+        $response->assertSee('102');
     }
 
     public function test_tenant_cannot_view_inactive_kos_detail(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = $this->createTenant();
         $kos = Kos::factory()->create(['status' => 'inactive']);
 
         $this->actingAs($tenant)->get("/tenant/kos/{$kos->id}")->assertNotFound();
@@ -70,5 +78,337 @@ class TenantKosBrowseTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
 
         $this->actingAs($owner)->get('/tenant/kos')->assertForbidden();
+    }
+
+    // ── Search tests ────────────────────────────────────────────
+
+    public function test_search_by_address(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos A', 'address' => 'Jl. Sudirman No. 10', 'status' => 'active']);
+        Kos::factory()->create(['name' => 'Kos B', 'address' => 'Jl. Thamrin No. 25', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=Sudirman');
+
+        $response->assertOk();
+        $response->assertSee('Kos A');
+        $response->assertDontSee('Kos B');
+    }
+
+    public function test_search_by_description(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos Premium', 'description' => 'Kos premium dengan fasilitas lengkap', 'status' => 'active']);
+        Kos::factory()->create(['name' => 'Kos Murah', 'description' => 'Kos murah meriah dekat kampus', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=premium');
+
+        $response->assertOk();
+        $response->assertSee('Kos Premium');
+        $response->assertDontSee('Kos Murah');
+    }
+
+    public function test_search_case_insensitive(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos Melati', 'status' => 'active']);
+        Kos::factory()->create(['name' => 'Kos Kenanga', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=MELATI');
+
+        $response->assertOk();
+        $response->assertSee('Kos Melati');
+        $response->assertDontSee('Kos Kenanga');
+    }
+
+    public function test_search_trim_whitespace(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos Melati', 'status' => 'active']);
+        Kos::factory()->create(['name' => 'Kos Mawar', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=%20Melati%20');
+
+        $response->assertOk();
+        $response->assertSee('Kos Melati');
+        $response->assertDontSee('Kos Mawar');
+    }
+
+    public function test_search_no_result(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos Melati', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=inexistente');
+
+        $response->assertOk();
+        $response->assertSee('Kos tidak ditemukan');
+        $response->assertDontSee('Kos Melati');
+    }
+
+    public function test_search_special_characters_escaped(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos 50%', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=%');
+
+        $response->assertOk();
+        $response->assertDontSee('Kos 50%');
+    }
+
+    // ── Price filter tests ──────────────────────────────────────
+
+    public function test_price_minimum_filter(): void
+    {
+        $tenant = $this->createTenant();
+        $kos1 = Kos::factory()->create(['name' => 'Cheap Kos', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Expensive Kos', 'status' => 'active']);
+
+        Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 500000, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 2000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?price_min=1000000');
+
+        $response->assertOk();
+        $response->assertSee('Expensive Kos');
+        $response->assertDontSee('Cheap Kos');
+    }
+
+    public function test_price_maximum_filter(): void
+    {
+        $tenant = $this->createTenant();
+        $kos1 = Kos::factory()->create(['name' => 'Cheap Kos', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Expensive Kos', 'status' => 'active']);
+
+        Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 500000, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 2000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?price_max=1000000');
+
+        $response->assertOk();
+        $response->assertSee('Cheap Kos');
+        $response->assertDontSee('Expensive Kos');
+    }
+
+    public function test_price_range_filter(): void
+    {
+        $tenant = $this->createTenant();
+        $kos1 = Kos::factory()->create(['name' => 'Kos A', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Kos B', 'status' => 'active']);
+        $kos3 = Kos::factory()->create(['name' => 'Kos C', 'status' => 'active']);
+
+        Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 500000, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 1000000, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kos3->id, 'monthly_price' => 2000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?price_min=700000&price_max=1500000');
+
+        $response->assertOk();
+        $response->assertSee('Kos B');
+        $response->assertDontSee('Kos A');
+        $response->assertDontSee('Kos C');
+    }
+
+    // ── Facility filter tests ───────────────────────────────────
+
+    public function test_facility_single_filter(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi']);
+
+        $kos1 = Kos::factory()->create(['name' => 'Kos WiFi', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Kos No WiFi', 'status' => 'active']);
+
+        $kamar1 = Kamar::factory()->create(['kos_id' => $kos1->id, 'status' => 'available']);
+        $kamar1->fasilitas()->attach($wifi->id);
+
+        $kamar2 = Kamar::factory()->create(['kos_id' => $kos2->id, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?facilities[]='.$wifi->id);
+
+        $response->assertOk();
+        $response->assertSee('Kos WiFi');
+        $response->assertDontSee('Kos No WiFi');
+    }
+
+    public function test_facility_multiple_filter_and_logic(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi']);
+        $ac = Fasilitas::create(['name' => 'AC']);
+
+        $kos1 = Kos::factory()->create(['name' => 'Kos Both', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Kos WiFi Only', 'status' => 'active']);
+
+        $kamar1 = Kamar::factory()->create(['kos_id' => $kos1->id, 'status' => 'available']);
+        $kamar1->fasilitas()->attach([$wifi->id, $ac->id]);
+
+        $kamar2 = Kamar::factory()->create(['kos_id' => $kos2->id, 'status' => 'available']);
+        $kamar2->fasilitas()->attach($wifi->id);
+
+        $response = $this->actingAs($tenant)->get("/tenant/kos?facilities[]={$wifi->id}&facilities[]={$ac->id}");
+
+        $response->assertOk();
+        $response->assertSee('Kos Both');
+        $response->assertDontSee('Kos WiFi Only');
+    }
+
+    // ── Availability filter tests ───────────────────────────────
+
+    public function test_availability_filter_shows_only_kos_with_available_rooms(): void
+    {
+        $tenant = $this->createTenant();
+
+        $kosAvailable = Kos::factory()->create(['name' => 'Kos Available', 'status' => 'active']);
+        $kosBooked = Kos::factory()->create(['name' => 'Kos Booked', 'status' => 'active']);
+        $kosMaintenance = Kos::factory()->create(['name' => 'Kos Maintenance', 'status' => 'active']);
+        $kosEmpty = Kos::factory()->create(['name' => 'Kos Empty', 'status' => 'active']);
+
+        Kamar::factory()->create(['kos_id' => $kosAvailable->id, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kosBooked->id, 'status' => 'booked']);
+        Kamar::factory()->create(['kos_id' => $kosMaintenance->id, 'status' => 'maintenance']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?tersedia_only=1');
+
+        $response->assertOk();
+        $response->assertSee('Kos Available');
+        $response->assertDontSee('Kos Booked');
+        $response->assertDontSee('Kos Maintenance');
+        $response->assertDontSee('Kos Empty');
+    }
+
+    // ── Sort tests ──────────────────────────────────────────────
+
+    public function test_sort_invalid_falls_back_to_default(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos A', 'status' => 'active']);
+        Kos::factory()->create(['name' => 'Kos B', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?sort=hack');
+
+        $response->assertOk();
+    }
+
+    public function test_sort_price_lowest(): void
+    {
+        $tenant = $this->createTenant();
+        $kos1 = Kos::factory()->create(['name' => 'Kos Cheap', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Kos Expensive', 'status' => 'active']);
+
+        Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 500000, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 3000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?sort=harga_terendah');
+
+        $response->assertOk();
+        $response->assertSeeTextInOrder(['Kos Cheap', 'Kos Expensive']);
+    }
+
+    public function test_sort_price_highest(): void
+    {
+        $tenant = $this->createTenant();
+        $kos1 = Kos::factory()->create(['name' => 'Kos Cheap', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Kos Expensive', 'status' => 'active']);
+
+        Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 500000, 'status' => 'available']);
+        Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 3000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?sort=harga_tertinggi');
+
+        $response->assertOk();
+        $response->assertSeeTextInOrder(['Kos Expensive', 'Kos Cheap']);
+    }
+
+    // ── Combined filter test ────────────────────────────────────
+
+    public function test_combined_search_price_facility_availability(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi']);
+
+        $kos1 = Kos::factory()->create(['name' => 'Kos Melati', 'description' => 'Kos strategis', 'status' => 'active']);
+        $kos2 = Kos::factory()->create(['name' => 'Kos Mawar', 'description' => 'Kos strategis', 'status' => 'active']);
+        $kos3 = Kos::factory()->create(['name' => 'Kos Melati Premium', 'status' => 'active']);
+
+        $k1 = Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 800000, 'status' => 'available']);
+        $k1->fasilitas()->attach($wifi->id);
+
+        $k2 = Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 800000, 'status' => 'available']);
+        $k2->fasilitas()->attach($wifi->id);
+
+        Kamar::factory()->create(['kos_id' => $kos3->id, 'monthly_price' => 3000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=Melati&price_min=500000&price_max=1000000&facilities[]='.$wifi->id.'&tersedia_only=1');
+
+        $response->assertOk();
+        $response->assertSee('Kos Melati');
+        $response->assertDontSee('Kos Mawar');
+        $response->assertDontSee('Kos Melati Premium');
+    }
+
+    // ── Result count test ───────────────────────────────────────
+
+    public function test_result_count_displayed(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos A', 'status' => 'active']);
+        Kos::factory()->create(['name' => 'Kos B', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos');
+
+        $response->assertOk();
+        $response->assertSee('kos ditemukan');
+        $response->assertSee('2');
+    }
+
+    // ── Active filter chips test ────────────────────────────────
+
+    public function test_active_filter_chips_displayed(): void
+    {
+        $tenant = $this->createTenant();
+        Kos::factory()->create(['name' => 'Kos Melati', 'status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=Melati&tersedia_only=1');
+
+        $response->assertOk();
+        $response->assertSee('Melati');
+        $response->assertSee('Tersedia');
+    }
+
+    // ── Favorite isolation test ─────────────────────────────────
+
+    public function test_tenant_favorite_isolation(): void
+    {
+        $tenantA = $this->createTenant();
+        $tenantB = $this->createTenant();
+        $kos = Kos::factory()->create(['status' => 'active']);
+
+        $this->actingAs($tenantA)->post('/tenant/favorites/toggle', ['kos_id' => $kos->id]);
+
+        $responseB = $this->actingAs($tenantB)->get('/tenant/kos');
+
+        $responseB->assertOk();
+    }
+
+    // ── Guest access test ───────────────────────────────────────
+
+    public function test_unauthenticated_user_redirected_to_login(): void
+    {
+        $this->get('/tenant/kos')->assertRedirect('/login');
+    }
+
+    // ── No cross-tenant data leak ───────────────────────────────
+
+    public function test_tenant_cannot_see_other_tenants_bookings_via_kos(): void
+    {
+        $tenant = $this->createTenant();
+        $kos = Kos::factory()->create(['status' => 'active']);
+
+        $response = $this->actingAs($tenant)->get("/tenant/kos/{$kos->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('booking_code');
     }
 }

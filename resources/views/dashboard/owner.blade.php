@@ -1,15 +1,21 @@
 <x-app-layout>
     <div class="space-y-6">
+        <x-alert />
 
         {{-- Welcome Banner --}}
-        <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-primary-900 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
+        @php
+            $hour = (int) now()->format('H');
+            $greeting = $hour < 11 ? 'Selamat Pagi' : ($hour < 15 ? 'Selamat Siang' : ($hour < 19 ? 'Selamat Sore' : 'Selamat Malam'));
+        @endphp
+        <div class="bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white dark:bg-slate-900 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <div class="absolute bottom-0 left-0 w-48 h-48 bg-white dark:bg-slate-900 rounded-full translate-y-1/2 -translate-x-1/4"></div>
             </div>
             <div class="relative">
-                <h1 class="text-2xl sm:text-3xl font-bold">Selamat Datang, {{ $user->name }}!</h1>
-                <p class="mt-2 text-blue-100/80 text-sm sm:text-base">Kelola bisnis kos Anda dari satu tempat.</p>
+                <p class="text-sm text-primary-100/90 font-medium">{{ $greeting }}, {{ $user->name }} 👋</p>
+                <h1 class="text-2xl sm:text-3xl font-black mt-1.5">Kelola Bisnis Kos Anda</h1>
+                <p class="mt-2 text-blue-100/80 text-sm sm:text-base">Berikut ringkasan properti Anda hari ini.</p>
                 <div class="mt-4 flex flex-wrap gap-3">
                     <a href="{{ route('owner.kos.create') }}" class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-white/25 transition">
                         <i class="ri-add-line"></i> Tambah Kos
@@ -123,15 +129,37 @@
                         <i class="ri-calendar-todo-line text-orange-600 dark:text-orange-400"></i>
                     </div>
                     <div>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Booking Pending</p>
-                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['total_pending_bookings'] }}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Perlu Check-in</p>
+                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['needs_checkin'] }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+                        <i class="ri-file-warning-line text-red-600 dark:text-red-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Tagihan Belum Bayar</p>
+                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['tagihan_outstanding'] }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center">
+                        <i class="ri-alarm-warning-line text-rose-600 dark:text-rose-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Tagihan Terlambat</p>
+                        <p class="text-lg font-bold {{ $stats['tagihan_overdue'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-900 dark:text-white' }}">{{ $stats['tagihan_overdue'] }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         {{-- Quick Actions --}}
-        @if($stats['total_pending_bookings'] > 0 || ($stats['pending_payments'] ?? 0) > 0)
+        @if($stats['needs_checkin'] > 0 || ($stats['pending_payments'] ?? 0) > 0)
             <div class="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/30 rounded-2xl p-5">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center shrink-0">
@@ -139,14 +167,14 @@
                     </div>
                     <div>
                         <h3 class="text-sm font-semibold text-orange-800">Perhatian Diperlukan</h3>
-                        @if($stats['total_pending_bookings'] > 0)
-                            <p class="text-sm text-orange-700 mt-1">Anda memiliki <strong>{{ $stats['total_pending_bookings'] }}</strong> booking yang menunggu persetujuan.</p>
-                            <a href="{{ route('owner.booking.index') }}?status=pending" class="mt-3 inline-flex items-center gap-1.5 bg-orange-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-orange-700 transition">
-                                <i class="ri-calendar-check-line"></i> Review Booking
+                        @if($stats['needs_checkin'] > 0)
+                            <p class="text-sm text-orange-700 mt-1">Anda memiliki <strong>{{ $stats['needs_checkin'] }}</strong> booking yang perlu diproses check-in.</p>
+                            <a href="{{ route('owner.checkin.index') }}" class="mt-3 inline-flex items-center gap-1.5 bg-orange-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-orange-700 transition">
+                                <i class="ri-login-box-line"></i> Proses Check-in
                             </a>
                         @endif
                         @if(($stats['pending_payments'] ?? 0) > 0)
-                            <p class="text-sm text-orange-700 {{ $stats['total_pending_bookings'] > 0 ? 'mt-2' : 'mt-1' }}"><strong>{{ $stats['pending_payments'] }}</strong> bukti pembayaran menunggu verifikasi.</p>
+                            <p class="text-sm text-orange-700 {{ $stats['needs_checkin'] > 0 ? 'mt-2' : 'mt-1' }}"><strong>{{ $stats['pending_payments'] }}</strong> bukti pembayaran menunggu verifikasi.</p>
                             <a href="{{ route('owner.pembayaran.index') }}?status=pending" class="mt-3 inline-flex items-center gap-1.5 bg-amber-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-amber-700 transition">
                                 <i class="ri-bank-card-line"></i> Verifikasi Pembayaran
                             </a>
@@ -159,7 +187,7 @@
         {{-- Workflow Guide --}}
         <x-workflow-guide title="Panduan Alur Kerja Owner" :steps="[
             ['title' => 'Kelola Kos & Kamar', 'desc' => 'Daftarkan properti dan kamar yang tersedia'],
-            ['title' => 'Setujui Booking', 'desc' => 'Tinjau permintaan sewa yang masuk dari calon penghuni'],
+            ['title' => 'Pantau Booking', 'desc' => 'Booking langsung dikonfirmasi — fokus proses check-in'],
             ['title' => 'Proses Check-in', 'desc' => 'Aktifkan penghuni — kontrak sewa dibuat otomatis'],
             ['title' => 'Buat Tagihan', 'desc' => 'Kirim tagihan sewa bulanan ke penghuni aktif'],
             ['title' => 'Verifikasi Pembayaran', 'desc' => 'Konfirmasi bukti bayar agar tercatat sebagai pendapatan'],

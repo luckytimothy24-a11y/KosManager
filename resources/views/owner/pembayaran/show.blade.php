@@ -44,6 +44,9 @@
                     <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Periode Tagihan</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->tagihan->period_start->translatedFormat('d M Y') }} – {{ $pembayaran->tagihan->period_end->translatedFormat('d M Y') }}</dd></div>
                     <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Total Tagihan</dt><dd class="font-medium text-slate-900 dark:text-white whitespace-nowrap">Rp {{ number_format($pembayaran->tagihan->total, 0, ',', '.') }}</dd></div>
                     <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Jatuh Tempo</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->tagihan->due_date->translatedFormat('d M Y') }}</dd></div>
+                    @if($pembayaran->isFromGateway())
+                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Sumber</dt><dd class="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200"><i class="ri-global-line text-primary-500"></i> Pembayaran Online <span class="text-[11px] font-mono text-slate-400 dark:text-slate-500">{{ $pembayaran->gateway_reference }}</span></dd></div>
+                    @endif
                     @if($pembayaran->verified_at)
                         <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Diverifikasi</dt>
                             <dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->verified_at->translatedFormat('d M Y H:i') }}{{ $pembayaran->verifier ? ' oleh '.$pembayaran->verifier->name : '' }}</dd>
@@ -72,6 +75,12 @@
                            class="block rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-white">
                             <img src="{{ route('pembayaran.proof', $pembayaran) }}" alt="Bukti pembayaran" class="w-full max-h-[380px] object-contain bg-white">
                         </a>
+                    @elseif($ext === 'pdf')
+                        <div class="rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40">
+                            <iframe src="{{ route('pembayaran.proof', $pembayaran) }}#toolbar=0&navpanes=0"
+                                    class="w-full h-96" title="Pratinjau bukti pembayaran PDF"></iframe>
+                        </div>
+                        <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1"><i class="ri-file-pdf-line"></i> Pratinjau PDF — jika tidak tampil, gunakan tombol unduh di bawah.</p>
                     @else
                         <div class="flex flex-col items-center justify-center gap-3 p-8 text-center rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40">
                             <span class="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center"><i class="ri-file-pdf-line text-2xl text-red-500"></i></span>
@@ -91,20 +100,32 @@
 
                 @if($pembayaran->verification_status === 'pending')
                     <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-3"
-                         x-data="{ reason: '', open: false }">
-                        <form method="POST" action="{{ route($prefix.'.pembayaran.verify', $pembayaran) }}" x-show="!open"
-                              onsubmit="return confirm('Verifikasi pembayaran ini sebagai LUNAS?')" class="sm:col-span-1">
-                            @csrf
-                            <button type="submit"
-                                    class="w-full px-4 py-2.5 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 active:bg-green-800 transition shadow-sm shadow-green-600/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500">
-                                <i class="ri-check-double-line mr-1"></i> Verifikasi Lunas
-                            </button>
-                        </form>
+                         x-data="{ reason: '', open: false, submitting: false }">
+                        <x-confirm-dialog title="Verifikasi Pembayaran?" description="Verifikasi pembayaran ini sebagai LUNAS?"
+                                           confirmText="Verifikasi" confirmClass="bg-green-600 hover:bg-green-700 text-white"
+                                           x-show="!open" class="sm:col-span-1">
+                            <x-slot name="slot">
+                                <button type="button"
+                                        class="w-full px-4 py-2.5 text-sm font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 active:bg-green-800 transition shadow-sm shadow-green-600/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500">
+                                    <i class="ri-check-double-line mr-1"></i> Verifikasi Lunas
+                                </button>
+                            </x-slot>
+                            <x-slot name="actions">
+                                <form method="POST" action="{{ route($prefix.'.pembayaran.verify', $pembayaran) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                                    @csrf
+                                    <button type="submit" :disabled="submitting"
+                                            class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-green-600 hover:bg-green-700 transition shadow-sm shadow-green-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span x-show="!submitting">Verifikasi</span>
+                                        <span x-show="submitting" x-cloak>Memproses...</span>
+                                    </button>
+                                </form>
+                            </x-slot>
+                        </x-confirm-dialog>
                         <button type="button" x-show="!open" @click="open = true"
                                 class="w-full px-4 py-2.5 text-sm font-bold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
                             <i class="ri-close-circle-line mr-1"></i> Tolak
                         </button>
-                        <form method="POST" action="{{ route($prefix.'.pembayaran.reject', $pembayaran) }}" x-show="open" x-cloak class="sm:col-span-2 space-y-3">
+                        <form method="POST" action="{{ route($prefix.'.pembayaran.reject', $pembayaran) }}" x-show="open" x-cloak class="sm:col-span-2 space-y-3" x-on:submit="submitting = true">
                             @csrf
                             <div>
                                 <label for="reject-reason" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">Alasan Penolakan <span class="text-red-500">*</span></label>
@@ -114,8 +135,10 @@
                             <div class="flex justify-end gap-2">
                                 <button type="button" @click="open = false; reason = ''"
                                         class="px-4 py-2 text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition">Batal</button>
-                                <button type="submit"
-                                        class="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-xl hover:bg-red-700 transition shadow-sm shadow-red-600/30">Konfirmasi Penolakan</button>
+                                <x-danger-button x-bind:disabled="submitting">
+                                    <span x-show="!submitting">Konfirmasi Penolakan</span>
+                                    <span x-show="submitting" x-cloak>Memproses...</span>
+                                </x-danger-button>
                             </div>
                         </form>
                     </div>

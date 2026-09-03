@@ -7,6 +7,15 @@
         @apply bg-primary-500/20 text-primary-900 dark:text-primary-100;
     }
 
+    /* Cegah horizontal scroll tak disengaja di layar sempit (mobile-first) */
+    html {
+        overflow-x: clip;
+    }
+
+    body {
+        overflow-x: clip;
+    }
+
     /* Konsistensi focus state keyboard (accessibility) */
     a:focus-visible,
     button:focus-visible,
@@ -27,5 +36,9 @@
 
     .dark .scrollbar-thin {
         scrollbar-color: theme('colors.slate.600') transparent;
+    }
+
+    .text-balance {
+        text-wrap: balance;
     }
 }

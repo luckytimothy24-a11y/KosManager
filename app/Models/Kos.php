@@ -16,6 +16,8 @@ class Kos extends Model
         'owner_id',
         'name',
         'address',
+        'latitude',
+        'longitude',
         'description',
         'phone',
         'photo',
@@ -23,6 +25,11 @@ class Kos extends Model
         'rules',
         'payment_info',
         'status',
+    ];
+
+    protected $casts = [
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
     ];
 
     public function owner()
@@ -40,6 +47,11 @@ class Kos extends Model
         return $this->belongsToMany(User::class, 'kos_user');
     }
 
+    public function fasilitas()
+    {
+        return $this->belongsToMany(Fasilitas::class, 'kos_fasilitas');
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);
@@ -48,5 +60,15 @@ class Kos extends Model
     public function penghunis()
     {
         return $this->hasMany(Penghuni::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function favoriteCount(): int
+    {
+        return $this->favorites()->count();
     }
 }

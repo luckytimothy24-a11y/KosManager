@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Owner\BookingController;
 use App\Http\Controllers\Owner\CheckInController;
 use App\Http\Controllers\Owner\CheckOutController;
+use App\Http\Controllers\Owner\FavoriteController;
 use App\Http\Controllers\Owner\KamarController;
 use App\Http\Controllers\Owner\KontrakController;
 use App\Http\Controllers\Owner\KosController;
@@ -12,56 +14,44 @@ use App\Http\Controllers\Owner\PembayaranController;
 use App\Http\Controllers\Owner\PenghuniController;
 use App\Http\Controllers\Owner\TagihanController;
 use App\Http\Controllers\Owner\TenantBookingController;
+use App\Http\Controllers\Owner\TenantKontrakController;
 use App\Http\Controllers\Owner\TenantKosController;
 use App\Http\Controllers\Owner\TenantPembayaranController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SuperAdmin\AuditLogController;
 use App\Http\Controllers\SuperAdmin\FasilitasController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
 use App\Http\Controllers\SuperAdmin\UserController;
-use App\Models\AuditLog;
-use App\Models\Kamar;
-use App\Models\Kos;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Webhook\PaymentGatewayWebhookController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function (Request $request) {
-    $q = trim((string) $request->query('q', ''));
+Route::get('/', WelcomeController::class);
 
-    $kosQuery = Kos::where('status', 'active')
-        ->withCount(['kamar as available_rooms' => fn ($qr) => $qr->where('status', 'available')])
-        ->withMin('kamar as min_price', 'monthly_price')
-        ->orderByDesc('available_rooms');
-
-    if ($q !== '') {
-        $kosQuery->where(function ($w) use ($q) {
-            $w->where('name', 'like', "%{$q}%")
-                ->orWhere('address', 'like', "%{$q}%");
-        });
-    }
-
-    $featuredKos = $kosQuery->limit(6)->get();
-
-    $stats = [
-        'kos' => Kos::where('status', 'active')->count(),
-        'kamar' => Kamar::where('status', 'available')->count(),
-        'owners' => User::where('role', 'owner')->count(),
-    ];
-
-    return view('welcome', compact('featuredKos', 'stats', 'q'));
-});
+Route::get('/health', HealthController::class)->name('health');
+Route::get('/up', HealthController::class)->name('up');
 
 Route::get('/dashboard', DashboardController::class)
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'active', 'verified'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::post('/webhooks/payment-gateway', [PaymentGatewayWebhookController::class, 'handle'])
+    ->middleware('throttle:20,1')
+    ->name('webhook.payment-gateway');
+
+Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])
         ->name('notifications.markAllRead');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])
+        ->name('notifications.index');
+
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
 
     Route::get('/pembayaran/{pembayaran}/proof', [PembayaranController::class, 'downloadProof'])
         ->name('pembayaran.proof');
@@ -76,11 +66,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::get('laporan/export-pdf/{type}', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
     Route::get('laporan/export-excel/{type}', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
 
-    Route::get('audit-log', function () {
-        $logs = AuditLog::with('user')->latest()->paginate(20);
-
-        return view('super-admin.audit-log.index', compact('logs'));
-    })->name('audit-log.index');
+    Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 });
 
 // Owner Routes
@@ -113,6 +99,7 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
+    Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
     Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve');
     Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
 
@@ -168,9 +155,17 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('booking', [TenantBookingController::class, 'index'])->name('booking.index');
     Route::get('booking/create', [TenantBookingController::class, 'create'])->name('booking.create');
     Route::post('booking', [TenantBookingController::class, 'store'])->name('booking.store');
+    Route::get('booking/success/{booking}', [TenantBookingController::class, 'success'])->name('booking.success');
+    Route::get('booking/{booking}', [TenantBookingController::class, 'show'])->name('booking.show');
     Route::post('booking/{booking}/cancel', [TenantBookingController::class, 'cancel'])->name('booking.cancel');
 
+    Route::post('favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::get('favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
+
+    Route::get('kontrak', [TenantKontrakController::class, 'index'])->name('kontrak.index');
+    Route::get('kontrak/{kontrak}', [TenantKontrakController::class, 'show'])->name('kontrak.show');
 
     Route::get('tagihan', [TagihanController::class, 'index'])->name('tagihan.index');
     Route::get('tagihan/{tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
@@ -178,6 +173,8 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
+    Route::post('pembayaran/gateway', [TenantPembayaranController::class, 'gatewayStore'])
+        ->name('pembayaran.gateway');
 });
 
 require __DIR__.'/auth.php';

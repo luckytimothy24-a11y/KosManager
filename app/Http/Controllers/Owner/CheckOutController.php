@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCheckOutRequest;
+use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
+use App\Models\Kontrak;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
@@ -34,6 +36,7 @@ class CheckOutController extends Controller
 
     public function requestCheckout(StoreCheckOutRequest $request, Penghuni $penghuni)
     {
+        $penghuni->load(['kos', 'user', 'kamar']);
         $user = $request->user();
 
         if ($user->isTenant()) {
@@ -44,19 +47,27 @@ class CheckOutController extends Controller
 
         abort_unless($penghuni->status === 'active', 400, 'Penghuni tidak aktif.');
 
-        $existing = CheckOut::where('penghuni_id', $penghuni->id)->where('status', 'pending')->exists();
-        if ($existing) {
+        $created = \DB::transaction(function () use ($request, $penghuni) {
+            $existing = CheckOut::where('penghuni_id', $penghuni->id)->where('status', 'pending')->lockForUpdate()->exists();
+            if ($existing) {
+                return false;
+            }
+
+            CheckOut::create([
+                'penghuni_id' => $penghuni->id,
+                'kamar_id' => $penghuni->kamar_id,
+                'request_date' => now(),
+                'room_condition' => $request->validated('condition'),
+                'notes' => $request->validated('notes'),
+                'status' => 'pending',
+            ]);
+
+            return true;
+        });
+
+        if (! $created) {
             return back()->with('error', 'Pengajuan check-out untuk penghuni ini sudah ada dan menunggu persetujuan.');
         }
-
-        CheckOut::create([
-            'penghuni_id' => $penghuni->id,
-            'kamar_id' => $penghuni->kamar_id,
-            'request_date' => now(),
-            'room_condition' => $request->validated('condition'),
-            'notes' => $request->validated('notes'),
-            'status' => 'pending',
-        ]);
 
         $kosOwner = $penghuni->kos->owner_id;
         NotificationService::checkoutRequested($kosOwner, $penghuni->user->name, $penghuni->kamar->room_number);
@@ -77,7 +88,7 @@ class CheckOutController extends Controller
             }
 
             $unpaidCount = Tagihan::where('penghuni_id', $locked->penghuni_id)
-                ->whereIn('status', ['unpaid', 'overdue', 'pending_verification'])
+                ->outstanding()
                 ->count();
 
             if ($unpaidCount > 0) {
@@ -96,10 +107,23 @@ class CheckOutController extends Controller
             $penghuni->update(['status' => 'inactive']);
 
             if ($kamar) {
-                $kamar->update(['status' => 'available']);
+                // Bila masih ada booking approved yang mencakup periode masa
+                // depan pada kamar ini, kamar kembali ke status 'booked', bukan
+                // 'available' — konsisten dengan booking:expire-old &
+                // BookingService::cancel. Kamar 'available' hanya bila tidak ada
+                // reservasi approved yang masih menutupi periode ke depan.
+                $stillReserved = Booking::where('kamar_id', $kamar->id)
+                    ->where('status', 'approved')
+                    ->whereDate('end_date', '>=', today())
+                    ->exists();
+
+                $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
             }
 
-            $kontrak = $penghuni->kontraks()->where('status', 'active')->first();
+            $kontrak = Kontrak::where('penghuni_id', $penghuni->id)
+                ->where('status', 'active')
+                ->lockForUpdate()
+                ->first();
             if ($kontrak) {
                 // Keluar sebelum kontrak berakhir = terminated, sesuai/di akhir masa sewa = expired (PRD §6).
                 $kontrakStatus = now()->startOfDay()->lt($kontrak->end_date) ? 'terminated' : 'expired';
@@ -120,8 +144,12 @@ class CheckOutController extends Controller
                 ->with('error', "Check-out tidak dapat disetujui. Penghuni masih memiliki {$outcome['count']} tagihan yang belum diselesaikan (belum dibayar atau menunggu verifikasi).");
         }
 
-        NotificationService::checkoutApproved($outcome['penghuni']->user_id, $outcome['checkOut']->kamar->room_number);
-        AuditLogService::approve('Check-Out', "Check-out disetujui untuk {$outcome['penghuni']->user->name}", ['check_out_id' => $outcome['checkOut']->id]);
+        try {
+            NotificationService::checkoutApproved($outcome['penghuni']->user_id, $outcome['checkOut']->kamar->room_number);
+            AuditLogService::approve('Check-Out', "Check-out disetujui untuk {$outcome['penghuni']->user->name}", ['check_out_id' => $outcome['checkOut']->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Check-out approval notification/audit failed: '.$e->getMessage());
+        }
 
         return redirect()->route("$prefix.checkout.index")->with('success', 'Check-out berhasil disetujui.');
     }
@@ -137,7 +165,12 @@ class CheckOutController extends Controller
             $locked->update(['status' => 'rejected']);
         });
 
-        AuditLogService::reject('Check-Out', 'Check-out ditolak', ['check_out_id' => $checkOut->id]);
+        try {
+            AuditLogService::reject('Check-Out', 'Check-out ditolak', ['check_out_id' => $checkOut->id]);
+            NotificationService::checkoutRejected($checkOut->penghuni->user_id, $checkOut->kamar->room_number);
+        } catch (\Exception $e) {
+            \Log::warning('Check-out rejection notification/audit failed: '.$e->getMessage());
+        }
 
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
 

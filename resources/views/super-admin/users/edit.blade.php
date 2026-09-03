@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="flex items-start gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                    <input id="is_active" type="hidden" name="is_active" value="0">
+                    <input type="hidden" name="is_active" value="0">
                     <input id="is_active" type="checkbox" name="is_active" value="1" {{ old('is_active', $user->is_active) ? 'checked' : '' }}
                            class="mt-0.5 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500 cursor-pointer">
                     <label for="is_active" class="cursor-pointer select-none">

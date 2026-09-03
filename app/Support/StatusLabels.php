@@ -16,10 +16,11 @@ class StatusLabels
     {
         return match ($status) {
             'pending' => 'Menunggu Persetujuan',
-            'approved' => 'Disetujui',
+            'approved' => 'Terkonfirmasi',
             'rejected' => 'Ditolak',
             'cancelled' => 'Dibatalkan',
             'completed' => 'Selesai',
+            'expired' => 'Kedaluwarsa',
             default => ucfirst($status),
         };
     }
@@ -34,6 +35,7 @@ class StatusLabels
             'approved' => 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300',
             'rejected', 'cancelled' => 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-300',
             'completed' => 'bg-blue-100 text-blue-800 dark:bg-blue-500/10 dark:text-blue-300',
+            'expired' => 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
             default => 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100',
         };
     }

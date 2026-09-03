@@ -117,7 +117,9 @@ class PembayaranTest extends TestCase
             'verification_status' => 'pending',
         ]);
 
-        $response = $this->actingAs($this->owner)->post(route('owner.pembayaran.reject', $pembayaran));
+        $response = $this->actingAs($this->owner)->post(route('owner.pembayaran.reject', $pembayaran), [
+            'reason' => 'Bukti tidak jelas, mohon unggah ulang.',
+        ]);
         $this->assertDatabaseHas('pembayarans', [
             'id' => $pembayaran->id,
             'verification_status' => 'rejected',

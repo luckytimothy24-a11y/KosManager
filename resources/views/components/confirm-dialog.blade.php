@@ -6,13 +6,42 @@
     'triggerClass' => '',
 ])
 
-<div x-data="{ open: false }" class="inline-block">
-    <button type="button" @click="open = true" aria-haspopup="dialog" {{ $attributes->merge(['class' => $triggerClass]) }}>
+<div x-data="{
+        open: false,
+        focusables() {
+            // All focusable element types within the open dialog panel...
+            let selector = 'a, button, input:not([type=\'hidden\']), textarea, select, details, [tabindex]:not([tabindex=\'-1\'])'
+            if (!this.open || !this.$refs.panel) return []
+            return [...this.$refs.panel.querySelectorAll(selector)]
+                // All non-disabled elements...
+                .filter(el => ! el.hasAttribute('disabled'))
+        },
+        firstFocusable() { return this.focusables()[0] },
+        lastFocusable() { return this.focusables().slice(-1)[0] },
+        nextFocusable() { return this.focusables()[this.nextFocusableIndex()] || this.firstFocusable() },
+        prevFocusable() { return this.focusables()[this.prevFocusableIndex()] || this.lastFocusable() },
+        nextFocusableIndex() { return (this.focusables().indexOf(document.activeElement) + 1) % (this.focusables().length + 1) },
+        prevFocusableIndex() { return Math.max(0, this.focusables().indexOf(document.activeElement)) -1 },
+    }"
+    x-init="$watch('open', value => {
+        if (value) {
+            document.body.classList.add('overflow-y-hidden');
+            setTimeout(() => firstFocusable().focus(), 50);
+        } else {
+            document.body.classList.remove('overflow-y-hidden');
+        }
+    })"
+    class="inline-block">
+    <button type="button" @click="open = true" aria-haspopup="dialog"
+            :aria-expanded="open ? 'true' : 'false'"
+            {{ $attributes->merge(['class' => $triggerClass . ' focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900']) }}>
         {{ $slot }}
     </button>
 
     <div x-show="open" x-cloak
          x-on:keydown.escape.window="open = false"
+         x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
+         x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
          class="fixed inset-0 z-50 overflow-y-auto"
          role="dialog" aria-modal="true" aria-label="{{ $title }}">
         <div x-show="open"
@@ -26,7 +55,8 @@
              @click="open = false"></div>
 
         <div class="min-h-full flex items-center justify-center p-4">
-            <div x-show="open"
+            <div x-ref="panel"
+                 x-show="open"
                  class="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden"
                  x-transition:enter="ease-out duration-200"
                  x-transition:enter-start="opacity-0 translate-y-3 scale-95"
@@ -47,11 +77,9 @@
                         </div>
                     </div>
 
-                    <div class="mt-5">{{ $content }}</div>
-
                     <div class="mt-6 flex items-center justify-end gap-2">
                         <button type="button" @click="open = false"
-                                class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                                class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400">
                             Batal
                         </button>
                         {{ $actions }}

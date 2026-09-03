@@ -30,7 +30,7 @@ class BookingFactory extends Factory
             'end_date' => fake()->dateTimeBetween('+1 month', '+3 months'),
             'rental_type' => fake()->randomElement(['daily', 'monthly']),
             'price' => fake()->numberBetween(500000, 5000000),
-            'status' => 'pending',
+            'status' => 'approved',
         ];
     }
 }

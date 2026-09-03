@@ -12,7 +12,7 @@ class KontrakPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('super_admin', 'admin', 'owner');
+        return $user->hasRole('super_admin', 'admin', 'owner', 'tenant');
     }
 
     public function view(User $user, Kontrak $kontrak): bool

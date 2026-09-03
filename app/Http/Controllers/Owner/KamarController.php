@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreKamarRequest;
 use App\Http\Requests\UpdateKamarRequest;
+use App\Models\Booking;
 use App\Models\Fasilitas;
 use App\Models\Kamar;
 use App\Models\Kos;
@@ -32,9 +33,10 @@ class KamarController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('room_number', 'like', '%'.$request->search.'%')
-                    ->orWhere('room_name', 'like', '%'.$request->search.'%');
+            $search = addcslashes($request->search, '%_');
+            $query->where(function ($q) use ($search) {
+                $q->where('room_number', 'like', '%'.$search.'%')
+                    ->orWhere('room_name', 'like', '%'.$search.'%');
             });
         }
 
@@ -59,7 +61,7 @@ class KamarController extends Controller
         $kosList = $user->isOwner()
             ? Kos::where('owner_id', $user->id)->get()
             : ($user->isAdmin() ? $user->assignedKos : Kos::all());
-        $fasilitasList = Fasilitas::all();
+        $fasilitasList = Fasilitas::ofType('kamar')->active()->get();
 
         return view('owner.kamar.create', compact('kosList', 'fasilitasList'));
     }
@@ -99,13 +101,10 @@ class KamarController extends Controller
         $this->authorize('update', $kamar);
 
         $user = request()->user();
-        $kosList = $user->isOwner()
-            ? Kos::where('owner_id', $user->id)->get()
-            : ($user->isAdmin() ? $user->assignedKos : Kos::all());
-        $fasilitasList = Fasilitas::all();
+        $fasilitasList = Fasilitas::ofType('kamar')->active()->get();
         $selectedFasilitas = $kamar->fasilitas->pluck('id')->toArray();
 
-        return view('owner.kamar.edit', compact('kamar', 'kosList', 'fasilitasList', 'selectedFasilitas'));
+        return view('owner.kamar.edit', compact('kamar', 'fasilitasList', 'selectedFasilitas'));
     }
 
     public function update(UpdateKamarRequest $request, Kamar $kamar)
@@ -116,12 +115,22 @@ class KamarController extends Controller
         $fasilitasIds = $data['fasilitas'] ?? [];
         unset($data['fasilitas']);
 
-        if (($data['status'] ?? null) === 'available'
-            && $kamar->status === 'occupied'
-            && $kamar->penghunis()->where('status', 'active')->exists()) {
-            return back()
-                ->withErrors(['status' => 'Kamar masih memiliki penghuni aktif dan tidak dapat diubah menjadi tersedia.'])
-                ->withInput();
+        $newStatus = $data['status'] ?? null;
+        $hasActivePenghuni = $kamar->penghunis()->where('status', 'active')->exists();
+        $hasActiveBooking = $kamar->bookings()->whereIn('status', Booking::activeStatuses())->exists();
+
+        if ($newStatus !== null && $newStatus !== $kamar->status) {
+            if ($hasActivePenghuni && ! in_array($newStatus, ['occupied'])) {
+                return back()
+                    ->withErrors(['status' => 'Kamar masih memiliki penghuni aktif dan hanya dapat dalam status terisi.'])
+                    ->withInput();
+            }
+
+            if ($hasActiveBooking && ! in_array($newStatus, ['booked'])) {
+                return back()
+                    ->withErrors(['status' => 'Kamar masih memiliki booking aktif dan hanya dapat dalam status dipesan.'])
+                    ->withInput();
+            }
         }
 
         if ($request->hasFile('photo')) {
@@ -145,7 +154,7 @@ class KamarController extends Controller
         $this->authorize('delete', $kamar);
 
         $hasActivePenghuni = $kamar->penghunis()->where('status', 'active')->exists();
-        $hasActiveBooking = $kamar->bookings()->whereIn('status', ['pending', 'approved'])->exists();
+        $hasActiveBooking = $kamar->bookings()->whereIn('status', Booking::activeStatuses())->exists();
 
         if ($hasActivePenghuni || $hasActiveBooking) {
             return redirect()->route('owner.kamar.index')

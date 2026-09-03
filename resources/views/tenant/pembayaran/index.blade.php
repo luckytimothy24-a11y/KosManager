@@ -28,60 +28,56 @@
             </form>
         </div>
 
-        {{-- Table --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-            <div class="overflow-x-auto scrollbar-thin">
-                <table class="w-full text-sm">
-                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                        <tr>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold">No. Pembayaran</th>
-                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Nominal</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden sm:table-cell">Tanggal Bayar</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden md:table-cell">Metode</th>
-                            <th scope="col" class="px-4 py-3.5 text-center font-semibold">Status</th>
-                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                        @forelse($pembayarans as $p)
-                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                                <td class="px-4 py-3.5 font-mono font-semibold text-slate-900 dark:text-white">{{ $p->payment_number }}</td>
-                                <td class="px-4 py-3.5 text-right font-semibold text-slate-900 dark:text-white whitespace-nowrap">Rp {{ number_format($p->amount, 0, ',', '.') }}</td>
-                                <td class="px-4 py-3.5 hidden sm:table-cell text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ $p->payment_date->translatedFormat('d M Y') }}</td>
-                                <td class="px-4 py-3.5 hidden md:table-cell">
-                                    <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                                        <i class="{{ ['transfer_bank' => 'ri-bank-line', 'cash' => 'ri-cash-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }} text-slate-400"></i>
-                                        {{ \PaymentLabels::paymentMethod($p->payment_method) }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3.5 text-center"><x-status-badge :status="$p->verification_status" context="verification" /></td>
-                                <td class="px-4 py-3.5">
-                                    <div class="flex items-center justify-end">
-                                        <a href="{{ route('tenant.pembayaran.show', $p) }}"
-                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
-                                           title="Detail" aria-label="Detail pembayaran {{ $p->payment_number }}">
-                                            <i class="ri-eye-line"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6">
-                                    <x-empty-state icon="ri-bank-card-line" title="Belum ada pembayaran"
-                                                   description="Riwayat pembayaran tagihan Anda akan tampil di sini." />
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        @if($pembayarans->isEmpty())
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+                <x-empty-state icon="ri-bank-card-line" title="Belum ada pembayaran"
+                               description="Riwayat pembayaran tagihan Anda akan tampil di sini." />
+            </div>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($pembayarans as $p)
+                    <a href="{{ route('tenant.pembayaran.show', $p) }}"
+                       class="group bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200 block">
+                        <div class="p-5">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="font-mono font-semibold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">{{ $p->payment_number }}</p>
+                                    <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                                        <i class="ri-bank-card-line text-slate-400"></i> {{ \PaymentLabels::paymentMethod($p->payment_method) }}
+                                        @if($p->isFromGateway())
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-300"><i class="ri-global-line"></i> Online</span>
+                                        @endif
+                                    </p>
+                                    @if($p->tagihan)
+                                        <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400 truncate">
+                                            <i class="ri-file-list-3-line text-slate-400"></i>
+                                            <span class="font-mono font-medium text-slate-600 dark:text-slate-300">{{ $p->tagihan->bill_number }}</span>
+                                            <span class="text-slate-300 dark:text-slate-600">·</span>
+                                            Periode {{ $p->tagihan->period_start->translatedFormat('d M Y') }} – {{ $p->tagihan->period_end->translatedFormat('d M Y') }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <x-status-badge :status="$p->verification_status" context="verification" />
+                            </div>
+
+                            <div class="mt-4 flex items-end justify-between gap-3 pt-3.5 border-t border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tanggal Bayar</p>
+                                    <p class="mt-0.5 text-sm font-semibold text-slate-700 dark:text-slate-200">{{ $p->payment_date->translatedFormat('d M Y') }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nominal</p>
+                                    <p class="mt-0.5 text-base font-black text-slate-900 dark:text-white">Rp {{ number_format($p->amount, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
             </div>
 
             @if($pembayarans->hasPages())
-                <div class="p-4 border-t border-slate-100 dark:border-slate-800">
-                    {{ $pembayarans->links() }}
-                </div>
+                <div class="flex justify-center">{{ $pembayarans->links() }}</div>
             @endif
-        </div>
+        @endif
     </div>
 </x-app-layout>

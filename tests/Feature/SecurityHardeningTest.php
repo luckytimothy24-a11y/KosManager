@@ -199,7 +199,9 @@ class SecurityHardeningTest extends TestCase
             'verification_status' => 'pending',
         ]);
 
-        $this->actingAs($owner)->post("/owner/pembayaran/{$pembayaran->id}/reject")->assertRedirect();
+        $this->actingAs($owner)->post("/owner/pembayaran/{$pembayaran->id}/reject", [
+            'reason' => 'Bukti tidak sesuai nominal.',
+        ])->assertRedirect();
 
         $this->assertDatabaseHas('tagihans', ['id' => $tagihan->id, 'status' => 'unpaid']);
 

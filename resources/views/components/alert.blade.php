@@ -22,7 +22,8 @@
 
 @foreach($flashes as [$flashType, $flashMessage])
     @php([$style, $defaultIcon] = $styles[$flashType])
-    <div class="mb-4 px-4 py-3 rounded-xl border {{ $style }} flex items-start gap-2.5" role="{{ $flashType === 'error' ? 'alert' : 'status' }}">
+    @php($live = $flashType === 'error' ? 'assertive' : 'polite')
+    <div class="mb-4 px-4 py-3 rounded-xl border {{ $style }} flex items-start gap-2.5" role="{{ $flashType === 'error' ? 'alert' : 'status' }}" aria-live="{{ $live }}" aria-atomic="true">
         <i class="{{ $icon ?? $defaultIcon }} text-base mt-0.5 shrink-0"></i>
         <span class="text-sm font-medium leading-relaxed">{{ $flashMessage }}</span>
     </div>
