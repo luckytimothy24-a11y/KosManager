@@ -62,7 +62,24 @@ class TenantKosController extends Controller
 
         if ($request->filled('facilities')) {
             $facilityIds = array_map('intval', $request->facilities);
-            $query->whereHas('kamar.fasilitas', fn ($q) => $q->whereIn('fasilitas.id', $facilityIds), '>=', count($facilityIds));
+
+            $query->where(function ($q) use ($facilityIds) {
+                foreach ($facilityIds as $fid) {
+                    $q->where(function ($w) use ($fid) {
+                        // Kos menyediakan fasilitas level Kos (kos_fasilitas) ...
+                        $w->whereHas('fasilitas', function ($fq) use ($fid) {
+                            $fq->where('fasilitas.id', $fid);
+                        });
+                        // ... ATAU pada kamar yang tersedia (kamar_fasilitas).
+                        $w->orWhereHas('kamar', function ($kq) use ($fid) {
+                            $kq->where('status', 'available')
+                                ->whereHas('fasilitas', function ($fq) use ($fid) {
+                                    $fq->where('fasilitas.id', $fid);
+                                });
+                        });
+                    });
+                }
+            });
         }
 
         $sort = in_array($request->get('sort'), self::VALID_SORT) ? $request->get('sort') : 'terbaru';
@@ -134,9 +151,8 @@ class TenantKosController extends Controller
             ->whereHas('kamar', fn ($q) => $q->where('status', 'available'))
             ->withCount(['kamar as kamar_tersedia' => fn ($q) => $q->where('status', 'available')])
             ->withMin(['kamar as harga_mulai' => fn ($q) => $q->where('status', 'available')], 'monthly_price')
-            ->whereNotNull('harga_mulai')
-            ->when($hargaMulai, fn ($q) => $q->orderByRaw('ABS(harga_mulai - ?)', [$hargaMulai]))
-            ->orderBy('harga_mulai')
+            ->when($hargaMulai, fn ($q) => $q->orderByRaw('ABS(COALESCE(harga_mulai, 999999999) - ?)', [$hargaMulai]))
+            ->orderByRaw('COALESCE(harga_mulai, 999999999)')
             ->limit(3)
             ->get();
 

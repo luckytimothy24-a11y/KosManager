@@ -72,6 +72,20 @@ class ApiV1FoundationTest extends TestCase
         $this->assertSame(0, DB::table('personal_access_tokens')->count());
     }
 
+    public function test_inactive_user_with_valid_token_gets_403_json_not_500(): void
+    {
+        $user = $this->makeUser(['role' => 'tenant']);
+        $token = $user->createToken('api')->plainTextToken;
+
+        $user->update(['is_active' => false]);
+        app('auth')->forgetGuards();
+
+        $response = $this->withToken($token)->getJson('/api/v1/favorites');
+
+        $response->assertStatus(403);
+        $response->assertJson(['message' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.']);
+    }
+
     public function test_login_validates_input(): void
     {
         $response = $this->postJson('/api/v1/auth/login', [

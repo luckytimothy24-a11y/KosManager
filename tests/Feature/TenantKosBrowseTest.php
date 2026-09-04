@@ -254,6 +254,126 @@ class TenantKosBrowseTest extends TestCase
         $response->assertDontSee('Kos WiFi Only');
     }
 
+    // ── F-1/F-2 regression tests ────────────────────────────────
+    // Semantik fasilitas (dibuktikan dari UI/relasi/seeder):
+    // Kos dianggap menyediakan fasilitas bila fasilitas itu ada di level
+    // Kos (kos_fasilitas) ATAU pada minimal satu kamar yang tersedia.
+    // Bukan "satu kamar harus memiliki semua fasilitas".
+
+    public function test_facility_filter_matches_kos_level_facility(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi', 'type' => 'kos']);
+
+        $kosWith = Kos::factory()->create(['name' => 'Kos Ber-WiFi', 'status' => 'active']);
+        $kosWith->fasilitas()->attach($wifi->id);
+        Kamar::factory()->create(['kos_id' => $kosWith->id, 'status' => 'available']);
+
+        $kosWithout = Kos::factory()->create(['name' => 'Kos Tanpa Fasilitas', 'status' => 'active']);
+        Kamar::factory()->create(['kos_id' => $kosWithout->id, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?facilities[]='.$wifi->id);
+
+        $response->assertOk();
+        $response->assertSee('Kos Ber-WiFi');
+        $response->assertDontSee('Kos Tanpa Fasilitas');
+    }
+
+    public function test_room_facility_still_matches(): void
+    {
+        $tenant = $this->createTenant();
+        $ac = Fasilitas::create(['name' => 'AC', 'type' => 'kamar']);
+
+        $kos = Kos::factory()->create(['name' => 'Kos Ber-AC', 'status' => 'active']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
+        $kamar->fasilitas()->attach($ac->id);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?facilities[]='.$ac->id);
+
+        $response->assertOk();
+        $response->assertSee('Kos Ber-AC');
+    }
+
+    public function test_facilities_and_logic_on_same_available_room_matches(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi']);
+        $ac = Fasilitas::create(['name' => 'AC']);
+
+        $kos = Kos::factory()->create(['name' => 'Kos Lengkap', 'status' => 'active']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
+        $kamar->fasilitas()->attach([$wifi->id, $ac->id]);
+
+        $response = $this->actingAs($tenant)->get("/tenant/kos?facilities[]={$wifi->id}&facilities[]={$ac->id}");
+
+        $response->assertOk();
+        $response->assertSee('Kos Lengkap');
+    }
+
+    public function test_facilities_spread_across_multiple_rooms_still_matches(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi']);
+        $ac = Fasilitas::create(['name' => 'AC']);
+
+        // Kamar A = AC, Kamar B = WiFi, keduanya tersedia.
+        $kos = Kos::factory()->create(['name' => 'Kos Gabungan', 'status' => 'active']);
+        $kamarA = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
+        $kamarA->fasilitas()->attach($ac->id);
+        $kamarB = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
+        $kamarB->fasilitas()->attach($wifi->id);
+
+        // Semantik marketplace: fasilitas dinilai di level Kos, sehingga kos
+        // yang menyediakan AC (kamar A) DAN WiFi (kamar B) tetap lolos.
+        $response = $this->actingAs($tenant)->get("/tenant/kos?facilities[]={$ac->id}&facilities[]={$wifi->id}");
+
+        $response->assertOk();
+        $response->assertSee('Kos Gabungan');
+    }
+
+    public function test_facility_on_non_available_room_does_not_match(): void
+    {
+        $tenant = $this->createTenant();
+        $ac = Fasilitas::create(['name' => 'AC', 'type' => 'kamar']);
+
+        // Fasilitas hanya ada di kamar booked/occupied -> tidak dihitung sebagai
+        // penawaran yang tersedia oleh tenant.
+        $kos = Kos::factory()->create(['name' => 'Kos Penuh', 'status' => 'active']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'booked']);
+        $kamar->fasilitas()->attach($ac->id);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?facilities[]='.$ac->id);
+
+        $response->assertOk();
+        $response->assertDontSee('Kos Penuh');
+    }
+
+    public function test_combined_filter_with_kos_level_facility(): void
+    {
+        $tenant = $this->createTenant();
+        $wifi = Fasilitas::create(['name' => 'WiFi', 'type' => 'kos']);
+        $ac = Fasilitas::create(['name' => 'AC', 'type' => 'kamar']);
+
+        $kos1 = Kos::factory()->create(['name' => 'Kos Melati', 'description' => 'Kos strategis', 'status' => 'active']);
+        $kos1->fasilitas()->attach($wifi->id);
+        $k1 = Kamar::factory()->create(['kos_id' => $kos1->id, 'monthly_price' => 800000, 'status' => 'available']);
+        $k1->fasilitas()->attach($ac->id);
+
+        $kos2 = Kos::factory()->create(['name' => 'Kos Mawar', 'description' => 'Kos strategis', 'status' => 'active']);
+        $k2 = Kamar::factory()->create(['kos_id' => $kos2->id, 'monthly_price' => 800000, 'status' => 'available']);
+        $k2->fasilitas()->attach($ac->id);
+
+        $kos3 = Kos::factory()->create(['name' => 'Kos Melati Premium', 'status' => 'active']);
+        Kamar::factory()->create(['kos_id' => $kos3->id, 'monthly_price' => 3000000, 'status' => 'available']);
+
+        $response = $this->actingAs($tenant)->get('/tenant/kos?q=Melati&price_min=500000&price_max=1000000&facilities[]='.$wifi->id.'&facilities[]='.$ac->id.'&tersedia_only=1&sort=harga_terendah');
+
+        $response->assertOk();
+        $response->assertSee('Kos Melati');
+        $response->assertDontSee('Kos Mawar');
+        $response->assertDontSee('Kos Melati Premium');
+    }
+
     // ── Availability filter tests ───────────────────────────────
 
     public function test_availability_filter_shows_only_kos_with_available_rooms(): void

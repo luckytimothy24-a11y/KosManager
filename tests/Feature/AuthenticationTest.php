@@ -45,6 +45,28 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_failed_login_preserves_email_and_shows_error_feedback(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'owner',
+            'email' => 'owner@example.com',
+        ]);
+
+        $response = $this->from('login')->post('/login', [
+            'email' => 'owner@example.com',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertRedirect('login');
+        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasInput('email', 'owner@example.com');
+        $this->assertGuest();
+
+        $this->get('login')
+            ->assertSee('owner@example.com')
+            ->assertSee('Email atau kata sandi tidak sesuai.');
+    }
+
     public function test_login_is_recorded_in_audit_log(): void
     {
         $user = User::factory()->create(['role' => 'owner']);
