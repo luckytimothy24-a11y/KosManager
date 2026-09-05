@@ -67,6 +67,11 @@ class Kos extends Model
         return $this->hasMany(Favorite::class);
     }
 
+    public function advertisingCampaigns()
+    {
+        return $this->hasMany(AdvertisingCampaign::class);
+    }
+
     public function favoriteCount(): int
     {
         return $this->favorites()->count();

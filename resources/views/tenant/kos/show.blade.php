@@ -70,7 +70,9 @@
                 <div class="lg:col-span-2 space-y-5">
                     {{-- Name & Address --}}
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $kos->name }}</h1>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $kos->name }}</h1>
+                        </div>
                         <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
                             <span class="inline-flex items-center gap-1.5"><i class="ri-map-pin-2-fill text-primary-500"></i> {{ $kos->address }}</span>
                             @if($kos->phone)
@@ -593,6 +595,23 @@
                                 </div>
                             </div>
                         </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Iklan detail — advertiser PIHAK KETIGA, terpisah dari info kos organik --}}
+        @if(($detailAds ?? collect())->isNotEmpty())
+            <div>
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Partner untuk Penghuni Kos</h2>
+                    <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
+                        <i class="ri-megaphone-fill text-[10px]"></i> Iklan
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($detailAds as $ad)
+                        @include('tenant.partials.promoted-partner', ['ad' => $ad, 'placement' => 'detail', 'variant' => 'card'])
                     @endforeach
                 </div>
             </div>

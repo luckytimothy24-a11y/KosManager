@@ -141,6 +141,31 @@ class NotificationService
         self::create($ownerId, NotificationType::BOOKING, 'Booking Dibatalkan', "{$tenantName} membatalkan booking {$bookingCode}.");
     }
 
+    public static function advertisingCreated(int $moderatorId, string $ownerName, string $kosName): void
+    {
+        self::create($moderatorId, NotificationType::ADVERTISING, 'Kampanye Menunggu Review', "{$ownerName} membuat kampanye iklan untuk kos {$kosName} yang menunggu review.");
+    }
+
+    public static function advertisingApproved(int $ownerId, string $kosName): void
+    {
+        self::create($ownerId, NotificationType::ADVERTISING, 'Kampanye Disetujui', "Kampanye iklan untuk kos {$kosName} telah disetujui dan aktif.");
+    }
+
+    public static function advertisingRejected(int $ownerId, string $kosName, string $reason): void
+    {
+        self::create($ownerId, NotificationType::ADVERTISING, 'Kampanye Ditolak', "Kampanye iklan untuk kos {$kosName} ditolak. Alasan: {$reason}");
+    }
+
+    public static function advertisingSuspended(int $ownerId, string $kosName, string $reason): void
+    {
+        self::create($ownerId, NotificationType::ADVERTISING, 'Kampanye Ditangguhkan', "Kampanye iklan untuk kos {$kosName} ditangguhkan. Alasan: {$reason}");
+    }
+
+    public static function advertisingPaymentReceived(int $moderatorId, string $ownerName, string $kosName): void
+    {
+        self::create($moderatorId, NotificationType::ADVERTISING, 'Pembayaran Kampanye Diterima', "{$ownerName} telah membayar kampanye iklan untuk kos {$kosName}.");
+    }
+
     public static function cleanup(int $olderThanDays = 90): int
     {
         return Notification::where('created_at', '<', now()->subDays($olderThanDays))->delete();

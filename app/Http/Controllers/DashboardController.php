@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Owner\TenantKosController;
+use App\Models\AdvertisingCampaign;
 use App\Models\Booking;
 use App\Models\CheckIn;
 use App\Models\CheckOut;
@@ -14,12 +15,15 @@ use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
+use App\Services\AdvertisingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function __construct(private readonly AdvertisingService $advertisingService) {}
+
     public function __invoke(Request $request)
     {
         $user = $request->user();
@@ -221,6 +225,25 @@ class DashboardController extends Controller
 
         $locations = TenantKosController::locationDiscovery();
 
+        // Advertising untuk audience (tenant): hanya menampilkan kampanye ACTIVE
+        // advertiser PIHAK KETIGA pada placement homepage. Kos tetap murni organik —
+        // iklan sama sekali tidak memengaruhi daftar rekomendasi/next mari kita.
+        $partnerAds = collect();
+        if (auth()->check() && auth()->user()->isTenant()) {
+            $partnerAds = $this->advertisingService->partnerAds(AdvertisingCampaign::PLACEMENT_HOMEPAGE, 4);
+
+            foreach ($partnerAds as $ad) {
+                $this->advertisingService->trackEvent(
+                    (int) $ad->id,
+                    'impression',
+                    auth()->id(),
+                    session()->getId(),
+                    AdvertisingCampaign::PLACEMENT_HOMEPAGE,
+                    true
+                );
+            }
+        }
+
         return view('dashboard.tenant', compact(
             'stats',
             'user',
@@ -234,7 +257,8 @@ class DashboardController extends Controller
             'favoriteKosIds',
             'favoriteCount',
             'favoritedIds',
-            'locations'
+            'locations',
+            'partnerAds'
         ));
     }
 

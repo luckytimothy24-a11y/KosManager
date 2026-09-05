@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             FasilitasSeeder::class,
             KosSeeder::class,
             KamarSeeder::class,
+            AdvertisingSeeder::class,
             BookingSeeder::class,
             PenghuniSeeder::class,
             KontrakSeeder::class,

@@ -81,6 +81,12 @@
                         $navItem('super-admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
                         $navItem('super-admin.audit-log.index', 'Activity Log', 'ri-history-line'),
                     ];
+                    $groups['Monetisasi'] = [
+                        $navItem('super-admin.advertising.dashboard', 'Advertising', 'ri-megaphone-line'),
+                        $navItem('super-admin.advertising.packages.index', 'Paket Iklan', 'ri-price-tag-3-line'),
+                        $navItem('super-admin.advertising.campaigns.index', 'Kampanye', 'ri-bill-line'),
+                        $navItem('super-admin.advertising.revenue', 'Revenue', 'ri-line-chart-line'),
+                    ];
                 } elseif ($user->isOwner()) {
                     $groups['Manajemen'] = [
                         $navItem('owner.kos.index', 'Kelola Kos', 'ri-building-2-line'),
@@ -99,6 +105,7 @@
                     ];
                     $groups['Lainnya'] = [
                         $navItem('owner.laporan.index', 'Laporan', 'ri-file-chart-line'),
+                        $navItem('owner.advertising.dashboard', 'Advertising', 'ri-megaphone-line'),
                     ];
                 } else {
                     $groups['Manajemen'] = [
@@ -117,6 +124,7 @@
                     ];
                     $groups['Lainnya'] = [
                         $navItem('admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
+                        $navItem('admin.advertising.index', 'Advertising', 'ri-megaphone-line'),
                     ];
                 }
             @endphp

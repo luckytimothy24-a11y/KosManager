@@ -215,6 +215,18 @@
         </section>
 
         {{-- ============================================================
+             ADVERTISING — Promoted Partner (advertiser pihak ketiga)
+             Iklan jelas terpisah dari kos organik, transparan & berlabel.
+             ============================================================ --}}
+        @if($partnerAds->isNotEmpty())
+            <section aria-label="Partner untuk penghuni kos" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($partnerAds as $ad)
+                    @include('tenant.partials.promoted-partner', ['ad' => $ad, 'placement' => 'homepage', 'variant' => 'banner'])
+                @endforeach
+            </section>
+        @endif
+
+        {{-- ============================================================
              BELUM MEMILIKI KAMAR (callout)
              ============================================================ --}}
         @if(!$penghuni)

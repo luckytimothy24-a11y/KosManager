@@ -252,6 +252,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'PaymentLabels' => PaymentLabels::class,
         'StatusLabels' => StatusLabels::class,
+        'AdvertisingLabels' => AdvertisingLabels::class,
     ])->toArray(),
 
 ];

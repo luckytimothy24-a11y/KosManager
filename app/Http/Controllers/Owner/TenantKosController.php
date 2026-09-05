@@ -3,15 +3,24 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdvertisingCampaign;
 use App\Models\Fasilitas;
 use App\Models\Favorite;
 use App\Models\Kamar;
 use App\Models\Kos;
+use App\Services\AdvertisingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class TenantKosController extends Controller
 {
+    protected AdvertisingService $advertisingService;
+
+    public function __construct(AdvertisingService $advertisingService)
+    {
+        $this->advertisingService = $advertisingService;
+    }
+
     private const VALID_SORT = [
         'terbaru', 'harga_terendah', 'harga_tertinggi',
         'terbanyak_disewa', 'paling_banyak_favorit',
@@ -92,6 +101,23 @@ class TenantKosController extends Controller
         };
 
         $kosList = $query->paginate(9)->withQueryString();
+
+        // Advertising untuk placement marketplace: hanya kampanye ACTIVE advertiser
+        // PIHAK KETIGA (kos_id NULL). Kos yang tampil di bawah TETAP murni organik —
+        // seluruh search/filter/sort/availability di atas tidak dipengaruhi iklan.
+        $marketplaceAds = $this->advertisingService->partnerAds(AdvertisingCampaign::PLACEMENT_MARKETPLACE, 3);
+
+        foreach ($marketplaceAds as $ad) {
+            $this->advertisingService->trackEvent(
+                $ad->id,
+                'impression',
+                auth()->check() ? auth()->id() : null,
+                session()->getId(),
+                AdvertisingCampaign::PLACEMENT_MARKETPLACE,
+                true
+            );
+        }
+
         $fasilitasList = Fasilitas::active()->orderBy('name')->get();
 
         $favoritedIds = auth()->check() && auth()->user()->isTenant()
@@ -102,7 +128,7 @@ class TenantKosController extends Controller
 
         $locations = self::locationDiscovery();
 
-        return view('tenant.kos.index', compact('kosList', 'fasilitasList', 'favoritedIds', 'facilityCategories', 'selectedLocation', 'locations'));
+        return view('tenant.kos.index', compact('kosList', 'fasilitasList', 'favoritedIds', 'facilityCategories', 'selectedLocation', 'locations', 'marketplaceAds'));
     }
 
     /**
@@ -143,6 +169,22 @@ class TenantKosController extends Controller
         $isFavorited = auth()->check()
             && Favorite::where('user_id', auth()->id())->where('kos_id', $kos->id)->exists();
 
+        // Advertising untuk halaman detail: kampanye ACTIVE PIHAK KETIGA yang
+        // relevan untuk penghuni (placement detail). Tidak memengaruhi informasi
+        // kos organik apa pun (kamar, harga, fasilitas, booking).
+        $detailAds = $this->advertisingService->partnerAds(AdvertisingCampaign::PLACEMENT_DETAIL, 3);
+
+        foreach ($detailAds as $ad) {
+            $this->advertisingService->trackEvent(
+                $ad->id,
+                'impression',
+                auth()->check() ? auth()->id() : null,
+                session()->getId(),
+                AdvertisingCampaign::PLACEMENT_DETAIL,
+                true
+            );
+        }
+
         $facilityGroups = self::groupFacilities($kos, $allKamar);
 
         $similarKos = Kos::query()
@@ -156,7 +198,7 @@ class TenantKosController extends Controller
             ->limit(3)
             ->get();
 
-        return view('tenant.kos.show', compact('kos', 'allKamar', 'kamarTersedia', 'hargaMulai', 'favoriteCount', 'facilityGroups', 'similarKos', 'isFavorited'));
+        return view('tenant.kos.show', compact('kos', 'allKamar', 'kamarTersedia', 'hargaMulai', 'favoriteCount', 'facilityGroups', 'similarKos', 'isFavorited', 'detailAds'));
     }
 
     /**

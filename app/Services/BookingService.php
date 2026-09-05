@@ -71,6 +71,9 @@ class BookingService
                 NotificationService::bookingInstantConfirmation($booking->user_id, $booking->booking_code, $booking->kamar->room_number);
                 NotificationService::bookingNew($booking->kos->owner_id, $booking->user->name, $booking->kamar->room_number);
                 AuditLogService::create('Booking', "Booking baru {$booking->user->name} untuk kamar {$booking->kamar->room_number} (instant booking)", ['kos_id' => $booking->kos_id, 'kamar_id' => $booking->kamar_id]);
+
+                // Atribusi conversion advertising bila booking berasal dari klik iklan.
+                app(AdvertisingService::class)->recordConversionIfApplicable($userId, $booking->kos_id);
             } catch (\Exception $e) {
                 \Log::warning('Booking notification/audit failed: '.$e->getMessage());
             }

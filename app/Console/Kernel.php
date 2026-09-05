@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('booking:expire-old')->dailyAt('00:15')->withoutOverlapping();
         $schedule->command('kontrak:expire-old')->dailyAt('00:25')->withoutOverlapping();
         $schedule->command('tagihan:remind-due-soon')->dailyAt('07:00')->withoutOverlapping();
+        $schedule->command('advertising:process-campaigns')->hourly()->withoutOverlapping();
 
         if (config('backup.schedule_enabled', true)) {
             $schedule->command('backup:run')

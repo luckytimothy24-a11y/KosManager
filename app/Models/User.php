@@ -102,6 +102,21 @@ class User extends Authenticatable
         return $this->hasMany(Favorite::class);
     }
 
+    public function advertisingCampaigns()
+    {
+        return $this->hasMany(AdvertisingCampaign::class, 'owner_id');
+    }
+
+    public function advertisingOrders()
+    {
+        return $this->hasMany(AdvertisingOrder::class, 'owner_id');
+    }
+
+    public function advertisingEvents()
+    {
+        return $this->hasMany(AdvertisingEvent::class, 'user_id');
+    }
+
     public function hasFavorited(int $kosId): bool
     {
         return $this->favorites()->where('kos_id', $kosId)->exists();

@@ -8,10 +8,14 @@
             ->filter()
             ->values();
     $kamarFacilities = $kos->kamar->first()?->fasilitas ?? collect();
+
+    // Kos bersifat murni organik — tidak ada label/link iklan pada kartu kos
+    // (campaign promosi kos lama tidak lagi diboost secara visual).
+    $adLink = fn () => route('tenant.kos.show', $kos);
 @endphp
 
 <div class="relative group bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col">
-    <a href="{{ route('tenant.kos.show', $kos) }}" class="block relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700" aria-label="Lihat detail {{ $kos->name }}">
+    <a href="{{ $adLink() }}" class="block relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700" aria-label="Lihat detail {{ $kos->name }}">
         @if($kos->photo)
             <img src="{{ asset('storage/' . $kos->photo) }}" alt="Foto {{ $kos->name }}"
                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -22,7 +26,7 @@
         @endif
 
         {{-- Availability badge --}}
-        <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm {{ $availableRooms > 0 ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur text-green-700 dark:text-green-300' : 'bg-slate-800/90 dark:bg-slate-950/90 backdrop-blur text-slate-200' }}">
+        <span class="absolute top-3 right-3 inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm {{ $availableRooms > 0 ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur text-green-700 dark:text-green-300' : 'bg-slate-800/90 dark:bg-slate-950/90 backdrop-blur text-slate-200' }}">
             <span class="w-1.5 h-1.5 rounded-full {{ $availableRooms > 0 ? 'bg-green-500' : 'bg-slate-400' }}"></span>
             {{ $availableRooms > 0 ? 'TERSEDIA · '.$availableRooms.' kamar' : 'PENUH' }}
         </span>
@@ -45,7 +49,7 @@
 
     <div class="p-4 flex flex-col flex-1">
         <div class="flex items-start justify-between gap-2">
-            <a href="{{ route('tenant.kos.show', $kos) }}" class="min-w-0">
+            <a href="{{ $adLink() }}" class="min-w-0">
                 <h3 class="font-bold text-slate-900 dark:text-white leading-snug group-hover:text-primary-500 dark:group-hover:text-primary-300 transition line-clamp-1">{{ $kos->name }}</h3>
             </a>
             @if($kos->favorites_count > 0)
@@ -105,7 +109,7 @@
             @else
                 <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
             @endif
-            <a href="{{ route('tenant.kos.show', $kos) }}"
+            <a href="{{ $adLink() }}"
                class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold text-white bg-primary-500 hover:bg-primary-600 px-3.5 py-2 rounded-xl transition shadow-sm shadow-primary-500/30 active:scale-95">
                 Lihat Detail <i class="ri-arrow-right-line"></i>
             </a>

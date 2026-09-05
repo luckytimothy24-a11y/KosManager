@@ -16,6 +16,8 @@ class NotificationType
 
     public const CHECKOUT = 'checkout';
 
+    public const ADVERTISING = 'advertising';
+
     public static function label(string $type): string
     {
         return match ($type) {
@@ -25,6 +27,7 @@ class NotificationType
             self::BILLING => 'Tagihan',
             self::CHECKIN => 'Check-In',
             self::CHECKOUT => 'Check-Out',
+            self::ADVERTISING => 'Advertising',
             default => 'Lainnya',
         };
     }
@@ -38,6 +41,7 @@ class NotificationType
             self::BILLING => self::label(self::BILLING),
             self::CHECKIN => self::label(self::CHECKIN),
             self::CHECKOUT => self::label(self::CHECKOUT),
+            self::ADVERTISING => self::label(self::ADVERTISING),
         ];
     }
 }

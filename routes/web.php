@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
+use App\Http\Controllers\AdvertisingClickController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Owner\AdvertisingController;
 use App\Http\Controllers\Owner\BookingController;
 use App\Http\Controllers\Owner\CheckInController;
 use App\Http\Controllers\Owner\CheckOutController;
@@ -18,6 +21,9 @@ use App\Http\Controllers\Owner\TenantKontrakController;
 use App\Http\Controllers\Owner\TenantKosController;
 use App\Http\Controllers\Owner\TenantPembayaranController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SuperAdmin\AdvertisingCampaignController;
+use App\Http\Controllers\SuperAdmin\AdvertisingDashboardController;
+use App\Http\Controllers\SuperAdmin\AdvertisingPackageController;
 use App\Http\Controllers\SuperAdmin\AuditLogController;
 use App\Http\Controllers\SuperAdmin\FasilitasController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
@@ -67,12 +73,39 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::get('laporan/export-excel/{type}', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
 
     Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+
+    // Advertising (Super Admin)
+    Route::get('advertising', [AdvertisingDashboardController::class, 'index'])->name('advertising.dashboard');
+    Route::get('advertising/packages', [AdvertisingPackageController::class, 'index'])->name('advertising.packages.index');
+    Route::get('advertising/packages/create', [AdvertisingPackageController::class, 'create'])->name('advertising.packages.create');
+    Route::post('advertising/packages', [AdvertisingPackageController::class, 'store'])->name('advertising.packages.store');
+    Route::get('advertising/packages/{package}/edit', [AdvertisingPackageController::class, 'edit'])->name('advertising.packages.edit');
+    Route::put('advertising/packages/{package}', [AdvertisingPackageController::class, 'update'])->name('advertising.packages.update');
+    Route::delete('advertising/packages/{package}', [AdvertisingPackageController::class, 'destroy'])->name('advertising.packages.destroy');
+
+    Route::get('advertising/campaigns', [AdvertisingCampaignController::class, 'index'])->name('advertising.campaigns.index');
+    Route::get('advertising/campaigns/{campaign}', [AdvertisingCampaignController::class, 'show'])->name('advertising.campaigns.show');
+    Route::post('advertising/campaigns/{campaign}/approve', [AdvertisingCampaignController::class, 'approve'])->name('advertising.campaigns.approve');
+    Route::post('advertising/campaigns/{campaign}/reject', [AdvertisingCampaignController::class, 'reject'])->name('advertising.campaigns.reject');
+    Route::post('advertising/campaigns/{campaign}/suspend', [AdvertisingCampaignController::class, 'suspend'])->name('advertising.campaigns.suspend');
+
+    Route::get('advertising/revenue', [AdvertisingCampaignController::class, 'revenue'])->name('advertising.revenue');
+    Route::get('advertising/revenue/export', [AdvertisingCampaignController::class, 'exportCsv'])->name('advertising.revenue.export');
 });
 
 // Owner Routes
 Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::resource('kos', KosController::class)->parameter('kos', 'kos');
     Route::resource('kamar', KamarController::class);
+
+    // Advertising (Owner + Super Admin)
+    Route::get('advertising', [AdvertisingController::class, 'dashboard'])->name('advertising.dashboard');
+    Route::get('advertising/campaigns', [AdvertisingController::class, 'index'])->name('advertising.index');
+    Route::get('advertising/campaigns/create', [AdvertisingController::class, 'create'])->name('advertising.create');
+    Route::post('advertising/campaigns', [AdvertisingController::class, 'store'])->name('advertising.store');
+    Route::get('advertising/campaigns/{campaign}', [AdvertisingController::class, 'show'])->name('advertising.show');
+    Route::post('advertising/campaigns/{campaign}/pay', [AdvertisingController::class, 'pay'])->name('advertising.pay');
+    Route::post('advertising/campaigns/{campaign}/cancel', [AdvertisingController::class, 'cancel'])->name('advertising.cancel');
 
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
@@ -110,6 +143,13 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
 
 // Admin Routes
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Advertising (Admin moderation)
+    Route::get('advertising', [AdminAdvertisingController::class, 'index'])->name('advertising.index');
+    Route::get('advertising/{campaign}', [AdminAdvertisingController::class, 'show'])->name('advertising.show');
+    Route::post('advertising/{campaign}/approve', [AdminAdvertisingController::class, 'approve'])->name('advertising.approve');
+    Route::post('advertising/{campaign}/reject', [AdminAdvertisingController::class, 'reject'])->name('advertising.reject');
+    Route::post('advertising/{campaign}/suspend', [AdminAdvertisingController::class, 'suspend'])->name('advertising.suspend');
+
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
     Route::post('booking/{booking}/approve', [BookingController::class, 'approve'])->name('booking.approve');
@@ -151,6 +191,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
     Route::get('kos', [TenantKosController::class, 'index'])->name('kos.index');
     Route::get('kos/{kos}', [TenantKosController::class, 'show'])->name('kos.show');
+
+    // Click tracking iklan (sponsored/featured) -> redirect ke detail kos.
+    Route::get('ad/click/{campaign}', [AdvertisingClickController::class, 'track'])
+        ->where('campaign', '[0-9]+')
+        ->name('ad.click');
 
     Route::get('booking', [TenantBookingController::class, 'index'])->name('booking.index');
     Route::get('booking/create', [TenantBookingController::class, 'create'])->name('booking.create');

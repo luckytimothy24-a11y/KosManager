@@ -47,6 +47,20 @@
             </div>
         </div>
 
+        {{-- Iklan marketplace — advertiser PIHAK KETIGA, JELAS terpisah dari daftar kos organik.
+             Daftar kos di bawah TIDAK pernah diboost/diubah oleh iklan ini. --}}
+        @if(($marketplaceAds ?? collect())->isNotEmpty())
+            <section aria-label="Partner untuk penghuni kos" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($marketplaceAds as $idx => $ad)
+                    @include('tenant.partials.promoted-partner', [
+                        'ad' => $ad,
+                        'placement' => 'marketplace',
+                        'variant' => $idx === 0 ? 'banner' : 'card',
+                    ])
+                @endforeach
+            </section>
+        @endif
+
         {{-- Quick Filter Chips (facilities ACTUAL dari master data) --}}
         @if($fasilitasList->isNotEmpty())
             <div class="flex items-start gap-2 flex-wrap" aria-label="Filter cepat">
