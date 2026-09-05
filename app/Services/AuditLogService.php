@@ -101,9 +101,13 @@ class AuditLogService
         return AuditLog::whereNotNull('integrity_hash')->latest('id')->value('integrity_hash');
     }
 
-    private static function computeHash(AuditLog $log, ?string $previousHash): string
+    private static function computeHash(AuditLog $log, ?string $previousHash): ?string
     {
         $secret = config('audit.hmac_secret');
+
+        if (! static::isValidSecret($secret)) {
+            return null;
+        }
 
         $payload = implode(':', [
             $log->id ?? '',
@@ -119,10 +123,16 @@ class AuditLogService
             $previousHash ?? '',
         ]);
 
-        if ($secret === null || strlen($secret) < 64) {
-            return hash_hmac('sha256', $payload, str_repeat('0', 32));
-        }
-
         return hash_hmac('sha256', $payload, $secret);
+    }
+
+    /**
+     * HMAC secret wajib berupa 64 karakter hex. Selain itu fail-closed
+     * (integrity hash NULL) — tidak pernah memakai fallback key.
+     */
+    private static function isValidSecret(?string $secret): bool
+    {
+        return is_string($secret)
+            && preg_match('/^[0-9a-fA-F]{64}$/', $secret) === 1;
     }
 }

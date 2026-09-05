@@ -132,18 +132,22 @@ Fitur keamanan yang sudah diimplementasikan dan diuji:
 - **Transaction + lockForUpdate** pada aksi approve/reject untuk mencegah race condition
 - **Booking overlap protection** — penolakan otomatis periode bentrok
 - **Audit log** — login, CRUD, approve/reject tercatat termasuk IP address
+- **Audit log anti-tamper** — tiap entri ditandatangani HMAC-SHA256 (rantai hash antarsatu dengan secret 64-hex; fail-closed jika secret tidak valid)
+- **Secure image upload** — validasi konten file asli (MIME via finfo + decoding image), HTML/SVG/malformed ditolak
 - **Soft delete historical users** — user dengan riwayat transaksi tidak terhapus permanen
 - **Security tests** — suite khusus isolation boundary & payment security
 
 ## Automated Testing
 
-Hasil test terbaru:
+Hasil test terbaru (baseline terverifikasi batch 9):
 
 ```
-Tests:    246 passed (704 assertions)
+Last verified baseline: 1031 passed (3521 assertions)
 Pint:     passed (code style PSR-12)
 Build:    sukses (Vite)
 ```
+
+> Sebelum deploy pastikan seluruh suite lolos: `php artisan test`, `vendor/bin/pint --test`, `npm run build`.
 
 Cakupan meliputi unit test logika bisnis, feature test seluruh modul, race condition, security/isolation boundary, hingga command otomasi.
 
@@ -224,9 +228,7 @@ Pipeline gagal jika salah satu tahap gagal, sehingga regresi terdeteksi sebelum 
 
 Rencana pengembangan selanjutnya (belum diimplementasikan):
 
-- REST API untuk integrasi mobile
 - Notifikasi realtime
-- Integrasi payment gateway
-- Deployment automation (Docker/CI deploy)
-- Backup database otomatis
+- Aktivasi payment gateway produksi (sandbox sudah terpasang; mekanisme webhook & verifikasi pembayaran tersedia)
+- Deployment automation (Docker/CI deploy) — runbook deployment manual sudah terdokumentasi
 - Master data untuk tipe kamar dan tipe tagihan

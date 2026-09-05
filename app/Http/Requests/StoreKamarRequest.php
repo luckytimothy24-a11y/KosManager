@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SafeImage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,7 @@ class StoreKamarRequest extends FormRequest
             'monthly_price' => ['required', 'numeric', 'min:0'],
             'area' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new SafeImage],
             'status' => ['sometimes', 'in:available,booked,occupied,maintenance'],
             'fasilitas' => ['nullable', 'array'],
             'fasilitas.*' => [

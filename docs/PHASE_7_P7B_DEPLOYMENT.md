@@ -80,25 +80,37 @@ Wajib diubah di produksi:
 
 | Variabel              | Nilai produksi yang disarankan |
 |-----------------------|--------------------------------|
+| `APP_NAME`            | Nama aplikasi (tampilan UI/mail) |
+| `APP_KEY`             | hasil `php artisan key:generate` (32 byte random base64) |
 | `APP_ENV`             | `production`                   |
 | `APP_DEBUG`           | `false`                        |
 | `APP_URL`             | `https://domain-anda`          |
 | `LOG_CHANNEL`         | `daily` (rotasi 14 hari)       |
 | `LOG_LEVEL`           | `warning` (atau `error`)       |
+| `SESSION_DRIVER`      | `file` (bila 1 server) / `redis` (multi-server) |
 | `SESSION_SECURE_COOKIE` | `true` (wajib bila HTTPS)    |
+| `QUEUE_CONNECTION`    | `database` (worker wajib berjalan) |
+| `DB_CONNECTION` / `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | Kredensial database produksi |
+| `AUDIT_LOG_HMAC_SECRET` | **WAJIB** — 64 karakter hex acak (audit log fail-closed bila tidak valid) |
 | `PAYMENT_GATEWAY_WEBHOOK_KEY` | **WAJIB** — string acak panjang (fail-closed bila kosong) |
 | `TRUSTED_PROXIES`     | IP/CIDR reverse proxy atau `*` |
-| `MAIL_HOST` / `MAIL_PORT` | SMTP penyedia email produksi |
+| `MAIL_HOST` / `MAIL_PORT` / `MAIL_USERNAME` / `MAIL_PASSWORD` | SMTP penyedia email produksi |
+| `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Pengirim email terverifikasi |
 
+> Generate secret audit log: `php -r "echo bin2hex(random_bytes(32));"`.
 > Catatan: permission file log `storage/logs/` dan session `storage/framework/sessions/` harus writable.
 > Untuk multi-server, pertimbangkan `CACHE_DRIVER=redis`, `SESSION_DRIVER=redis`, dan `QUEUE_CONNECTION=redis`.
 
-### 2. Migrasi & seed (jika pertama kali)
+### 2. Migrasi & seed (hanya jika pertama kali)
 
 ```bash
 php artisan migrate --force
-php artisan db:seed --force   # jika diperlukan data awal/demo
 ```
+
+> **PENTING — Jangan menjalankan `php artisan db:seed` di produksi.**
+> `DatabaseSeeder` otomatis mengecualikan `AdvertisingSeeder` (data demo finansial AD-DEMO-*) di environment
+> `production`, dan `AdvertisingSeeder` akan **gagal (throw)** bila dipaksa jalan. Data awal produksi dibuat
+> lewat flow aplikasi (registrasi owner, create kos, dll.), bukan seeder.
 
 ### 3. Optimasi produksi
 
@@ -122,9 +134,73 @@ php artisan queue:work database --tries=3 --timeout=90
 - Untuk produksi gunakan supervisor/systemd agar worker selalu berjalan:
   - perintah: `php {path}/artisan queue:work database --sleep=3 --tries=3 --max-time=3600`
   - `numprocs`: sesuaikan dengan load.
+- Contoh supervisor (`/etc/supervisor/conf.d/kosmanager-worker.conf`):
+
+```ini
+[program:kosmanager-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /var/www/kosmanager/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/kosmanager/storage/logs/worker.log
+stopwaitsecs=3600
+```
+
+- Lalu: `supervisorctl reread && supervisorctl update && supervisorctl start kosmanager-worker:*`.
 - Pantau failed jobs: `artisan queue:failed` / `queue:retry` / `queue:flush`.
 
-### 5. Scheduler (cron)
+### 5. Web server (Nginx + PHP-FPM)
+
+Umum di produksi: aplikasi di belakang Nginx dengan PHP-FPM via `php-fpm` socket.
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name domain-anda;
+
+    root /var/www/kosmanager/public;
+    index index.php;
+
+    # ganti dengan sertifikat Anda
+    ssl_certificate     /etc/letsencrypt/live/domain-anda/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/domain-anda/privkey.pem;
+
+    # file dot & directory storage terlindung — tidak pernah didocroot
+    location ~ /\.(?!well-known).* { deny all; }
+    location ~ ^/storage/ { deny all; }
+    location ~ /\.(env|git|log) { deny all; }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+    }
+
+    location ~ /\.(?!well-known).* { deny all; }
+
+    # cache statis (aset Vite)
+    location ~* \.(js|css|png|jpg|jpeg|gif|webp|svg|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+- Pastikan `storage/` dan `bootstrap/cache` writable user `www-data`.
+- Redirect HTTP → HTTPS (blok `server` 80 dengan `return 301 https://$host$request_uri;`).
+- Referensi: tautan aset public via `php artisan storage:link` bila upload foto dipakai.
+
+### 6. Scheduler (cron)
 
 Semua tugas terjadwal (tandai tagihan overdue 00:05, expire booking 00:15, expire kontrak 00:25,
 pengingat jatuh tempo 07:00, dan **backup database** 00:35 — lihat P7-A) dijalankan lewat scheduler.
@@ -136,29 +212,35 @@ crontab -e
 
 - Jika ada >1 server, aktifkan `onOneServer` (sudah dipasang pada `backup:run`) dan gunakan cache store yang sama.
 
-### 6. Backup (rekap P7-A)
+### 7. Backup (rekap P7-A)
 
 - `php artisan backup:run` — dump database ke `storage/app/backups` dengan nama unik + retensi otomatis (`BACKUP_RETENTION_DAYS`).
 - `php artisan backup:list`, `backup:verify`, `backup:restore --force`.
 - Amankan hasil backup: upload salinan ke remote (S3/rsync/gcloud) karena disk `backups` privat di dalam server.
 - Detail lengkap: `docs/PHASE_7_P7A_DATABASE_BACKUP.md`.
 
-### 7. Health check
+### 8. Health check
 
 - `GET /health` dan `GET /up` → `200` bila database terhubung, `503` bila tidak.
 - Daftarkan pada load balancer / orchestrator (mis. Nginx `proxy_pass`, Docker healthcheck, UptimeRobot).
 
-### 8. Keamanan
+### 9. Keamanan
 
 - `APP_DEBUG` selalu `false` di produksi.
 - Gunakan HTTPS + set `SESSION_SECURE_COOKIE=true`. Atur `TRUSTED_PROXIES` bila di belakang proxy.
   Default (kosong) tidak mempercayai proxy manapun — aman bagi deployment langsung.
 - `.env` tidak boleh masuk VCS (sudah ada di `.gitignore` beserta `.env.backup`, `.env.production`).
 - `public/.htaccess` memakai `Options -Indexes` (tidak ada listing direktori). Pastikan `storage/` tidak docroot.
+- Isi `AUDIT_LOG_HMAC_SECRET` dengan 64 karakter hex acak — audit log fail-closed (entri baru tidak
+  bertanda-tangan) bila secret tidak valid; tidak ada fallback key.
 - Perbarui `PAYMENT_GATEWAY_WEBHOOK_KEY` dengan nilai acak panjang agar verifikasi signature webhook aman.
 - Terapkan rotasi log (`LOG_CHANNEL=daily`) agar `storage/logs/laravel.log` tidak membengkak.
+- Upload foto divalidasi isi file-nya (MIME aktual + decode image); SVG/HTML/malformed ditolak — tidak ada
+  library image di server yang dipakai untuk re-encode, sehingga metadata EXIF masih ikut tersimpan
+  (dokumentasikan sebagai risiko sisa bila perlu).
+- Backup database sebaiknya di-upload salinannya ke remote (S3/rsync/gcloud) karena disk privat.
 
-### 9. Deploy update
+### 10. Deploy update
 
 ```bash
 php artisan down            # maintenance mode
@@ -172,11 +254,14 @@ php artisan up
 
 ## Hasil Verifikasi (Regression Gate)
 
-- `php artisan test` → **604 passed** (1785 assertions); baseline 598 (1770) + 6 test baru (15 assertion) — **PASS**.
+- `php artisan test` → **last verified baseline: 1031 passed** (3521 assertions) — Batch 9 audit final.
 - `vendor/bin/pint --test` → **PASS**.
 - `npm run build` → **PASS**.
 - `php artisan view:cache` → **PASS**.
 - `php artisan route:cache` + `php artisan config:cache` → **PASS** (diverifikasi, lalu `route:clear`/`config:clear`).
+
+> Jalankan ulang seluruh verifikasi di atas sebelum menandai build siap deploy — Batch 10 menambah
+> test hardening (audit HMAC fail-closed, seeder production guard, validasi gambar) yang wajib hijau.
 
 ## Risiko / Rekomendasi Lanjutan (di luar scope P7-B)
 

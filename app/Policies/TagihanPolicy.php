@@ -22,19 +22,4 @@ class TagihanPolicy
             || (int) $tagihan->kamar->kos->owner_id === (int) $user->id
             || (int) $tagihan->penghuni->user_id === (int) $user->id;
     }
-
-    public function create(User $user): bool
-    {
-        return $user->hasRole('super_admin', 'admin', 'owner');
-    }
-
-    public function update(User $user): bool
-    {
-        return $user->hasRole('super_admin', 'admin', 'owner');
-    }
-
-    public function verify(User $user): bool
-    {
-        return $user->hasRole('super_admin', 'admin', 'owner');
-    }
 }

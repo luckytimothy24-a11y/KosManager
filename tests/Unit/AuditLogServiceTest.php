@@ -240,7 +240,19 @@ class AuditLogServiceTest extends TestCase
         $this->assertFalse($result['valid']);
     }
 
-    public function test_fail_closed_when_no_hmac_secret_configured(): void
+    public function test_valid_64_hex_secret_produces_integrity_hash(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $log = AuditLogService::log('Test', 'Test', 'Valid secret log');
+
+        $this->assertNotNull($log->integrity_hash);
+        $this->assertEquals(64, strlen($log->integrity_hash));
+    }
+
+    public function test_missing_secret_fails_closed(): void
     {
         config(['audit.hmac_secret' => null]);
 
@@ -250,11 +262,65 @@ class AuditLogServiceTest extends TestCase
 
         $log = AuditLogService::log('Test', 'Test', 'No secret log');
 
-        $this->assertNotNull($log->integrity_hash);
-        $this->assertEquals(64, strlen($log->integrity_hash));
+        $this->assertNull($log->integrity_hash);
+    }
+
+    public function test_short_secret_fails_closed(): void
+    {
+        config(['audit.hmac_secret' => 'short-secret']);
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $log = AuditLogService::log('Test', 'Test', 'Short secret log');
+
+        $this->assertNull($log->integrity_hash);
+    }
+
+    public function test_non_hex_secret_fails_closed(): void
+    {
+        config(['audit.hmac_secret' => str_repeat('g', 64)]);
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        $log = AuditLogService::log('Test', 'Test', 'Non hex secret log');
+
+        $this->assertNull($log->integrity_hash);
+    }
+
+    public function test_invalid_secret_never_persists_zero_key_hash(): void
+    {
+        config(['audit.hmac_secret' => null]);
+
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        AuditLogService::log('Test', 'Test', 'First');
+        AuditLogService::log('Test', 'Test', 'Second');
+
+        $hashes = AuditLog::orderBy('id')->pluck('integrity_hash');
+
+        $this->assertCount(2, $hashes);
+        $this->assertTrue($hashes->every(fn ($hash) => $hash === null));
+    }
+
+    public function test_verify_chain_counts_valid_secret_entries_as_signed(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        AuditLogService::log('Test', 'Test', 'Log one');
+        AuditLogService::log('Test', 'Test', 'Log two');
 
         $result = AuditLogService::verifyChain();
+
         $this->assertTrue($result['valid']);
+        $this->assertEquals(2, $result['verified']);
     }
 
     public function test_audit_logs_schema_has_integrity_columns_after_migration(): void

@@ -19,6 +19,7 @@
     <env name="SESSION_DRIVER" value="array"/>
     <env name="TELESCOPE_ENABLED" value="false"/>
     <env name="PAYMENT_GATEWAY_WEBHOOK_KEY" value="phpunit-test-webhook-secret-for-kosmanager"/>
+    <env name="AUDIT_LOG_HMAC_SECRET" value="aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"/>
   </php>
   <source>
     <include>

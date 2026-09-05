@@ -42,6 +42,14 @@ class AdvertisingSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            throw new \RuntimeException(
+                'AdvertisingSeeder hanya memuat data demo development (termasuk order PAID AD-DEMO-*). '.
+                'Dilarang dijalankan di environment production — gunakan `php artisan db:seed` (DatabaseSeeder) yang '.
+                'secara otomatis mengecualikan seeder ini di production.'
+            );
+        }
+
         $packages = [
             [
                 'code' => 'FEATURED',
