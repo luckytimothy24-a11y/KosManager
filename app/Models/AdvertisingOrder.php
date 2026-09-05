@@ -24,11 +24,15 @@ class AdvertisingOrder extends Model
         'amount',
         'status',
         'paid_at',
+        'refunded_at',
+        'refunded_by',
+        'refund_reason',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'paid_at' => 'datetime',
+        'refunded_at' => 'datetime',
     ];
 
     public function campaign()
@@ -44,5 +48,15 @@ class AdvertisingOrder extends Model
     public function isPaid(): bool
     {
         return $this->status === self::STATUS_PAID;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function isRefunded(): bool
+    {
+        return $this->status === self::STATUS_REFUNDED;
     }
 }

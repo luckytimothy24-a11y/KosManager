@@ -201,7 +201,7 @@ class AdvertisingCampaignController extends Controller
             'reason' => 'required|string|min:3',
         ]);
 
-        $rejected = $this->service->reject($campaign, $data['reason']);
+        $rejected = $this->service->reject($campaign, $data['reason'], $request->user());
 
         if (! $rejected) {
             return back()->with('error', 'Kampanye tidak dapat ditolak pada status saat ini.');
@@ -217,6 +217,24 @@ class AdvertisingCampaignController extends Controller
 
         return redirect()->route(auth()->user()->isAdmin() ? 'admin.advertising.index' : 'super-admin.advertising.campaigns.index')
             ->with('success', 'Kampanye berhasil ditolak.');
+    }
+
+    /**
+     * Tandai order advertiser pihak ketiga sebagai PAID (dana diterima).
+     */
+    public function markThirdPartyOrderPaid(Request $request, AdvertisingOrder $order)
+    {
+        $this->authorize('confirmPayment', $order);
+
+        $ok = $this->service->markThirdPartyOrderPaid($order, $request->user());
+
+        if (! $ok) {
+            return back()->with('error', 'Order tidak dapat ditandai sebagai dibayar pada status saat ini.');
+        }
+
+        AuditLogService::log('Payment', 'Advertising', "Order {$order->order_number} ditandai terbayar", data: ['order_id' => $order->id]);
+
+        return back()->with('success', 'Order ditandai sebagai dibayar.');
     }
 
     public function suspend(Request $request, AdvertisingCampaign $campaign)
@@ -249,8 +267,14 @@ class AdvertisingCampaignController extends Controller
     {
         $this->authorize('viewAny', AdvertisingCampaign::class);
 
+        $status = $request->filled('status') && in_array($request->status, [
+            AdvertisingOrder::STATUS_PENDING,
+            AdvertisingOrder::STATUS_PAID,
+            AdvertisingOrder::STATUS_REFUNDED,
+        ], true) ? $request->status : AdvertisingOrder::STATUS_PAID;
+
         $query = AdvertisingOrder::with(['campaign.owner', 'campaign.kos', 'campaign.package'])
-            ->where('status', 'paid');
+            ->where('status', $status);
 
         if ($request->filled('start_date')) {
             $query->whereDate('paid_at', '>=', $request->start_date);
@@ -270,7 +294,9 @@ class AdvertisingCampaignController extends Controller
 
         $orders = $query->latest('paid_at')->paginate(15)->withQueryString();
 
-        $totalRevenue = (float) AdvertisingOrder::where('status', 'paid')->sum('amount');
+        $totalRevenue = (float) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_PAID)->sum('amount');
+        $pendingRevenue = (float) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_PENDING)->sum('amount');
+        $refundedRevenue = (float) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_REFUNDED)->sum('amount');
         $owners = User::where('role', 'owner')->orderBy('name')->get();
         $packages = AdvertisingPackage::orderBy('name')->get();
         $statuses = collect([
@@ -278,15 +304,21 @@ class AdvertisingCampaignController extends Controller
             'active', 'completed', 'rejected', 'suspended', 'cancelled',
         ]);
 
-        return view('super-admin.advertising.revenue', compact('orders', 'totalRevenue', 'owners', 'packages', 'statuses'));
+        return view('super-admin.advertising.revenue', compact('orders', 'totalRevenue', 'pendingRevenue', 'refundedRevenue', 'owners', 'packages', 'statuses', 'status'));
     }
 
     public function exportCsv(Request $request)
     {
         $this->authorize('viewAny', AdvertisingCampaign::class);
 
+        $status = $request->filled('status') && in_array($request->status, [
+            AdvertisingOrder::STATUS_PENDING,
+            AdvertisingOrder::STATUS_PAID,
+            AdvertisingOrder::STATUS_REFUNDED,
+        ], true) ? $request->status : AdvertisingOrder::STATUS_PAID;
+
         $query = AdvertisingOrder::with(['campaign.owner', 'campaign.kos', 'campaign.package'])
-            ->where('status', 'paid');
+            ->where('status', $status);
 
         if ($request->filled('start_date')) {
             $query->whereDate('paid_at', '>=', $request->start_date);
@@ -310,6 +342,7 @@ class AdvertisingCampaignController extends Controller
         $handle = fopen('php://temp', 'r+');
         fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
         fputcsv($handle, ['KosManager - Laporan Revenue Advertising'], ',');
+        fputcsv($handle, ['Status Order: '.AdvertisingLabels::orderLabel($status).' (paid/refunded menandakan status ledger)'], ',');
         if ($request->start_date || $request->end_date) {
             fputcsv($handle, ['Periode: '.($request->start_date ?? '-').' s/d '.($request->end_date ?? '-')], ',');
         }
@@ -327,11 +360,13 @@ class AdvertisingCampaignController extends Controller
                 $c->package->name ?? '-',
                 $c->package?->duration_days.' hari' ?? '-',
                 'Rp '.number_format($item->amount, 0, ',', '.'),
-                AdvertisingLabels::campaignLabel($c->status),
+                AdvertisingLabels::orderLabel($item->status),
             ], ',');
         }
         fputcsv($handle, [], ',');
-        fputcsv($handle, ['Total Revenue', 'Rp '.number_format((float) AdvertisingOrder::where('status', 'paid')->sum('amount'), 0, ',', '.')], ',');
+        fputcsv($handle, ['Total Revenue (paid)', 'Rp '.number_format((float) AdvertisingOrder::where('status', 'paid')->sum('amount'), 0, ',', '.')], ',');
+        fputcsv($handle, ['Belum Diterima (pending)', 'Rp '.number_format((float) AdvertisingOrder::where('status', 'pending')->sum('amount'), 0, ',', '.')], ',');
+        fputcsv($handle, ['Dikembalikan (refunded)', 'Rp '.number_format((float) AdvertisingOrder::where('status', 'refunded')->sum('amount'), 0, ',', '.')], ',');
         rewind($handle);
         $csv = stream_get_contents($handle);
         fclose($handle);

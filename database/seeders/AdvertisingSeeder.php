@@ -13,21 +13,28 @@ use Illuminate\Support\Carbon;
 class AdvertisingSeeder extends Seeder
 {
     /**
-     * Seed data advertising demo.
+     * Seed data advertising demo (KHUSUS DEVELOPMENT).
      *
      * 1. Paket iklan (legacy promosi kos + paket advertiser pihak ketiga dengan
      *    placement). Harga/placement SELALU diambil dari database, tidak pernah
      *    di-hardcode di blade.
      * 2. Kampanye promosi kos owner (demo) yang sedang live (bila kos ada) —
-     *    mempertahankan fitur advertising lama yang sudah ada.
+     *    mempertahankan fitur advertising lama yang sudah ada. Order-nya PAID
+     *    (mencontoh alur owner yang membayar).
      * 3. Kampanye ADVERTISER PIHAK KETIGA demo yang sedang live (kos_id NULL):
      *     - AD-PARTNER-1 Demo Partner WiFi (marketplace)
      *     - AD-PARTNER-2 Demo Laundry (homepage)
      *     - AD-PARTNER-3 Demo Furniture (detail)
      *     - AD-PARTNER-4 Demo Jasa Pindahan (native)
+     *    Order demo-nya berstatus PENDING (piutang) — konsisten dengan aturan
+     *    ledger pihak ketiga: revenue hanya dihitung setelah dana diterima.
      *
      * Semua nama advertiser bersifat fiktif/"Demo" — tidak mengklaim kemitraan
      * dengan pihak nyata mana pun.
+     *
+     * PERINGATAN: seeder ini TIDAK boleh dijalankan di environment yang
+     * dipakai untuk laporan revenue (staging/production) — data demo AD-DEMO-*
+     * tetap memuat order paid yang akan menggelembungkan angka revenue.
      *
      * Idempotent: setiap item di-seed hanya bila belum ada (guard per kode/campaign_number).
      */
@@ -229,6 +236,8 @@ class AdvertisingSeeder extends Seeder
         foreach ($partnerCampaigns as $spec) {
             $this->makePartnerCampaign($owner, $superAdmin, $byCode[$spec['package_code']], $spec, $now);
         }
+
+        $this->command?->warn('AdvertisingSeeder: data demo advertising dibuat untuk DEVELOPMENT. JANGAN dijalankan di staging/production (AD-DEMO-* memuat order paid).');
     }
 
     private function makeCampaign(
@@ -303,13 +312,14 @@ class AdvertisingSeeder extends Seeder
             'approved_at' => $now->copy()->subDays(8),
         ]);
 
+        // Order pihak ketiga berstatus PENDING (piutang) — konsisten dengan
+        // aturan ledger: revenue hanya dihitung setelah dana diterima.
         AdvertisingOrder::create([
             'order_number' => 'ORD-'.$spec['campaign_number'],
             'campaign_id' => $campaign->id,
             'owner_id' => $owner->id,
             'amount' => $package->price,
-            'status' => 'paid',
-            'paid_at' => $now->copy()->subDays(8),
+            'status' => 'pending',
         ]);
     }
 }

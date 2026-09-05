@@ -201,16 +201,24 @@ class AdvertisingService
         return true;
     }
 
-    public function reject(AdvertisingCampaign $campaign, string $reason): bool
+    /**
+     * Tolak kampanye oleh moderator. Order berstatus paid yang terkait ikut
+     * dimutasikan ke refunded (layanan tidak pernah diberikan).
+     */
+    public function reject(AdvertisingCampaign $campaign, string $reason, ?User $actor = null): bool
     {
         if ($campaign->status !== AdvertisingCampaign::STATUS_PENDING_REVIEW) {
             return false;
         }
 
-        $campaign->update([
-            'status' => AdvertisingCampaign::STATUS_REJECTED,
-            'rejection_reason' => $reason,
-        ]);
+        \DB::transaction(function () use ($campaign, $reason, $actor) {
+            $campaign->update([
+                'status' => AdvertisingCampaign::STATUS_REJECTED,
+                'rejection_reason' => $reason,
+            ]);
+
+            $this->refundPaidOrders($campaign, 'Penolakan kampanye: '.$reason, $actor);
+        });
 
         return true;
     }
@@ -229,7 +237,12 @@ class AdvertisingService
         return true;
     }
 
-    public function cancel(AdvertisingCampaign $campaign): bool
+    /**
+     * Batalkan kampanye oleh owner. Bila sudah ada order paid (kampanye dibatalkan
+     * setelah pembayaran, sebelum layanan tayang), order ikut dimutasikan ke
+     * refunded sehingga tidak lagi dihitung sebagai revenue.
+     */
+    public function cancel(AdvertisingCampaign $campaign, ?User $actor = null): bool
     {
         if (! in_array($campaign->status, [
             AdvertisingCampaign::STATUS_PENDING_PAYMENT,
@@ -239,9 +252,30 @@ class AdvertisingService
             return false;
         }
 
-        $campaign->update(['status' => AdvertisingCampaign::STATUS_CANCELLED]);
+        \DB::transaction(function () use ($campaign, $actor) {
+            $campaign->update(['status' => AdvertisingCampaign::STATUS_CANCELLED]);
+
+            $this->refundPaidOrders($campaign, 'Kampanye dibatalkan oleh owner', $actor);
+        });
 
         return true;
+    }
+
+    /**
+     * Mutasi seluruh order status PAID milik campaign menjadi REFUNDED.
+     * Mengembalikan uang secara konseptual (layanan tak pernah diberikan);
+     * paid_at tetap dipertahankan sebagai riwayat pembayaran.
+     */
+    private function refundPaidOrders(AdvertisingCampaign $campaign, string $reason, ?User $actor = null): void
+    {
+        AdvertisingOrder::where('campaign_id', $campaign->id)
+            ->where('status', AdvertisingOrder::STATUS_PAID)
+            ->update([
+                'status' => AdvertisingOrder::STATUS_REFUNDED,
+                'refunded_at' => now(),
+                'refunded_by' => $actor?->id,
+                'refund_reason' => mb_substr($reason, 0, 190),
+            ]);
     }
 
     /**
@@ -405,10 +439,49 @@ class AdvertisingService
                 'approved_at' => $now,
             ]);
 
+            // Ledger pihak ketiga: order status pending (piutang) langsung dibuat
+            // saat kampanye dibuat moderator. Revenue dihitung hanya setelah dana
+            // benar-benar diterima (order di-mark paid oleh moderator).
+            AdvertisingOrder::create([
+                'order_number' => 'AO'.strtoupper(Str::random(12)),
+                'campaign_id' => $campaign->id,
+                'owner_id' => $campaign->owner_id,
+                'amount' => $package->price,
+                'status' => AdvertisingOrder::STATUS_PENDING,
+            ]);
+
             return $campaign;
         });
 
         return ['ok' => true, 'campaign' => $campaign];
+    }
+
+    /**
+     * Tandai order pihak ketiga (status pending) sebagai PAID — konfirmasi
+     * manual moderator bahwa dana telah diterima untuk penjualan iklan.
+     * Idempotent: order yang bukan pending tidak dapat di-mark paid.
+     */
+    public function markThirdPartyOrderPaid(AdvertisingOrder $order, User $moderator): bool
+    {
+        if ($order->status !== AdvertisingOrder::STATUS_PENDING) {
+            return false;
+        }
+
+        $campaign = $order->campaign;
+
+        if (! $campaign || $campaign->kos_id !== null) {
+            return false;
+        }
+
+        $updated = $campaign->orders()
+            ->whereKey($order->id)
+            ->where('status', AdvertisingOrder::STATUS_PENDING)
+            ->update([
+                'status' => AdvertisingOrder::STATUS_PAID,
+                'paid_at' => now(),
+            ]);
+
+        return $updated === 1;
     }
 
     /**

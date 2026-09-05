@@ -92,6 +92,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::post('advertising/campaigns/{campaign}/approve', [AdvertisingCampaignController::class, 'approve'])->name('advertising.campaigns.approve');
     Route::post('advertising/campaigns/{campaign}/reject', [AdvertisingCampaignController::class, 'reject'])->name('advertising.campaigns.reject');
     Route::post('advertising/campaigns/{campaign}/suspend', [AdvertisingCampaignController::class, 'suspend'])->name('advertising.campaigns.suspend');
+    Route::post('advertising/orders/{order}/mark-paid', [AdvertisingCampaignController::class, 'markThirdPartyOrderPaid'])->name('advertising.orders.mark-paid');
 
     Route::get('advertising/revenue', [AdvertisingCampaignController::class, 'revenue'])->name('advertising.revenue');
     Route::get('advertising/revenue/export', [AdvertisingCampaignController::class, 'exportCsv'])->name('advertising.revenue.export');
@@ -157,6 +158,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('advertising/{campaign}/approve', [AdminAdvertisingController::class, 'approve'])->name('advertising.approve');
     Route::post('advertising/{campaign}/reject', [AdminAdvertisingController::class, 'reject'])->name('advertising.reject');
     Route::post('advertising/{campaign}/suspend', [AdminAdvertisingController::class, 'suspend'])->name('advertising.suspend');
+    Route::post('advertising/orders/{order}/mark-paid', [AdminAdvertisingController::class, 'markThirdPartyOrderPaid'])->name('advertising.orders.mark-paid');
 
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');

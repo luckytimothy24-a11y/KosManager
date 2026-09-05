@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\AdvertisingCampaign;
+use App\Models\AdvertisingOrder;
 use App\Models\AdvertisingPackage;
 use App\Models\Booking;
 use App\Models\CheckIn;
@@ -15,6 +16,7 @@ use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Policies\AdvertisingCampaignPolicy;
+use App\Policies\AdvertisingOrderPolicy;
 use App\Policies\AdvertisingPackagePolicy;
 use App\Policies\BookingPolicy;
 use App\Policies\CheckInPolicy;
@@ -43,6 +45,7 @@ class AuthServiceProvider extends ServiceProvider
         Notification::class => NotificationPolicy::class,
         AdvertisingPackage::class => AdvertisingPackagePolicy::class,
         AdvertisingCampaign::class => AdvertisingCampaignPolicy::class,
+        AdvertisingOrder::class => AdvertisingOrderPolicy::class,
     ];
 
     public function boot(): void

@@ -114,6 +114,11 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
                 <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">Order Berbayar</p>
                 <p class="text-2xl font-bold text-slate-900 dark:text-white mt-1">{{ number_format($stats['orders']) }}</p>
+                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                    <span class="text-amber-600 dark:text-amber-400">{{ $stats['pendingOrders'] }} pending</span>
+                    ·
+                    <span class="text-slate-500 dark:text-slate-400">{{ $stats['refundedOrders'] }} refunded</span>
+                </p>
             </div>
         </div>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdvertisingCampaign;
+use App\Models\AdvertisingOrder;
 use App\Models\AdvertisingPackage;
 use App\Services\AdvertisingService;
 use App\Services\AuditLogService;
@@ -184,7 +185,7 @@ class AdvertisingController extends Controller
 
         $data = $request->validate(['reason' => 'required|string|min:3']);
 
-        $rejected = $this->service->reject($campaign, $data['reason']);
+        $rejected = $this->service->reject($campaign, $data['reason'], $request->user());
 
         if (! $rejected) {
             return back()->with('error', 'Kampanye tidak dapat ditolak pada status saat ini.');
@@ -199,6 +200,24 @@ class AdvertisingController extends Controller
         AuditLogService::reject('Advertising', "Kampanye iklan {$campaign->campaign_number} ditolak: {$data['reason']}", ['campaign_id' => $campaign->id]);
 
         return redirect()->route('admin.advertising.index')->with('success', 'Kampanye berhasil ditolak.');
+    }
+
+    /**
+     * Tandai order advertiser pihak ketiga sebagai PAID (dana diterima).
+     */
+    public function markThirdPartyOrderPaid(Request $request, AdvertisingOrder $order)
+    {
+        $this->authorize('confirmPayment', $order);
+
+        $ok = $this->service->markThirdPartyOrderPaid($order, $request->user());
+
+        if (! $ok) {
+            return back()->with('error', 'Order tidak dapat ditandai sebagai dibayar pada status saat ini.');
+        }
+
+        AuditLogService::log('Payment', 'Advertising', "Order {$order->order_number} ditandai terbayar", data: ['order_id' => $order->id]);
+
+        return back()->with('success', 'Order ditandai sebagai dibayar.');
     }
 
     public function suspend(Request $request, AdvertisingCampaign $campaign)

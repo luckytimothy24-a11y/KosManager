@@ -187,11 +187,11 @@ class AdvertisingController extends Controller
             ->with('success', 'Pembayaran kampanye berhasil. Kampanye sedang menunggu review.');
     }
 
-    public function cancel(AdvertisingCampaign $campaign)
+    public function cancel(Request $request, AdvertisingCampaign $campaign)
     {
         $this->authorize('cancel', $campaign);
 
-        $cancelled = $this->service->cancel($campaign);
+        $cancelled = $this->service->cancel($campaign, $request->user());
 
         if (! $cancelled) {
             return back()->with('error', 'Kampanye tidak dapat dibatalkan pada status saat ini.');

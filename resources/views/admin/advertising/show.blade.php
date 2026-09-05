@@ -109,6 +109,20 @@
                                         </span>
                                     </dd>
                                 </div>
+                                @if($order->isRefunded())
+                                    <div class="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                                        Dikembalikan {{ $order->refunded_at?->format('d/m/Y H:i') ?? '-' }}
+                                        @if($order->refund_reason) · {{ $order->refund_reason }} @endif
+                                    </div>
+                                @endif
+                                @if($order->isPending() && $campaign->isThirdParty())
+                                    <form method="POST" action="{{ route('admin.advertising.orders.mark-paid', $order) }}" class="mt-2">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-lg transition">
+                                            <i class="ri-check-double-line"></i> Tandai Terbayar
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         @endforeach
                     </dl>

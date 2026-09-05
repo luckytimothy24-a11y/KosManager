@@ -23,6 +23,13 @@ class AdvertisingAnalytics
         $revenueToday = (float) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_PAID)
             ->where('paid_at', '>=', $now->copy()->startOfDay())->sum('amount');
 
+        // Rekonsiliasi: piutang (order pending) & pengembalian (order refunded)
+        // dipisah dari revenue net agar laporan tidak menyesatkan.
+        $pendingRevenue = (float) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_PENDING)->sum('amount');
+        $pendingOrders = (int) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_PENDING)->count();
+        $refundedRevenue = (float) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_REFUNDED)->sum('amount');
+        $refundedOrders = (int) AdvertisingOrder::where('status', AdvertisingOrder::STATUS_REFUNDED)->count();
+
         $active = AdvertisingCampaign::where('status', AdvertisingCampaign::STATUS_ACTIVE)
             ->where('starts_at', '<=', $now)->where('ends_at', '>', $now)->count();
         $pendingReview = (int) AdvertisingCampaign::where('status', AdvertisingCampaign::STATUS_PENDING_REVIEW)->count();
@@ -41,6 +48,10 @@ class AdvertisingAnalytics
             'revenue',
             'revenueMonth',
             'revenueToday',
+            'pendingRevenue',
+            'pendingOrders',
+            'refundedRevenue',
+            'refundedOrders',
             'active',
             'pendingReview',
             'pendingPayment',
