@@ -118,6 +118,29 @@ class TenantKosController extends Controller
             );
         }
 
+        // Promosi kos owner (featured/sponsored). Hanya kos yang LOLOS filter
+        // pencarian/harga/fasilitas/ketersediaan di atas yang boleh tampil —
+        // promosi TIDAK pernah membongkar hasil organik (lihat audit test
+        // test_marketplace_sponsored_kos_respects_price_filter).
+        $promotedKosIds = (clone $query)->pluck('id');
+
+        $promotedKos = $this->advertisingService->kosPromoCampaigns(
+            AdvertisingCampaign::PLACEMENT_MARKETPLACE,
+            $promotedKosIds->all(),
+            4
+        );
+
+        foreach ($promotedKos as $ad) {
+            $this->advertisingService->trackEvent(
+                (int) $ad->id,
+                'impression',
+                auth()->check() ? auth()->id() : null,
+                session()->getId(),
+                AdvertisingCampaign::PLACEMENT_MARKETPLACE,
+                true
+            );
+        }
+
         $fasilitasList = Fasilitas::active()->orderBy('name')->get();
 
         $favoritedIds = auth()->check() && auth()->user()->isTenant()
@@ -128,7 +151,7 @@ class TenantKosController extends Controller
 
         $locations = self::locationDiscovery();
 
-        return view('tenant.kos.index', compact('kosList', 'fasilitasList', 'favoritedIds', 'facilityCategories', 'selectedLocation', 'locations', 'marketplaceAds'));
+        return view('tenant.kos.index', compact('kosList', 'fasilitasList', 'favoritedIds', 'facilityCategories', 'selectedLocation', 'locations', 'marketplaceAds', 'promotedKos'));
     }
 
     /**

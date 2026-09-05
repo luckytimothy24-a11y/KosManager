@@ -25,16 +25,18 @@ class AdvertisingCampaignPolicy
     }
 
     /**
-     * Owner dapat membuat campaign hanya untuk kos miliknya sendiri.
+     * Membuat campaign:
+     * - kos_id null (advertiser PIHAK KETIGA): owner, admin, dan super admin.
+     * - kos_id terisi (promosi kos owner): hanya owner untuk kos miliknya.
      */
     public function create(User $user, ?int $kosId = null): bool
     {
-        if (! $user->isOwner()) {
-            return false;
+        if ($kosId === null) {
+            return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();
         }
 
-        if ($kosId === null) {
-            return true;
+        if (! $user->isOwner()) {
+            return false;
         }
 
         return $user->ownedKos()->whereKey($kosId)->exists();
@@ -42,6 +44,15 @@ class AdvertisingCampaignPolicy
 
     public function update(User $user, AdvertisingCampaign $campaign): bool
     {
+        // Moderator (admin/super admin) dapat mengedit creative/CTA/placement
+        // kampanye pihak ketiga selama belum selesai/dibatalkan.
+        if (($user->isSuperAdmin() || $user->isAdmin()) && $campaign->kos_id === null) {
+            return ! in_array($campaign->status, [
+                AdvertisingCampaign::STATUS_COMPLETED,
+                AdvertisingCampaign::STATUS_CANCELLED,
+            ], true);
+        }
+
         // Owner hanya boleh mengedit campaign yang masih draft/pending_payment.
         return $this->isOwner($user, $campaign)
             && in_array($campaign->status, [

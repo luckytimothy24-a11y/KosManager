@@ -84,7 +84,11 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::delete('advertising/packages/{package}', [AdvertisingPackageController::class, 'destroy'])->name('advertising.packages.destroy');
 
     Route::get('advertising/campaigns', [AdvertisingCampaignController::class, 'index'])->name('advertising.campaigns.index');
+    Route::get('advertising/campaigns/create', [AdvertisingCampaignController::class, 'create'])->name('advertising.campaigns.create');
+    Route::post('advertising/campaigns', [AdvertisingCampaignController::class, 'store'])->name('advertising.campaigns.store');
     Route::get('advertising/campaigns/{campaign}', [AdvertisingCampaignController::class, 'show'])->name('advertising.campaigns.show');
+    Route::get('advertising/campaigns/{campaign}/edit', [AdvertisingCampaignController::class, 'edit'])->name('advertising.campaigns.edit');
+    Route::put('advertising/campaigns/{campaign}', [AdvertisingCampaignController::class, 'update'])->name('advertising.campaigns.update');
     Route::post('advertising/campaigns/{campaign}/approve', [AdvertisingCampaignController::class, 'approve'])->name('advertising.campaigns.approve');
     Route::post('advertising/campaigns/{campaign}/reject', [AdvertisingCampaignController::class, 'reject'])->name('advertising.campaigns.reject');
     Route::post('advertising/campaigns/{campaign}/suspend', [AdvertisingCampaignController::class, 'suspend'])->name('advertising.campaigns.suspend');
@@ -145,7 +149,11 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     // Advertising (Admin moderation)
     Route::get('advertising', [AdminAdvertisingController::class, 'index'])->name('advertising.index');
+    Route::get('advertising/create', [AdminAdvertisingController::class, 'create'])->name('advertising.create');
+    Route::post('advertising', [AdminAdvertisingController::class, 'store'])->name('advertising.store');
     Route::get('advertising/{campaign}', [AdminAdvertisingController::class, 'show'])->name('advertising.show');
+    Route::get('advertising/{campaign}/edit', [AdminAdvertisingController::class, 'edit'])->name('advertising.edit');
+    Route::put('advertising/{campaign}', [AdminAdvertisingController::class, 'update'])->name('advertising.update');
     Route::post('advertising/{campaign}/approve', [AdminAdvertisingController::class, 'approve'])->name('advertising.approve');
     Route::post('advertising/{campaign}/reject', [AdminAdvertisingController::class, 'reject'])->name('advertising.reject');
     Route::post('advertising/{campaign}/suspend', [AdminAdvertisingController::class, 'suspend'])->name('advertising.suspend');

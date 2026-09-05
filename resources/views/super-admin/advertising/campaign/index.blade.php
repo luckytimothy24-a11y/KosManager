@@ -8,6 +8,9 @@
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola dan moderasi semua kampanye iklan.</p>
             </div>
             <div class="flex gap-2">
+                <a href="{{ route('super-admin.advertising.campaigns.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-500 hover:bg-primary-600 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">
+                    <i class="ri-add-circle-line"></i> Iklan Pihak Ketiga
+                </a>
                 <a href="{{ route('super-admin.advertising.dashboard') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                     <i class="ri-dashboard-line"></i> Dashboard
                 </a>

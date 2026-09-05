@@ -226,6 +226,25 @@
             </section>
         @endif
 
+        {{-- Promosi kos OWNER ber-placement homepage (is_homepage, kos_id TIDAK
+             NULL). Jelas berlabel "Promosi Beranda" — pemilik kos yang membayar
+             mendapat ruang tayang, tanpa memengaruhi rekomendasi organik. --}}
+        @if(($kosPromosHome ?? collect())->isNotEmpty())
+            <section aria-label="Promosi kos di beranda" class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30">
+                        <i class="ri-star-fill text-[11px]"></i> Promosi Kos
+                    </span>
+                    <span class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Iklan promo kos — rekomendasi di bawah tetap organik</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    @foreach($kosPromosHome as $promo)
+                        @include('tenant.partials.promoted-kos', ['campaign' => $promo, 'placement' => 'homepage'])
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         {{-- ============================================================
              BELUM MEMILIKI KAMAR (callout)
              ============================================================ --}}

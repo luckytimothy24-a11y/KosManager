@@ -229,10 +229,31 @@ class DashboardController extends Controller
         // advertiser PIHAK KETIGA pada placement homepage. Kos tetap murni organik —
         // iklan sama sekali tidak memengaruhi daftar rekomendasi/next mari kita.
         $partnerAds = collect();
+        $kosPromosHome = collect();
         if (auth()->check() && auth()->user()->isTenant()) {
             $partnerAds = $this->advertisingService->partnerAds(AdvertisingCampaign::PLACEMENT_HOMEPAGE, 4);
 
             foreach ($partnerAds as $ad) {
+                $this->advertisingService->trackEvent(
+                    (int) $ad->id,
+                    'impression',
+                    auth()->id(),
+                    session()->getId(),
+                    AdvertisingCampaign::PLACEMENT_HOMEPAGE,
+                    true
+                );
+            }
+
+            // Promosi kos owner ber-placement homepage (is_homepage, kos_id TIDAK
+            // NULL) di beranda tenant — pemilik kos yang membayar mendapat ruang
+            // tayang yang JELAS berlabel, tanpa menyentuh rekomendasi organik.
+            $kosPromosHome = $this->advertisingService->kosPromoCampaigns(
+                AdvertisingCampaign::PLACEMENT_HOMEPAGE,
+                [],
+                2
+            );
+
+            foreach ($kosPromosHome as $ad) {
                 $this->advertisingService->trackEvent(
                     (int) $ad->id,
                     'impression',
@@ -258,7 +279,8 @@ class DashboardController extends Controller
             'favoriteCount',
             'favoritedIds',
             'locations',
-            'partnerAds'
+            'partnerAds',
+            'kosPromosHome'
         ));
     }
 

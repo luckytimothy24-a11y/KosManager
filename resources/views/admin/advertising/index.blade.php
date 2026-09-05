@@ -2,9 +2,14 @@
     <div class="space-y-6">
         <x-alert />
 
-        <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Moderasi Advertising</h1>
-            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Review kampanye iklan untuk kos yang Anda kelola.</p>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Moderasi Advertising</h1>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Review kampanye iklan untuk kos yang Anda kelola.</p>
+            </div>
+            <a href="{{ route('admin.advertising.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-500 hover:bg-primary-600 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 self-start sm:self-auto">
+                <i class="ri-add-circle-line"></i> Iklan Pihak Ketiga
+            </a>
         </div>
 
         {{-- Filter --}}

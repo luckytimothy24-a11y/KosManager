@@ -292,6 +292,167 @@ class AdvertisingService
     }
 
     /**
+     * Kampanye promosi kos owner (kos_id TIDAK NULL) yang sedang live.
+     *
+     * Marketplace: kampanye is_featured ATAU is_sponsored.
+     * Homepage:    kampanye is_homepage.
+     *
+     * Bila $kosIds diberikan, hanya kos yang ada dalam daftar tersebut yang
+     * boleh tampil — digunakan agar promosi kos SELALU menghormati pencarian /
+     * filter harga / fasilitas / ketersediaan yang sedang aktif di marketplace
+     * (kos di luar filter tidak pernah muncul di section promosi).
+     *
+     * @param  array<int, int>  $kosIds
+     * @return Collection<int, AdvertisingCampaign>
+     */
+    public function kosPromoCampaigns(string $placement, array $kosIds = [], int $limit = 4)
+    {
+        $query = $this->activeCampaigns()
+            ->whereNotNull('kos_id');
+
+        if ($placement === AdvertisingCampaign::PLACEMENT_HOMEPAGE) {
+            $query->where('is_homepage', true);
+        } else {
+            $query->where(fn ($q) => $q->where('is_featured', true)->orWhere('is_sponsored', true));
+        }
+
+        if ($kosIds !== []) {
+            $query->whereIn('kos_id', $kosIds);
+        }
+
+        return $query->orderByDesc('is_featured')
+            ->orderByDesc('is_sponsored')
+            ->orderBy('id')
+            ->limit($limit)
+            ->with(['kos' => function ($q) {
+                $q->where('status', 'active')
+                    ->withCount(['kamar as kamar_tersedia' => fn ($k) => $k->where('status', 'available')])
+                    ->withMin(['kamar as harga_mulai' => fn ($k) => $k->where('status', 'available')], 'monthly_price')
+                    ->withMin(['kamar as harga_harian_mulai' => fn ($k) => $k->where('status', 'available')->whereNotNull('daily_price')], 'daily_price')
+                    ->with(['kamar' => fn ($k) => $k->where('status', 'available')->with('fasilitas')->limit(1), 'fasilitas' => fn ($f) => $f->active()]);
+            }])
+            ->get()
+            ->filter(fn ($c) => $c->kos && $c->kos->exists)
+            ->values();
+    }
+
+    /**
+     * Buat campaign ADVERTISER PIHAK KETIGA oleh moderator (admin/super admin).
+     *
+     * Tidak ada simulasi pembayaran: moderator membuat kampanye atas nama
+     * platform sehingga langsung berstatus active (atau approved bila jadwal
+     * masih di masa depan). Dicatat sebagai approved oleh moderator.
+     *
+     * @param  array<string, mixed>  $data  [package_id, advertiser_name, headline, advertiser_description, cta_label, destination_url, placement?, starts_at?]
+     * @return array{ok: bool, error?: string, message?: string, campaign?: AdvertisingCampaign}
+     */
+    public function createThirdPartyByModerator(User $moderator, array $data): array
+    {
+        $package = AdvertisingPackage::whereKey(data_get($data, 'package_id'))
+            ->where('is_active', true)
+            ->first();
+
+        if (! $package) {
+            return ['ok' => false, 'error' => 'package', 'message' => 'Paket iklan tidak valid atau sudah tidak aktif.'];
+        }
+
+        if ($package->price <= 0) {
+            return ['ok' => false, 'error' => 'price', 'message' => 'Paket iklan tidak valid.'];
+        }
+
+        $placement = data_get($data, 'placement') ?: $package->placement;
+
+        if (! in_array($placement, AdvertisingCampaign::PLACEMENTS, true)) {
+            return ['ok' => false, 'error' => 'placement', 'message' => 'Placement iklan tidak valid.'];
+        }
+
+        $destinationUrl = trim((string) data_get($data, 'destination_url', ''));
+        $scheme = strtolower((string) parse_url($destinationUrl, PHP_URL_SCHEME));
+
+        if ($destinationUrl === '' || ! in_array($scheme, ['http', 'https'], true)) {
+            return ['ok' => false, 'error' => 'destination', 'message' => 'Destination URL harus berupa tautan http/https yang valid.'];
+        }
+
+        $startsAt = data_get($data, 'starts_at') ? now()->parse($data['starts_at']) : now();
+        $endsAt = $startsAt->copy()->addDays((int) $package->duration_days);
+        $now = now();
+
+        $campaign = \DB::transaction(function () use ($moderator, $package, $placement, $destinationUrl, $startsAt, $endsAt, $now, $data) {
+            $campaign = AdvertisingCampaign::create([
+                'campaign_number' => 'AD'.strtoupper(Str::random(8)),
+                'owner_id' => $moderator->id,
+                'kos_id' => null,
+                'package_id' => $package->id,
+                'status' => $startsAt > $now
+                    ? AdvertisingCampaign::STATUS_APPROVED
+                    : AdvertisingCampaign::STATUS_ACTIVE,
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
+                'budget' => $package->price,
+                'is_featured' => $package->is_featured,
+                'is_sponsored' => $package->is_sponsored,
+                'is_homepage' => $package->is_homepage,
+                'advertiser_name' => trim((string) data_get($data, 'advertiser_name')),
+                'advertiser_logo' => data_get($data, 'advertiser_logo') ?: null,
+                'advertiser_description' => data_get($data, 'advertiser_description') ?: null,
+                'headline' => trim((string) data_get($data, 'headline')),
+                'description' => data_get($data, 'description') ?: null,
+                'image' => data_get($data, 'image') ?: null,
+                'cta_label' => trim((string) data_get($data, 'cta_label')),
+                'destination_url' => $destinationUrl,
+                'placement' => $placement,
+                'approved_by' => $moderator->id,
+                'approved_at' => $now,
+            ]);
+
+            return $campaign;
+        });
+
+        return ['ok' => true, 'campaign' => $campaign];
+    }
+
+    /**
+     * Perbarui creative/CTA/placement dari kampanye advertiser pihak ketiga.
+     * Hanya data yang diizinkan yang diubah — tidak pernah menyentuh status,
+     * periode, paket, atau kos_id (triwulan tetap dari data awal).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function updateThirdParty(AdvertisingCampaign $campaign, array $data): bool
+    {
+        if ($campaign->kos_id !== null) {
+            return false;
+        }
+
+        $placement = data_get($data, 'placement') ?: $campaign->placement;
+
+        if (! in_array($placement, AdvertisingCampaign::PLACEMENTS, true)) {
+            return false;
+        }
+
+        $destinationUrl = trim((string) data_get($data, 'destination_url', $campaign->destination_url));
+        $scheme = strtolower((string) parse_url($destinationUrl, PHP_URL_SCHEME));
+
+        if ($destinationUrl === '' || ! in_array($scheme, ['http', 'https'], true)) {
+            return false;
+        }
+
+        $campaign->update([
+            'advertiser_name' => trim((string) data_get($data, 'advertiser_name', $campaign->advertiser_name)),
+            'advertiser_logo' => data_get($data, 'advertiser_logo') ?: $campaign->advertiser_logo,
+            'advertiser_description' => data_get($data, 'advertiser_description') ?: $campaign->advertiser_description,
+            'headline' => trim((string) data_get($data, 'headline', $campaign->headline)),
+            'description' => data_get($data, 'description') ?: $campaign->description,
+            'image' => data_get($data, 'image') ?: $campaign->image,
+            'cta_label' => data_get($data, 'cta_label') ?: $campaign->cta_label,
+            'destination_url' => $destinationUrl,
+            'placement' => $placement,
+        ]);
+
+        return true;
+    }
+
+    /**
      * Catat event tracking (impression/click/conversion) dengan deduplikasi
      * reasonable untuk impression guna mencegah spam refresh/render berulang.
      */

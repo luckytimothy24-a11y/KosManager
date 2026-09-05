@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdvertisingCampaign;
+use App\Models\AdvertisingPackage;
 use App\Services\AdvertisingService;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
+use App\Support\AdvertisingLabels;
 use Illuminate\Http\Request;
 
 class AdvertisingController extends Controller
@@ -43,6 +45,100 @@ class AdvertisingController extends Controller
         ]);
 
         return view('admin.advertising.index', compact('campaigns', 'statuses'));
+    }
+
+    /**
+     * Form pembuatan kampanye ADVERTISER PIHAK KETIGA oleh admin
+     * (kos_id NULL — bersifat global, bukan untuk promosi kos tertentu).
+     */
+    public function create()
+    {
+        $this->authorize('create', [AdvertisingCampaign::class, null]);
+
+        $packages = AdvertisingPackage::active()->orderBy('sort_order')->orderBy('price')->get();
+        $placements = self::placementOptions();
+
+        return view('admin.advertising.create', compact('packages', 'placements'));
+    }
+
+    public function store(Request $request)
+    {
+        $this->authorize('create', [AdvertisingCampaign::class, null]);
+
+        $data = $request->validate(self::thirdPartyRules());
+
+        $result = $this->service->createThirdPartyByModerator($request->user(), $data);
+
+        if (! $result['ok']) {
+            return back()->withErrors(['package' => $result['message']])->withInput();
+        }
+
+        $campaign = $result['campaign'];
+
+        AuditLogService::create(
+            'Advertising',
+            "Kampanye iklan pihak ketiga {$campaign->campaign_number} dibuat oleh moderator",
+            ['campaign_id' => $campaign->id, 'package_id' => $campaign->package_id, 'placement' => $campaign->placement]
+        );
+
+        return redirect()->route('admin.advertising.show', $campaign)
+            ->with('success', 'Kampanye iklan pihak ketiga berhasil dibuat.');
+    }
+
+    public function edit(AdvertisingCampaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+
+        $campaign->load('package');
+        $packages = AdvertisingPackage::active()->orderBy('sort_order')->orderBy('price')->get();
+        $placements = self::placementOptions();
+
+        return view('admin.advertising.edit', compact('campaign', 'packages', 'placements'));
+    }
+
+    public function update(Request $request, AdvertisingCampaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+
+        $data = $request->validate(self::thirdPartyRules());
+
+        $updated = $this->service->updateThirdParty($campaign, $data);
+
+        if (! $updated) {
+            return back()->with('error', 'Kampanye tidak dapat diperbarui pada status saat ini.');
+        }
+
+        AuditLogService::log('Update', 'Advertising', "Kampanye iklan pihak ketiga {$campaign->campaign_number} diperbarui", data: ['campaign_id' => $campaign->id]);
+
+        return redirect()->route('admin.advertising.show', $campaign)
+            ->with('success', 'Kampanye iklan pihak ketiga berhasil diperbarui.');
+    }
+
+    private static function placementOptions(): array
+    {
+        return [
+            AdvertisingCampaign::PLACEMENT_HOMEPAGE => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_HOMEPAGE),
+            AdvertisingCampaign::PLACEMENT_MARKETPLACE => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_MARKETPLACE),
+            AdvertisingCampaign::PLACEMENT_DETAIL => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_DETAIL),
+            AdvertisingCampaign::PLACEMENT_NATIVE => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_NATIVE),
+        ];
+    }
+
+    private static function thirdPartyRules(): array
+    {
+        return [
+            'package_id' => 'required|exists:advertising_packages,id',
+            'advertiser_name' => 'required|string|max:120',
+            'advertiser_logo' => 'nullable|url|max:255',
+            'advertiser_description' => 'nullable|string|max:1000',
+            'headline' => 'required|string|max:190',
+            'description' => 'nullable|string|max:1000',
+            'image' => 'nullable|url|max:255',
+            'cta_label' => 'nullable|string|max:60',
+            'destination_url' => 'required|string|max:500',
+            'placement' => 'nullable|in:homepage,marketplace,detail,native',
+            'starts_at' => 'nullable|date|after:yesterday',
+        ];
     }
 
     public function show(AdvertisingCampaign $campaign)
