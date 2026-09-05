@@ -15,7 +15,7 @@ class WelcomeController extends Controller
 
         $kosQuery = Kos::where('status', 'active')
             ->withCount(['kamar as available_rooms' => fn ($qr) => $qr->where('status', 'available')])
-            ->withMin('kamar as min_price', 'monthly_price')
+            ->withMin(['kamar as min_price' => fn ($qr) => $qr->where('status', 'available')], 'monthly_price')
             ->orderByDesc('available_rooms');
 
         if ($q !== '') {

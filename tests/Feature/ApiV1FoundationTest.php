@@ -122,6 +122,53 @@ class ApiV1FoundationTest extends TestCase
         $this->assertSame(0, DB::table('personal_access_tokens')->count());
     }
 
+    public function test_login_requests_are_throttled_after_five_attempts(): void
+    {
+        $user = $this->makeUser();
+
+        for ($i = 1; $i <= 5; $i++) {
+            $this->postJson('/api/v1/auth/login', [
+                'email' => $user->email,
+                'password' => 'secret123',
+            ])->assertOk();
+        }
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret123',
+        ])->assertStatus(429);
+    }
+
+    public function test_throttle_counts_all_login_attempts_and_keeps_authenticated_routes_working(): void
+    {
+        $user = $this->makeUser(['role' => 'tenant']);
+        $token = $user->createToken('test')->plainTextToken;
+
+        foreach (['salah-1', 'salah-2', 'salah-3'] as $wrong) {
+            $this->postJson('/api/v1/auth/login', [
+                'email' => $user->email,
+                'password' => $wrong,
+            ])->assertStatus(401);
+        }
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret123',
+        ])->assertOk();
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret123',
+        ])->assertOk();
+
+        $this->postJson('/api/v1/auth/login', [
+            'email' => $user->email,
+            'password' => 'secret123',
+        ])->assertStatus(429);
+
+        $this->withToken($token)->getJson('/api/v1/me')->assertOk();
+    }
+
     // ---------------------------------------------------------------- me
 
     public function test_me_returns_authenticated_user_from_token(): void

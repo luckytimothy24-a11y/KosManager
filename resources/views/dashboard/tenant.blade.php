@@ -1,39 +1,84 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto space-y-12">
+    <div class="max-w-6xl mx-auto space-y-10">
         <x-alert />
 
         {{-- ============================================================
-             KOS SAYA (My Space) — hanya untuk tenant yang sudah check-in
+             WELCOME HEADER (compact — bukan hero marketplace)
+             ============================================================ --}}
+        <header class="flex items-center justify-between gap-4" aria-label="Selamat datang">
+            <div class="min-w-0">
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                    Halo, <span class="text-primary-600 dark:text-primary-400">{{ $user->name }}</span> 👋
+                </h1>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola tempat tinggal dan aktivitas kos kamu dengan mudah.</p>
+            </div>
+            <div class="hidden sm:flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-300 bg-primary-50 dark:bg-primary-500/10 px-3 py-1.5 rounded-full">
+                    <i class="ri-shield-check-line"></i> Akun aman
+                </span>
+            </div>
+        </header>
+
+        {{-- ============================================================
+             ADVERTISING — Promoted Partner (advertiser pihak ketiga)
+             Langsung di bawah greeting; iklan jelas terpisah dari kos
+             organik, transparan & berlabel.
+             ============================================================ --}}
+        @if($partnerAds->isNotEmpty())
+            <section aria-label="Partner untuk penghuni kos" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($partnerAds as $ad)
+                    @include('tenant.partials.promoted-partner', ['ad' => $ad, 'placement' => 'homepage', 'variant' => 'banner'])
+                @endforeach
+            </section>
+        @endif
+
+        {{-- ============================================================
+             KOS SAYA (Residence) — hanya untuk tenant yang sudah check-in
              ============================================================ --}}
         @if($penghuni)
             <section aria-label="Kos saya" class="space-y-6">
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
-                        <span class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
-                            <i class="ri-home-heart-line text-emerald-500"></i>
+                        <span class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">
+                            <i class="ri-home-heart-line text-lg text-emerald-500"></i>
                         </span>
                         <div>
                             <h2 class="text-lg font-bold text-slate-900 dark:text-white">Kos Saya</h2>
                             <p class="text-xs text-slate-400 dark:text-slate-500">{{ $stats['kos_name'] ?? '' }} · Kamar {{ $stats['kamar_number'] ?? '-' }}</p>
                         </div>
                     </div>
-                    <a href="{{ route('tenant.tagihan.index') }}"
+                    <a href="{{ route('tenant.kontrak.index') }}"
                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-500 hover:text-primary-600 transition shrink-0">
-                        Lihat Tagihan <i class="ri-arrow-right-s-line"></i>
+                        Lihat Kontrak <i class="ri-arrow-right-s-line"></i>
                     </a>
                 </div>
 
-                {{-- Stat grid --}}
-                <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Kamar</p>
-                        <p class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['kamar_number'] ?? '-' }}</p>
-                        <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500 truncate">{{ $stats['kos_name'] ?? '-' }}</p>
-                    </div>
+                {{-- Primary residence card --}}
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+                        {{-- Kos / Kamar --}}
+                        <div class="flex items-center gap-4 min-w-0 flex-1">
+                            <div class="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-primary-50 via-primary-100 to-emerald-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700 flex items-center justify-center">
+                                @if(!empty($penghuni->kos->photo))
+                                    <img src="{{ asset('storage/' . $penghuni->kos->photo) }}" alt="Foto {{ $stats['kos_name'] ?? 'Kos' }}" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
+                                @else
+                                    <i class="ri-building-2-line text-2xl text-primary-400 dark:text-primary-300/60"></i>
+                                @endif
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-medium text-slate-400 dark:text-slate-500">Residence</p>
+                                <p class="text-lg font-black text-slate-900 dark:text-white truncate">{{ $stats['kos_name'] ?? '-' }}</p>
+                                <p class="mt-0.5 text-sm font-semibold text-slate-500 dark:text-slate-400 inline-flex items-center gap-1.5">
+                                    <i class="ri-door-open-line text-primary-500"></i> Kamar {{ $stats['kamar_number'] ?? '-' }}
+                                </p>
+                            </div>
+                        </div>
 
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Kontrak</p>
-                        <div class="mt-1.5">
+                        <div class="hidden sm:block w-px h-14 bg-slate-100 dark:bg-slate-800 shrink-0"></div>
+
+                        {{-- Kontrak --}}
+                        <div class="min-w-0 shrink-0">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kontrak</p>
                             @php
                                 $kStatus = $stats['kontrak_status'] ?? '-';
                                 $kColor = match($kStatus) {
@@ -43,118 +88,83 @@
                                     default => 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400',
                                 };
                             @endphp
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold {{ $kColor }}">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold mt-1.5 {{ $kColor }}">
                                 {{ \StatusLabels::kontrakLabel($kStatus) }}
                             </span>
-                        </div>
-                        @if(!empty($stats['kontrak_end']))
-                            <p class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">sd {{ $stats['kontrak_end']->translatedFormat('d M Y') }}</p>
-                        @endif
-                    </div>
-
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Jatuh Tempo</p>
-                        <p class="text-lg font-bold mt-1 {{ ($stats['tagihan_pending'] ?? 0) > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500' }}">
-                            @if(!empty($stats['nearest_due']))
-                                {{ $stats['nearest_due']->translatedFormat('d M Y') }}
-                            @else
-                                Tidak ada
+                            @if(!empty($stats['kontrak_end']))
+                                <p class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">sd {{ $stats['kontrak_end']->translatedFormat('d M Y') }}</p>
                             @endif
-                        </p>
-                    </div>
+                        </div>
 
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Tagihan Belum Bayar</p>
-                        <p class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['tagihan_pending'] ?? 0 }}</p>
-                        @if(($stats['total_belum_dibayar'] ?? 0) > 0)
-                            <p class="mt-1 text-[11px] font-semibold text-slate-600 dark:text-slate-300">Rp {{ number_format((float) $stats['total_belum_dibayar'], 0, ',', '.') }}</p>
-                        @endif
-                        @if(($stats['tagihan_pending'] ?? 0) > 0)
-                            <a href="{{ route('tenant.tagihan.index') }}" class="mt-2 inline-flex items-center gap-0.5 text-[11px] font-medium text-amber-600 hover:text-amber-700 transition">
-                                Bayar sekarang <i class="ri-arrow-right-s-line"></i>
-                            </a>
-                        @endif
-                    </div>
+                        <div class="hidden sm:block w-px h-14 bg-slate-100 dark:bg-slate-800 shrink-0"></div>
 
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Menunggu Verifikasi</p>
-                        <p class="text-xl font-bold text-slate-900 dark:text-white mt-1">{{ $stats['tagihan_pending_verification'] ?? 0 }}</p>
-                        @if(($stats['tagihan_pending_verification'] ?? 0) > 0)
-                            <a href="{{ route('tenant.tagihan.index') }}?status=pending_verification" class="mt-2 inline-flex items-center gap-0.5 text-[11px] font-medium text-yellow-600 hover:text-yellow-700 transition">
-                                Lihat <i class="ri-arrow-right-s-line"></i>
-                            </a>
-                        @else
-                            <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Tidak ada</p>
-                        @endif
-                    </div>
+                        {{-- Jatuh tempo --}}
+                        <div class="min-w-0 shrink-0">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Jatuh Tempo</p>
+                            <p class="text-base font-bold mt-1.5 {{ ($stats['tagihan_pending'] ?? 0) > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500' }}">
+                                @if(!empty($stats['nearest_due']))
+                                    {{ $stats['nearest_due']->translatedFormat('d M Y') }}
+                                @else
+                                    Tidak ada
+                                @endif
+                            </p>
+                            @if(($stats['tagihan_pending'] ?? 0) > 0)
+                                <a href="{{ route('tenant.tagihan.index') }}" class="mt-1 inline-flex items-center gap-0.5 text-[11px] font-semibold text-amber-600 hover:text-amber-700 transition">
+                                    {{ $stats['tagihan_pending'] }} tagihan · Bayar <i class="ri-arrow-right-s-line"></i>
+                                </a>
+                            @endif
+                        </div>
 
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-shadow">
-                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Pembayaran Terakhir</p>
-                        @if(!empty($stats['last_payment_amount']))
-                            <p class="text-lg font-bold text-slate-900 dark:text-white mt-1">Rp {{ number_format((float) $stats['last_payment_amount'], 0, ',', '.') }}</p>
-                            <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ $stats['last_payment_date']->translatedFormat('d M Y') }}</p>
-                        @else
-                            <p class="text-lg font-bold text-slate-400 dark:text-slate-500 mt-1">Belum ada</p>
-                        @endif
+                        <div class="hidden sm:block w-px h-14 bg-slate-100 dark:bg-slate-800 shrink-0"></div>
+
+                        {{-- Pembayaran terakhir --}}
+                        <div class="min-w-0 shrink-0">
+                            <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Pembayaran Terakhir</p>
+                            @if(!empty($stats['last_payment_amount']))
+                                <p class="text-base font-bold text-slate-900 dark:text-white mt-1.5">Rp {{ number_format((float) $stats['last_payment_amount'], 0, ',', '.') }}</p>
+                                <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">{{ $stats['last_payment_date']->translatedFormat('d M Y') }}</p>
+                            @else
+                                <p class="text-base font-bold text-slate-400 dark:text-slate-500 mt-1.5">Belum ada</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
-                {{-- My Space quick actions --}}
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                    <a href="{{ route('tenant.booking.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0"><i class="ri-calendar-check-line text-lg text-blue-600 dark:text-blue-400"></i></div>
+                {{-- Compact payment summary strip (data dari $stats) --}}
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
+                            <i class="ri-file-list-3-line text-lg text-amber-600 dark:text-amber-400"></i>
+                        </span>
                         <div class="min-w-0">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white">Booking Saya</p>
-                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Riwayat booking</p>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Tagihan Belum Bayar</p>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['tagihan_pending'] ?? 0 }}</p>
                         </div>
-                    </a>
-                    <a href="{{ route('tenant.tagihan.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0"><i class="ri-file-list-3-line text-lg text-amber-600 dark:text-amber-400"></i></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-xl bg-yellow-50 dark:bg-yellow-500/10 flex items-center justify-center shrink-0">
+                            <i class="ri-time-line text-lg text-yellow-600 dark:text-yellow-400"></i>
+                        </span>
                         <div class="min-w-0">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white">Tagihan Saya</p>
-                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Cek & bayar tagihan</p>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Menunggu Verifikasi</p>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['tagihan_pending_verification'] ?? 0 }}</p>
                         </div>
-                    </a>
-                    <a href="{{ route('tenant.pembayaran.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center shrink-0"><i class="ri-money-dollar-circle-line text-lg text-green-600 dark:text-green-400"></i></div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 flex items-center gap-3 col-span-2 lg:col-span-1">
+                        <span class="w-9 h-9 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center shrink-0">
+                            <i class="ri-money-dollar-circle-line text-lg text-green-600 dark:text-green-400"></i>
+                        </span>
                         <div class="min-w-0">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white">Pembayaran</p>
-                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Riwayat pembayaran</p>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Total Belum Dibayar</p>
+                            <p class="text-lg font-bold text-slate-900 dark:text-white">
+                                @if(($stats['total_belum_dibayar'] ?? 0) > 0)
+                                    Rp {{ number_format((float) $stats['total_belum_dibayar'], 0, ',', '.') }}
+                                @else
+                                    Rp 0
+                                @endif
+                            </p>
                         </div>
-                    </a>
-                    @if($pendingCheckout)
-                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-amber-200 dark:border-amber-500/20 p-4 flex items-center gap-3" title="Pengajuan check-out menunggu persetujuan">
-                            <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0"><i class="ri-time-line text-lg text-amber-600 dark:text-amber-400"></i></div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white">Check-Out Diproses</p>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Menunggu persetujuan</p>
-                            </div>
-                        </div>
-                    @else
-                        <x-confirm-dialog title="Ajukan Check-Out?" description="Ajukan check-out dari kamar {{ $stats['kamar_number'] ?? '' }}? Tindakan ini akan mengirim permintaan ke pemilik kos."
-                                           confirmText="Ya, Ajukan" confirmClass="bg-red-600 hover:bg-red-700 text-white"
-                                           triggerClass="contents" aria-label="Ajukan check-out">
-                            <x-slot name="slot">
-                                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:border-red-200 transition flex items-center gap-3 text-left w-full">
-                                    <div class="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0"><i class="ri-logout-box-r-line text-lg text-red-600 dark:text-red-400"></i></div>
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-bold text-slate-900 dark:text-white">Ajukan Check-Out</p>
-                                        <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Keluar dari kamar saat ini</p>
-                                    </div>
-                                </div>
-                            </x-slot>
-                            <x-slot name="actions">
-                                <form method="POST" action="{{ route('tenant.checkout.request', $penghuni) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
-                                    @csrf
-                                    <button type="submit" :disabled="submitting"
-                                            class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <span x-show="!submitting">Ya, Ajukan</span>
-                                        <span x-show="submitting" x-cloak>Mengirim...</span>
-                                    </button>
-                                </form>
-                            </x-slot>
-                        </x-confirm-dialog>
-                    @endif
+                    </div>
                 </div>
             </section>
 
@@ -162,69 +172,238 @@
         @endif
 
         {{-- ============================================================
-             HERO WELCOME + SEARCH
+             ATTENTION / STATUS PENTING (data existing, no dummy data)
              ============================================================ --}}
-        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-600 via-primary-700 to-indigo-800 text-white p-6 sm:p-10 lg:p-12">
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-0 right-0 w-72 h-72 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                <div class="absolute bottom-0 left-0 w-56 h-56 bg-white rounded-full translate-y-1/2 -translate-x-1/4"></div>
-            </div>
-            <div class="relative max-w-3xl">
-                <p class="text-primary-100/90 text-sm font-semibold">Halo, {{ $user->name }} 👋</p>
-                <h1 class="mt-1.5 text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight">Temukan Kos yang Cocok Buat Kamu</h1>
-                <p class="mt-2.5 text-primary-100/80 text-sm sm:text-base">Temukan tempat tinggal yang sesuai kebutuhan dan budgetmu.</p>
+        @php
+            $attention = [];
+            if ($penghuni) {
+                if (($stats['tagihan_pending'] ?? 0) > 0) {
+                    $attention[] = [
+                        'icon' => 'ri-bill-line',
+                        'iconClass' => 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400',
+                        'title' => $stats['tagihan_pending'].' tagihan belum dibayar',
+                        'desc' => 'Cek tagihan dan lakukan pembayaran sebelum jatuh tempo.',
+                        'route' => route('tenant.tagihan.index'),
+                        'cta' => 'Bayar Sekarang',
+                    ];
+                }
+                if (($stats['tagihan_pending_verification'] ?? 0) > 0) {
+                    $attention[] = [
+                        'icon' => 'ri-time-line',
+                        'iconClass' => 'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+                        'title' => 'Pembayaran menunggu verifikasi',
+                        'desc' => 'Bukti pembayaranmu sedang diverifikasi pengelola.',
+                        'route' => route('tenant.pembayaran.index'),
+                        'cta' => 'Lihat Status',
+                    ];
+                }
+                if ($pendingCheckout) {
+                    $attention[] = [
+                        'icon' => 'ri-logout-box-line',
+                        'iconClass' => 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400',
+                        'title' => 'Check-out sedang diproses',
+                        'desc' => 'Pengajuan check-out kamu menunggu persetujuan pemilik kos.',
+                        'route' => route('tenant.kontrak.index'),
+                        'cta' => 'Lihat Status',
+                    ];
+                }
+            }
+        @endphp
 
-                <form method="GET" action="{{ route('tenant.kos.index') }}" class="mt-6" role="search">
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <div class="relative flex-1">
-                            <i class="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <label for="hero-search-kos" class="sr-only">Cari kos, lokasi, atau fasilitas</label>
-                            <input type="text" name="q" id="hero-search-kos" value="{{ request('q') }}"
-                                   placeholder="Cari nama kos, lokasi, atau fasilitas..."
-                                   autocomplete="off"
-                                   aria-label="Cari kos"
-                                   class="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white text-slate-900 text-sm placeholder-slate-400 focus:ring-4 focus:ring-white/30 transition border-0 shadow-xl">
-                        </div>
-                        <button type="submit"
-                                class="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-primary-700 text-sm font-bold rounded-2xl hover:bg-primary-50 transition shadow-xl shadow-black/10 active:scale-95">
-                            <i class="ri-search-line"></i> Cari Kos
-                        </button>
+        @if($penghuni)
+            <section aria-label="Perlu Perhatian" class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
+                        <i class="ri-notification-3-line text-lg text-primary-600 dark:text-primary-400"></i>
+                    </span>
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Perlu Perhatian</h2>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Hal yang perlu kamu tindak lanjuti hari ini.</p>
                     </div>
-                </form>
-
-                <div class="mt-5 flex flex-wrap items-center gap-2 text-xs">
-                    <span class="text-primary-100/70 font-medium">Atau cari cepat:</span>
-                    <a href="{{ route('tenant.kos.index') }}"
-                       class="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 backdrop-blur px-3 py-1.5 rounded-full transition border border-white/20">
-                        <i class="ri-building-2-line"></i> Semua Kos
-                    </a>
-                    <a href="{{ route('tenant.kos.index', ['tersedia_only' => 1]) }}"
-                       class="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 backdrop-blur px-3 py-1.5 rounded-full transition border border-white/20">
-                        <i class="ri-door-open-line"></i> Tersedia
-                    </a>
-                    <a href="{{ route('tenant.kos.index', ['sort' => 'harga_terendah']) }}"
-                       class="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 backdrop-blur px-3 py-1.5 rounded-full transition border border-white/20">
-                        <i class="ri-money-dollar-circle-line"></i> Harga Terjangkau
-                    </a>
-                    <a href="{{ route('tenant.favorites.index') }}"
-                       class="inline-flex items-center gap-1.5 bg-white/15 hover:bg-white/25 backdrop-blur px-3 py-1.5 rounded-full transition border border-white/20">
-                        <i class="ri-heart-line"></i> Favorit
-                    </a>
                 </div>
-            </div>
-        </section>
+
+                @if(!empty($attention))
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @foreach($attention as $item)
+                            <a href="{{ $item['route'] }}"
+                               class="group flex items-start gap-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 hover:shadow-md hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200">
+                                <span class="shrink-0 w-10 h-10 rounded-xl {{ $item['iconClass'] }} flex items-center justify-center">
+                                    <i class="{{ $item['icon'] }} text-lg"></i>
+                                </span>
+                                <span class="min-w-0 flex-1">
+                                    <span class="block text-sm font-bold text-slate-900 dark:text-white leading-snug">{{ $item['title'] }}</span>
+                                    <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{{ $item['desc'] }}</span>
+                                </span>
+                                <span class="shrink-0 inline-flex items-center gap-0.5 text-xs font-semibold text-primary-500 group-hover:text-primary-600 transition">
+                                    {{ $item['cta'] }} <i class="ri-arrow-right-s-line"></i>
+                                </span>
+                            </a>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="flex items-center gap-3 rounded-2xl border border-green-100 dark:border-green-500/20 bg-green-50/60 dark:bg-green-500/[0.06] p-4">
+                        <span class="shrink-0 w-10 h-10 rounded-xl bg-green-100 dark:bg-green-500/10 flex items-center justify-center">
+                            <i class="ri-shield-check-line text-lg text-green-600 dark:text-green-400"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-green-700 dark:text-green-300">Semua pembayaran aman</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Tidak ada tagihan yang perlu kamu bayar saat ini.</p>
+                        </div>
+                    </div>
+                @endif
+            </section>
+
+            <hr class="border-slate-200/70 dark:border-slate-800">
+        @endif
 
         {{-- ============================================================
-             ADVERTISING — Promoted Partner (advertiser pihak ketiga)
-             Iklan jelas terpisah dari kos organik, transparan & berlabel.
+             QUICK ACTIONS (hierarchy: Tagihan & Bayar primary,
+             Booking/Kontrak secondary, Check-Out destructive/special)
+             Rendered untuk semua tenant; sinyal check-out hanya bila ada penghuni.
              ============================================================ --}}
-        @if($partnerAds->isNotEmpty())
-            <section aria-label="Partner untuk penghuni kos" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @foreach($partnerAds as $ad)
-                    @include('tenant.partials.promoted-partner', ['ad' => $ad, 'placement' => 'homepage', 'variant' => 'banner'])
-                @endforeach
+        <section aria-label="Aksi cepat" class="space-y-4">
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">
+                    <i class="ri-thunderstorms-line text-lg text-primary-600 dark:text-primary-400"></i>
+                </span>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Aksi Cepat</h2>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ $penghuni ? 'Aktivitas utama tempat tinggalmu.' : 'Kelola aktivitas sewa dan pembayaranmu.' }}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    {{-- Primary: Tagihan --}}
+                    <a href="{{ route('tenant.tagihan.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-amber-200 dark:hover:border-amber-500/30 transition-all duration-200 group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:bg-amber-100 dark:group-hover:bg-amber-500/20 transition"><i class="ri-file-list-3-line text-lg text-amber-600 dark:text-amber-400"></i></div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">Tagihan</p>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Cek & bayar tagihan</p>
+                        </div>
+                    </a>
+
+                    {{-- Primary: Pembayaran --}}
+                    <a href="{{ route('tenant.pembayaran.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-green-200 dark:hover:border-green-500/30 transition-all duration-200 group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center shrink-0 group-hover:bg-green-100 dark:group-hover:bg-green-500/20 transition"><i class="ri-money-dollar-circle-line text-lg text-green-600 dark:text-green-400"></i></div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">Pembayaran</p>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Riwayat pembayaran</p>
+                        </div>
+                    </a>
+
+                    {{-- Secondary: Booking Saya --}}
+                    <a href="{{ route('tenant.booking.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-500/30 transition-all duration-200 group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition"><i class="ri-calendar-check-line text-lg text-blue-600 dark:text-blue-400"></i></div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">Booking Saya</p>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Riwayat booking</p>
+                        </div>
+                    </a>
+
+                    {{-- Secondary: Kontrak --}}
+                    <a href="{{ route('tenant.kontrak.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-200 group flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center shrink-0 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition"><i class="ri-file-text-line text-lg text-indigo-600 dark:text-indigo-400"></i></div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 dark:text-white">Kontrak</p>
+                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Lihat kontrak sewa</p>
+                        </div>
+                    </a>
+                </div>
+
+                {{-- Check-Out: destructive/special action, emphasis only when needed.
+                     Hanya untuk tenant yang punya penghuni aktif. --}}
+                @if($penghuni)
+                    @if($pendingCheckout)
+                        <a href="{{ route('tenant.kontrak.index') }}"
+                           class="inline-flex items-center gap-2.5 rounded-2xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition">
+                            <i class="ri-time-line text-lg"></i> Check-Out Diproses
+                            <span class="text-xs font-medium text-amber-600/80 dark:text-amber-400/80">Menunggu persetujuan</span>
+                        </a>
+                    @else
+                        <div class="inline-flex">
+                            <x-confirm-dialog title="Ajukan Check-Out?" description="Ajukan check-out dari kamar {{ $stats['kamar_number'] ?? '' }}? Tindakan ini akan mengirim permintaan ke pemilik kos."
+                                               confirmText="Ya, Ajukan" confirmClass="bg-red-600 hover:bg-red-700 text-white"
+                                               triggerClass="contents" aria-label="Ajukan check-out">
+                                <x-slot name="slot">
+                                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-red-100 dark:border-red-500/20 p-4 hover:shadow-md hover:border-red-200 transition flex items-center gap-3 text-left w-full group">
+                                        <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0 group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition"><i class="ri-logout-box-r-line text-lg text-red-600 dark:text-red-400"></i></div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-900 dark:text-white">Ajukan Check-Out</p>
+                                            <p class="text-[11px] text-slate-400 dark:text-slate-500 truncate">Keluar dari kamar saat ini</p>
+                                        </div>
+                                    </div>
+                                </x-slot>
+                                <x-slot name="actions">
+                                    <form method="POST" action="{{ route('tenant.checkout.request', $penghuni) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                                        @csrf
+                                        <button type="submit" :disabled="submitting"
+                                                class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <span x-show="!submitting">Ya, Ajukan</span>
+                                            <span x-show="submitting" x-cloak>Mengirim...</span>
+                                        </button>
+                                    </form>
+                                </x-slot>
+                            </x-confirm-dialog>
+                        </div>
+                    @endif
+                @endif
             </section>
-        @endif
+
+            <hr class="border-slate-200/70 dark:border-slate-800">
+
+        {{-- ============================================================
+             CARI KOS (marketplace — compact, secondary, bukan hero)
+             ============================================================ --}}
+        <section aria-label="Cari kos" class="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6">
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                    <i class="ri-search-eye-line text-lg text-primary-600 dark:text-primary-400"></i>
+                </span>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Cari Kos</h2>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Temukan tempat tinggal yang sesuai kebutuhanmu.</p>
+                </div>
+            </div>
+
+            <form method="GET" action="{{ route('tenant.kos.index') }}" class="mt-5" role="search">
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <div class="relative flex-1">
+                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <label for="dashboard-search-kos" class="sr-only">Cari kos, lokasi, atau fasilitas</label>
+                        <input type="text" name="q" id="dashboard-search-kos" value="{{ request('q') }}"
+                               placeholder="Cari nama kos, lokasi, atau fasilitas..."
+                               autocomplete="off"
+                               aria-label="Cari kos"
+                               class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-500 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/40 transition">
+                    </div>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-bold rounded-xl transition shadow-sm shadow-primary-500/30 active:scale-95">
+                        <i class="ri-search-line"></i> Cari Kos
+                    </button>
+                </div>
+            </form>
+
+            @php
+                $filters = [
+                    ['label' => 'Semua Kos', 'icon' => 'ri-building-2-line', 'url' => route('tenant.kos.index')],
+                    ['label' => 'Tersedia', 'icon' => 'ri-door-open-line', 'url' => route('tenant.kos.index', ['tersedia_only' => 1])],
+                    ['label' => 'Harga Terjangkau', 'icon' => 'ri-money-dollar-circle-line', 'url' => route('tenant.kos.index', ['sort' => 'harga_terendah'])],
+                    ['label' => 'Favorit', 'icon' => 'ri-heart-line', 'url' => route('tenant.favorites.index'), 'badge' => (int) ($favoriteCount ?? 0)],
+                ];
+            @endphp
+            <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                <span class="text-slate-400 dark:text-slate-500 font-medium">Atau cari cepat:</span>
+                @foreach($filters as $f)
+                    <a href="{{ $f['url'] }}"
+                       class="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 px-3 py-1.5 rounded-full transition border border-slate-200 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-500/30">
+                        <i class="{{ $f['icon'] }} text-primary-500"></i> {{ $f['label'] }}
+                        @if(!empty($f['badge']) && $f['badge'] > 0)
+                            <span class="font-bold text-primary-500">({{ $f['badge'] }})</span>
+                        @endif
+                    </a>
+                @endforeach
+            </div>
+        </section>
 
         {{-- Promosi kos OWNER ber-placement homepage (is_homepage, kos_id TIDAK
              NULL). Jelas berlabel "Promosi Beranda" — pemilik kos yang membayar
@@ -249,7 +428,7 @@
              BELUM MEMILIKI KAMAR (callout)
              ============================================================ --}}
         @if(!$penghuni)
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/60 dark:bg-primary-500/[0.06] px-5 py-4">
+            <section aria-label="Belum memiliki kamar" class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-2xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/60 dark:bg-primary-500/[0.06] px-5 py-4">
                 <div class="w-11 h-11 rounded-xl bg-primary-100 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
                     <i class="ri-door-open-line text-xl text-primary-600 dark:text-primary-300"></i>
                 </div>
@@ -261,46 +440,8 @@
                    class="inline-flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 shrink-0">
                     <i class="ri-search-eye-line"></i> Cari Kos Sekarang
                 </a>
-            </div>
+            </section>
         @endif
-
-        {{-- ============================================================
-             QUICK ACTION (Cari · Favorit · Booking · Tagihan)
-             ============================================================ --}}
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3" aria-label="Aksi cepat">
-            <a href="{{ route('tenant.kos.index') }}"
-               class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200 group flex flex-col items-center text-center gap-2">
-                <div class="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-100 dark:group-hover:bg-blue-500/20 transition">
-                    <i class="ri-search-eye-line text-xl text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <p class="text-xs font-bold text-slate-700 dark:text-slate-200">Cari Kos</p>
-            </a>
-            <a href="{{ route('tenant.favorites.index') }}"
-               class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-red-200 dark:hover:border-red-500/30 transition-all duration-200 group flex flex-col items-center text-center gap-2">
-                <div class="w-11 h-11 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center group-hover:bg-red-100 dark:group-hover:bg-red-500/20 transition">
-                    <i class="ri-heart-line text-xl text-red-500 dark:text-red-400"></i>
-                </div>
-                <p class="text-xs font-bold text-slate-700 dark:text-slate-200">Favorit
-                    @if($favoriteCount > 0)
-                        <span class="text-primary-500 font-bold">({{ $favoriteCount }})</span>
-                    @endif
-                </p>
-            </a>
-            <a href="{{ route('tenant.booking.index') }}"
-               class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200 group flex flex-col items-center text-center gap-2">
-                <div class="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/20 transition">
-                    <i class="ri-calendar-check-line text-xl text-indigo-600 dark:text-indigo-400"></i>
-                </div>
-                <p class="text-xs font-bold text-slate-700 dark:text-slate-200">Booking</p>
-            </a>
-            <a href="{{ route('tenant.tagihan.index') }}"
-               class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md hover:-translate-y-0.5 hover:border-amber-200 dark:hover:border-amber-500/30 transition-all duration-200 group flex flex-col items-center text-center gap-2">
-                <div class="w-11 h-11 rounded-2xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-500/20 transition">
-                    <i class="ri-file-list-3-line text-xl text-amber-600 dark:text-amber-400"></i>
-                </div>
-                <p class="text-xs font-bold text-slate-700 dark:text-slate-200">Tagihan</p>
-            </a>
-        </section>
 
         {{-- ============================================================
              JELAJAHI BERDASARKAN LOKASI / ALAMAT

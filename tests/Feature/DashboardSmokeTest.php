@@ -3,7 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\CheckOut;
+use App\Models\Kamar;
+use App\Models\Kontrak;
+use App\Models\Kos;
 use App\Models\Penghuni;
+use App\Models\Tagihan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -103,5 +107,48 @@ class DashboardSmokeTest extends TestCase
         $response->assertOk();
         $response->assertSee('Check-Out Diproses');
         $response->assertDontSee('Ajukan Check-Out');
+    }
+
+    public function test_tenant_dashboard_attention_card_shows_actual_pending_tagihan_count(): void
+    {
+        $user = User::factory()->create(['role' => 'tenant']);
+        $kos = Kos::factory()->create(['status' => 'active']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
+        $penghuni = Penghuni::factory()->create([
+            'user_id' => $user->id,
+            'kos_id' => $kos->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'active',
+        ]);
+        $kontrak = Kontrak::factory()->create([
+            'penghuni_id' => $penghuni->id,
+            'kos_id' => $kos->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'active',
+        ]);
+        Tagihan::factory()->create([
+            'bill_number' => 'TG0001F05',
+            'penghuni_id' => $penghuni->id,
+            'kontrak_id' => $kontrak->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'unpaid',
+            'period_start' => '2026-09-01',
+            'period_end' => '2026-09-30',
+        ]);
+        Tagihan::factory()->create([
+            'bill_number' => 'TG0002F05',
+            'penghuni_id' => $penghuni->id,
+            'kontrak_id' => $kontrak->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'unpaid',
+            'period_start' => '2026-10-01',
+            'period_end' => '2026-10-31',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('2 tagihan belum dibayar');
+        $response->assertDontSee("{{ \$stats['tagihan_pending'] }}");
     }
 }

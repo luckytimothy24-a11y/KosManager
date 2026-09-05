@@ -18,7 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // Public
-    Route::post('/auth/login', [AuthController::class, 'login'])->name('api.v1.auth.login');
+    Route::post('/auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('api.v1.auth.login');
     Route::get('/health', HealthController::class)->name('api.v1.health');
 
     // Public — Marketplace (P7-D Batch 2)
