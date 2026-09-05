@@ -171,11 +171,11 @@ class AdvertisingController extends Controller
         return view('owner.advertising.show', compact('campaign', 'impressions', 'clicks', 'conversions', 'ctr', 'conversionRate'));
     }
 
-    public function pay(AdvertisingCampaign $campaign)
+    public function pay(Request $request, AdvertisingCampaign $campaign)
     {
         $this->authorize('pay', $campaign);
 
-        $result = $this->service->pay($campaign);
+        $result = $this->service->pay($campaign, $request->user());
 
         if (! $result['ok']) {
             return back()->with('error', $result['message']);

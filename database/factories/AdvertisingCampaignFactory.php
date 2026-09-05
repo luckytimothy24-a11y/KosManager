@@ -49,6 +49,11 @@ class AdvertisingCampaignFactory extends Factory
         ]);
     }
 
+    public function pendingPayment(): static
+    {
+        return $this->state(fn () => ['status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT]);
+    }
+
     public function pendingReview(): static
     {
         return $this->state(fn () => ['status' => AdvertisingCampaign::STATUS_PENDING_REVIEW]);

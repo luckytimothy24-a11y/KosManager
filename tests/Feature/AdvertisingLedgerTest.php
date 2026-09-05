@@ -70,6 +70,15 @@ class AdvertisingLedgerTest extends TestCase
         $campaign = AdvertisingCampaign::whereNotNull('advertiser_name')->whereNull('kos_id')->first();
         $this->assertNotNull($campaign);
 
+        // M3 gating: campaign baru berstatus PENDING_PAYMENT — TIDAK live,
+        // TIDAK masuk placement, TIDAK dihitung aktif.
+        $this->assertDatabaseHas('advertising_campaigns', [
+            'id' => $campaign->id,
+            'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
+        ]);
+        $this->assertFalse($campaign->fresh()->isLive());
+        $this->assertCount(0, app(AdvertisingService::class)->partnerAds('marketplace', 10));
+
         // 1 order PENDING (piutang) — bukan paid otomatis.
         $this->assertDatabaseHas('advertising_orders', [
             'campaign_id' => $campaign->id,
@@ -84,7 +93,7 @@ class AdvertisingLedgerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
         $package = $this->marketplacePackage(['price' => 100000]);
-        $campaign = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([
+        $campaign = AdvertisingCampaign::factory()->pendingPayment()->thirdParty('marketplace')->create([
             'owner_id' => $admin->id,
             'package_id' => $package->id,
             'budget' => 100000,
@@ -102,11 +111,24 @@ class AdvertisingLedgerTest extends TestCase
             ->assertRedirect()
             ->assertSessionHas('success');
 
+        $order->refresh();
         $this->assertDatabaseHas('advertising_orders', [
             'id' => $order->id,
             'status' => AdvertisingOrder::STATUS_PAID,
         ]);
-        $this->assertNotNull($order->fresh()->paid_at);
+
+        // M2: paid_at + paid_by diisi atomik dari aktor terautentikasi.
+        $this->assertNotNull($order->paid_at);
+        $this->assertEquals($admin->id, $order->paid_by);
+
+        // M3: setelah dana diterima kampanye menjadi LIVE.
+        $this->assertDatabaseHas('advertising_campaigns', [
+            'id' => $campaign->id,
+            'status' => AdvertisingCampaign::STATUS_ACTIVE,
+            'approved_by' => $admin->id,
+        ]);
+        $this->assertTrue($campaign->fresh()->isLive());
+        $this->assertContains($campaign->id, app(AdvertisingService::class)->partnerAds('marketplace', 10)->pluck('id')->all());
     }
 
     public function test_mark_paid_is_restricted_to_pending_third_party_orders(): void
@@ -157,6 +179,151 @@ class AdvertisingLedgerTest extends TestCase
         $this->actingAs($owner)
             ->post(route('admin.advertising.orders.mark-paid', $ownerTarget))
             ->assertForbidden();
+    }
+
+    public function test_pending_third_party_campaign_not_live_in_any_placement(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $package = $this->marketplacePackage();
+
+        $pending = AdvertisingCampaign::factory()->pendingPayment()->thirdParty('marketplace')->create([
+            'owner_id' => $admin->id,
+            'package_id' => $package->id,
+        ]);
+        AdvertisingOrder::factory()->create([
+            'campaign_id' => $pending->id,
+            'owner_id' => $admin->id,
+            'status' => AdvertisingOrder::STATUS_PENDING,
+            'paid_at' => null,
+        ]);
+
+        $live = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([
+            'owner_id' => $admin->id,
+            'package_id' => $package->id,
+        ]);
+
+        $ads = app(AdvertisingService::class)->partnerAds('marketplace', 10);
+        $this->assertCount(1, $ads);
+        $this->assertContains($live->id, $ads->pluck('id')->all());
+        $this->assertNotContains($pending->id, $ads->pluck('id')->all());
+    }
+
+    public function test_pending_third_party_campaign_not_counted_as_active_or_revenue(): void
+    {
+        $superAdmin = User::factory()->create(['role' => 'super_admin']);
+        $package = $this->marketplacePackage(['price' => 200000]);
+
+        $this->actingAs($superAdmin)
+            ->post(route('super-admin.advertising.campaigns.store'), [
+                'package_id' => $package->id,
+                'advertiser_name' => 'Partner Belum Bayar',
+                'headline' => 'Iklan Belum Dikonfirmasi',
+                'destination_url' => 'https://example.com/pending',
+                'placement' => 'marketplace',
+            ])
+            ->assertRedirect();
+
+        $stats = app(AdvertisingAnalytics::class)->overview();
+
+        $this->assertEquals(0, $stats['active']);
+        $this->assertEquals(0, (float) $stats['revenue']);
+        $this->assertEquals(1, $stats['pendingOrders']);
+        $this->assertEquals(200000, (float) $stats['pendingRevenue']);
+    }
+
+    public function test_mark_paid_ignores_client_supplied_paid_by(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $other = User::factory()->create(['role' => 'owner']);
+        $package = $this->marketplacePackage();
+
+        $campaign = AdvertisingCampaign::factory()->pendingPayment()->thirdParty('marketplace')->create([
+            'owner_id' => $admin->id,
+            'package_id' => $package->id,
+        ]);
+        $order = AdvertisingOrder::factory()->create([
+            'campaign_id' => $campaign->id,
+            'owner_id' => $admin->id,
+            'status' => AdvertisingOrder::STATUS_PENDING,
+            'paid_at' => null,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.advertising.orders.mark-paid', $order), [
+                'paid_by' => $other->id,
+                'status' => 'refunded',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertEquals($admin->id, $order->fresh()->paid_by);
+        $this->assertEquals(AdvertisingOrder::STATUS_PAID, $order->fresh()->status);
+    }
+
+    public function test_duplicate_mark_paid_does_not_overwrite_paid_by(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $package = $this->marketplacePackage();
+
+        $campaign = AdvertisingCampaign::factory()->pendingPayment()->thirdParty('marketplace')->create([
+            'owner_id' => $admin->id,
+            'package_id' => $package->id,
+        ]);
+        $order = AdvertisingOrder::factory()->create([
+            'campaign_id' => $campaign->id,
+            'owner_id' => $admin->id,
+            'status' => AdvertisingOrder::STATUS_PENDING,
+            'paid_at' => null,
+        ]);
+
+        $this->actingAs($admin)->post(route('admin.advertising.orders.mark-paid', $order))->assertRedirect();
+
+        $paidByAfterFirst = $order->fresh()->paid_by;
+        $paidAtAfterFirst = $order->fresh()->paid_at;
+
+        // Mark-paid kedua → 403 (order sudah paid) dan paid_by TIDAK berubah.
+        $this->actingAs($admin)->post(route('admin.advertising.orders.mark-paid', $order))->assertForbidden();
+
+        $order->refresh();
+        $this->assertEquals($paidByAfterFirst, $order->paid_by);
+        $this->assertEquals($paidAtAfterFirst->format('Y-m-d H:i:s'), $order->paid_at->format('Y-m-d H:i:s'));
+    }
+
+    public function test_owner_pay_records_paid_by_owner(): void
+    {
+        $owner = $this->setupOwner();
+        $campaign = $this->campaign($owner, ['status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT]);
+
+        $this->actingAs($owner)
+            ->post(route('owner.advertising.pay', $campaign))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $order = AdvertisingOrder::where('campaign_id', $campaign->id)->firstOrFail();
+        $this->assertEquals(AdvertisingOrder::STATUS_PAID, $order->status);
+        $this->assertNotNull($order->paid_at);
+        $this->assertEquals($owner->id, $order->paid_by);
+    }
+
+    public function test_refunded_order_screen_uses_ledger_wording_not_transfer_claim(): void
+    {
+        $owner = $this->setupOwner();
+        $campaign = $this->campaign($owner, ['status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT]);
+        $service = app(AdvertisingService::class);
+
+        $service->pay($campaign, $owner);
+        $service->cancel($campaign->fresh(), $owner);
+
+        $this->assertDatabaseHas('advertising_orders', [
+            'campaign_id' => $campaign->id,
+            'status' => AdvertisingOrder::STATUS_REFUNDED,
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('owner.advertising.show', $campaign))
+            ->assertOk()
+            ->assertSee('Pembayaran dibatalkan dan dicatat sebagai refunded')
+            ->assertDontSee('Dana dikembalikan');
     }
 
     // ---------------------------------------------------------------------
@@ -342,17 +509,21 @@ class AdvertisingLedgerTest extends TestCase
 
         $this->seed(AdvertisingSeeder::class);
 
-        // Kampanye AD-DEMO-* (promosi kos owner) tetap memuat order PAID.
+        // Kampanye AD-DEMO-* (promosi kos owner) tetap memuat order PAID dan live.
         $this->assertDatabaseHas('advertising_campaigns', ['campaign_number' => 'AD-DEMO-1']);
         foreach (['AD-DEMO-1', 'AD-DEMO-2', 'AD-DEMO-4'] as $num) {
             $campaign = AdvertisingCampaign::where('campaign_number', $num)->first();
+            $this->assertEquals(AdvertisingCampaign::STATUS_ACTIVE, $campaign->status);
             $this->assertEquals('paid', AdvertisingOrder::where('campaign_id', $campaign->id)->first()->status);
         }
 
-        // Kampanye AD-PARTNER-* (pihak ketiga) order-nya PENDING — tidak menambah revenue.
+        // Kampanye AD-PARTNER-* (pihak ketiga) order-nya PENDING dan campaign
+        // PENDING_PAYMENT (belum live) — tidak menambah revenue/active.
         foreach (['AD-PARTNER-1', 'AD-PARTNER-2', 'AD-PARTNER-3', 'AD-PARTNER-4'] as $num) {
             $campaign = AdvertisingCampaign::where('campaign_number', $num)->first();
             $this->assertNotNull($campaign);
+            $this->assertEquals(AdvertisingCampaign::STATUS_PENDING_PAYMENT, $campaign->status);
+            $this->assertFalse($campaign->isLive());
             $this->assertEquals(
                 'pending',
                 AdvertisingOrder::where('campaign_id', $campaign->id)->first()->status

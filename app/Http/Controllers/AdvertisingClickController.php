@@ -45,7 +45,8 @@ class AdvertisingClickController extends Controller
                 'click',
                 $user?->id,
                 session()->getId(),
-                $request->get('placement', $campaign->placement ?: 'marketplace')
+                $request->get('placement', $campaign->placement ?: 'marketplace'),
+                true
             );
 
             if ($campaign->isThirdParty()) {

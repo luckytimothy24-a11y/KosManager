@@ -24,6 +24,7 @@ class AdvertisingOrder extends Model
         'amount',
         'status',
         'paid_at',
+        'paid_by',
         'refunded_at',
         'refunded_by',
         'refund_reason',
@@ -43,6 +44,11 @@ class AdvertisingOrder extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function paidBy()
+    {
+        return $this->belongsTo(User::class, 'paid_by');
     }
 
     public function isPaid(): bool

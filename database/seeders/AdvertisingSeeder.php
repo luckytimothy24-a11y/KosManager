@@ -21,13 +21,15 @@ class AdvertisingSeeder extends Seeder
      * 2. Kampanye promosi kos owner (demo) yang sedang live (bila kos ada) —
      *    mempertahankan fitur advertising lama yang sudah ada. Order-nya PAID
      *    (mencontoh alur owner yang membayar).
-     * 3. Kampanye ADVERTISER PIHAK KETIGA demo yang sedang live (kos_id NULL):
+     * 3. Kampanye ADVERTISER PIHAK KETIGA demo (kos_id NULL):
      *     - AD-PARTNER-1 Demo Partner WiFi (marketplace)
      *     - AD-PARTNER-2 Demo Laundry (homepage)
      *     - AD-PARTNER-3 Demo Furniture (detail)
      *     - AD-PARTNER-4 Demo Jasa Pindahan (native)
-     *    Order demo-nya berstatus PENDING (piutang) — konsisten dengan aturan
-     *    ledger pihak ketiga: revenue hanya dihitung setelah dana diterima.
+     *    Campaign DEMO ini berstatus PENDING_PAYMENT (belum live) dengan order
+     *    PENDING (piutang) — konsisten dengan aturan M3: kampanye pihak ketiga
+     *    hanya live setelah dana diterima, dan revenue hanya dihitung setelah
+     *    order di-mark paid.
      *
      * Semua nama advertiser bersifat fiktif/"Demo" — tidak mengklaim kemitraan
      * dengan pihak nyata mana pun.
@@ -295,7 +297,7 @@ class AdvertisingSeeder extends Seeder
             'owner_id' => $owner->id,
             'kos_id' => null,
             'package_id' => $package->id,
-            'status' => AdvertisingCampaign::STATUS_ACTIVE,
+            'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
             'starts_at' => $now->copy()->subDays(7),
             'ends_at' => $now->copy()->addDays(21),
             'budget' => $package->price,
@@ -308,12 +310,11 @@ class AdvertisingSeeder extends Seeder
             'cta_label' => $spec['cta_label'],
             'destination_url' => $spec['destination_url'],
             'placement' => $spec['placement'],
-            'approved_by' => $approver?->id,
-            'approved_at' => $now->copy()->subDays(8),
         ]);
 
         // Order pihak ketiga berstatus PENDING (piutang) — konsisten dengan
-        // aturan ledger: revenue hanya dihitung setelah dana diterima.
+        // aturan ledger: revenue hanya dihitung setelah dana diterima. Campaign
+        // baru boleh live setelah order di-mark paid (gating M3).
         AdvertisingOrder::create([
             'order_number' => 'ORD-'.$spec['campaign_number'],
             'campaign_id' => $campaign->id,

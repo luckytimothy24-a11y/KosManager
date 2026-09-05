@@ -111,7 +111,7 @@
                                 </div>
                                 @if($order->isRefunded())
                                     <div class="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                                        Dikembalikan {{ $order->refunded_at?->format('d/m/Y H:i') ?? '-' }}
+                                        Pembayaran dibatalkan dan dicatat sebagai refunded {{ $order->refunded_at?->format('d/m/Y H:i') ?? '-' }}
                                         @if($order->refund_reason) · {{ $order->refund_reason }} @endif
                                     </div>
                                 @endif

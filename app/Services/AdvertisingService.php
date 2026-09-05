@@ -125,9 +125,12 @@ class AdvertisingService
      * nominal server-side dari package. Idempotent — bila order paid sudah ada,
      * tidak membuat duplikat. mentransisikan pending_payment -> pending_review.
      *
+     * Actor (owner yang melakukan pembayaran) dicatat ke paid_by server-side;
+     * TIDAK pernah berasal dari input request.
+     *
      * @return array{ok: bool, error?: string, message?: string, order?: AdvertisingOrder, campaign?: AdvertisingCampaign}
      */
-    public function pay(AdvertisingCampaign $campaign): array
+    public function pay(AdvertisingCampaign $campaign, ?User $actor = null): array
     {
         if ($campaign->status !== AdvertisingCampaign::STATUS_PENDING_PAYMENT) {
             return ['ok' => false, 'error' => 'invalid_state', 'message' => 'Campaign tidak dalam status menunggu pembayaran.'];
@@ -140,7 +143,7 @@ class AdvertisingService
         $order = $existingOrder;
 
         if (! $order) {
-            $order = \DB::transaction(function () use ($campaign) {
+            $order = \DB::transaction(function () use ($campaign, $actor) {
                 $locked = AdvertisingCampaign::whereKey($campaign->id)->lockForUpdate()->firstOrFail();
 
                 if ($locked->status !== AdvertisingCampaign::STATUS_PENDING_PAYMENT) {
@@ -154,6 +157,7 @@ class AdvertisingService
                     'amount' => $locked->budget,
                     'status' => AdvertisingOrder::STATUS_PAID,
                     'paid_at' => now(),
+                    'paid_by' => $actor?->id,
                 ]);
 
                 $locked->update(['status' => AdvertisingCampaign::STATUS_PENDING_REVIEW]);
@@ -373,9 +377,11 @@ class AdvertisingService
     /**
      * Buat campaign ADVERTISER PIHAK KETIGA oleh moderator (admin/super admin).
      *
-     * Tidak ada simulasi pembayaran: moderator membuat kampanye atas nama
-     * platform sehingga langsung berstatus active (atau approved bila jadwal
-     * masih di masa depan). Dicatat sebagai approved oleh moderator.
+     * Gating pembayaran (M3): kampanye dibuat berstatus pending_payment — TIDAK
+     * live, TIDAK masuk placement, TIDAK dihitung aktif — sampai order-nya
+     * di-mark paid. Order piutang (pending) dibuat atomik bersama kampanye.
+     * Persetujuan (approved_by/approved_at) baru diisi saat dana dikonfirmasi
+     * (markThirdPartyOrderPaid) karena itu yang memvalidasi go-live.
      *
      * @param  array<string, mixed>  $data  [package_id, advertiser_name, headline, advertiser_description, cta_label, destination_url, placement?, starts_at?]
      * @return array{ok: bool, error?: string, message?: string, campaign?: AdvertisingCampaign}
@@ -409,17 +415,14 @@ class AdvertisingService
 
         $startsAt = data_get($data, 'starts_at') ? now()->parse($data['starts_at']) : now();
         $endsAt = $startsAt->copy()->addDays((int) $package->duration_days);
-        $now = now();
 
-        $campaign = \DB::transaction(function () use ($moderator, $package, $placement, $destinationUrl, $startsAt, $endsAt, $now, $data) {
+        $campaign = \DB::transaction(function () use ($moderator, $package, $placement, $destinationUrl, $startsAt, $endsAt, $data) {
             $campaign = AdvertisingCampaign::create([
                 'campaign_number' => 'AD'.strtoupper(Str::random(8)),
                 'owner_id' => $moderator->id,
                 'kos_id' => null,
                 'package_id' => $package->id,
-                'status' => $startsAt > $now
-                    ? AdvertisingCampaign::STATUS_APPROVED
-                    : AdvertisingCampaign::STATUS_ACTIVE,
+                'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
                 'starts_at' => $startsAt,
                 'ends_at' => $endsAt,
                 'budget' => $package->price,
@@ -435,8 +438,6 @@ class AdvertisingService
                 'cta_label' => trim((string) data_get($data, 'cta_label')),
                 'destination_url' => $destinationUrl,
                 'placement' => $placement,
-                'approved_by' => $moderator->id,
-                'approved_at' => $now,
             ]);
 
             // Ledger pihak ketiga: order status pending (piutang) langsung dibuat
@@ -459,6 +460,14 @@ class AdvertisingService
     /**
      * Tandai order pihak ketiga (status pending) sebagai PAID — konfirmasi
      * manual moderator bahwa dana telah diterima untuk penjualan iklan.
+     *
+     * Gating pembayaran (M3): order pending → paid (paid_at + paid_by aktor
+     * diisi atomik) hanya untuk kampanye pihak ketiga yang masih berstatus
+     * pending_payment. Setelah dana diterima kampanye dipromosikan live:
+     * active bila sedang dalam jendela tayang, approved bila jadwal masih
+     * di masa depan (akan diaktifkan scheduler), completed bila jendela sudah
+     * lewat. Approver dicatat pada titik konfirmasi ini.
+     *
      * Idempotent: order yang bukan pending tidak dapat di-mark paid.
      */
     public function markThirdPartyOrderPaid(AdvertisingOrder $order, User $moderator): bool
@@ -473,15 +482,48 @@ class AdvertisingService
             return false;
         }
 
-        $updated = $campaign->orders()
-            ->whereKey($order->id)
-            ->where('status', AdvertisingOrder::STATUS_PENDING)
-            ->update([
-                'status' => AdvertisingOrder::STATUS_PAID,
-                'paid_at' => now(),
-            ]);
+        if ($campaign->status !== AdvertisingCampaign::STATUS_PENDING_PAYMENT) {
+            return false;
+        }
 
-        return $updated === 1;
+        return (bool) \DB::transaction(function () use ($order, $campaign, $moderator) {
+            $locked = AdvertisingCampaign::whereKey($campaign->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->status !== AdvertisingCampaign::STATUS_PENDING_PAYMENT) {
+                return false;
+            }
+
+            $updated = $locked->orders()
+                ->whereKey($order->id)
+                ->where('status', AdvertisingOrder::STATUS_PENDING)
+                ->update([
+                    'status' => AdvertisingOrder::STATUS_PAID,
+                    'paid_at' => now(),
+                    'paid_by' => $moderator->id,
+                ]);
+
+            if ($updated !== 1) {
+                return false;
+            }
+
+            $now = now();
+            $updates = [
+                'approved_by' => $moderator->id,
+                'approved_at' => $now,
+            ];
+
+            if ($locked->ends_at && $locked->ends_at < $now) {
+                $updates['status'] = AdvertisingCampaign::STATUS_COMPLETED;
+            } elseif ($locked->starts_at && $locked->starts_at > $now) {
+                $updates['status'] = AdvertisingCampaign::STATUS_APPROVED;
+            } else {
+                $updates['status'] = AdvertisingCampaign::STATUS_ACTIVE;
+            }
+
+            $locked->update($updates);
+
+            return true;
+        });
     }
 
     /**
@@ -527,7 +569,8 @@ class AdvertisingService
 
     /**
      * Catat event tracking (impression/click/conversion) dengan deduplikasi
-     * reasonable untuk impression guna mencegah spam refresh/render berulang.
+     * reasonable (per user/session, jendela 15 menit) untuk mencegah spam
+     * render berulang dan klik ganda buatan (CTR inflasi).
      */
     public function trackEvent(
         int $campaignId,
@@ -537,7 +580,7 @@ class AdvertisingService
         ?string $placement = null,
         bool $deduplicate = false
     ): bool {
-        if (in_array($type, [AdvertisingEvent::TYPE_IMPRESSION, AdvertisingEvent::TYPE_CONVERSION], true) && $deduplicate) {
+        if (in_array($type, [AdvertisingEvent::TYPE_IMPRESSION, AdvertisingEvent::TYPE_CLICK, AdvertisingEvent::TYPE_CONVERSION], true) && $deduplicate) {
             $query = AdvertisingEvent::where('campaign_id', $campaignId)
                 ->where('type', $type)
                 ->where('created_at', '>=', now()->subMinutes(15));

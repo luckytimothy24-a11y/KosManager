@@ -172,6 +172,27 @@ class AdvertisingThirdPartyTest extends TestCase
         $this->assertFalse(session()->has('ad_click'));
     }
 
+    public function test_duplicate_click_in_same_session_is_deduplicated(): void
+    {
+        $tenant = User::factory()->create(['role' => 'tenant']);
+        $owner = $this->setupOwner();
+        $package = $this->marketplacePackage();
+        $campaign = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([
+            'owner_id' => $owner->id,
+            'package_id' => $package->id,
+            'destination_url' => 'https://example.com/landing',
+        ]);
+
+        $service = app(AdvertisingService::class);
+
+        // Klik pertama tercatat, klik kedua sesi sama dalam jendela dedup TIDAK.
+        $service->trackEvent($campaign->id, 'click', $tenant->id, 'sess-click', 'marketplace', true);
+        $service->trackEvent($campaign->id, 'click', $tenant->id, 'sess-click', 'marketplace', true);
+
+        $this->assertDatabaseHas('advertising_events', ['campaign_id' => $campaign->id, 'type' => 'click']);
+        $this->assertEquals(1, AdvertisingEvent::where('campaign_id', $campaign->id)->where('type', 'click')->count());
+    }
+
     public function test_third_party_click_does_not_attribute_conversion_on_booking(): void
     {
         $tenant = User::factory()->create(['role' => 'tenant']);

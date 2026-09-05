@@ -6,6 +6,7 @@ use App\Models\AdvertisingCampaign;
 use App\Models\AdvertisingPackage;
 use App\Models\Kos;
 use App\Models\User;
+use App\Services\AdvertisingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -46,9 +47,15 @@ class AdvertisingModeratorThirdPartyTest extends TestCase
             'headline' => 'Iklan Demo dari Moderator',
             'destination_url' => 'https://example.com/moderator',
             'placement' => 'marketplace',
-            'status' => AdvertisingCampaign::STATUS_ACTIVE,
-            'approved_by' => $superAdmin->id,
+            'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
+            'approved_by' => null,
         ]);
+
+        // M3 gating: campaign baru TIDAK live dan tidak masuk placement sampai
+        // order piutang di-mark paid.
+        $campaign = AdvertisingCampaign::where('advertiser_name', 'Demo Moderator Ads')->firstOrFail();
+        $this->assertFalse($campaign->isLive());
+        $this->assertCount(0, app(AdvertisingService::class)->partnerAds('marketplace', 10));
     }
 
     public function test_admin_can_create_third_party_campaign(): void
@@ -62,8 +69,8 @@ class AdvertisingModeratorThirdPartyTest extends TestCase
         $this->assertDatabaseHas('advertising_campaigns', [
             'owner_id' => $admin->id,
             'kos_id' => null,
-            'status' => AdvertisingCampaign::STATUS_ACTIVE,
-            'approved_by' => $admin->id,
+            'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
+            'approved_by' => null,
         ]);
     }
 
