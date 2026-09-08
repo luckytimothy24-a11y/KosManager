@@ -36,7 +36,7 @@
                             </p>
                         @endif
                         <p class="mt-1.5 text-xs text-red-600/80 dark:text-red-300/70">
-                            Silakan perbaiki bukti pembayaran lalu unggah kembali di bawah.
+                            Silakan bayar tagihan kembali menggunakan metode tunai di bawah sesuai petunjuk pengelola.
                         </p>
                     </div>
                 </div>
@@ -191,26 +191,7 @@
                     <h4 class="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white mb-1">
                         <i class="ri-upload-cloud-2-line text-primary-500"></i> Bayar Tagihan Ini
                     </h4>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-5">Pilih pembayaran online (verifikasi otomatis) atau unggah bukti transfer manual.</p>
-
-                    {{-- Gateway payment (auto verification) --}}
-                    <div class="mb-5 rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/50 dark:bg-primary-500/[0.06] p-4 flex flex-wrap items-center justify-between gap-3">
-                        <div class="min-w-0">
-                            <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100">
-                                <i class="ri-qr-code-line text-primary-600 dark:text-primary-300"></i> Bayar Online
-                            </p>
-                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Scan QRIS / bayar virtual account yang kami sediakan. Pembayaran diverifikasi otomatis oleh sistem, tanpa menunggu pengelola.</p>
-                        </div>
-                        <form method="POST" action="{{ route('tenant.pembayaran.gateway') }}" x-data="{ submitting: false }" x-on:submit="submitting = true" class="shrink-0">
-                            @csrf
-                            <input type="hidden" name="tagihan_id" value="{{ $tagihan->id }}">
-                            <button type="submit" x-bind:disabled="submitting"
-                                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 transition shadow-sm shadow-primary-600/30 disabled:opacity-60 disabled:cursor-not-allowed">
-                                <template x-if="!submitting"><span class="flex items-center gap-1.5"><i class="ri-qr-scan-2-line"></i> Buat Pembayaran Online</span></template>
-                                <template x-if="submitting" x-cloak><span class="flex items-center gap-1.5"><i class="ri-loader-4-line animate-spin"></i> Membuat...</span></template>
-                            </button>
-                        </form>
-                    </div>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-5">Pembayaran dilakukan secara tunai langsung kepada pengelola kos.</p>
 
                     {{-- Payment Instructions from Owner --}}
                     @if($tagihan->kamar->kos->payment_info)
@@ -223,11 +204,12 @@
                     @endif
 
                     <form method="POST" action="{{ route('tenant.pembayaran.store') }}" enctype="multipart/form-data"
-                          x-data="paymentForm('{{ old('payment_method', 'transfer_bank') }}')"
+                          x-data="paymentForm()"
                           x-on:submit="submitting = true">
                         @csrf
                         <input type="hidden" name="tagihan_id" value="{{ $tagihan->id }}">
                         <input type="hidden" name="amount" value="{{ $tagihan->total }}">
+                        <input type="hidden" name="payment_method" value="cash">
                         <div class="space-y-5 max-w-xl">
 
                             {{-- Total summary above submit --}}
@@ -247,59 +229,28 @@
                                 <p class="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-lock-line"></i> Nominal mengikuti total tagihan dan tidak dapat diubah.</p>
                             </div>
 
-                            {{-- Payment Method --}}
-                            <fieldset>
-                                <legend id="payment-method-label" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Pilih Metode Pembayaran <span class="text-red-500">*</span></legend>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                    <label for="method-transfer_bank" class="flex items-center gap-2.5 px-3.5 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
-                                        <input id="method-transfer_bank" type="radio" name="payment_method" value="transfer_bank" x-model="method" required class="text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600">
-                                        <span class="flex items-center gap-2">
-                                            <i class="ri-bank-line text-slate-400"></i>
-                                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">Transfer Bank</span>
-                                        </span>
-                                    </label>
-                                    <label for="method-e_wallet" class="flex items-center gap-2.5 px-3.5 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
-                                        <input id="method-e_wallet" type="radio" name="payment_method" value="e_wallet" x-model="method" class="text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600">
-                                        <span class="flex items-center gap-2">
-                                            <i class="ri-smartphone-line text-slate-400"></i>
-                                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">E-Wallet / QRIS</span>
-                                        </span>
-                                    </label>
-                                    <label for="method-cash" class="flex items-center gap-2.5 px-3.5 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
-                                        <input id="method-cash" type="radio" name="payment_method" value="cash" x-model="method" class="text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600">
-                                        <span class="flex items-center gap-2">
-                                            <i class="ri-hand-coin-line text-slate-400"></i>
-                                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200">Tunai</span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </fieldset>
-
-                            {{-- Dynamic Instructions --}}
-                            <div class="rounded-xl border border-dashed border-slate-200 dark:border-slate-700 px-4 py-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed" aria-live="polite">
-                                <template x-if="method === 'transfer_bank'">
-                                    <p class="flex items-start gap-1.5"><i class="ri-bank-line mt-0.5 text-primary-500 shrink-0"></i><span>Transfer sesuai nominal ke rekening pengelola di atas, lalu unggah bukti transfer.</span></p>
-                                </template>
-                                <template x-if="method === 'e_wallet'">
-                                    <p class="flex items-start gap-1.5"><i class="ri-smartphone-line mt-0.5 text-primary-500 shrink-0"></i><span>Bayar melalui aplikasi e-wallet atau scan QRIS yang tersedia, lalu unggah tangkapan layar bukti pembayaran.</span></p>
-                                </template>
-                                <template x-if="method === 'cash'">
-                                    <p class="flex items-start gap-1.5"><i class="ri-hand-coin-line mt-0.5 text-primary-500 shrink-0"></i><span>Bayar langsung kepada pengelola/admin kos. Bukti pembayaran opsional untuk metode tunai.</span></p>
-                                </template>
+                            {{-- Cash method info --}}
+                            <div class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
+                                <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                                    <i class="ri-hand-coin-line text-emerald-600 dark:text-emerald-300"></i> Pembayaran Tunai
+                                </p>
+                                <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                                    Bayar sejumlah <strong class="text-slate-700 dark:text-slate-200">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</strong> langsung kepada pengelola/admin kos,
+                                    lalu kirim konfirmasi di bawah. Pengelola akan memverifikasi pembayaran Anda.
+                                </p>
                             </div>
 
-                            {{-- Proof Upload --}}
+                            {{-- Proof Upload (optional for cash) --}}
                             <div>
                                 <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5" id="proof-label">
-                                    Bukti Pembayaran <span class="text-red-500">*</span> <span class="font-normal">(JPG/PNG/PDF, maks 5MB)</span>
+                                    Bukti Pembayaran <span class="font-normal">(opsional — JPG/PNG/PDF, maks 5MB)</span>
                                 </label>
                                 <input id="proof_file" type="file" name="proof_file" accept="image/jpeg,image/png,image/webp,application/pdf"
-                                       :required="method !== 'cash'"
                                        x-ref="proofInput"
                                        @change="handleProofChange($event)"
                                        aria-describedby="proof-feedback proof-hint"
                                        class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-500/10 file:text-primary-600 dark:file:text-primary-300 hover:file:bg-primary-100 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-                                <p id="proof-hint" class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Pastikan bukti jelas dan nominal terlihat.</p>
+                                <p id="proof-hint" class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Unggah bukti jika diperlukan pengelola. Pastikan bukti jelas.</p>
 
                                 {{-- Client-side proof feedback --}}
                                 <div x-show="proof.name" x-cloak id="proof-feedback"
@@ -331,7 +282,7 @@
                             <button type="submit" x-bind:disabled="submitting"
                                     class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
                                 <template x-if="!submitting">
-                                    <span class="flex items-center gap-2"><i class="ri-send-plane-line"></i> Kirim Pembayaran</span>
+                                    <span class="flex items-center gap-2"><i class="ri-hand-coin-line"></i> Konfirmasi Pembayaran Tunai</span>
                                 </template>
                                 <template x-if="submitting" x-cloak>
                                     <span class="flex items-center gap-2"><i class="ri-loader-4-line animate-spin"></i> Mengirim...</span>
@@ -350,7 +301,7 @@
                     </div>
                     <div>
                         <h4 class="font-bold text-slate-900 dark:text-white">Menunggu Verifikasi</h4>
-                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Bukti pembayaran Anda sedang diperiksa oleh pengelola kos. Anda akan menerima notifikasi setelah diverifikasi.</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Pembayaran Anda sedang diperiksa oleh pengelola kos. Anda akan menerima notifikasi setelah diverifikasi.</p>
                     </div>
                 </div>
             </div>
@@ -398,9 +349,8 @@
 
     <script>
         (function () {
-            window.paymentForm = function (initialMethod) {
+            window.paymentForm = function () {
                 return {
-                    method: initialMethod,
                     submitting: false,
                     proof: { name: '', size: 0, sizeLabel: '', isImage: false, preview: '', oversize: false },
                     handleProofChange(event) {

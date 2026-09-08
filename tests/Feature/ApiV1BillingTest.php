@@ -104,7 +104,7 @@ class ApiV1BillingTest extends TestCase
     {
         return [
             'amount' => 1500000,
-            'payment_method' => 'transfer_bank',
+            'payment_method' => 'cash',
             'proof_file' => UploadedFile::fake()->create('bukti.pdf', 200, 'application/pdf'),
         ];
     }
@@ -245,13 +245,13 @@ class ApiV1BillingTest extends TestCase
 
     // ------------------------------------------------- payment store
 
-    public function test_payment_store_submits_proof_and_returns_201(): void
+    public function test_payment_store_submits_cash_payment_and_returns_201(): void
     {
         $response = $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", $this->validPaymentPayload());
 
         $response->assertStatus(201)
-            ->assertJson(['message' => 'Bukti pembayaran berhasil diupload. Menunggu verifikasi.']);
+            ->assertJson(['message' => 'Pembayaran tunai berhasil dikirim. Menunggu verifikasi pengelola.']);
 
         $this->assertDatabaseHas('pembayarans', [
             'tagihan_id' => $this->tagihan->id,
@@ -336,15 +336,18 @@ class ApiV1BillingTest extends TestCase
             ->assertJsonStructure(['errors' => ['payment_method']]);
     }
 
-    public function test_payment_store_requires_proof_for_online_method(): void
+    public function test_payment_store_rejects_online_methods(): void
     {
-        $this->withToken($this->token($this->tenant))
-            ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
-                'amount' => 1500000,
-                'payment_method' => 'transfer_bank',
-            ])
-            ->assertStatus(422)
-            ->assertJsonStructure(['errors' => ['proof_file']]);
+        foreach (['transfer_bank', 'e_wallet'] as $method) {
+            $this->withToken($this->token($this->tenant))
+                ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
+                    'amount' => 1500000,
+                    'payment_method' => $method,
+                    'proof_file' => UploadedFile::fake()->create('bukti.pdf', 200, 'application/pdf'),
+                ])
+                ->assertStatus(422)
+                ->assertJsonStructure(['errors' => ['payment_method']]);
+        }
     }
 
     public function test_payment_store_rejects_invalid_file_type(): void
@@ -352,7 +355,7 @@ class ApiV1BillingTest extends TestCase
         $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
                 'amount' => 1500000,
-                'payment_method' => 'transfer_bank',
+                'payment_method' => 'cash',
                 'proof_file' => UploadedFile::fake()->create('bukti.txt', 200, 'text/plain'),
             ])
             ->assertStatus(422)
@@ -364,7 +367,7 @@ class ApiV1BillingTest extends TestCase
         $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
                 'amount' => 1500000,
-                'payment_method' => 'transfer_bank',
+                'payment_method' => 'cash',
                 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 6000, 'application/pdf'),
             ])
             ->assertStatus(422)

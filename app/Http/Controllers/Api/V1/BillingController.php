@@ -87,13 +87,13 @@ class BillingController extends Controller
 
         $kosOwner = $savedTagihan->kamar->kos->owner_id;
         NotificationService::paymentSubmitted($kosOwner, $request->user()->name, $savedTagihan->bill_number);
-        AuditLogService::create('Pembayaran', "Pembayaran untuk tagihan {$savedTagihan->bill_number} diupload oleh {$request->user()->name}", ['tagihan_id' => $savedTagihan->id]);
+        AuditLogService::create('Pembayaran', "Pembayaran untuk tagihan {$savedTagihan->bill_number} dikirim oleh {$request->user()->name}", ['tagihan_id' => $savedTagihan->id]);
 
         $savedTagihan->load(['kamar', 'pembayarans']);
 
         return response()->json([
             'data' => new TagihanResource($savedTagihan),
-            'message' => 'Bukti pembayaran berhasil diupload. Menunggu verifikasi.',
+            'message' => 'Pembayaran tunai berhasil dikirim. Menunggu verifikasi pengelola.',
         ], 201);
     }
 

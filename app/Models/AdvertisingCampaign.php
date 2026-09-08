@@ -38,11 +38,14 @@ class AdvertisingCampaign extends Model
 
     public const PLACEMENT_NATIVE = 'native';
 
+    public const PLACEMENT_TENANT_DASHBOARD = 'tenant_dashboard';
+
     public const PLACEMENTS = [
         self::PLACEMENT_HOMEPAGE,
         self::PLACEMENT_MARKETPLACE,
         self::PLACEMENT_DETAIL,
         self::PLACEMENT_NATIVE,
+        self::PLACEMENT_TENANT_DASHBOARD,
     ];
 
     protected $table = 'advertising_campaigns';
@@ -51,6 +54,7 @@ class AdvertisingCampaign extends Model
         'campaign_number',
         'owner_id',
         'kos_id',
+        'partner_id',
         'package_id',
         'status',
         'starts_at',
@@ -68,6 +72,10 @@ class AdvertisingCampaign extends Model
         'cta_label',
         'destination_url',
         'placement',
+        'contract_reference',
+        'campaign_code',
+        'monetization_type',
+        'target_audience',
         'approved_by',
         'approved_at',
         'rejection_reason',
@@ -97,6 +105,11 @@ class AdvertisingCampaign extends Model
     public function package()
     {
         return $this->belongsTo(AdvertisingPackage::class, 'package_id');
+    }
+
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class, 'partner_id');
     }
 
     public function approver()
@@ -181,6 +194,28 @@ class AdvertisingCampaign extends Model
     public function displayImage(): ?string
     {
         return $this->image ?: $this->advertiser_logo;
+    }
+
+    /**
+     * Kampanye monetisasi BERMITRA (terhubung ke entitas Partner terdaftar).
+     * Tidak semua kampanye pihak ketiga harus terkait partner — namun hampir
+     * semua kampanye B2B (DANA/Shopee/GoPay) terpaut ke Partner.
+     */
+    public function isPartnerLinked(): bool
+    {
+        return $this->partner_id !== null;
+    }
+
+    /**
+     * Nama partner terkait (entitas terdaftar) atau fallback ke nama advertiser.
+     */
+    public function partnerLabel(): ?string
+    {
+        if ($this->isPartnerLinked() && $this->partner && $this->partner->exists) {
+            return $this->partner->name;
+        }
+
+        return $this->advertiser_name;
     }
 
     public function canBePaid(): bool

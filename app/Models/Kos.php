@@ -76,4 +76,85 @@ class Kos extends Model
     {
         return $this->favorites()->count();
     }
+
+    public function hasValidCoordinates(): bool
+    {
+        if (! is_numeric($this->latitude) || ! is_numeric($this->longitude)) {
+            return false;
+        }
+
+        if ((float) $this->latitude < -90 || (float) $this->latitude > 90) {
+            return false;
+        }
+
+        if ((float) $this->longitude < -180 || (float) $this->longitude > 180) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function coordinatesDestination(): ?string
+    {
+        if (! $this->hasValidCoordinates()) {
+            return null;
+        }
+
+        return trim((string) $this->latitude).','.trim((string) $this->longitude);
+    }
+
+    public function addressDestination(): ?string
+    {
+        $address = is_string($this->address) ? trim($this->address) : '';
+
+        return $address !== '' ? $address : null;
+    }
+
+    public function routeDestination(): ?string
+    {
+        return $this->coordinatesDestination() ?? $this->addressDestination();
+    }
+
+    public function googleMapsDestinationUrl(string $mode): ?string
+    {
+        $coordinates = $this->coordinatesDestination();
+
+        if ($coordinates !== null) {
+            $destination = urlencode((string) $this->latitude).','.urlencode((string) $this->longitude);
+        } else {
+            $address = $this->addressDestination();
+
+            if ($address === null) {
+                return null;
+            }
+
+            $destination = urlencode($address);
+        }
+
+        return 'https://www.google.com/maps/'.$mode.'/?api=1&destination='.$destination;
+    }
+
+    public function googleMapsDirectionsUrl(): ?string
+    {
+        return $this->googleMapsDestinationUrl('dir');
+    }
+
+    public function googleMapsSearchUrl(): ?string
+    {
+        $coordinates = $this->coordinatesDestination();
+
+        if ($coordinates !== null) {
+            $query = urlencode((string) $this->latitude).','.urlencode((string) $this->longitude);
+        } else {
+            $address = $this->addressDestination();
+
+            if ($address === null) {
+                return null;
+            }
+
+            $query = urlencode($address);
+        }
+
+        return 'https://www.google.com/maps/search/?api=1&query='.$query;
+    }
 }

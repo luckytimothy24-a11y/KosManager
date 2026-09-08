@@ -145,7 +145,12 @@
                                                     </div>
                                                     <div class="flex items-start justify-between gap-3">
                                                         <dt class="text-slate-500 dark:text-slate-400 shrink-0">Alamat</dt>
-                                                        <dd class="font-semibold text-slate-700 dark:text-slate-200 text-right leading-snug">{{ $selectedKos->address }}</dd>
+                                                        <dd class="font-semibold text-slate-700 dark:text-slate-200 text-right leading-snug">
+                                                            {{ $selectedKos->address }}
+                                                            @if($selectedKos->googleMapsDirectionsUrl())
+                                                                <x-kos-directions-button :kos="$selectedKos" variant="secondary" size="sm" label="Arah ke Kos" />
+                                                            @endif
+                                                        </dd>
                                                     </div>
                                                 </div>
                                             @endif

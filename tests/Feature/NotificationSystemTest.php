@@ -14,6 +14,7 @@ use App\Services\NotificationService;
 use App\Support\NotificationType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class NotificationSystemTest extends TestCase
@@ -220,7 +221,7 @@ class NotificationSystemTest extends TestCase
         $this->assertSame(1, Notification::forUser($owner)->where('type', NotificationType::BOOKING)->where('title', 'Booking Baru')->count());
     }
 
-    public function test_gateway_payment_submitted_notifies_owner(): void
+    public function test_cash_payment_submitted_notifies_owner(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
         $tenant = User::factory()->create(['role' => 'tenant']);
@@ -245,8 +246,10 @@ class NotificationSystemTest extends TestCase
             'status' => 'unpaid',
         ]);
 
-        $response = $this->actingAs($tenant)->post(route('tenant.pembayaran.gateway'), [
+        $response = $this->actingAs($tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
+            'amount' => $tagihan->total,
+            'payment_method' => 'cash',
         ]);
 
         $response->assertRedirect();
@@ -278,10 +281,16 @@ class NotificationSystemTest extends TestCase
             'status' => 'unpaid',
         ]);
 
-        $this->actingAs($tenant)->post(route('tenant.pembayaran.gateway'), [
+        $payment = Pembayaran::factory()->create([
             'tagihan_id' => $tagihan->id,
+            'penghuni_id' => $penghuni->id,
+            'amount' => $tagihan->total,
+            'payment_method' => 'e_wallet',
+            'verification_status' => 'pending',
+            'gateway_provider' => 'sandbox',
+            'gateway_reference' => 'VA-'.strtoupper(Str::random(6)),
         ]);
-        $payment = Pembayaran::where('tagihan_id', $tagihan->id)->firstOrFail();
+        $tagihan->update(['status' => 'pending_verification']);
 
         $payload = [
             'gateway_reference' => $payment->gateway_reference,

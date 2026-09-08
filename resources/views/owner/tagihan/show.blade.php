@@ -124,13 +124,14 @@
                 @if(Auth::user()->isTenant() && !in_array($tagihan->status, ['paid', 'cancelled']))
                     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-primary-100 dark:border-primary-500/20 p-6">
                         <h4 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white mb-1">
-                            <i class="ri-upload-2-line text-primary-500"></i> Upload Bukti Pembayaran
+                            <i class="ri-hand-coin-line text-primary-500"></i> Konfirmasi Pembayaran Tunai
                         </h4>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Pembayaran akan diverifikasi oleh pemilik kos dalam 1&times;24 jam.</p>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Pembayaran tunai akan diverifikasi oleh pemilik kos dalam 1&times;24 jam.</p>
                         <form method="POST" action="{{ route('tenant.pembayaran.store') }}" enctype="multipart/form-data" x-data="{ submitting: false }" x-on:submit="submitting = true">
                             @csrf
                             <input type="hidden" name="tagihan_id" value="{{ $tagihan->id }}">
                             <input type="hidden" name="amount" value="{{ $tagihan->total }}">
+                            <input type="hidden" name="payment_method" value="cash">
                             <div class="space-y-4">
                                 <div>
                                     <label for="amount_display" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nominal</label>
@@ -138,23 +139,14 @@
                                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/60 dark:text-slate-100 text-sm font-bold cursor-not-allowed">
                                 </div>
                                 <div>
-                                    <label for="payment_method" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Metode Pembayaran <span class="text-red-500">*</span></label>
-                                    <select id="payment_method" name="payment_method" required
-                                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                        <option value="transfer_bank">Transfer Bank</option>
-                                        <option value="e_wallet">E-Wallet / QRIS</option>
-                                        <option value="cash">Tunai</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Bukti Transfer <span class="text-red-500">*</span></label>
-                                    <input id="proof_file" type="file" name="proof_file" accept="image/jpeg,image/png,application/pdf" required
+                                    <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Bukti Pembayaran <span class="font-normal">(opsional)</span></label>
+                                    <input id="proof_file" type="file" name="proof_file" accept="image/jpeg,image/png,application/pdf"
                                            class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-500/10 file:text-primary-600 dark:file:text-primary-300 hover:file:bg-primary-100 cursor-pointer">
-                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">JPG, PNG, atau PDF.</p>
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">JPG, PNG, atau PDF. Unggah jika diperlukan pengelola.</p>
                                 </div>
                                 <button type="submit" :disabled="submitting"
                                         class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
-                                    <i class="ri-send-plane-line"></i> Kirim &amp; Tunggu Verifikasi
+                                    <i class="ri-hand-coin-line"></i> Kirim &amp; Tunggu Verifikasi
                                 </button>
                             </div>
                         </form>

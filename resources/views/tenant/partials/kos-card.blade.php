@@ -62,6 +62,18 @@
         <p class="mt-1 text-xs text-slate-400 dark:text-slate-500 flex items-start gap-1 line-clamp-1">
             <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500"></i> {{ $kos->address }}
         </p>
+        @php
+            $directionsUrl = $kos->googleMapsDirectionsUrl();
+        @endphp
+        @if($directionsUrl)
+            <a href="{{ $directionsUrl }}"
+               target="_blank" rel="noopener noreferrer"
+               aria-label="Buka petunjuk arah menuju {{ $kos->name }} di Google Maps"
+               title="Buka petunjuk arah menuju {{ $kos->name }} di Google Maps"
+               class="mt-1.5 inline-flex items-center gap-1 text-[10px] font-semibold text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded">
+                <i class="ri-navigation-line text-[10px]"></i> Arah ke Kos
+            </a>
+        @endif
 
         {{-- Fasilitas (kamar utama + general) — dot separated, +N jika lebih dari 3 --}}
         @php

@@ -518,42 +518,66 @@
         {{-- Google Maps Location --}}
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
             <div class="p-6">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-                    <i class="ri-map-pin-2-fill text-primary-500"></i> Lokasi
-                </h3>
+                @php
+                    $hasCoordinates = $kos->hasValidCoordinates();
+                    $googleMapsUrl = $kos->googleMapsSearchUrl();
+                    $directionsUrl = $kos->googleMapsDirectionsUrl();
+                @endphp
 
-                @if($kos->latitude && $kos->longitude)
+                <h2 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                    <i class="ri-map-pin-2-fill text-primary-500"></i> Lokasi Kos
+                </h2>
+
+                @if($hasCoordinates)
                     <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{{ $kos->address }}</p>
 
-                    <div class="mt-4 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800">
-                        <iframe
-                            src="https://maps.google.com/maps?q={{ urlencode($kos->latitude . ',' . $kos->longitude) }}&z=15&output=embed"
-                            width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            title="Peta lokasi {{ $kos->name }}"
-                            class="w-full"
-                        ></iframe>
+                    <div class="mt-4 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <a href="{{ $googleMapsUrl }}"
+                           target="_blank" rel="noopener noreferrer"
+                           aria-label="Lihat lokasi {{ $kos->name }} di Google Maps"
+                           class="group relative block focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/50">
+                            <iframe
+                                src="https://maps.google.com/maps?q={{ urlencode($kos->coordinatesDestination()) }}&z=15&output=embed"
+                                width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="Peta lokasi {{ $kos->name }}"
+                                class="w-full block"
+                            ></iframe>
+                            <span aria-hidden="true"
+                                  class="absolute inset-0 block cursor-pointer transition group-hover:bg-black/10 group-focus-visible:bg-black/10"></span>
+                            <span aria-hidden="true"
+                                  class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur text-xs font-bold text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+                                <i class="ri-external-link-line"></i> Klik untuk membuka Maps
+                            </span>
+                        </a>
                     </div>
 
                     <div class="mt-4 flex flex-wrap gap-3">
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($kos->latitude . ',' . $kos->longitude) }}"
+                        <a href="{{ $googleMapsUrl }}"
                            target="_blank" rel="noopener noreferrer"
-                           class="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-300 border border-primary-200 dark:border-primary-500/30 hover:bg-primary-50 dark:hover:bg-primary-500/10 px-4 py-2.5 rounded-xl transition">
-                            <i class="ri-map-pin-2-fill"></i> Buka di Google Maps
+                           aria-label="Buka lokasi {{ $kos->name }} di Google Maps"
+                           class="inline-flex items-center justify-center gap-2 min-h-11 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 active:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">
+                            <i class="ri-google-fill"></i> Buka di Google Maps
                         </a>
-                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($kos->latitude . ',' . $kos->longitude) }}"
-                           target="_blank" rel="noopener noreferrer"
-                           class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-2.5 rounded-xl transition">
-                            <i class="ri-road-map-line"></i> Petunjuk Arah
-                        </a>
+                        <x-kos-directions-button :kos="$kos" label="Petunjuk Arah" variant="ghost" />
+                    </div>
+                @elseif($directionsUrl)
+                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 p-5">
+                        <p class="text-sm text-slate-600 dark:text-slate-300 flex items-start gap-2">
+                            <i class="ri-map-pin-2-line text-primary-500 shrink-0 mt-0.5" aria-hidden="true"></i>
+                            <span>{{ $kos->address }}</span>
+                        </p>
+                        <div class="mt-4">
+                            <x-kos-directions-button :kos="$kos" label="Arah ke Kos" />
+                        </div>
                     </div>
                 @else
                     <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 p-5 text-center">
                         <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto">
                             <i class="ri-map-pin-line text-lg text-slate-400 dark:text-slate-500"></i>
                         </div>
-                        <p class="mt-2 text-xs text-slate-400 dark:text-slate-500">Lokasi peta belum ditentukan oleh pengelola.</p>
-                        <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{{ $kos->address }}</p>
+                        <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Lokasi peta belum tersedia.</p>
+                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Alamat kos belum tersedia.</p>
                     </div>
                 @endif
             </div>
@@ -605,13 +629,13 @@
             <div>
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <h2 class="text-base font-bold text-slate-900 dark:text-white">Partner untuk Penghuni Kos</h2>
-                    <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
-                        <i class="ri-megaphone-fill text-[10px]"></i> Iklan
+                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                        Iklan
                     </span>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="space-y-2.5">
                     @foreach($detailAds as $ad)
-                        @include('tenant.partials.promoted-partner', ['ad' => $ad, 'placement' => 'detail', 'variant' => 'card'])
+                        @include('tenant.partials.partner-ad', ['ad' => $ad, 'placement' => 'detail', 'variant' => 'compact'])
                     @endforeach
                 </div>
             </div>

@@ -5,47 +5,12 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePembayaranRequest;
 use App\Models\Penghuni;
-use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use App\Services\PaymentService;
-use Illuminate\Http\Request;
 
 class TenantPembayaranController extends Controller
 {
-    /**
-     * Buat pembayaran online via payment gateway (verifikasi otomatis).
-     */
-    public function gatewayStore(Request $request, PaymentService $paymentService)
-    {
-        $user = $request->user();
-        $penghuni = Penghuni::where('user_id', $user->id)->where('status', 'active')->first();
-        abort_unless($penghuni, 403);
-
-        $tagihan = Tagihan::findOrFail($request->tagihan_id);
-        abort_unless((int) $tagihan->penghuni_id === (int) $penghuni->id, 403);
-
-        $result = $paymentService->createGateway([
-            'penghuni' => $penghuni,
-            'tagihan' => $tagihan,
-        ]);
-
-        if (! $result['ok']) {
-            return back()->withErrors([
-                'amount' => $result['message'],
-            ]);
-        }
-
-        $tagihan = $result['tagihan'];
-        $pembayaran = $result['pembayaran'];
-
-        $kosOwner = $tagihan->kamar->kos->owner_id;
-        NotificationService::paymentSubmitted($kosOwner, $user->name, $tagihan->bill_number);
-        AuditLogService::create('Pembayaran', "Pembayaran online untuk tagihan {$tagihan->bill_number} dibuat oleh {$user->name}", ['tagihan_id' => $tagihan->id, 'gateway_reference' => $pembayaran->gateway_reference]);
-
-        return redirect()->route('tenant.pembayaran.show', $pembayaran)->with('success', 'Pembayaran online berhasil dibuat. Selesaikan pembayaran Anda lalu sistem akan memverifikasi otomatis.');
-    }
-
     public function store(StorePembayaranRequest $request, PaymentService $paymentService)
     {
         $user = $request->user();
@@ -81,8 +46,8 @@ class TenantPembayaranController extends Controller
 
         $kosOwner = $tagihan->kamar->kos->owner_id;
         NotificationService::paymentSubmitted($kosOwner, $user->name, $tagihan->bill_number);
-        AuditLogService::create('Pembayaran', "Pembayaran untuk tagihan {$tagihan->bill_number} diupload oleh {$user->name}", ['tagihan_id' => $tagihan->id]);
+        AuditLogService::create('Pembayaran', "Pembayaran untuk tagihan {$tagihan->bill_number} dikirim oleh {$user->name}", ['tagihan_id' => $tagihan->id]);
 
-        return redirect()->route('tenant.tagihan.show', $tagihan)->with('success', 'Bukti pembayaran berhasil diupload. Menunggu verifikasi.');
+        return redirect()->route('tenant.tagihan.show', $tagihan)->with('success', 'Pembayaran tunai berhasil dikirim. Menunggu verifikasi pengelola.');
     }
 }

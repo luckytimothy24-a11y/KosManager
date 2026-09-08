@@ -135,7 +135,8 @@ class Phase45TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.kos.show', $this->kos));
         $response->assertOk();
         $response->assertDontSee('maps.google.com');
-        $response->assertSee('Lokasi peta belum ditentukan oleh pengelola.');
+        $response->assertSee('Arah ke Kos');
+        $response->assertSee('maps/dir/?api=1', false);
     }
 
     /** Similar kos only active with available rooms */
@@ -156,8 +157,8 @@ class Phase45TenantMarketplaceTest extends TestCase
         $response->assertDontSee($noRoomKos->name);
     }
 
-    /** Payment methods display correctly on tagihan */
-    public function test_payment_methods_display_on_tagihan(): void
+    /** Cash-only payment method shown on tagihan */
+    public function test_cash_only_payment_method_display_on_tagihan(): void
     {
         $penghuni = Penghuni::factory()->create([
             'user_id' => $this->tenant->id,
@@ -173,9 +174,11 @@ class Phase45TenantMarketplaceTest extends TestCase
 
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $tagihan));
         $response->assertOk();
-        $response->assertSee('Transfer Bank');
-        $response->assertSee('E-Wallet / QRIS');
-        $response->assertSee('Tunai');
+        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('Konfirmasi Pembayaran Tunai');
+        $response->assertDontSee('Transfer Bank');
+        $response->assertDontSee('E-Wallet / QRIS');
+        $response->assertDontSee('Bayar Online');
     }
 
     /** Payment status unpaid shows correctly */

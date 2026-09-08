@@ -82,7 +82,7 @@ class BusinessFlowTest extends TestCase
         $this->actingAs($tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
             'amount' => $tagihan->total,
-            'payment_method' => 'transfer_bank',
+            'payment_method' => 'cash',
             'proof_file' => $proof,
         ])->assertRedirect();
         $this->assertDatabaseHas('tagihans', ['id' => $tagihan->id, 'status' => 'pending_verification']);

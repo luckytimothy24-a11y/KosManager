@@ -57,9 +57,22 @@
                     <x-advertising-detail-row :label="'Owner'" :value="$campaign->owner->name" />
                     @if($campaign->kos_id === null)
                         <x-advertising-detail-row :label="'Advertiser'" :value="$campaign->advertiser_name" />
+                        <x-advertising-detail-row :label="'Partner'" :value="$campaign->partner?->name ?? '-'" />
                         <x-advertising-detail-row :label="'Headline'" :value="$campaign->headline" />
                         <x-advertising-detail-row :label="'Placement'" :value="\App\Support\AdvertisingLabels::placementLabel($campaign->placement)" />
                         <x-advertising-detail-row :label="'Destination'" :value="$campaign->destination_url" />
+                        @if($campaign->campaign_code)
+                            <x-advertising-detail-row :label="'Kode Kampanye'" :value="$campaign->campaign_code" />
+                        @endif
+                        @if($campaign->contract_reference)
+                            <x-advertising-detail-row :label="'Referensi Kontrak'" :value="$campaign->contract_reference" />
+                        @endif
+                        @if($campaign->monetization_type)
+                            <x-advertising-detail-row :label="'Monetisasi'" :value="\App\Support\AdvertisingLabels::monetizationLabel($campaign->monetization_type)" />
+                        @endif
+                        @if($campaign->target_audience)
+                            <x-advertising-detail-row :label="'Target Audiens'" :value="$campaign->target_audience" />
+                        @endif
                     @else
                         <x-advertising-detail-row :label="'Kos'" :value="$campaign->kos?->name" />
                         <x-advertising-detail-row :label="'Perimeter'" :value="$campaign->kos?->address" />

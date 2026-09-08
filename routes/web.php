@@ -27,6 +27,7 @@ use App\Http\Controllers\SuperAdmin\AdvertisingPackageController;
 use App\Http\Controllers\SuperAdmin\AuditLogController;
 use App\Http\Controllers\SuperAdmin\FasilitasController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
+use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\Webhook\PaymentGatewayWebhookController;
 use App\Http\Controllers\WelcomeController;
@@ -96,6 +97,14 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
 
     Route::get('advertising/revenue', [AdvertisingCampaignController::class, 'revenue'])->name('advertising.revenue');
     Route::get('advertising/revenue/export', [AdvertisingCampaignController::class, 'exportCsv'])->name('advertising.revenue.export');
+
+    // Partner (mitra monetisasi — DANA, Shopee, GoPay, dll.)
+    Route::get('partners', [PartnerController::class, 'index'])->name('partners.index');
+    Route::get('partners/create', [PartnerController::class, 'create'])->name('partners.create');
+    Route::post('partners', [PartnerController::class, 'store'])->name('partners.store');
+    Route::get('partners/{partner}/edit', [PartnerController::class, 'edit'])->name('partners.edit');
+    Route::put('partners/{partner}', [PartnerController::class, 'update'])->name('partners.update');
+    Route::delete('partners/{partner}', [PartnerController::class, 'destroy'])->name('partners.destroy');
 });
 
 // Owner Routes
@@ -228,8 +237,6 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
-    Route::post('pembayaran/gateway', [TenantPembayaranController::class, 'gatewayStore'])
-        ->name('pembayaran.gateway');
 });
 
 require __DIR__.'/auth.php';

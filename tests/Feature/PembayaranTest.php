@@ -62,14 +62,14 @@ class PembayaranTest extends TestCase
         ]);
     }
 
-    public function test_tenant_can_upload_payment_proof(): void
+    public function test_tenant_can_submit_cash_payment_with_proof(): void
     {
         $proof = UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf');
 
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 1500000,
-            'payment_method' => 'transfer_bank',
+            'payment_method' => 'cash',
             'proof_file' => $proof,
         ]);
 
@@ -169,7 +169,7 @@ class PembayaranTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 100000,
-            'payment_method' => 'transfer_bank',
+            'payment_method' => 'cash',
             'proof_file' => $proof,
         ]);
 

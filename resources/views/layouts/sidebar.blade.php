@@ -82,6 +82,7 @@
                         $navItem('super-admin.audit-log.index', 'Activity Log', 'ri-history-line'),
                     ];
                     $groups['Monetisasi'] = [
+                        $navItem('super-admin.partners.index', 'Partner', 'ri-handshake-line'),
                         $navItem('super-admin.advertising.dashboard', 'Advertising', 'ri-megaphone-line'),
                         $navItem('super-admin.advertising.packages.index', 'Paket Iklan', 'ri-price-tag-3-line'),
                         $navItem('super-admin.advertising.campaigns.index', 'Kampanye', 'ri-bill-line'),

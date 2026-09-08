@@ -6,6 +6,7 @@ use App\Models\AdvertisingCampaign;
 use App\Models\AdvertisingOrder;
 use App\Models\AdvertisingPackage;
 use App\Models\Kos;
+use App\Models\Partner;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
@@ -199,7 +200,11 @@ class AdvertisingSeeder extends Seeder
 
         // --------------------------------------------------------------------
         // Kampanye advertiser PIHAK KETIGA demo (kos_id NULL, placement jelas).
+        // Setiap kampanye DIKAITKAN ke entitas Partner (mitra monetisasi) bila
+        // tersedia — DANA, Shopee, GoPay — dengan metadata kontrak.
         // --------------------------------------------------------------------
+        $partners = Partner::whereIn('slug', ['dana', 'shopee', 'gopay'])->get()->keyBy('slug');
+
         $partnerCampaigns = [
             [
                 'campaign_number' => 'AD-PARTNER-1',
@@ -210,6 +215,7 @@ class AdvertisingSeeder extends Seeder
                 'destination_url' => 'https://example.com/demo-wifi',
                 'placement' => 'marketplace',
                 'package_code' => 'MARKETPLACE_BANNER',
+                'partner_slug' => 'shopee',
             ],
             [
                 'campaign_number' => 'AD-PARTNER-2',
@@ -220,6 +226,7 @@ class AdvertisingSeeder extends Seeder
                 'destination_url' => 'https://example.com/demo-laundry',
                 'placement' => 'homepage',
                 'package_code' => 'HOMEPAGE_BANNER',
+                'partner_slug' => 'dana',
             ],
             [
                 'campaign_number' => 'AD-PARTNER-3',
@@ -230,6 +237,7 @@ class AdvertisingSeeder extends Seeder
                 'destination_url' => 'https://example.com/demo-furniture',
                 'placement' => 'detail',
                 'package_code' => 'MARKETPLACE_BANNER',
+                'partner_slug' => 'shopee',
             ],
             [
                 'campaign_number' => 'AD-PARTNER-4',
@@ -240,11 +248,112 @@ class AdvertisingSeeder extends Seeder
                 'destination_url' => 'https://example.com/demo-pindahan',
                 'placement' => 'native',
                 'package_code' => 'NATIVE_AD',
+                'partner_slug' => 'gopay',
+            ],
+
+            // --- Kampanye LIVE (active, sudah dibayar) untuk partner ternama ---
+            // DANA: iklan cashless untuk bayar tagihan kos di marketplace.
+            [
+                'campaign_number' => 'AD-DANA-1',
+                'advertiser_name' => 'DANA',
+                'headline' => 'Bayar kebutuhan harian jadi lebih praktis.',
+                'advertiser_description' => 'Temukan kemudahan transaksi digital untuk menemani aktivitas harianmu.',
+                'cta_label' => 'Lihat Promo',
+                'destination_url' => 'https://www.dana.id',
+                'placement' => 'marketplace',
+                'package_code' => 'MARKETPLACE_BANNER',
+                'partner_slug' => 'dana',
+                'live' => true,
+            ],
+            // Shopee: iklan marketplace untuk belanja kebutuhan kos (homepage).
+            [
+                'campaign_number' => 'AD-SHOPEE-1',
+                'advertiser_name' => 'Shopee',
+                'headline' => 'Lengkapi kebutuhan kos tanpa bikin kantong boncos.',
+                'advertiser_description' => 'Mulai dari perlengkapan kamar sampai kebutuhan harian, temukan pilihan menarik untuk anak kos.',
+                'cta_label' => 'Belanja Sekarang',
+                'destination_url' => 'https://shopee.co.id',
+                'placement' => 'homepage',
+                'package_code' => 'HOMEPAGE_BANNER',
+                'partner_slug' => 'shopee',
+                'live' => true,
+            ],
+            // GoPay: iklan untuk pembayaran cepat di detail kos.
+            [
+                'campaign_number' => 'AD-GOPAY-1',
+                'advertiser_name' => 'GoPay',
+                'headline' => 'Urusan sehari-hari, jadi lebih praktis.',
+                'advertiser_description' => 'Temukan kemudahan pembayaran digital untuk berbagai kebutuhanmu.',
+                'cta_label' => 'Selengkapnya',
+                'destination_url' => 'https://gopay.co.id',
+                'placement' => 'detail',
+                'package_code' => 'MARKETPLACE_BANNER',
+                'partner_slug' => 'gopay',
+                'live' => true,
+            ],
+            // GoPay: iklan tenant_dashboard — slot baru di dashboard tenant.
+            [
+                'campaign_number' => 'AD-GOPAY-2',
+                'advertiser_name' => 'GoPay',
+                'headline' => 'Urusan sehari-hari, jadi lebih praktis.',
+                'advertiser_description' => 'Temukan kemudahan pembayaran digital untuk berbagai kebutuhanmu.',
+                'cta_label' => 'Selengkapnya',
+                'destination_url' => 'https://gopay.co.id/home',
+                'placement' => 'tenant_dashboard',
+                'package_code' => 'NATIVE_AD',
+                'partner_slug' => 'gopay',
+                'live' => true,
+            ],
+            // DANA: iklan cashless di carousel homepage (slide tambahan).
+            [
+                'campaign_number' => 'AD-DANA-2',
+                'advertiser_name' => 'DANA',
+                'headline' => 'Bayar tagihan kos langsung dari dompet digital.',
+                'advertiser_description' => 'Bayar cepat, riwayat otomatis tercatat, dan aman.',
+                'cta_label' => 'Coba Sekarang',
+                'destination_url' => 'https://www.dana.id/promo',
+                'placement' => 'homepage',
+                'package_code' => 'HOMEPAGE_BANNER',
+                'partner_slug' => 'dana',
+                'live' => true,
+            ],
+            // Shopee: iklan belanja kebutuhan kos di marketplace (compact kedua).
+            [
+                'campaign_number' => 'AD-SHOPEE-2',
+                'advertiser_name' => 'Shopee',
+                'headline' => 'Perlengkapan kamar sampai kebutuhan harian tersedia.',
+                'advertiser_description' => 'Gratis ongkir dan voucher khusus anak kos.',
+                'cta_label' => 'Belanja Sekarang',
+                'destination_url' => 'https://shopee.co.id/deals',
+                'placement' => 'marketplace',
+                'package_code' => 'MARKETPLACE_BANNER',
+                'partner_slug' => 'shopee',
+                'live' => true,
+            ],
+            // GoPay: iklan pembayaran cepat di carousel homepage (slide tambahan).
+            [
+                'campaign_number' => 'AD-GOPAY-3',
+                'advertiser_name' => 'GoPay',
+                'headline' => 'Isi saldo, bayar kebutuhan, semua di satu tempat.',
+                'advertiser_description' => 'Pembayaran digital cepat tanpa ribet.',
+                'cta_label' => 'Selengkapnya',
+                'destination_url' => 'https://gopay.co.id',
+                'placement' => 'homepage',
+                'package_code' => 'HOMEPAGE_BANNER',
+                'partner_slug' => 'gopay',
+                'live' => true,
             ],
         ];
 
         foreach ($partnerCampaigns as $spec) {
-            $this->makePartnerCampaign($owner, $superAdmin, $byCode[$spec['package_code']], $spec, $now);
+            $this->makePartnerCampaign(
+                $owner,
+                $superAdmin,
+                $byCode[$spec['package_code']],
+                $spec,
+                $now,
+                $partners->get($spec['partner_slug'] ?? '')
+            );
         }
 
         $this->command?->warn('AdvertisingSeeder: data demo advertising dibuat untuk DEVELOPMENT. JANGAN dijalankan di staging/production (AD-DEMO-* memuat order paid).');
@@ -294,18 +403,22 @@ class AdvertisingSeeder extends Seeder
         ?User $approver,
         AdvertisingPackage $package,
         array $spec,
-        Carbon $now
+        Carbon $now,
+        ?Partner $partner = null
     ): void {
         if (! $package || AdvertisingCampaign::where('campaign_number', $spec['campaign_number'])->exists()) {
             return;
         }
 
+        $live = (bool) ($spec['live'] ?? false);
+
         $campaign = AdvertisingCampaign::create([
             'campaign_number' => $spec['campaign_number'],
             'owner_id' => $owner->id,
             'kos_id' => null,
+            'partner_id' => $partner?->id,
             'package_id' => $package->id,
-            'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
+            'status' => $live ? AdvertisingCampaign::STATUS_ACTIVE : AdvertisingCampaign::STATUS_PENDING_PAYMENT,
             'starts_at' => $now->copy()->subDays(7),
             'ends_at' => $now->copy()->addDays(21),
             'budget' => $package->price,
@@ -318,17 +431,24 @@ class AdvertisingSeeder extends Seeder
             'cta_label' => $spec['cta_label'],
             'destination_url' => $spec['destination_url'],
             'placement' => $spec['placement'],
+            'contract_reference' => 'KTR-'.$spec['campaign_number'],
+            'campaign_code' => $spec['campaign_number'],
+            'monetization_type' => $partner?->monetization_type ?? 'deal',
+            'target_audience' => 'Mahasiswa / penghuni kos',
+            'approved_by' => $live ? $approver?->id : null,
+            'approved_at' => $live ? $now->copy()->subDays(7) : null,
         ]);
 
-        // Order pihak ketiga berstatus PENDING (piutang) — konsisten dengan
-        // aturan ledger: revenue hanya dihitung setelah dana diterima. Campaign
-        // baru boleh live setelah order di-mark paid (gating M3).
+        // Order pihak ketiga: PENDING (piutang) untuk kampanye belum dibayar;
+        // PAID untuk kampanye LIVE (konsisten dengan aturan ledger: revenue
+        // hanya dihitung setelah dana diterima).
         AdvertisingOrder::create([
             'order_number' => 'ORD-'.$spec['campaign_number'],
             'campaign_id' => $campaign->id,
             'owner_id' => $owner->id,
             'amount' => $package->price,
-            'status' => 'pending',
+            'status' => $live ? 'paid' : 'pending',
+            'paid_at' => $live ? $now->copy()->subDays(7) : null,
         ]);
     }
 }

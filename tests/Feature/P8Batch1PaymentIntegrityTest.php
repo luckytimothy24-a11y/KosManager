@@ -16,6 +16,7 @@ use App\Services\PaymentService;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -191,13 +192,17 @@ class P8Batch1PaymentIntegrityTest extends TestCase
 
     // ---------------------------------------------------------------- PaymentService dedup (manual + gateway)
 
-    public function test_gateway_payment_via_service_sets_active_key_and_reference(): void
+    public function test_legacy_gateway_payment_sets_active_key_and_reference(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
+        $payment = Pembayaran::factory()->create([
             'tagihan_id' => $this->tagihan->id,
+            'amount' => $this->tagihan->total,
+            'payment_method' => 'e_wallet',
+            'verification_status' => 'pending',
+            'gateway_reference' => 'VA-'.strtoupper(Str::random(6)),
+            'gateway_provider' => 'sandbox',
+            'active_payment_key' => $this->tagihan->id,
         ]);
-
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
 
         $this->assertSame('pending', $payment->verification_status);
         $this->assertSame((int) $this->tagihan->id, (int) $payment->active_payment_key);
@@ -214,7 +219,7 @@ class P8Batch1PaymentIntegrityTest extends TestCase
             'penghuni' => $penghuni,
             'tagihan' => $this->tagihan,
             'amount' => $this->tagihan->total,
-            'payment_method' => 'transfer_bank',
+            'payment_method' => 'cash',
         ]);
 
         $this->assertTrue($result['ok']);

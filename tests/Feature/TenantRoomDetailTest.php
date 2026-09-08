@@ -280,12 +280,13 @@ class TenantRoomDetailTest extends TestCase
             'status' => 'active',
             'latitude' => null,
             'longitude' => null,
+            'address' => '',
         ]);
 
         $response = $this->actingAs($tenant)->get("/tenant/kos/{$kos->id}");
 
         $response->assertOk();
-        $response->assertSee('Lokasi peta belum ditentukan oleh pengelola');
+        $response->assertSee('Lokasi peta belum tersedia');
         $response->assertDontSee('maps.google.com', escape: false);
     }
 
@@ -312,6 +313,7 @@ class TenantRoomDetailTest extends TestCase
             'status' => 'active',
             'latitude' => null,
             'longitude' => null,
+            'address' => '',
         ]);
 
         $response = $this->actingAs($tenant)->get("/tenant/kos/{$kos->id}");

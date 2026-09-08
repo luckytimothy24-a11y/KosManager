@@ -13,6 +13,8 @@ use App\Services\PaymentGateway\PaymentGatewayContract;
 use App\Services\PaymentGateway\PaymentGatewayManager;
 use App\Services\PaymentGateway\SandboxGateway;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PaymentGatewayTest extends TestCase
@@ -67,6 +69,28 @@ class PaymentGatewayTest extends TestCase
         return hash_hmac('sha256', json_encode($payload), config('payment-gateway.signature_key'));
     }
 
+    /** Buat payment gateway legacy (data historis / simulasi webhook). */
+    private function createGatewayPayment(): Pembayaran
+    {
+        $reference = 'VA-TEST-'.strtoupper(Str::random(6));
+
+        $payment = Pembayaran::factory()->create([
+            'tagihan_id' => $this->tagihan->id,
+            'penghuni_id' => $this->penghuni->id,
+            'amount' => $this->tagihan->total,
+            'payment_method' => 'e_wallet',
+            'verification_status' => Pembayaran::STATUS_PENDING,
+            'gateway_provider' => 'sandbox',
+            'gateway_reference' => $reference,
+            'gateway_instructions' => 'Bayar virtual account '.$reference.' sejumlah Rp 1.500.000.',
+            'gateway_expires_at' => now()->addHours(24),
+        ]);
+
+        $this->tagihan->update(['status' => Tagihan::STATUS_PAYMENT_PENDING]);
+
+        return $payment;
+    }
+
     // ---------------------------------------------------------------- F1: driver
 
     public function test_sandbox_gateway_driver_is_resolved_by_manager(): void
@@ -111,12 +135,19 @@ class PaymentGatewayTest extends TestCase
         $this->assertFalse(PaymentGatewayManager::driver()->verifySignature($badPayload, $this->sign($payload)));
     }
 
-    // ---------------------------------------------------------------- F3: tenant initiates gateway payment
+    // ---------------------------------------------------------------- F3: tenant payment flow (cash only)
 
-    public function test_tenant_can_create_gateway_payment(): void
+    public function test_gateway_payment_creation_route_is_removed(): void
     {
-        $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
+        $this->assertFalse(Route::has('tenant.pembayaran.gateway'));
+    }
+
+    public function test_tenant_submits_cash_payment_through_manual_store(): void
+    {
+        $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
+            'amount' => $this->tagihan->total,
+            'payment_method' => 'cash',
         ]);
 
         $response->assertRedirect();
@@ -124,60 +155,18 @@ class PaymentGatewayTest extends TestCase
         $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->first();
 
         $this->assertNotNull($payment);
-        $this->assertTrue($payment->isFromGateway());
-        $this->assertSame('sandbox', $payment->gateway_provider);
-        $this->assertNotNull($payment->gateway_reference);
-        $this->assertNotNull($payment->gateway_instructions);
+        $this->assertSame('cash', $payment->payment_method);
+        $this->assertFalse($payment->isFromGateway());
+        $this->assertNull($payment->gateway_reference);
         $this->assertSame(Pembayaran::STATUS_PENDING, $payment->verification_status);
-        $this->assertTrue($payment->tagihan->fresh()->status === Tagihan::STATUS_PAYMENT_PENDING);
+        $this->assertSame(Tagihan::STATUS_PAYMENT_PENDING, $payment->tagihan->fresh()->status);
     }
 
-    public function test_tenant_cannot_create_gateway_payment_on_non_payable_tagihan(): void
+    // ---------------------------------------------------------------- F4: webhook auto-verification (legacy gateway)
+
+    public function test_webhook_auto_verifies_legacy_gateway_payment(): void
     {
-        $this->tagihan->update(['status' => Tagihan::STATUS_PAID]);
-
-        $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-
-        $response->assertSessionHasErrors('amount');
-        $this->assertDatabaseMissing('pembayarans', ['tagihan_id' => $this->tagihan->id]);
-    }
-
-    public function test_other_tenant_cannot_create_gateway_payment(): void
-    {
-        $other = User::factory()->create(['role' => 'tenant']);
-
-        $response = $this->actingAs($other)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-
-        $response->assertForbidden();
-        $this->assertDatabaseMissing('pembayarans', ['tagihan_id' => $this->tagihan->id]);
-    }
-
-    public function test_gateway_payment_blocks_duplicate(): void
-    {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-
-        $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-
-        $response->assertSessionHasErrors('amount');
-        $this->assertSame(1, Pembayaran::where('tagihan_id', $this->tagihan->id)->count());
-    }
-
-    // ---------------------------------------------------------------- F4: webhook auto-verification
-
-    public function test_webhook_auto_verifies_payment(): void
-    {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $payload = [
             'gateway_reference' => $payment->gateway_reference,
@@ -197,10 +186,7 @@ class PaymentGatewayTest extends TestCase
 
     public function test_webhook_rejects_invalid_signature(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $payload = ['gateway_reference' => $payment->gateway_reference, 'status' => 'success', 'amount' => 1];
 
@@ -225,10 +211,7 @@ class PaymentGatewayTest extends TestCase
 
     public function test_webhook_rejects_amount_mismatch(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $payload = [
             'gateway_reference' => $payment->gateway_reference,
@@ -246,10 +229,7 @@ class PaymentGatewayTest extends TestCase
 
     public function test_webhook_is_idempotent(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $payload = [
             'gateway_reference' => $payment->gateway_reference,
@@ -259,20 +239,17 @@ class PaymentGatewayTest extends TestCase
         $headers = ['X-Gateway-Signature' => $this->sign($payload)];
 
         $this->postJson(route('webhook.payment-gateway'), $payload, $headers)->assertOk();
-        $this->assertSame(2, \DB::table('audit_logs')->count());
+        $this->assertSame(1, \DB::table('audit_logs')->count());
         $second = $this->postJson(route('webhook.payment-gateway'), $payload, $headers);
 
         $second->assertOk();
         $this->assertSame(Pembayaran::STATUS_APPROVED, $payment->fresh()->verification_status);
-        $this->assertSame(2, \DB::table('audit_logs')->count(), 'Webhook kedua tidak boleh menambah audit log.');
+        $this->assertSame(1, \DB::table('audit_logs')->count(), 'Webhook kedua tidak boleh menambah audit log.');
     }
 
     public function test_webhook_passes_through_for_non_success_status(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $payload = [
             'gateway_reference' => $payment->gateway_reference,
@@ -290,22 +267,20 @@ class PaymentGatewayTest extends TestCase
 
     // ---------------------------------------------------------------- F5: views
 
-    public function test_tenant_tagihan_show_offers_gateway_payment(): void
+    public function test_tenant_tagihan_show_does_not_offer_gateway_payment(): void
     {
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $this->tagihan));
 
         $response->assertOk();
-        $response->assertSee('Bayar Online');
-        $response->assertSee('Buat Pembayaran Online');
-        $response->assertSee(route('tenant.pembayaran.gateway'), false);
+        $response->assertDontSee('Bayar Online');
+        $response->assertDontSee('Buat Pembayaran Online');
+        $response->assertDontSee('tenant.pembayaran.gateway', false);
+        $response->assertSee('Pembayaran Tunai');
     }
 
-    public function test_tenant_pembayaran_show_shows_gateway_instructions(): void
+    public function test_tenant_pembayaran_show_shows_legacy_gateway_instructions(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $response = $this->actingAs($this->tenant)->get(route('tenant.pembayaran.show', $payment));
 
@@ -315,12 +290,9 @@ class PaymentGatewayTest extends TestCase
         $response->assertSee('memverifikasi otomatis', false);
     }
 
-    public function test_owner_pembayaran_show_marks_gateway_source(): void
+    public function test_owner_pembayaran_show_marks_legacy_gateway_source(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $response = $this->actingAs($this->owner)
             ->get(route('owner.pembayaran.show', $payment));
@@ -332,10 +304,7 @@ class PaymentGatewayTest extends TestCase
 
     public function test_owner_cannot_manually_verify_gateway_payment_already_approved(): void
     {
-        $this->actingAs($this->tenant)->post(route('tenant.pembayaran.gateway'), [
-            'tagihan_id' => $this->tagihan->id,
-        ]);
-        $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->firstOrFail();
+        $payment = $this->createGatewayPayment();
 
         $payload = [
             'gateway_reference' => $payment->gateway_reference,

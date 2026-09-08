@@ -230,6 +230,7 @@ class DashboardController extends Controller
         // iklan sama sekali tidak memengaruhi daftar rekomendasi/next mari kita.
         $partnerAds = collect();
         $kosPromosHome = collect();
+        $tenantDashboardAds = collect();
         if (auth()->check() && auth()->user()->isTenant()) {
             $partnerAds = $this->advertisingService->partnerAds(AdvertisingCampaign::PLACEMENT_HOMEPAGE, 4);
 
@@ -263,6 +264,25 @@ class DashboardController extends Controller
                     true
                 );
             }
+
+            // Placement khusus DASHBOARD TENANT ($tenantDashboardAds) — slot iklan
+            // partner yang berbeda dari carousel homepage, ditampilkan sebagai kartu
+            // ringkas di bawah.Kontennya JELAS terpisah dari kos organik.
+            $tenantDashboardAds = $this->advertisingService->partnerAds(
+                AdvertisingCampaign::PLACEMENT_TENANT_DASHBOARD,
+                3
+            );
+
+            foreach ($tenantDashboardAds as $ad) {
+                $this->advertisingService->trackEvent(
+                    (int) $ad->id,
+                    'impression',
+                    auth()->id(),
+                    session()->getId(),
+                    AdvertisingCampaign::PLACEMENT_TENANT_DASHBOARD,
+                    true
+                );
+            }
         }
 
         return view('dashboard.tenant', compact(
@@ -280,7 +300,8 @@ class DashboardController extends Controller
             'favoritedIds',
             'locations',
             'partnerAds',
-            'kosPromosHome'
+            'kosPromosHome',
+            'tenantDashboardAds'
         ));
     }
 

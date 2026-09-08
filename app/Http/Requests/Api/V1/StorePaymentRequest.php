@@ -17,15 +17,10 @@ class StorePaymentRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
+        return [
             'amount' => ['required', 'numeric', 'min:1'],
-            'payment_method' => ['required', 'in:transfer_bank,cash,e_wallet'],
+            'payment_method' => ['required', 'in:cash'],
+            'proof_file' => ['sometimes', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ];
-
-        if ($this->input('payment_method') !== 'cash') {
-            $rules['proof_file'] = ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'];
-        }
-
-        return $rules;
     }
 }

@@ -288,7 +288,7 @@ class AdvertisingAuditTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Laundry Antar Jemput di Jantung Kos')
-            ->assertSee('Promoted Partner');
+            ->assertSee('Sponsored');
 
         // Marketplace menampilkan iklan pihak ketiga (placement marketplace) — bukan kos.
         $this->actingAs($tenant)

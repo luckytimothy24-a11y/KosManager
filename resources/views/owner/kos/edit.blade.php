@@ -176,7 +176,7 @@
                 <div>
                     <label for="payment_info" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Informasi Pembayaran</label>
                     <textarea id="payment_info" name="payment_info" rows="3"
-                              placeholder="Contoh:{{ "\n" }}Transfer Bank BCA 1234567890 a.n. KosManager{{ "\n" }}QRIS tersedia di loket"
+                              placeholder="Contoh:{{ "\n" }}Pembayaran tunai langsung kepada pengelola di loket kos,{{ "\n" }}hubungi 0812xxxxxxx untuk konfirmasi."
                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">{{ old('payment_info', $kos->payment_info) }}</textarea>
                     <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
                         <i class="ri-eye-line mt-0.5 shrink-0"></i> Ditampilkan ke penghuni saat mereka melakukan pembayaran tagihan.

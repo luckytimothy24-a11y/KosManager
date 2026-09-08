@@ -48,14 +48,15 @@
         </div>
 
         {{-- Iklan marketplace — advertiser PIHAK KETIGA, JELAS terpisah dari daftar kos organik.
+             Kompak (bukan banner besar) agar tidak mendominasi content organik.
              Daftar kos di bawah TIDAK pernah diboost/diubah oleh iklan ini. --}}
         @if(($marketplaceAds ?? collect())->isNotEmpty())
-            <section aria-label="Partner untuk penghuni kos" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @foreach($marketplaceAds as $idx => $ad)
-                    @include('tenant.partials.promoted-partner', [
+            <section aria-label="Partner untuk penghuni kos" class="space-y-2.5">
+                @foreach($marketplaceAds as $ad)
+                    @include('tenant.partials.partner-ad', [
                         'ad' => $ad,
                         'placement' => 'marketplace',
-                        'variant' => $idx === 0 ? 'banner' : 'card',
+                        'variant' => 'compact',
                     ])
                 @endforeach
             </section>
@@ -219,7 +220,7 @@
                                     'lainnya' => 'Fasilitas Lainnya',
                                 ];
                             @endphp
-                            <div x-data="{ openFacility: @json(array_key_first($facilityCategories) ?: null) }">
+                            <div x-data="{ openFacility: {{ array_key_first($facilityCategories) ? "'".array_key_first($facilityCategories)."'" : 'null' }} }">
                                 <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Fasilitas</label>
                                 <div class="mt-2 space-y-2">
                                     @foreach($facilityCategories as $catKey => $facilities)

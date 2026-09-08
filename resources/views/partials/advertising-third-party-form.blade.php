@@ -2,8 +2,10 @@
     // Form kampanye ADVERTISER PIHAK KETIGA (kos_id NULL) untuk moderator
     // (admin / super admin). Penerima: $formAction, $method (POST/PUT),
     // $packages, $placements, $campaign (nullable, mode edit), $submitLabel.
+    // Opsional: $partners (daftar Partner aktif) untuk dropdown kemitraan.
     $editMode = isset($campaign) && $campaign;
     $startsValue = old('starts_at', $editMode && $campaign->starts_at ? $campaign->starts_at->format('Y-m-d') : now()->format('Y-m-d'));
+    $partners = $partners ?? collect();
 @endphp
 
 <form method="POST" action="{{ $formAction }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6 space-y-5">
@@ -25,6 +27,54 @@
             <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Paket & periode tidak dapat diubah setelah pembuatan — hanya creative/CTA/placement yang dapat diedit.</p>
         @endif
         @error('package_id')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Partner (mitra monetisasi)</label>
+            <select name="partner_id" class="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <option value="">— Tanpa partner —</option>
+                @foreach($partners as $partner)
+                    <option value="{{ $partner->id }}" {{ old('partner_id', $editMode ? $campaign->partner_id : null) == $partner->id ? 'selected' : '' }}>
+                        {{ $partner->name }}
+                    </option>
+                @endforeach
+            </select>
+            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Kaitkan ke entitas partner terdaftar (mis. DANA, Shopee, GoPay) bila berlaku.</p>
+            @error('partner_id')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Tipe Monetisasi</label>
+            <select name="monetization_type" class="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                <option value="">— Pilih —</option>
+                <option value="cpm" {{ old('monetization_type', $editMode ? $campaign->monetization_type : null) === 'cpm' ? 'selected' : '' }}>CPM (per impressi)</option>
+                <option value="cpc" {{ old('monetization_type', $editMode ? $campaign->monetization_type : null) === 'cpc' ? 'selected' : '' }}>CPC (per klik)</option>
+                <option value="deal" {{ old('monetization_type', $editMode ? $campaign->monetization_type : null) === 'deal' ? 'selected' : '' }}>Kesepakatan paket</option>
+                <option value="contract" {{ old('monetization_type', $editMode ? $campaign->monetization_type : null) === 'contract' ? 'selected' : '' }}>Kontrak</option>
+            </select>
+            @error('monetization_type')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Referensi Kontrak</label>
+            <input type="text" name="contract_reference" value="{{ old('contract_reference', $editMode ? $campaign->contract_reference : '') }}" maxlength="120" placeholder="PO-2026/001"
+                   class="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            @error('contract_reference')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Kode Kampanye</label>
+            <input type="text" name="campaign_code" value="{{ old('campaign_code', $editMode ? $campaign->campaign_code : '') }}" maxlength="120" placeholder="DANA-Q3-2026"
+                   class="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            @error('campaign_code')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </div>
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Target Audiens</label>
+            <input type="text" name="target_audience" value="{{ old('target_audience', $editMode ? $campaign->target_audience : '') }}" maxlength="190" placeholder="Mahasiswa / anak kos"
+                   class="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            @error('target_audience')<p class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+        </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -98,6 +98,7 @@ class AdvertisingService
             'campaign_number' => 'AD'.strtoupper(Str::random(8)),
             'owner_id' => $owner->id,
             'kos_id' => null,
+            'partner_id' => data_get($data, 'partner_id') ?: null,
             'package_id' => $package->id,
             'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
             'starts_at' => $data['starts_at'] ?? now(),
@@ -115,6 +116,10 @@ class AdvertisingService
             'cta_label' => trim((string) data_get($data, 'cta_label')),
             'destination_url' => $destinationUrl,
             'placement' => $placement,
+            'contract_reference' => data_get($data, 'contract_reference') ?: null,
+            'campaign_code' => data_get($data, 'campaign_code') ?: null,
+            'monetization_type' => data_get($data, 'monetization_type') ?: null,
+            'target_audience' => data_get($data, 'target_audience') ?: null,
         ]);
 
         return ['ok' => true, 'campaign' => $campaign];
@@ -421,6 +426,7 @@ class AdvertisingService
                 'campaign_number' => 'AD'.strtoupper(Str::random(8)),
                 'owner_id' => $moderator->id,
                 'kos_id' => null,
+                'partner_id' => data_get($data, 'partner_id') ?: null,
                 'package_id' => $package->id,
                 'status' => AdvertisingCampaign::STATUS_PENDING_PAYMENT,
                 'starts_at' => $startsAt,
@@ -438,6 +444,10 @@ class AdvertisingService
                 'cta_label' => trim((string) data_get($data, 'cta_label')),
                 'destination_url' => $destinationUrl,
                 'placement' => $placement,
+                'contract_reference' => data_get($data, 'contract_reference') ?: null,
+                'campaign_code' => data_get($data, 'campaign_code') ?: null,
+                'monetization_type' => data_get($data, 'monetization_type') ?: null,
+                'target_audience' => data_get($data, 'target_audience') ?: null,
             ]);
 
             // Ledger pihak ketiga: order status pending (piutang) langsung dibuat
@@ -562,6 +572,11 @@ class AdvertisingService
             'cta_label' => data_get($data, 'cta_label') ?: $campaign->cta_label,
             'destination_url' => $destinationUrl,
             'placement' => $placement,
+            'partner_id' => array_key_exists('partner_id', $data) ? ($data['partner_id'] ?: null) : $campaign->partner_id,
+            'contract_reference' => data_get($data, 'contract_reference') ?: $campaign->contract_reference,
+            'campaign_code' => data_get($data, 'campaign_code') ?: $campaign->campaign_code,
+            'monetization_type' => data_get($data, 'monetization_type') ?: $campaign->monetization_type,
+            'target_audience' => data_get($data, 'target_audience') ?: $campaign->target_audience,
         ]);
 
         return true;
@@ -623,7 +638,7 @@ class AdvertisingService
             ->whereNotNull('advertiser_name')
             ->where('placement', $placement)
             ->orderBy('id')
-            ->with(['package', 'owner'])
+            ->with(['package', 'owner', 'partner'])
             ->get();
 
         return $this->fairRotate($campaigns, 'owner_id', (int) now()->format('Ymd'))

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdvertisingCampaign;
 use App\Models\AdvertisingOrder;
 use App\Models\AdvertisingPackage;
+use App\Models\Partner;
 use App\Models\User;
 use App\Services\AdvertisingAnalytics;
 use App\Services\AdvertisingService;
@@ -30,7 +31,7 @@ class AdvertisingCampaignController extends Controller
     {
         $this->authorize('viewAny', AdvertisingCampaign::class);
 
-        $query = AdvertisingCampaign::with(['owner', 'kos', 'package']);
+        $query = AdvertisingCampaign::with(['owner', 'kos', 'package', 'partner']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -63,7 +64,7 @@ class AdvertisingCampaignController extends Controller
     {
         $this->authorize('view', $campaign);
 
-        $campaign->load(['owner', 'kos', 'package', 'approver', 'orders']);
+        $campaign->load(['owner', 'kos', 'package', 'partner', 'approver', 'orders']);
 
         $impressions = $campaign->totalImpressions();
         $clicks = $campaign->totalClicks();
@@ -84,8 +85,9 @@ class AdvertisingCampaignController extends Controller
 
         $packages = AdvertisingPackage::active()->orderBy('sort_order')->orderBy('price')->get();
         $placements = self::placementOptions();
+        $partners = Partner::active()->orderBy('name')->get();
 
-        return view('super-admin.advertising.campaign.create', compact('packages', 'placements'));
+        return view('super-admin.advertising.campaign.create', compact('packages', 'placements', 'partners'));
     }
 
     public function store(Request $request)
@@ -105,7 +107,7 @@ class AdvertisingCampaignController extends Controller
         AuditLogService::create(
             'Advertising',
             "Kampanye iklan pihak ketiga {$campaign->campaign_number} dibuat oleh moderator",
-            ['campaign_id' => $campaign->id, 'package_id' => $campaign->package_id, 'placement' => $campaign->placement]
+            ['campaign_id' => $campaign->id, 'package_id' => $campaign->package_id, 'placement' => $campaign->placement, 'partner_id' => $campaign->partner_id]
         );
 
         return redirect()->route('super-admin.advertising.campaigns.show', $campaign)
@@ -119,11 +121,12 @@ class AdvertisingCampaignController extends Controller
     {
         $this->authorize('update', $campaign);
 
-        $campaign->load('package');
+        $campaign->load('package', 'partner');
         $packages = AdvertisingPackage::active()->orderBy('sort_order')->orderBy('price')->get();
         $placements = self::placementOptions();
+        $partners = Partner::active()->orderBy('name')->get();
 
-        return view('super-admin.advertising.campaign.edit', compact('campaign', 'packages', 'placements'));
+        return view('super-admin.advertising.campaign.edit', compact('campaign', 'packages', 'placements', 'partners'));
     }
 
     public function update(Request $request, AdvertisingCampaign $campaign)
@@ -151,6 +154,7 @@ class AdvertisingCampaignController extends Controller
             AdvertisingCampaign::PLACEMENT_MARKETPLACE => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_MARKETPLACE),
             AdvertisingCampaign::PLACEMENT_DETAIL => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_DETAIL),
             AdvertisingCampaign::PLACEMENT_NATIVE => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_NATIVE),
+            AdvertisingCampaign::PLACEMENT_TENANT_DASHBOARD => AdvertisingLabels::placementLabel(AdvertisingCampaign::PLACEMENT_TENANT_DASHBOARD),
         ];
     }
 
@@ -158,6 +162,7 @@ class AdvertisingCampaignController extends Controller
     {
         return [
             'package_id' => 'required|exists:advertising_packages,id',
+            'partner_id' => 'nullable|exists:partners,id',
             'advertiser_name' => 'required|string|max:120',
             'advertiser_logo' => 'nullable|url|max:255',
             'advertiser_description' => 'nullable|string|max:1000',
@@ -166,8 +171,12 @@ class AdvertisingCampaignController extends Controller
             'image' => 'nullable|url|max:255',
             'cta_label' => 'nullable|string|max:60',
             'destination_url' => 'required|string|max:500',
-            'placement' => 'nullable|in:homepage,marketplace,detail,native',
+            'placement' => 'nullable|in:homepage,marketplace,detail,native,tenant_dashboard',
             'starts_at' => 'nullable|date|after:yesterday',
+            'contract_reference' => 'nullable|string|max:120',
+            'campaign_code' => 'nullable|string|max:120',
+            'monetization_type' => 'nullable|in:cpm,cpc,deal,contract',
+            'target_audience' => 'nullable|string|max:190',
         ];
     }
 

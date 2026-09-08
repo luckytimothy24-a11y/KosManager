@@ -39,7 +39,7 @@
                         <tr>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kampanye</th>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Owner</th>
-                            <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kos</th>
+                            <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kos / Partner</th>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Paket</th>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Periode</th>
@@ -51,7 +51,14 @@
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
                                 <td class="px-5 py-3 font-mono text-xs font-bold text-slate-500 dark:text-slate-400">{{ $c->campaign_number }}</td>
                                 <td class="px-5 py-3 font-medium text-slate-800 dark:text-slate-200">{{ $c->owner->name }}</td>
-                                <td class="px-5 py-3 text-slate-600 dark:text-slate-300">{{ $c->kos?->name ?? $c->advertiser_name }}</td>
+                                <td class="px-5 py-3 text-slate-600 dark:text-slate-300">
+                                    {{ $c->kos?->name ?? $c->advertiser_name }}
+                                    @if($c->partner)
+                                        <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-teal-100 dark:bg-teal-500/15 text-teal-700 dark:text-teal-300">
+                                            <i class="ri-handshake-line mr-0.5"></i>{{ $c->partner->name }}
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="px-5 py-3 text-slate-600 dark:text-slate-300">{{ $c->package->name }}</td>
                                 <td class="px-5 py-3">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold {{ \App\Support\AdvertisingLabels::campaignBadge($c->status) }}">

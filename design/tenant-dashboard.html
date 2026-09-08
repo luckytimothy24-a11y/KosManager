@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KosManager — Dashboard Tenant</title>
+<style>
+  :root {
+    --bg: #F4F7FB;
+    --card: #FFFFFF;
+    --text: #0F172A;
+    --muted: #64748B;
+    --muted-2: #94A3B8;
+    --primary: #3E7BFA;
+    --primary-dark: #2F62CD;
+    --primary-soft: #EEF4FF;
+    --green: #059669;
+    --green-soft: #ECFDF5;
+    --amber: #B45309;
+    --amber-soft: #FFF7E6;
+    --border: #E6EDF5;
+    --shadow: 0 6px 20px rgba(15, 55, 125, .07);
+    --shadow-sm: 0 2px 10px rgba(15, 55, 125, .05);
+    --r-lg: 20px;
+    --r-md: 16px;
+    --r-sm: 12px;
+    --nav-h: 76px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #E8EFF8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .frame {
+    width: 390px;
+    height: 844px;
+    background: var(--bg);
+    border-radius: 32px;
+    box-shadow: 0 30px 80px rgba(15, 55, 125, .25);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 420px) {
+    body { background: var(--bg); }
+    .frame { width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; }
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 20px calc(var(--nav-h) + 24px);
+    scrollbar-width: none;
+  }
+  .content::-webkit-scrollbar { display: none; }
+
+  .icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; flex: none; }
+
+  /* ---------- Header ---------- */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-top: 4px;
+  }
+  .hello-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 7px;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+  .status-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; }
+  .bell-btn {
+    width: 40px; height: 40px;
+    border: none;
+    background: var(--card);
+    border-radius: 14px;
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    flex: none;
+  }
+  .bell-btn .icon { width: 20px; height: 20px; }
+  .bell-dot {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 7px; height: 7px;
+    background: #EF4444;
+    border: 2px solid var(--card);
+    border-radius: 50%;
+  }
+  .bell-wrap { position: relative; flex: none; }
+
+  /* ---------- Carousel ---------- */
+  .carousel-wrap { margin-bottom: 18px; -webkit-user-select: none; user-select: none; }
+  .carousel {
+    display: flex;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .carousel:active { cursor: grabbing; }
+  .slide {
+    min-width: 100%;
+    border-radius: var(--r-lg);
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: transform .35s ease;
+  }
+  .slide-left { min-width: 0; }
+  .slide h2 { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .slide p { font-size: 12.5px; color: var(--muted); margin: 5px 0 14px; line-height: 1.45; }
+  .slide-cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: none;
+    background: var(--card);
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 9px 15px;
+    border-radius: 11px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(15, 55, 125, .10);
+  }
+  .slide-cta .icon { width: 15px; height: 15px; }
+  .slide-art {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .75);
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+    color: var(--primary-dark);
+  }
+  .slide.s1 { background: #E4EEFF; }
+  .slide.s2 { background: #E2F5F0; }
+  .slide.s3 { background: #FDEED6; }
+  .slide.s2 .slide-cta, .slide.s2 .slide-art { color: #0E7C66; }
+  .slide.s3 .slide-cta, .slide.s3 .slide-art { color: #A06A08; }
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .dots button {
+    width: 6px; height: 6px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: #CBD9EC;
+    cursor: pointer;
+    transition: all .25s ease;
+  }
+  .dots button.active { width: 18px; background: var(--primary); }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: var(--card);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  /* Kos Saya */
+  .kos-photo {
+    position: relative;
+    width: 100%;
+    height: 178px;
+    background: linear-gradient(180deg, #BFD9F7 0%, #9CC3EE 55%, #7FA8DC 100%);
+    display: block;
+  }
+  .kos-body { padding: 16px 16px 18px; }
+  .kos-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .kos-name { font-size: 19px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .kamar-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 9px;
+  }
+  .kamar-badge .icon { width: 13px; height: 13px; }
+  .rent-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .rent-icon {
+    width: 36px; height: 36px;
+    background: var(--green-soft);
+    border-radius: 11px;
+    color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+  }
+  .rent-icon .icon { width: 18px; height: 18px; }
+  .rent-text .rent-label { font-size: 13px; font-weight: 700; color: var(--text); }
+  .rent-text .rent-date { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 13px 6px 11px;
+    background: #F5F8FC;
+    border: none;
+    border-radius: 13px;
+    color: var(--text);
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .12s ease;
+  }
+  .action-btn:active { transform: scale(.96); }
+  .action-btn .icon { width: 21px; height: 21px; }
+  .action-btn.maps { background: var(--primary-soft); color: var(--primary-dark); }
+
+  /* Tagihan */
+  .bill-body { padding: 16px; }
+  .bill-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .pay-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--amber-soft);
+    color: var(--amber);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+  .bill-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .bill-amount {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+  }
+  .bill-due { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .bill-due .icon { width: 15px; height: 15px; color: var(--muted-2); }
+  .bill-cta {
+    width: 100%;
+    margin-top: 16px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(62, 123, 250, .32);
+    transition: transform .12s ease, background .2s ease;
+  }
+  .bill-cta:active { transform: scale(.98); background: var(--primary-dark); }
+  .pay-methods {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 13px;
+    flex-wrap: wrap;
+  }
+  .pay-methods span {
+    font-size: 11px;
+    color: var(--muted);
+    background: #F5F8FC;
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .pay-methods .lead { display: inline-flex; align-items: center; gap: 5px; color: var(--primary-dark); background: var(--primary-soft); border-color: transparent; }
+  .pay-methods .lead .icon { width: 12px; height: 12px; }
+
+  /* ---------- Bottom Nav ---------- */
+  .nav {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    box-shadow: 0 -6px 20px rgba(15, 55, 125, .06);
+    border-radius: 22px 22px 0 0;
+    z-index: 10;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    background: none;
+    color: var(--muted-2);
+    font-size: 10.5px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-item .icon { width: 22px; height: 22px; }
+  .nav-item.active { color: var(--primary); }
+  .nav-item.active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 22px; height: 3px;
+    background: var(--primary);
+    border-radius: 0 0 4px 4px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="content">
+
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <div class="hello-title">Halo, Raka 👋</div>
+        <span class="status-badge"><span class="dot"></span>Sewa Aktif · Lunas hingga 12 Okt</span>
+      </div>
+      <button class="bell-wrap bell-btn" aria-label="Notifikasi">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="bell-dot"></span>
+      </button>
+    </header>
+
+    <!-- Promo Carousel -->
+    <section class="carousel-wrap">
+      <div class="carousel" id="carousel">
+        <div class="slide s1">
+          <div class="slide-left">
+            <h2>Laundry Antar Jemput</h2>
+            <p>Praktis, bersih, langsung dari kos.</p>
+            <button class="slide-cta">Pesan Sekarang
+              <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <div class="slide-art">
+            <svg class="icon" style="width:34px;height:34px;stroke-width:1.6" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h2"/><path d="M8 17h2"/></svg>
+          </div>
+        </div>
+        <div class="slide s2">
+          <div class="slide-left">
+            <h2>Cleaning Service Kamar</h2>
+            <p>Kamar wangi &amp; rapi, tinggal relax.</p>
+            <button class="slide-cta">Jadwalkan
+              <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <div class="slide-art">
+            <svg class="icon" style="width:34px;height:34px;stroke-width:1.6" viewBox="0 0 24 24"><path d="M12 3v3"/><path d="M12 8v1"/><path d="M5 12a7 7 0 0 1 14 0v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/></svg>
+          </div>
+        </div>
+        <div class="slide s3">
+          <div class="slide-left">
+            <h2>Promo Pembayaran Tagihan</h2>
+            <p>Cashback QRIS &amp; E-Wallet bulan ini.</p>
+            <button class="slide-cta">Bayar Sekarang
+              <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <div class="slide-art">
+            <svg class="icon" style="width:34px;height:34px;stroke-width:1.6" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="dots" id="dots"></div>
+    </section>
+
+    <!-- Kos Saya -->
+    <section class="card">
+      <div class="kos-photo" aria-label="Foto Kos Melati">
+        <svg width="390" height="178" viewBox="0 0 390 178" preserveAspectRatio="xMidYMax slice" style="display:block">
+          <rect width="390" height="178" fill="#8FB9E8"/>
+          <circle cx="320" cy="38" r="26" fill="#FCE9B8"/>
+          <circle cx="52" cy="34" r="16" fill="#FFFFFF" opacity=".8"/>
+          <circle cx="96" cy="18" r="22" fill="#FFFFFF" opacity=".6"/>
+          <circle cx="154" cy="30" r="14" fill="#FFFFFF" opacity=".75"/>
+          <path d="M0 118 Q 60 98 120 114 Q 190 132 260 116 Q 330 100 390 118 L 390 178 L 0 178 Z" fill="#6F9FD6"/>
+          <rect x="30" y="92" width="112" height="64" rx="4" fill="#5B82B5"/>
+          <rect x="30" y="92" width="112" height="8" fill="#55679A"/>
+          <rect x="46" y="108" width="22" height="22" rx="3" fill="#FCE9B8"/>
+          <rect x="82" y="108" width="22" height="22" rx="3" fill="#DCE8F7"/>
+          <rect x="118" y="108" width="22" height="22" rx="3" fill="#FCE9B8"/>
+          <rect x="46" y="140" width="22" height="16" rx="0" fill="#DCE8F7"/>
+          <rect x="82" y="140" width="22" height="16" rx="0" fill="#DCE8F7"/>
+          <rect x="118" y="140" width="22" height="16" rx="0" fill="#DCE8F7"/>
+          <rect x="156" y="120" width="110" height="36" rx="4" fill="#5B82B5"/>
+          <rect x="156" y="120" width="110" height="8" fill="#55679A"/>
+          <rect x="172" y="136" width="22" height="16" rx="3" fill="#FCE9B8"/>
+          <rect x="206" y="136" width="22" height="16" rx="3" fill="#DCE8F7"/>
+          <rect x="240" y="136" width="22" height="16" rx="3" fill="#FCE9B8"/>
+          <rect x="280" y="126" width="90" height="30" rx="4" fill="#5B82B5"/>
+          <path d="M0 156 Q 110 138 220 154 Q 305 166 390 152 L 390 178 L 0 178 Z" fill="#7FA8DC"/>
+          <ellipse cx="72" cy="172" rx="70" ry="14" fill="#7FB069"/>
+          <ellipse cx="320" cy="174" rx="76" ry="12" fill="#6FA35F"/>
+          <circle cx="352" cy="156" r="10" fill="#6FA35F"/>
+          <circle cx="262" cy="172" r="9" fill="#7FB069"/>
+        </svg>
+      </div>
+      <div class="kos-body">
+        <div class="kos-name-row">
+          <h1 class="kos-name">Kos Melati</h1>
+          <span class="kamar-badge">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+            Kamar A01
+          </span>
+        </div>
+        <div class="rent-row">
+          <div class="rent-icon">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="rent-text">
+            <div class="rent-label">Sewa Aktif</div>
+            <div class="rent-date">12 Sep 2026 — 12 Okt 2026</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="action-btn maps">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Lihat di Maps
+          </button>
+          <button class="action-btn">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+            Kontrak Sewa
+          </button>
+          <button class="action-btn">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            Lapor Kerusakan
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tagihan Berikutnya -->
+    <section class="card">
+      <div class="bill-body">
+        <div class="bill-head">
+          <h2 class="card-title">Tagihan Berikutnya</h2>
+          <span class="pay-status">
+            <svg class="icon" style="width:12px;height:12px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Belum Dibayar
+          </span>
+        </div>
+        <div class="bill-label">Sewa Bulan Depan</div>
+        <div class="bill-amount">Rp 1.500.000</div>
+        <div class="bill-due">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Jatuh tempo 12 Okt 2026
+        </div>
+        <button class="bill-cta">Bayar Tagihan</button>
+        <div class="pay-methods">
+          <span class="lead">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M3 11l18-7-7 18-2.5-7.5z"/></svg>
+            QRIS
+          </span>
+          <span>Virtual Account</span>
+          <span>E-Wallet</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="nav">
+    <button class="nav-item active" data-nav="Beranda">
+      <svg class="icon" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+      Beranda
+    </button>
+    <button class="nav-item" data-nav="Cari">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Cari
+    </button>
+    <button class="nav-item" data-nav="Tagihan">
+      <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+      Tagihan
+    </button>
+    <button class="nav-item" data-nav="Bantuan">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+      Bantuan
+    </button>
+    <button class="nav-item" data-nav="Profil">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg>
+      Profil
+    </button>
+  </nav>
+</div>
+
+<script>
+  ;(function () {
+    var carousel = document.getElementById('carousel');
+    var dotsWrap = document.getElementById('dots');
+    var slides = carousel.children;
+    var index = 0;
+    var startX = 0;
+
+    for (var i = 0; i < slides.length; i++) {
+      (function (i) {
+        var d = document.createElement('button');
+        d.setAttribute('aria-label', 'Slide ' + (i + 1));
+        if (i === 0) d.classList.add('active');
+        d.addEventListener('click', function () {
+          index = i;
+          update();
+        });
+        dotsWrap.appendChild(d);
+      })(i);
+    }
+
+    function update() {
+      carousel.style.transform = 'translateX(-' + index * 100 + '%)';
+      for (var i = 0; i < dotsWrap.children.length; i++) {
+        dotsWrap.children[i].classList.toggle('active', i === index);
+      }
+    }
+
+    carousel.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    carousel.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) {
+        index = dx < 0 ? Math.min(index + 1, slides.length - 1) : Math.max(index - 1, 0);
+        update();
+      }
+    }, { passive: true });
+
+    document.querySelectorAll('.nav-item').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.nav-item').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+      });
+    });
+  })();
+</script>
+</body>
+</html>

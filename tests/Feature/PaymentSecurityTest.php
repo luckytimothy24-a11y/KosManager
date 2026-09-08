@@ -67,7 +67,7 @@ class PaymentSecurityTest extends TestCase
         return array_merge([
             'tagihan_id' => $this->tagihan->id,
             'amount' => 1500000,
-            'payment_method' => 'transfer_bank',
+            'payment_method' => 'cash',
             'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
         ], $overrides);
     }
