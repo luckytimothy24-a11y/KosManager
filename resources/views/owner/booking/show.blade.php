@@ -19,13 +19,6 @@
                     </div>
                     <x-status-badge :status="$booking->status" context="booking" />
                 </div>
-
-                @if($booking->status === 'pending')
-                    <div class="mt-5 flex items-start gap-2.5 rounded-xl border border-yellow-100 dark:border-yellow-500/20 bg-yellow-50/70 dark:bg-yellow-500/[0.06] px-4 py-3">
-                        <i class="ri-time-line text-yellow-600 dark:text-yellow-400 mt-0.5"></i>
-                        <p class="text-sm text-yellow-800 dark:text-yellow-300/90">Menunggu persetujuan Anda. Kamar akan direservasi setelah disetujui.</p>
-                    </div>
-                @endif
             </div>
 
             {{-- Detail penyewa & kamar --}}
@@ -117,52 +110,13 @@
 
             {{-- Aksi --}}
             @can('update', $booking)
-                @if(in_array($booking->status, ['pending', 'approved']))
+                @if($booking->status === 'approved')
                     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8" x-data="{ submitting: false }">
                         <div class="flex flex-wrap items-center justify-end gap-3">
-                            @if($booking->status === 'pending')
-                                <x-confirm-dialog title="Tolak Booking?" description="Tolak booking ini? Penyewa akan menerima notifikasi penolakan."
-                                                   confirmText="Tolak">
-                                    <x-slot name="slot">
-                                        <span class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 rounded-xl hover:bg-red-100 dark:hover:bg-red-500/20 transition">
-                                            <i class="ri-close-circle-line"></i> Tolak Booking
-                                        </span>
-                                    </x-slot>
-                                    <x-slot name="actions">
-                                        <form method="POST" action="{{ route("$prefix.booking.reject", $booking) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
-                                            @csrf
-                                            <button type="submit" :disabled="submitting"
-                                                    class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
-                                                <span x-show="!submitting">Tolak</span>
-                                                <span x-show="submitting" x-cloak>Memproses...</span>
-                                            </button>
-                                        </form>
-                                    </x-slot>
-                                </x-confirm-dialog>
-                                <x-confirm-dialog title="Setujui Booking?" description="Setujui booking ini? Kamar akan direservasi untuk penyewa."
-                                                   confirmText="Setujui" confirmClass="bg-green-600 hover:bg-green-700 text-white">
-                                    <x-slot name="slot">
-                                        <span class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 active:bg-green-800 rounded-xl transition shadow-sm shadow-green-600/30">
-                                            <i class="ri-check-line"></i> Setujui Booking
-                                        </span>
-                                    </x-slot>
-                                    <x-slot name="actions">
-                                        <form method="POST" action="{{ route("$prefix.booking.approve", $booking) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
-                                            @csrf
-                                            <button type="submit" :disabled="submitting"
-                                                    class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-green-600 hover:bg-green-700 transition shadow-sm shadow-green-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
-                                                <span x-show="!submitting">Setujui</span>
-                                                <span x-show="submitting" x-cloak>Memproses...</span>
-                                            </button>
-                                        </form>
-                                    </x-slot>
-                                </x-confirm-dialog>
-                            @elseif($booking->status === 'approved')
-                                <a href="{{ route("$prefix.checkin.index") }}"
-                                   class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 active:bg-primary-700 rounded-xl transition shadow-sm shadow-primary-500/30">
-                                    <i class="ri-login-box-line"></i> Proses Check-In
-                                </a>
-                            @endif
+                            <a href="{{ route("$prefix.checkin.index") }}"
+                               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 active:bg-primary-700 rounded-xl transition shadow-sm shadow-primary-500/30">
+                                <i class="ri-login-box-line"></i> Proses Check-In
+                            </a>
                         </div>
                     </div>
                 @endif

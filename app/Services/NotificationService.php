@@ -61,16 +61,6 @@ class NotificationService
         self::create($ownerId, NotificationType::BOOKING, 'Booking Baru', "{$tenantName} melakukan booking untuk kamar {$roomNumber}");
     }
 
-    public static function bookingApproved(int $tenantId, string $bookingCode): void
-    {
-        self::create($tenantId, NotificationType::BOOKING, 'Booking Disetujui', "Booking {$bookingCode} telah disetujui.");
-    }
-
-    public static function bookingRejected(int $tenantId, string $bookingCode): void
-    {
-        self::create($tenantId, NotificationType::BOOKING, 'Booking Ditolak', "Booking {$bookingCode} telah ditolak.");
-    }
-
     public static function bookingInstantConfirmation(int $tenantId, string $bookingCode, string $roomNumber): void
     {
         self::create($tenantId, NotificationType::BOOKING, 'Booking Berhasil', "Booking {$bookingCode} untuk kamar {$roomNumber} telah terkonfirmasi. Silakan lakukan check-in sesuai jadwal.");

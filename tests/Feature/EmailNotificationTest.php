@@ -26,21 +26,6 @@ class EmailNotificationTest extends TestCase
         });
     }
 
-    public function test_booking_approved_email_has_subject_and_body(): void
-    {
-        Mail::fake();
-
-        $user = User::factory()->create(['role' => 'tenant']);
-
-        NotificationService::bookingApproved($user->id, 'BK-001');
-
-        Mail::assertQueued(KosManagerMail::class, function ($mail) use ($user) {
-            return $mail->hasTo($user->email)
-                && $mail->mailSubject === 'Booking Disetujui'
-                && str_contains($mail->bodyMessage, 'BK-001');
-        });
-    }
-
     public function test_bill_created_email_contains_due_date(): void
     {
         Mail::fake();

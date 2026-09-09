@@ -59,7 +59,7 @@
                 <ul class="mt-8 space-y-4">
                     @foreach([
                         ['ri-door-open-line', 'Manajemen kamar & status hunian real-time'],
-                        ['ri-calendar-check-line', 'Booking online dengan persetujuan pemilik'],
+                        ['ri-calendar-check-line', 'Booking online dengan konfirmasi instan'],
                         ['ri-wallet-3-line', 'Tagihan, pembayaran & verifikasi terpusat'],
                         ['ri-bar-chart-grouped-line', 'Laporan keuangan siap ekspor PDF / Excel'],
                     ] as [$icon, $text])

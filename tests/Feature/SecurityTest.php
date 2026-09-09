@@ -67,22 +67,6 @@ class SecurityTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_owner_cannot_approve_booking_for_other_owner_kos(): void
-    {
-        $owner1 = User::factory()->create(['role' => 'owner']);
-        $owner2 = User::factory()->create(['role' => 'owner']);
-        $kos = Kos::factory()->create(['owner_id' => $owner2->id]);
-        $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $booking = Booking::factory()->create([
-            'kos_id' => $kos->id,
-            'kamar_id' => $kamar->id,
-            'status' => 'pending',
-        ]);
-
-        $response = $this->actingAs($owner1)->post(route('owner.booking.approve', $booking));
-        $response->assertStatus(403);
-    }
-
     public function test_unauthenticated_user_redirected_to_login(): void
     {
         $response = $this->get('/dashboard');

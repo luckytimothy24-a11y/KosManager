@@ -33,22 +33,6 @@ class BookingPolicy
         return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();
     }
 
-    public function approve(User $user, Booking $booking): bool
-    {
-        return ($user->isSuperAdmin()
-                || ($user->isAdmin() && $user->canAccessKos((int) $booking->kos_id))
-                || $this->isKosOwner($user, $booking))
-            && $booking->status === 'pending';
-    }
-
-    public function reject(User $user, Booking $booking): bool
-    {
-        return ($user->isSuperAdmin()
-                || ($user->isAdmin() && $user->canAccessKos((int) $booking->kos_id))
-                || $this->isKosOwner($user, $booking))
-            && $booking->status === 'pending';
-    }
-
     public function cancel(User $user, Booking $booking): bool
     {
         return $booking->user_id === $user->id

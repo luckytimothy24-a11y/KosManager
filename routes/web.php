@@ -123,8 +123,6 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
 
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
-    Route::post('booking/{booking}/approve', [BookingController::class, 'approve'])->name('booking.approve');
-    Route::post('booking/{booking}/reject', [BookingController::class, 'reject'])->name('booking.reject');
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
@@ -171,8 +169,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
-    Route::post('booking/{booking}/approve', [BookingController::class, 'approve'])->name('booking.approve');
-    Route::post('booking/{booking}/reject', [BookingController::class, 'reject'])->name('booking.reject');
 
     Route::get('kamar', [KamarController::class, 'index'])->name('kamar.index');
     Route::get('kamar/{kamar}', [KamarController::class, 'show'])->name('kamar.show');

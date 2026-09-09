@@ -79,49 +79,6 @@ class BookingTest extends TestCase
         $response->assertSessionHasErrors('kamar_id');
     }
 
-    public function test_tenant_cannot_approve_booking(): void
-    {
-        $booking = Booking::factory()->create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $this->kos->id,
-            'kamar_id' => $this->kamar->id,
-            'status' => 'pending',
-        ]);
-
-        $response = $this->actingAs($this->tenant)->post(route('owner.booking.approve', $booking));
-        $response->assertStatus(403);
-    }
-
-    public function test_owner_can_approve_booking(): void
-    {
-        $booking = Booking::factory()->create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $this->kos->id,
-            'kamar_id' => $this->kamar->id,
-            'status' => 'pending',
-        ]);
-
-        $response = $this->actingAs($this->owner)->post(route('owner.booking.approve', $booking));
-        $response->assertRedirect(route('owner.booking.index'));
-
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
-        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'booked']);
-    }
-
-    public function test_owner_can_reject_booking(): void
-    {
-        $booking = Booking::factory()->create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $this->kos->id,
-            'kamar_id' => $this->kamar->id,
-            'status' => 'pending',
-        ]);
-
-        $response = $this->actingAs($this->owner)->post(route('owner.booking.reject', $booking));
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'rejected']);
-        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'available']);
-    }
-
     public function test_tenant_can_cancel_own_booking(): void
     {
         $booking = Booking::factory()->create([
@@ -171,36 +128,5 @@ class BookingTest extends TestCase
 
         $response = $this->actingAs($this->tenant)->get(route('tenant.booking.index'));
         $response->assertStatus(200);
-    }
-
-    public function test_cannot_approve_overlapping_approved_booking(): void
-    {
-        $tenantB = User::factory()->create(['role' => 'tenant']);
-
-        $bookingA = Booking::factory()->create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $this->kos->id,
-            'kamar_id' => $this->kamar->id,
-            'start_date' => now()->addDays(1),
-            'end_date' => now()->addDays(30),
-            'status' => 'pending',
-        ]);
-        $bookingB = Booking::factory()->create([
-            'user_id' => $tenantB->id,
-            'kos_id' => $this->kos->id,
-            'kamar_id' => $this->kamar->id,
-            'start_date' => now()->addDays(5),
-            'end_date' => now()->addDays(10),
-            'status' => 'pending',
-        ]);
-
-        $this->actingAs($this->owner)->post(route('owner.booking.approve', $bookingA))->assertRedirect();
-        $this->assertDatabaseHas('bookings', ['id' => $bookingA->id, 'status' => 'approved']);
-
-        $response = $this->actingAs($this->owner)->post(route('owner.booking.approve', $bookingB));
-        $response->assertRedirect();
-        $response->assertSessionHas('error');
-
-        $this->assertDatabaseHas('bookings', ['id' => $bookingB->id, 'status' => 'pending']);
     }
 }
