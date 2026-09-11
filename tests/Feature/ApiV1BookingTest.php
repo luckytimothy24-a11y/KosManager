@@ -286,11 +286,28 @@ class ApiV1BookingTest extends TestCase
             'kamar_id' => $this->kamar->id,
             'start_date' => now()->addDays(1)->format('Y-m-d'),
             'end_date' => now()->addDays(3)->format('Y-m-d'),
-            'rental_type' => 'weekly',
+            'rental_type' => 'yearly',
         ]);
 
         $response->assertStatus(422)
             ->assertJsonStructure(['errors' => ['rental_type']]);
+    }
+
+    public function test_store_accepts_weekly_rental_type(): void
+    {
+        $this->kamar->update(['weekly_price' => 350000]);
+        $this->kamar->refresh();
+
+        $response = $this->withToken($this->token($this->tenant))->postJson('/api/v1/bookings', [
+            'kos_id' => $this->kos->id,
+            'kamar_id' => $this->kamar->id,
+            'start_date' => now()->addDays(1)->format('Y-m-d'),
+            'end_date' => now()->addDays(8)->format('Y-m-d'),
+            'rental_type' => 'weekly',
+        ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('bookings', ['kamar_id' => $this->kamar->id, 'rental_type' => 'weekly', 'price' => 350000]);
     }
 
     public function test_store_rejects_invalid_dates(): void

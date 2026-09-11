@@ -22,7 +22,7 @@ class StoreBookingRequest extends FormRequest
             ],
             'start_date' => ['required', 'date', 'after_or_equal:today'],
             'end_date' => ['required', 'date', 'after:start_date'],
-            'rental_type' => ['required', 'in:daily,monthly'],
+            'rental_type' => ['required', 'in:daily,weekly,monthly'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
