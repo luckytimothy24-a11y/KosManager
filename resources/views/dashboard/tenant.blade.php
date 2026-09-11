@@ -15,7 +15,7 @@
                 </h1>
                 @if($penghuni)
                     @if($isActiveRent)
-                        <span class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                        <span class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
                             <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
                             Sewa Aktif
                             @if(!empty($stats['kontrak_end']))
@@ -23,7 +23,7 @@
                             @endif
                         </span>
                     @else
-                        <span class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                        <span class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                             <span class="h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500"></span>
                             Sewa Tidak Aktif
                         </span>
@@ -33,7 +33,7 @@
                 @endif
             </div>
             <a href="{{ route('notifications.index') }}"
-               class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-400 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500 hover:text-primary-500 transition"
+               class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 shadow-sm transition hover:text-primary-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500"
                aria-label="Notifikasi">
                 <i class="ri-notification-3-line text-xl"></i>
                 @if(($sidebarBadges['unreadNotif'] ?? 0) > 0)
@@ -79,6 +79,9 @@
                      index: 0,
                      total: {{ count($promoSlides) }},
                      touchX: 0,
+                     drag: false,
+                     dragStartX: 0,
+                     dragMoved: false,
                      go(i) { this.index = Math.max(0, Math.min(this.total - 1, i)); },
                      prev() { this.go(this.index - 1); },
                      next() { this.go(this.index + 1); },
@@ -86,12 +89,34 @@
                      onTouchEnd(e) {
                          const dx = e.changedTouches[0].clientX - this.touchX;
                          if (Math.abs(dx) > 40) { dx < 0 ? this.next() : this.prev(); }
-                     }
+                     },
+                     startDrag(e) { if (!this.drag) { this.drag = true; this.dragMoved = false; this.dragStartX = e.clientX; } },
+                     moveDrag(e) {
+                         if (this.drag && !this.dragMoved && Math.abs(e.clientX - this.dragStartX) > 40) { this.dragMoved = true; }
+                     },
+                     endDrag(e) {
+                         if (this.drag) {
+                             const dx = e.clientX - this.dragStartX;
+                             if (this.dragMoved && Math.abs(dx) > 40) { dx < 0 ? this.next() : this.prev(); }
+                             this.drag = false;
+                         }
+                     },
+                     cancelDrag() { this.drag = false; this.dragMoved = false; }
                  }">
             <div class="relative overflow-hidden rounded-[1.25rem]"
+                 :class="total > 1 ? 'cursor-grab active:cursor-grabbing' : ''"
+                 role="region" aria-roledescription="karusel" aria-label="Promo dan partner pilihan"
+                 tabindex="0"
                  @touchstart.passive="onTouchStart($event)"
-                 @touchend.passive="onTouchEnd($event)">
-                <div class="flex transition-transform duration-500 ease-out"
+                 @touchend.passive="onTouchEnd($event)"
+                 @mousedown="startDrag($event)"
+                 @mousemove="moveDrag($event)"
+                 @mouseup="endDrag($event)"
+                 @mouseleave="cancelDrag()"
+                 @keydown.arrow-left.prevent="prev()"
+                 @keydown.arrow-right.prevent="next()"
+                 @click.capture="if (dragMoved) { $event.preventDefault(); $event.stopPropagation(); dragMoved = false; }">
+                <div class="flex transition-transform duration-500 ease-out motion-reduce:transition-none"
                      :style="'transform: translateX(-' + (index * 100) + '%)'">
                     @foreach($promoSlides as $slide)
                         @if($slide['type'] === 'ad')
@@ -115,30 +140,13 @@
                         @endif
                     @endforeach
                 </div>
-
-                @if(count($promoSlides) > 1)
-                    <button type="button" @click="prev()"
-                            class="absolute left-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-white/90 p-1.5 text-slate-600 shadow-md transition hover:bg-white active:scale-95 sm:block"
-                            aria-label="Slide sebelumnya">
-                        <i class="ri-arrow-left-s-line text-lg"></i>
-                    </button>
-                    <button type="button" @click="next()"
-                            class="absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-full bg-white/90 p-1.5 text-slate-600 shadow-md transition hover:bg-white active:scale-95 sm:block"
-                            aria-label="Slide berikutnya">
-                        <i class="ri-arrow-right-s-line text-lg"></i>
-                    </button>
-                @endif
             </div>
 
             @if(count($promoSlides) > 1)
-                <div class="mt-3 flex items-center justify-center gap-1.5" role="tablist" aria-label="Pilih slide">
+                <div class="pointer-events-none mt-3 flex items-center justify-center gap-1.5" aria-hidden="true">
                     @foreach($promoSlides as $i => $slide)
-                        <button type="button"
-                                @click="go({{ $i }})"
-                                :class="index === {{ $i }} ? 'w-5 bg-primary-500' : 'w-1.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400'"
-                                class="h-1.5 rounded-full transition-all duration-300"
-                                :aria-label="'Slide ' + ({{ $i }} + 1)"
-                                :aria-current="index === {{ $i }}"></button>
+                        <span :class="index === {{ $i }} ? 'w-5 bg-primary-500' : 'w-1.5 bg-slate-300 dark:bg-slate-700'"
+                              class="h-1.5 rounded-full transition-all duration-300"></span>
                     @endforeach
                 </div>
             @endif
@@ -198,45 +206,39 @@
                             </div>
                         </div>
 
-                        {{-- Quick actions --}}
-                        <div class="mt-4 grid grid-cols-3 gap-2.5">
-                            @if($mapsUrl)
-                                <a href="{{ $mapsUrl }}" target="_blank" rel="noopener noreferrer"
-                                   class="flex flex-col items-center gap-1.5 rounded-2xl bg-primary-50 px-2 py-3 text-[11px] font-semibold text-primary-600 transition active:scale-95 dark:bg-primary-500/10 dark:text-primary-300"
-                                   aria-label="Buka petunjuk arah menuju {{ $kos->name }} di Google Maps">
-                                    <i class="ri-navigation-line text-xl"></i>
-                                    Arah ke Kos
-                                </a>
-                            @endif
-                            <a href="{{ route('tenant.kontrak.index') }}"
-                               class="flex flex-col items-center gap-1.5 rounded-2xl bg-slate-50 px-2 py-3 text-[11px] font-semibold text-slate-600 transition active:scale-95 dark:bg-slate-800/80 dark:text-slate-300"
-                               aria-label="Lihat kontrak sewa">
-                                <i class="ri-file-text-line text-xl text-slate-500 dark:text-slate-400"></i>
-                                Kontrak Sewa
-                            </a>
-                            <a href="{{ route('dashboard') }}#bantuan"
-                               class="flex flex-col items-center gap-1.5 rounded-2xl bg-slate-50 px-2 py-3 text-[11px] font-semibold text-slate-600 transition active:scale-95 dark:bg-slate-800/80 dark:text-slate-300"
-                               aria-label="Lapor kerusakan kamar melalui bantuan">
-                                <i class="ri-tools-line text-xl text-slate-500 dark:text-slate-400"></i>
-                                Lapor Kerusakan
-                            </a>
-                        </div>
+{{-- Quick actions --}}
+            <div class="mt-4 grid grid-cols-3 gap-2.5">
+                @if($mapsUrl)
+                    <a href="{{ $mapsUrl }}" target="_blank" rel="noopener noreferrer"
+                       class="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-primary-50 px-2 py-3 text-[11px] font-semibold text-primary-600 transition active:scale-95 dark:bg-primary-500/10 dark:text-primary-300"
+                       aria-label="Buka petunjuk arah menuju {{ $kos->name }} di Google Maps">
+                        <i class="ri-navigation-line text-xl"></i>
+                        Arah ke Kos
+                    </a>
+                @endif
+                <a href="{{ route('tenant.kontrak.index') }}"
+                   class="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-slate-50 px-2 py-3 text-[11px] font-semibold text-slate-600 transition active:scale-95 dark:bg-slate-800/80 dark:text-slate-300"
+                   aria-label="Lihat kontrak sewa">
+                    <i class="ri-file-text-line text-xl text-slate-500 dark:text-slate-400"></i>
+                    Kontrak Sewa
+                </a>
+            </div>
                     </div>
                 </div>
 
                 {{-- Ringkasan pembayaran (data dari $stats) --}}
-                <div class="grid grid-cols-2 gap-3 lg:grid-cols-3">
-                    <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                        <p class="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400"><i class="ri-file-list-3-line text-amber-500"></i> Tagihan Belum Bayar</p>
-                        <p class="mt-1 text-lg font-bold text-slate-900 dark:text-white">{{ $stats['tagihan_pending'] ?? 0 }}</p>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="card-surface rounded-xl p-3.5">
+                        <p class="flex items-start gap-1.5 text-[11px] font-medium leading-tight text-slate-500 dark:text-slate-400"><i class="ri-file-list-3-line mt-0.5 text-amber-500"></i> Tagihan Belum Bayar</p>
+                        <p class="mt-1.5 text-xl font-black text-slate-900 dark:text-white">{{ $stats['tagihan_pending'] ?? 0 }}</p>
                     </div>
-                    <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                        <p class="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400"><i class="ri-time-line text-yellow-500"></i> Menunggu Verifikasi</p>
-                        <p class="mt-1 text-lg font-bold text-slate-900 dark:text-white">{{ $stats['tagihan_pending_verification'] ?? 0 }}</p>
+                    <div class="card-surface rounded-xl p-3.5">
+                        <p class="flex items-start gap-1.5 text-[11px] font-medium leading-tight text-slate-500 dark:text-slate-400"><i class="ri-time-line mt-0.5 text-yellow-500"></i> Menunggu Verifikasi</p>
+                        <p class="mt-1.5 text-xl font-black text-slate-900 dark:text-white">{{ $stats['tagihan_pending_verification'] ?? 0 }}</p>
                     </div>
-                    <div class="col-span-2 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm lg:col-span-1 dark:border-slate-800 dark:bg-slate-900">
-                        <p class="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400"><i class="ri-money-dollar-circle-line text-green-500"></i> Total Belum Dibayar</p>
-                        <p class="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+                    <div class="card-surface rounded-xl p-3.5">
+                        <p class="flex items-start gap-1.5 text-[11px] font-medium leading-tight text-slate-500 dark:text-slate-400"><i class="ri-money-dollar-circle-line mt-0.5 text-green-500"></i> Total Belum Dibayar</p>
+                        <p class="mt-1.5 text-sm font-black leading-tight text-slate-900 dark:text-white">
                             @if(($stats['total_belum_dibayar'] ?? 0) > 0)
                                 Rp {{ number_format((float) $stats['total_belum_dibayar'], 0, ',', '.') }}
                             @else
@@ -281,7 +283,7 @@
                             @endif
                         </p>
 
-                        <a href="{{ route('tenant.tagihan.index') }}"
+                        <a href="{{ route('tenant.tagihan.pay') }}"
                            class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary-500 px-5 py-3.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-[0.98]">
                             <i class="ri-wallet-3-line text-lg"></i> Bayar Tagihan
                         </a>
@@ -306,6 +308,17 @@
                     @endif
                 </div>
             </section>
+
+            {{-- Aksi bantuan (sekunder, shortcut chat langsung ke Owner) --}}
+            <a href="{{ route('tenant.messages.index') }}"
+               class="group inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white py-2 pl-2.5 pr-3 text-[13px] font-medium text-slate-600 transition hover:border-primary-300 hover:bg-primary-50/60 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-500/40 dark:hover:bg-primary-500/[0.08] dark:hover:text-primary-200"
+               aria-label="Hubungi owner kos">
+                <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary-50 text-primary-500 transition group-hover:bg-primary-100 dark:bg-primary-500/10 dark:group-hover:bg-primary-500/20">
+                    <i class="ri-chat-smile-3-line text-sm" aria-hidden="true"></i>
+                </span>
+                <span class="min-w-0 whitespace-nowrap">Butuh bantuan? Hubungi Owner</span>
+                <i class="ri-arrow-right-s-line shrink-0 text-base text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-primary-500" aria-hidden="true"></i>
+            </a>
         @endif
 
         {{-- ============================================================
@@ -314,16 +327,6 @@
         @php
             $attention = [];
             if ($penghuni) {
-                if (($stats['tagihan_pending'] ?? 0) > 0) {
-                    $attention[] = [
-                        'icon' => 'ri-bill-line',
-                        'iconClass' => 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400',
-                        'title' => $stats['tagihan_pending'].' tagihan belum dibayar',
-                        'desc' => 'Cek tagihan dan lakukan pembayaran sebelum jatuh tempo.',
-                        'route' => route('tenant.tagihan.index'),
-                        'cta' => 'Bayar Sekarang',
-                    ];
-                }
                 if (($stats['tagihan_pending_verification'] ?? 0) > 0) {
                     $attention[] = [
                         'icon' => 'ri-time-line',
@@ -347,7 +350,7 @@
             }
         @endphp
 
-        @if($penghuni)
+        @if($penghuni && !empty($attention))
             <section aria-label="Perlu Perhatian" class="space-y-4">
                 <h2 class="flex items-center gap-2 text-base font-black tracking-tight text-slate-900 dark:text-white">
                     <span class="grid h-8 w-8 place-items-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-500/10 dark:text-primary-300">
@@ -374,16 +377,6 @@
                             </a>
                         @endforeach
                     </div>
-                @else
-                    <div class="flex items-center gap-3 rounded-2xl border border-green-100 bg-green-50/60 p-4 dark:border-green-500/20 dark:bg-green-500/[0.06]">
-                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-green-100 text-lg text-green-600 dark:bg-green-500/10 dark:text-green-400">
-                            <i class="ri-shield-check-line"></i>
-                        </span>
-                        <div class="min-w-0">
-                            <p class="text-sm font-bold text-green-700 dark:text-green-300">Semua pembayaran aman</p>
-                            <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Tidak ada tagihan yang perlu kamu bayar saat ini.</p>
-                        </div>
-                    </div>
                 @endif
             </section>
         @endif
@@ -399,33 +392,32 @@
                 Aksi Cepat
             </h2>
 
-            <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                <a href="{{ route('tenant.tagihan.index') }}" class="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-amber-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/30">
-                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-lg text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"><i class="ri-file-list-3-line"></i></span>
-                    <span class="min-w-0">
-                        <span class="block text-sm font-bold text-slate-900 dark:text-white">Tagihan</span>
-                        <span class="block truncate text-[11px] text-slate-400 dark:text-slate-500">Cek & bayar tagihan</span>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <a href="{{ route('tenant.kos.index') }}"
+                   class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30"
+                   aria-label="Cari kos">
+                    <span class="grid h-11 w-11 place-items-center rounded-xl bg-primary-50 text-xl text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"><i class="ri-search-eye-line"></i></span>
+                    <span class="w-full">
+                        <span class="block text-sm font-bold leading-tight text-slate-900 dark:text-white">Cari Kos</span>
+                        <span class="mt-0.5 block text-[11px] text-slate-400 dark:text-slate-500">Temukan kos baru</span>
                     </span>
                 </a>
-                <a href="{{ route('tenant.pembayaran.index') }}" class="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-green-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-green-500/30">
-                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-green-50 text-lg text-green-600 dark:bg-green-500/10 dark:text-green-400"><i class="ri-money-dollar-circle-line"></i></span>
-                    <span class="min-w-0">
-                        <span class="block text-sm font-bold text-slate-900 dark:text-white">Pembayaran</span>
-                        <span class="block truncate text-[11px] text-slate-400 dark:text-slate-500">Riwayat pembayaran</span>
+                <a href="{{ route('tenant.tagihan.index') }}"
+                   class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-amber-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/30"
+                   aria-label="Lihat tagihan saya">
+                    <span class="grid h-11 w-11 place-items-center rounded-xl bg-amber-50 text-xl text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"><i class="ri-bill-line"></i></span>
+                    <span class="w-full">
+                        <span class="block text-sm font-bold leading-tight text-slate-900 dark:text-white">Tagihan Saya</span>
+                        <span class="mt-0.5 block text-[11px] text-slate-400 dark:text-slate-500">Status &amp; riwayat tagihan</span>
                     </span>
                 </a>
-                <a href="{{ route('tenant.booking.index') }}" class="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-500/30">
-                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-lg text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"><i class="ri-calendar-check-line"></i></span>
-                    <span class="min-w-0">
-                        <span class="block text-sm font-bold text-slate-900 dark:text-white">Booking Saya</span>
-                        <span class="block truncate text-[11px] text-slate-400 dark:text-slate-500">Riwayat booking</span>
-                    </span>
-                </a>
-                <a href="{{ route('tenant.kontrak.index') }}" class="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-indigo-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/30">
-                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-indigo-50 text-lg text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"><i class="ri-file-text-line"></i></span>
-                    <span class="min-w-0">
-                        <span class="block text-sm font-bold text-slate-900 dark:text-white">Kontrak</span>
-                        <span class="block truncate text-[11px] text-slate-400 dark:text-slate-500">Lihat kontrak sewa</span>
+                <a href="{{ route('tenant.kontrak.index') }}"
+                   class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-indigo-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/30"
+                   aria-label="Lihat kontrak sewa">
+                    <span class="grid h-11 w-11 place-items-center rounded-xl bg-indigo-50 text-xl text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"><i class="ri-file-text-line"></i></span>
+                    <span class="w-full">
+                        <span class="block text-sm font-bold leading-tight text-slate-900 dark:text-white">Kontrak</span>
+                        <span class="mt-0.5 block text-[11px] text-slate-400 dark:text-slate-500">Lihat kontrak sewa</span>
                     </span>
                 </a>
             </div>
@@ -501,7 +493,7 @@
             @php
                 $filters = [
                     ['label' => 'Semua Kos', 'icon' => 'ri-building-2-line', 'url' => route('tenant.kos.index')],
-                    ['label' => 'Tersedia', 'icon' => 'ri-door-open-line', 'url' => route('tenant.kos.index', ['tersedia_only' => 1])],
+                    ['label' => 'Tersedia', 'icon' => 'ri-bed-double-line', 'url' => route('tenant.kos.index', ['tersedia_only' => 1])],
                     ['label' => 'Harga Terjangkau', 'icon' => 'ri-money-dollar-circle-line', 'url' => route('tenant.kos.index', ['sort' => 'harga_terendah'])],
                     ['label' => 'Favorit', 'icon' => 'ri-heart-line', 'url' => route('tenant.favorites.index'), 'badge' => (int) ($favoriteCount ?? 0)],
                 ];
@@ -527,7 +519,10 @@
                     <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-500/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-amber-700 dark:border-amber-500/30 dark:text-amber-400">
                         <i class="ri-star-fill text-[11px]"></i> Promosi Kos
                     </span>
-                    <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">Iklan promo kos — rekomendasi di bawah tetap organik</span>
+                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                          aria-label="Konten iklan berbayar">
+                        <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
+                    </span>
                 </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     @foreach($kosPromosHome as $promo)
@@ -719,16 +714,16 @@
             </div>
 
             @if($favoriteKos->isEmpty())
-                <div class="flex flex-col items-center rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <div class="grid h-11 w-11 place-items-center rounded-2xl bg-red-50 text-xl text-red-400 dark:bg-red-500/10">
-                        <i class="ri-heart-line"></i>
-                    </div>
-                    <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada kos yang disimpan.</p>
-                    <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Temukan kos yang kamu suka dan simpan di sini.</p>
-                    <a href="{{ route('tenant.kos.index') }}"
-                       class="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-95">
-                        <i class="ri-search-eye-line"></i> Cari Kos
-                    </a>
+                <div class="card-surface p-6">
+                    <x-empty-state
+                        icon="ri-heart-line"
+                        title="Belum ada kos yang disimpan."
+                        description="Temukan kos yang kamu suka lalu simpan di sini."
+                        compact>
+                        <a href="{{ route('tenant.kos.index') }}" class="btn-primary">
+                            <i class="ri-search-eye-line"></i> Cari Kos
+                        </a>
+                    </x-empty-state>
                 </div>
             @else
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -806,7 +801,7 @@
             <div class="mb-4 flex items-end justify-between">
                 <div>
                     <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Masih bingung?</h2>
-                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Temukan jawaban seputar booking, pembayaran, dan kos.</p>
+                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-400">Temukan jawaban seputar layanan, kendala, dan pelaporan kerusakan.</p>
                 </div>
             </div>
             <div class="mx-auto max-w-3xl space-y-3">
@@ -816,13 +811,13 @@
                         ['q' => 'Bagaimana cara membayar?', 'a' => 'Setelah booking, kamu akan memiliki tagihan. Buka menu Tagihan, lalu kirim konfirmasi pembayaran tunai langsung kepada pengelola kos. Pengelola akan memverifikasi pembayaranmu. Kamu bisa melampirkan bukti pembayaran (opsional) jika diperlukan.'],
                         ['q' => 'Bagaimana cara check-in?', 'a' => 'Setelah kamu datang dan bertemu pengelola, pengelola akan memproses check-in kamarmu. Setelah check-in, kamar akan tampil di bagian "Kos Saya" pada beranda.'],
                         ['q' => 'Bagaimana jika ingin membatalkan booking?', 'a' => 'Buka menu Booking Saya, pilih booking yang ingin dibatalkan, lalu klik "Batalkan Booking". Kamar akan tersedia kembali untuk disewa orang lain.'],
-                        ['q' => 'Ada kerusakan di kamar, bagaimana cara melaporkannya?', 'a' => 'Hubungi pengelola kos melalui halaman Kontrak Sewa, atau kirim informasi kerusakan melalui notifikasi/halaman Bantuan. Pengelola akan memproses perbaikan sesegera mungkin.' ],
+                        ['q' => 'Ada kerusakan di kamar, bagaimana cara melaporkannya?', 'a' => 'Pilih menu "Lapor Kerusakan" di halaman beranda atau menu sewa. Jelaskan kerusakan yang terjadi dan lampirkan foto sebagai bukti. Pengelola kos akan segera meninjau dan menindaklanjuti laporanmu.' ],
                     ];
                 @endphp
                 @foreach($faqs as $i => $faq)
                     <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                         <button type="button"
-                                class="flex w-full items-center justify-between gap-3 px-5 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                                class="flex w-full items-center justify-between gap-3 px-6 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
                                 @click="open = open === {{ $i }} ? null : {{ $i }}"
                                 :aria-expanded="(open === {{ $i }}).toString()">
                             <span class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $faq['q'] }}</span>

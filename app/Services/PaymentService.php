@@ -55,6 +55,7 @@ class PaymentService
                     'proof_file' => $proofPath,
                     'verification_status' => Pembayaran::STATUS_PENDING,
                     'active_payment_key' => $locked->id,
+                    'notes' => $payload['notes'] ?? null,
                 ]);
 
                 $locked->update(['status' => Tagihan::STATUS_PAYMENT_PENDING]);
@@ -106,18 +107,17 @@ class PaymentService
      */
     public function resolveOwnTagihan(int $tagihanId, int $userId): ?Model
     {
-        $penghuni = Penghuni::where('user_id', $userId)->where('status', 'active')->first();
-
-        if (! $penghuni) {
-            return null;
-        }
-
         $tagihan = Tagihan::find($tagihanId);
 
-        if (! $tagihan || (int) $tagihan->penghuni_id !== (int) $penghuni->id) {
+        if (! $tagihan) {
             return null;
         }
 
-        return $tagihan;
+        $hasOwnership = Penghuni::where('user_id', $userId)
+            ->where('status', 'active')
+            ->where('id', $tagihan->penghuni_id)
+            ->exists();
+
+        return $hasOwnership ? $tagihan : null;
     }
 }
