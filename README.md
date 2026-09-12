@@ -92,14 +92,77 @@ Relasi inti: **Kos 1–N Kamar 1–N Booking/Kontrak/Tagihan → Tagihan 1–N P
 ## Business Flow
 
 ```
-Booking → Approval Owner/Admin → Check-in (buat Penghuni + Kontrak otomatis)
+Booking → Approval (instant, status approved) → Tenant Identity Submission → Owner/Admin Review
+       → [Confirm → Final Check-in (Penghuni+Kontrak+CheckIn)] atau [Reject → Tenant resubmit]
        → Tagihan per periode → Pembayaran oleh tenant → Verifikasi
        → Check-out (kontrak berakhir, kamar kembali available)
 ```
 
-Aturan penting:
+> **Prinsip:** `TENANT OWNS IDENTITY DATA. OWNER OWNS VERIFICATION DECISION.`
+> Tenant mengisi data identitasnya sendiri; owner hanya memverifikasi, bukan menginput ulang.
+
+### Alur Check-in (Identity Ownership)
+
+**A. Tenant — pemilik data identitas**
+
+1. Booking telah berstatus `approved`.
+2. Tenant membuka **Check-In Identity** (`/tenant/checkin/{booking}/identity`).
+3. Tenant mengisi:
+   - **Nomor KTP** (angka, 8–50 karakter, di-trim, spasi dihapus)
+   - **Nomor WhatsApp** (9–20 digit, `62`/`+62` → `08` dinormalisasi)
+   - **Alamat** (5–500 karakter)
+4. Tenant **submit** → `identity_data_submitted_at = now()`, `identity_number/phone/address` tersimpan, `identity_rejected_at/reason` di-clear. **Tidak** men-set `identity_confirmed_at` — status menjadi **`PENDING` → `Menunggu Konfirmasi Owner`.**
+5. Tenant menunggu verifikasi. Tidak memiliki tombol confirm — tenant **tidak dapat** self-confirm.
+6. Jika **ditolak** → tenant melihat `Check-In Ditolak` + **alasan penolakan** + form `Perbaiki & Ajukan Ulang` → submit kembali → `REJECTED → PENDING`.
+7. Jika **dikonfirmasi** → tenant melihat `✓ Check-In Dikonfirmasi` (`confirmed_at`) — form tidak lagi menjadi aksi utama.
+
+**B. Owner / Admin — pemilik keputusan verifikasi**
+
+1. Owner/admin membuka **Review Pengajuan Check-In** (`/owner/check-in` atau `/admin/check-in`).
+2. Identitas tampil **readonly** — owner **tidak perlu mengetik ulang** KTP/WA. KTP ditampilkan **masked** `************1234` (`Booking::maskedIdentityNumber()`), WhatsApp & alamat tampil sesuai desain.
+3. Reviewer dapat:
+   - **Confirm** → `identity_confirmed_at = now()`, `identity_confirmed_by = auth.id`, clear `rejected_*`. Notifikasi ke tenant `Check-In Dikonfirmasi`, audit `Approve`.
+   - **Reject** → `identity_rejected_at = now()`, `identity_rejection_reason = alasan (5–500, trimmed)`, clear `confirmed_*`. Notifikasi `Pengajuan Check-In Ditolak` + alasan, audit `Reject`. Reason **wajib**.
+4. Konfirmasi memungkinkan **final check-in processing** → `POST /owner/check-in/{booking}` membuat `Penghuni` + `Kontrak (KT-…)` + `CheckIn (officer_id)` dalam transaksi `lockForUpdate`, booking `completed`, kamar `occupied`.
+5. Reviewer hanya dapat memverifikasi booking **dalam scope kos yang diizinkan** (`kos.owner_id` atau `assignedKos` pivot). Cross-scope → `403`.
+
+**C. State Machine**
+
+```
+NOT_SUBMITTED (belum submit)
+  ↓ tenant submit
+PENDING (Menunggu Konfirmasi Owner)
+  ├──→ CONFIRMED (owner confirm) ──→ FINAL CHECK-IN PROCESS (Penghuni/Kontrak/CheckIn)
+  └──→ REJECTED (owner reject + alasan)
+         ↓ tenant resubmit (perbaiki & ajukan ulang)
+       PENDING → CONFIRMED → FINAL PROCESS
+```
+
+Aturan:
+
+- `PENDING → CONFIRMED` hanya oleh owner/admin, bukan tenant.
+- `REJECT → PENDING` hanya oleh tenant resubmit.
+- `PENDING → REJECTED` wajib alasan penolakan.
+- Final `process` mensyaratkan `identity_confirmed_at != null` + `hasIdentityData()` — sebelum itu **diblokir** `400 Menunggu konfirmasi owner`.
+
+**D. Model data (`bookings` identity fields)**
+
+| Kolom | Tujuan |
+|---|---|
+| `identity_number` | Nomor KTP tenant (disimpan penuh, tampil masked ke owner) |
+| `phone` | Nomor WhatsApp (dinormalisasi) |
+| `address` | Alamat sesuai KTP |
+| `identity_data_submitted_at` | Waktu pengajuan (set saat submit) |
+| `identity_confirmed_at` | Waktu konfirmasi owner |
+| `identity_confirmed_by` | FK `users.id` owner yang mengonfirmasi |
+| `identity_rejected_at` | Waktu penolakan |
+| `identity_rejection_reason` | Alasan penolakan (ditampilkan ke tenant) |
+
+Helper: `identityPending()`, `identityConfirmed()`, `identityRejected()`, `identityStatus(): not_submitted|pending|confirmed|rejected`, `maskedIdentityNumber()`, `confirmedBy()`.
+
+Aturan penting lainnya:
 - Kamar *occupied/maintenance* tidak bisa dibooking; rentang tanggal tidak boleh tumpang-tindih dengan booking approved lain.
-- Check-in hanya untuk booking berstatus approved.
+- Check-in hanya untuk booking berstatus `approved` dan identitas telah **dikonfirmasi owner** (bukan self-confirm) — migrasi `2026_09_13_000001` additive (`confirmed_by`, `rejected_at`, `rejection_reason`).
 - Check-out diblokir bila masih ada tagihan belum lunas atau pembayaran menunggu verifikasi.
 - Command terjadwal: `tagihan:mark-overdue`, `tagihan:remind-due`, `booking:expire-old`, `kontrak:expire-old`.
 
@@ -134,22 +197,35 @@ Fitur keamanan yang sudah diimplementasikan dan diuji:
 - **Audit log** — login, CRUD, approve/reject tercatat termasuk IP address
 - **Audit log anti-tamper** — tiap entri ditandatangani HMAC-SHA256 (rantai hash antarsatu dengan secret 64-hex; fail-closed jika secret tidak valid)
 - **Secure image upload** — validasi konten file asli (MIME via finfo + decoding image), HTML/SVG/malformed ditolak
+- **Tenant identity ownership** — tenant mengisi KTP/WA/alamat sendiri → `PENDING`; tenant **tidak dapat** self-confirm (endpoint `owner/check-in/{booking}/confirm` hanya `owner/admin/super_admin`, tenant hit → `403`, gate `identityPending()`).
+- **Owner verification scoped** — hanya owner kos terkait (`kos.owner_id`) atau admin ter-assign (`assignedKos` pivot) dapat `confirm`/`reject`; cross-scope → `403`. KTP tampil **masked** `************1234` (`Booking::maskedIdentityNumber()`) untuk owner; **tidak** masuk audit log/notification (`booking_id`, `user_id` saja).
+- **State-machine guarded** — `PENDING → CONFIRMED` hanya owner, `REJECT` wajib alasan 5–500, `REJECTED → PENDING` hanya via resubmit, `process` mensyaratkan `identity_confirmed_at` (`400` jika belum confirmed).
+- **Double-confirm & reject-only-pending** diblokir via `identityPending()` gate.
 - **Soft delete historical users** — user dengan riwayat transaksi tidak terhapus permanen
-- **Security tests** — suite khusus isolation boundary & payment security
+- **Security tests** — suite khusus isolation boundary & payment security (+ `CheckInSecurityTest` 12 tests untuk identity ownership)
 
 ## Automated Testing
 
-Hasil test terbaru (baseline terverifikasi batch 9):
+Hasil test terbaru (terverifikasi C.3/C.4 — identity ownership):
 
 ```
-Last verified baseline: 1031 passed (3521 assertions)
+Target identity/security suite: 47 passed / 174 assertions
+  - IdentityConfirmationTest: 20 passed (68 assertions)
+  - CheckInSecurityTest:      12 passed (46 assertions)
+  - CheckInOutTest:            9 passed (24 assertions)
+  - BusinessFlowTest:          2 passed (28 assertions)
+  - PasswordResetTest:         4 passed (8 assertions)
 Pint:     passed (code style PSR-12)
-Build:    sukses (Vite)
+Build:    sukses (Vite — 57 modules, 174.98 kB css)
 ```
+
+Target suite di atas **PASS** penuh. Catatan:
+
+> `Full suite was not completed within the configured 120-second execution window.` — timeout `php artisan test` (skala >1300 test, bukan failure). Browser/HTTP verification C.4 pada `390×844`: tenant own booking PASS, tenant other booking 403, tenant self-confirm 403, owner scoped review PASS (masking, confirm/reject), owner cross-scope 403, reject/reason PASS, resubmit PASS, confirm PASS, confirmed state PASS, responsive no overflow/clipping — PASS. Catatan C4-10: final `process` via browser reuse dataset terblokir oleh `kamar/penghuni` state reuse — bukan bug identity (identity prerequisite PASS, `BusinessFlowTest` dengan DB fresh memverifikasi final process).
 
 > Sebelum deploy pastikan seluruh suite lolos: `php artisan test`, `vendor/bin/pint --test`, `npm run build`.
 
-Cakupan meliputi unit test logika bisnis, feature test seluruh modul, race condition, security/isolation boundary, hingga command otomasi.
+Cakupan meliputi unit test logika bisnis, feature test seluruh modul, race condition, security/isolation boundary (termasuk **identity ownership**), hingga command otomasi.
 
 ## Installation
 

@@ -32,8 +32,17 @@ class Booking extends Model
         'start_date',
         'end_date',
         'rental_type',
+        'billing_mode',
         'price',
         'status',
+        'identity_confirmed_at',
+        'identity_confirmed_by',
+        'identity_rejected_at',
+        'identity_rejection_reason',
+        'identity_number',
+        'phone',
+        'address',
+        'identity_data_submitted_at',
         'notes',
     ];
 
@@ -41,8 +50,71 @@ class Booking extends Model
         'booking_date' => 'date',
         'start_date' => 'date',
         'end_date' => 'date',
+        'identity_confirmed_at' => 'datetime',
+        'identity_confirmed_by' => 'integer',
+        'identity_rejected_at' => 'datetime',
+        'identity_data_submitted_at' => 'datetime',
         'price' => 'decimal:2',
+        'billing_mode' => 'string',
     ];
+
+    public function identityConfirmed(): bool
+    {
+        return $this->identity_confirmed_at !== null;
+    }
+
+    public function identityRejected(): bool
+    {
+        return $this->identity_rejected_at !== null;
+    }
+
+    public function identityPending(): bool
+    {
+        return $this->identity_data_submitted_at !== null
+            && $this->identity_confirmed_at === null
+            && $this->identity_rejected_at === null;
+    }
+
+    /**
+     * Human status for identity check-in flow (4 states).
+     * - not_submitted | pending | confirmed | rejected
+     */
+    public function identityStatus(): string
+    {
+        if ($this->identityConfirmed()) {
+            return 'confirmed';
+        }
+        if ($this->identityRejected()) {
+            return 'rejected';
+        }
+        if ($this->identity_data_submitted_at !== null) {
+            return 'pending';
+        }
+
+        return 'not_submitted';
+    }
+
+    /**
+     * Mask KTP: ************1234 — never log or expose full number unnecessarily.
+     */
+    public function maskedIdentityNumber(): string
+    {
+        $num = (string) ($this->identity_number ?? '');
+        if ($num === '') {
+            return '-';
+        }
+        $len = mb_strlen($num);
+        if ($len <= 4) {
+            return str_repeat('*', $len);
+        }
+
+        return str_repeat('*', $len - 4).mb_substr($num, -4);
+    }
+
+    public function confirmedBy()
+    {
+        return $this->belongsTo(User::class, 'identity_confirmed_by');
+    }
 
     public function user()
     {
@@ -109,9 +181,22 @@ class Booking extends Model
         return [self::STATUS_CANCELLED, self::STATUS_REJECTED, self::STATUS_EXPIRED];
     }
 
+    public function hasIdentityData(): bool
+    {
+        return $this->identity_data_submitted_at !== null
+            && filled($this->identity_number)
+            && filled($this->phone)
+            && filled($this->address);
+    }
+
     public function priceUnitLabel(): string
     {
-        return $this->rental_type === 'daily' ? 'per hari' : 'per bulan';
+        return match ($this->rental_type) {
+            'daily' => 'per hari',
+            'weekly' => 'per minggu',
+            'monthly' => 'per bulan',
+            default => 'per bulan',
+        };
     }
 
     public function nextAction(): ?string

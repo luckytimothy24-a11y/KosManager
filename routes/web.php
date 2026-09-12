@@ -13,12 +13,14 @@ use App\Http\Controllers\Owner\FavoriteController;
 use App\Http\Controllers\Owner\KamarController;
 use App\Http\Controllers\Owner\KontrakController;
 use App\Http\Controllers\Owner\KosController;
+use App\Http\Controllers\Owner\MessageController;
 use App\Http\Controllers\Owner\PembayaranController;
 use App\Http\Controllers\Owner\PenghuniController;
 use App\Http\Controllers\Owner\TagihanController;
 use App\Http\Controllers\Owner\TenantBookingController;
 use App\Http\Controllers\Owner\TenantKontrakController;
 use App\Http\Controllers\Owner\TenantKosController;
+use App\Http\Controllers\Owner\TenantMessageController;
 use App\Http\Controllers\Owner\TenantPembayaranController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuperAdmin\AdvertisingCampaignController;
@@ -29,6 +31,7 @@ use App\Http\Controllers\SuperAdmin\FasilitasController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
 use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\UserController;
+use App\Http\Controllers\Tenant\TenantCheckInController;
 use App\Http\Controllers\Webhook\PaymentGatewayWebhookController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -111,6 +114,7 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
 Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::resource('kos', KosController::class)->parameter('kos', 'kos');
     Route::resource('kamar', KamarController::class);
+    Route::post('kamar/{kamar}/penghuni', [KamarController::class, 'addPenghuni'])->name('kamar.add-penghuni');
 
     // Advertising (Owner + Super Admin)
     Route::get('advertising', [AdvertisingController::class, 'dashboard'])->name('advertising.dashboard');
@@ -140,8 +144,15 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify');
     Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject');
 
+    Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('messages/{tenant}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('messages/{tenant}', [MessageController::class, 'reply'])->name('messages.reply');
+
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
+    // Owner review of tenant identity (pending -> confirm/reject) — tenant cannot hit these (owner/admin middleware)
+    Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm');
+    Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
@@ -191,6 +202,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
+    Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm');
+    Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
@@ -222,13 +235,23 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::post('favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
+    Route::get('checkin/{booking}/identity', [TenantCheckInController::class, 'show'])->name('checkin.identity');
+    // Tenant submits identity -> pending owner review (NOT self-confirmed)
+    Route::post('checkin/{booking}/identity', [TenantCheckInController::class, 'submit'])->name('checkin.identity.confirm');
+    // Keep PUT for resubmit after reject (same validation, clears rejected state)
+    Route::put('checkin/{booking}/identity', [TenantCheckInController::class, 'submit'])->name('checkin.identity.update');
+
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
 
     Route::get('kontrak', [TenantKontrakController::class, 'index'])->name('kontrak.index');
     Route::get('kontrak/{kontrak}', [TenantKontrakController::class, 'show'])->name('kontrak.show');
 
     Route::get('tagihan', [TagihanController::class, 'index'])->name('tagihan.index');
+    Route::get('tagihan/pay', [TagihanController::class, 'pay'])->name('tagihan.pay');
     Route::get('tagihan/{tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
+
+    Route::get('messages', [TenantMessageController::class, 'index'])->name('messages.index');
+    Route::post('messages', [TenantMessageController::class, 'store'])->name('messages.store');
 
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');

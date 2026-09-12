@@ -32,6 +32,7 @@ class BusinessFlowTest extends TestCase
             'kos_id' => $kos->id,
             'status' => 'available',
             'monthly_price' => 1500000,
+            'weekly_price' => 400000,
             'daily_price' => 100000,
         ]);
 
@@ -48,11 +49,22 @@ class BusinessFlowTest extends TestCase
 
         $booking = Booking::where('user_id', $tenant->id)->firstOrFail();
 
-        // 2. Check-in -> penghuni aktif + kontrak aktif + kamar occupied + booking completed
-        $this->actingAs($owner)->post(route('owner.checkin.process', $booking), [
+        // 1b. Tenant submit identity -> pending, then owner confirms (new flow: tenant cannot self-confirm)
+        $this->actingAs($tenant)->post(route('tenant.checkin.identity.confirm', $booking), [
             'identity_number' => '3201234567890001',
             'phone' => '081234567890',
             'address' => 'Jl. Test No. 1',
+        ])->assertRedirect();
+        $this->assertEquals('pending', $booking->fresh()->identityStatus());
+        $this->assertEquals('3201234567890001', $booking->fresh()->identity_number);
+
+        // 1c. Owner confirms identity (tenant owns data, owner owns verification)
+        $this->actingAs($owner)->post(route('owner.checkin.confirm', $booking))->assertRedirect();
+        $this->assertTrue($booking->fresh()->identityConfirmed());
+
+        // 2. Check-in -> penghuni aktif + kontrak aktif + kamar occupied + booking completed
+        $this->actingAs($owner)->post(route('owner.checkin.process', $booking), [
+            'notes' => 'Check-in lancar',
         ])->assertRedirect();
         $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'occupied']);
         $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'completed']);
