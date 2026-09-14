@@ -182,6 +182,26 @@
                 </div>
             </section>
 
+            {{-- Pemisah: Langkah Selanjutnya — Tambah Anak Kos --}}
+            <section class="rounded-2xl border-2 border-dashed border-primary-200 dark:border-primary-500/30 bg-primary-50/40 dark:bg-primary-500/[0.06] p-6 sm:p-7">
+                <div class="flex items-start gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-primary-500 text-white flex items-center justify-center shrink-0"><i class="ri-team-line text-xl"></i></span>
+                    <div class="min-w-0 flex-1">
+                        <h3 class="text-sm font-black text-slate-900 dark:text-white">Langkah selanjutnya: Tambah Anak Kos</h3>
+                        <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Penghuni diatur <span class="font-semibold text-slate-700 dark:text-slate-200">per Kamar</span> (bukan per Kos). Setelah Kos disimpan, atur <span class="font-semibold">Kapasitas 1–4 orang</span> &amp; <span class="font-semibold">Patungan (tagihan pisah per anak)</span> di Kelola Kamar.</p>
+                        <ol class="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300 list-decimal list-inside">
+                            <li>Simpan Kos ini dulu</li>
+                            <li>Buka <span class="font-semibold">Kelola Kamar → Tambah Kamar</span> → pilih Kapasitas <span class="font-semibold">2</span> &amp; Mode <span class="font-semibold">Patungan</span></li>
+                            <li>Di <span class="font-semibold">Detail Kamar</span> klik <span class="font-semibold">+ Tambah Penghuni</span> (Lucky Rp600.000 + Budi Rp600.000 = Rp1.200.000)</li>
+                        </ol>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <a href="{{ route('owner.kamar.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition"><i class="ri-door-open-line"></i> Kelola Kamar</a>
+                            <span class="inline-flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-information-line"></i> Tombol aktif setelah Kos disimpan</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {{-- Actions --}}
             <div class="flex items-center justify-end gap-3">
                 <a href="{{ route('owner.kos.index') }}"
