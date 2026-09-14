@@ -155,9 +155,9 @@ class KamarController extends Controller
                 'user_id' => $user->id,
                 'kos_id' => $locked->kos_id,
                 'kamar_id' => $locked->id,
-                'identity_number' => $validated['identity_number'],
-                'phone' => $validated['phone'],
-                'address' => $validated['address'],
+                'identity_number' => $validated['identity_number'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'address' => $validated['address'] ?? null,
                 'check_in_date' => $validated['check_in_date'],
                 'status' => 'active',
             ]);
