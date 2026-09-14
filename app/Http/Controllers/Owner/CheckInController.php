@@ -146,7 +146,14 @@ class CheckInController extends Controller
             abort_unless($locked->hasIdentityData(), 400, 'Data identitas tenant belum lengkap. Tenant harus melengkapi data identitas terlebih dahulu.');
 
             $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->first();
-            abort_unless($kamar && $kamar->status === 'booked', 400, 'Kamar tidak tersedia.');
+            abort_unless($kamar && $kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');
+            // Shared kamar: available masih valid meski ada occupant lain; personal harus booked
+            $isShared = ($kamar->billing_mode ?? 'personal') === 'shared';
+            if (! $isShared) {
+                abort_unless($kamar->status === 'booked', 400, 'Kamar tidak tersedia.');
+            } else {
+                abort_unless($kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');
+            }
             abort_unless($kamar->occupancy() < (int) $kamar->capacity, 400, 'Kamar sudah penuh. Kapasitas tidak mencukupi.');
 
             $penghuni = Penghuni::create([
@@ -189,7 +196,20 @@ class CheckInController extends Controller
             ]);
 
             $locked->update(['status' => 'completed']);
-            $kamar->update(['status' => 'occupied']);
+            // Status kamar occupancy-aware: full -> occupied, masih ada slot -> available/booked
+            $newOccupancy = $kamar->occupancy() + 1; // +1 for the penghuni just created (not yet counted if using cached)
+            // Re-query occupancy to be safe
+            $freshOccupancy = \App\Models\Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+            if ($freshOccupancy >= (int) $kamar->capacity) {
+                $kamar->update(['status' => 'occupied']);
+            } elseif ($kamar->status === 'booked' && $freshOccupancy === 0) {
+                // Should not happen but keep booked if no occupant yet
+                $kamar->update(['status' => 'occupied']);
+            } else {
+                // Still has slot: if still bookings covering future, keep booked; else occupied but with slot
+                // Keep occupied to indicate has tenant, but booking availability uses occupancy check
+                $kamar->update(['status' => 'occupied']);
+            }
 
             return ['booking' => $locked, 'kontrak' => $kontrak, 'kamar' => $kamar];
         });

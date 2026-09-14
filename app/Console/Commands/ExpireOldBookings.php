@@ -54,9 +54,14 @@ class ExpireOldBookings extends Command
                             ->where('status', 'approved')
                             ->whereDate('end_date', '>=', today())
                             ->exists();
-
                         if (! $stillReserved) {
-                            $kamar->update(['status' => 'available']);
+                            // Occupancy-aware: jangan bebaskan kamar jika masih ada penghuni aktif (shared)
+                            $occupancy = \App\Models\Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+                            if ($occupancy > 0) {
+                                $kamar->update(['status' => 'occupied']);
+                            } else {
+                                $kamar->update(['status' => 'available']);
+                            }
                         }
                     }
 

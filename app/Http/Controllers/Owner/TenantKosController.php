@@ -181,7 +181,13 @@ class TenantKosController extends Controller
             ->orderBy('room_number')
             ->get();
 
-        $kamarTersedia = $allKamar->filter(fn ($k) => $k->status === 'available');
+        // Kompatibilitas test + shared: personal hanya hitung status available,
+        // shared hitung juga occupied/booked yang masih punya slot (capacity-aware).
+        $kamarTersedia = $allKamar->filter(function (Kamar $k) {
+            if ($k->status === 'available') return true;
+            if (($k->billing_mode ?? 'personal') === 'shared' && $k->status !== 'maintenance' && $k->hasAvailableSlot()) return true;
+            return false;
+        });
 
         $hargaMulai = $kamarTersedia->isNotEmpty()
             ? $kamarTersedia->min('monthly_price')

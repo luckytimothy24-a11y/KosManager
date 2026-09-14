@@ -47,19 +47,26 @@ class BookingController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'rental_type' => $request->rental_type,
+            'billing_mode' => $request->input('billing_mode', 'personal'),
             'notes' => $request->notes,
         ], $request->user()->id);
 
         if (! $result['ok']) {
             $message = match ($result['error']) {
                 'conflict' => 'Kamar sudah dibooking pada periode tersebut.',
+                'overlap' => 'Kamar sudah dibooking pada periode tersebut.',
+                'kamar_penuh' => 'Kamar sudah penuh. Kapasitas tidak mencukupi.',
+                'already_occupant' => 'Anda sudah menjadi penghuni aktif di kamar ini.',
                 'no_price' => 'Harga kamar tidak tersedia.',
+                'billing_mode_not_allowed' => 'Kamar ini tidak mengizinkan shared billing.',
                 default => 'Kamar tidak tersedia untuk dibooking.',
             };
 
+            $field = $result['error'] === 'billing_mode_not_allowed' ? 'billing_mode' : 'kamar_id';
+
             return response()->json([
                 'message' => 'The given data was invalid.',
-                'errors' => ['kamar_id' => [$message]],
+                'errors' => [$field => [$message]],
             ], 422);
         }
 

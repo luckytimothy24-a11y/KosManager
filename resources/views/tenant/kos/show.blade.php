@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="space-y-6">
         <x-breadcrumb :items="[
             ['label' => 'Cari Kos', 'url' => route('tenant.kos.index')],
@@ -6,11 +6,11 @@
         ]" />
 
         {{-- Hero Section --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
-            <div class="relative h-56 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700"
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden">
+            <div class="relative h-56 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-primary-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700"
                  x-data="{ viewerOpen: false }">
                 <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-primary-100/70 dark:bg-slate-700/60"></div>
-                <div class="absolute -left-12 bottom-[-3rem] w-48 h-48 rounded-full bg-blue-100/60 dark:bg-slate-700/40"></div>
+                <div class="absolute -left-12 bottom-[-3rem] w-48 h-48 rounded-full bg-primary-100/60 dark:bg-slate-700/40"></div>
                 @if($kos->photo)
                     <button type="button"
                             @click="viewerOpen = true; $nextTick(() => $refs.viewerClose?.focus())"
@@ -28,7 +28,7 @@
                 @else
                     <span class="absolute inset-0 flex items-center justify-center text-[9rem] leading-none font-black uppercase text-primary-900/[0.06] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($kos->name, 0, 1) }}</span>
                 @endif
-                <span class="absolute top-4 left-4 inline-flex items-center gap-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur text-xs font-bold {{ $kamarTersedia->count() > 0 ? 'text-green-700 dark:text-green-300' : 'text-slate-600 dark:text-slate-300' }} px-3 py-1.5 rounded-lg shadow-sm z-10">
+                <span class="absolute top-4 left-4 inline-flex items-center gap-1 bg-white/95 dark:bg-zinc-800/95 backdrop-blur text-xs font-bold {{ $kamarTersedia->count() > 0 ? 'text-green-700 dark:text-green-300' : 'text-slate-600 dark:text-slate-300' }} px-3 py-1.5 rounded-lg shadow-sm z-10">
                     <i class="{{ $kamarTersedia->count() > 0 ? 'ri-door-open-line' : 'ri-door-closed-line' }}"></i>
                     {{ $kamarTersedia->count() }} kamar tersedia
                 </span>
@@ -83,8 +83,8 @@
                     </div>
 
                     {{-- Quick Stats --}}
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-3 text-center">
+                    <div class="grid {{ is_null($hargaMulai) ? 'grid-cols-2' : 'grid-cols-3' }} gap-3">
+                        <div class="bg-slate-50 dark:bg-zinc-800/60 rounded-xl p-3 text-center">
                             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Kamar</p>
                             <p class="mt-0.5 text-lg font-black text-slate-900 dark:text-white">{{ $allKamar->count() }}</p>
                         </div>
@@ -93,9 +93,9 @@
                             <p class="mt-0.5 text-lg font-black text-green-700 dark:text-green-300">{{ $kamarTersedia->count() }}</p>
                         </div>
                         @if(!is_null($hargaMulai))
-                            <div class="bg-primary-50 dark:bg-primary-500/10 rounded-xl p-3 text-center">
+                            <div class="bg-primary-50 dark:bg-primary-500/10 rounded-xl px-2 py-3 text-center">
                                 <p class="text-[10px] font-bold uppercase tracking-wider text-primary-500/70 dark:text-primary-400/60">Mulai dari</p>
-                                <p class="mt-0.5 text-sm font-black text-primary-700 dark:text-primary-300">Rp {{ number_format($hargaMulai, 0, ',', '.') }}<span class="text-[10px] font-medium text-primary-500/60">/bln</span></p>
+                                <p class="mt-0.5 text-xs sm:text-sm font-black leading-tight text-primary-700 break-words dark:text-primary-300">Rp {{ number_format($hargaMulai, 0, ',', '.') }}<span class="text-[10px] font-medium text-primary-500/60">/bln</span></p>
                             </div>
                         @endif
                     </div>
@@ -103,12 +103,12 @@
                     {{-- Description --}}
                     @if($kos->description)
                         <div>
-                            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tentang Kos</h3>
+                            <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tentang Kos</h2>
                             <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ $kos->description }}</p>
                         </div>
                     @else
                         <div>
-                            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tentang Kos</h3>
+                            <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tentang Kos</h2>
                             <p class="mt-1.5 text-sm text-slate-400 dark:text-slate-500 italic">Belum ada deskripsi dari pengelola.</p>
                         </div>
                     @endif
@@ -133,15 +133,15 @@
                         ];
                     @endphp
                     <div x-data="{ open: null }">
-                        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Fasilitas Kos</h3>
+                        <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Fasilitas Kos</h2>
                         @if(count($facilityGroups))
                             <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Fasilitas yang tersedia pada kos ini.</p>
                             <div class="mt-3 space-y-2.5">
                                 @foreach($facilityGroups as $key => $group)
                                     @php $label = $groupLabels[$key] ?? 'Fasilitas'; $gicon = $groupIcons[$key] ?? 'ri-check-line'; @endphp
-                                    <div class="rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+                                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 overflow-hidden">
                                         <button type="button"
-                                                class="w-full flex items-center justify-between gap-2 px-4 py-3 text-left bg-slate-50/60 dark:bg-slate-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                                                class="w-full flex items-center justify-between gap-2 px-4 py-3 text-left bg-slate-50/60 dark:bg-zinc-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
                                                 @click="open = open === '{{ $key }}' ? null : '{{ $key }}'"
                                                 :aria-expanded="(open === '{{ $key }}').toString()">
                                             <span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -175,7 +175,7 @@
                     {{-- Rules --}}
                     @if($kos->rules)
                         <div>
-                            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Peraturan</h3>
+                            <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Peraturan</h2>
                             <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ $kos->rules }}</p>
                         </div>
                     @endif
@@ -183,8 +183,8 @@
 
                 {{-- Sidebar --}}
                 <aside class="space-y-4">
-                    <div class="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-5">
-                        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Informasi Pemilik</h3>
+                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 bg-slate-50/60 dark:bg-zinc-800/40 p-5">
+                        <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Informasi Pemilik</h2>
                         <div class="mt-3 flex items-center gap-3">
                             <span class="w-11 h-11 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 flex items-center justify-center text-base font-bold uppercase shrink-0">{{ mb_substr($kos->owner?->name ?? '?', 0, 1) }}</span>
                             <div class="min-w-0">
@@ -198,17 +198,17 @@
                             </a>
                         @endif
                     </div>
-                    <div class="rounded-xl border border-slate-100 dark:border-slate-800 p-5">
-                        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cara Booking</h3>
+                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 p-5">
+                        <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cara Booking</h2>
                         <ol class="mt-3 space-y-2.5 text-xs text-slate-500 dark:text-slate-400">
                             <li class="flex gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 font-bold flex items-center justify-center text-[10px]">1</span> Pilih kamar yang tersedia di bawah.</li>
                             <li class="flex gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 font-bold flex items-center justify-center text-[10px]">2</span> Tentukan periode sewa lalu konfirmasi booking.</li>
-                            <li class="flex gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 font-bold flex items-center justify-center text-[10px]">3</span> Setelah disetujui, lakukan pembayaran sesuai tagihan.</li>
+                            <li class="flex gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 font-bold flex items-center justify-center text-[10px]">3</span> Booking langsung terkonfirmasi, lalu lakukan pembayaran sesuai tagihan.</li>
                         </ol>
                     </div>
 
-                    <div class="rounded-xl border border-slate-100 dark:border-slate-800 p-5">
-                        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kenapa Booking di KosManager?</h3>
+                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 p-5">
+                        <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kenapa Booking di KosManager?</h2>
                         <ul class="mt-3 space-y-2.5 text-xs text-slate-500 dark:text-slate-400">
                             <li class="flex gap-2"><span class="shrink-0 text-emerald-500"><i class="ri-check-line"></i></span> Booking langsung terkonfirmasi</li>
                             <li class="flex gap-2"><span class="shrink-0 text-emerald-500"><i class="ri-check-line"></i></span> Harga ditampilkan sebelum booking</li>
@@ -219,8 +219,8 @@
                     </div>
 
                     @if($kos->payment_info)
-                        <div class="rounded-xl border border-slate-100 dark:border-slate-800 p-5">
-                            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cara Pembayaran</h3>
+                        <div class="rounded-xl border border-slate-100 dark:border-zinc-700 p-5">
+                            <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cara Pembayaran</h2>
                             <div class="mt-3 text-xs text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ $kos->payment_info }}</div>
                         </div>
                     @endif
@@ -229,7 +229,7 @@
                         <form method="POST" action="{{ route('tenant.favorites.toggle') }}">
                             @csrf
                             <input type="hidden" name="kos_id" value="{{ $kos->id }}">
-                            <button type="submit" class="w-full inline-flex justify-center items-center gap-2 text-sm font-semibold {{ $isFavorited ? 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800' : 'text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10' }} px-4 py-2.5 rounded-xl transition">
+                            <button type="submit" class="w-full inline-flex justify-center items-center gap-2 text-sm font-semibold {{ $isFavorited ? 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-slate-800' : 'text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10' }} px-4 py-2.5 rounded-xl transition">
                                 <i class="{{ $isFavorited ? 'ri-heart-3-fill text-red-500' : 'ri-heart-3-line' }}"></i>
                                 {{ $isFavorited ? 'Hapus dari Favorit' : 'Tambahkan ke Favorit' }}
                             </button>
@@ -241,27 +241,26 @@
 
         {{-- All Rooms --}}
         <div id="kamar" x-data="{ detailKamar: null }">
-            <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
-                    <h2 class="text-base font-bold text-slate-900 dark:text-white">Pilihan Kamar</h2>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Temukan kamar yang sesuai kebutuhan dan budgetmu.</p>
+                    <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Pilihan Kamar</h2>
+                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Temukan kamar yang sesuai kebutuhan dan budgetmu.</p>
                 </div>
-                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">{{ $allKamar->count() }} kamar total · {{ $kamarTersedia->count() }} tersedia</span>
+                <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">{{ $allKamar->count() }} kamar total Â· {{ $kamarTersedia->count() }} tersedia</span>
             </div>
 
             @if($allKamar->isEmpty())
-                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-12 text-center">
-                    <div class="w-14 h-14 rounded-2xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center mx-auto">
-                        <i class="ri-door-closed-line text-2xl text-primary-400"></i>
-                    </div>
-                    <p class="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada kamar di kos ini.</p>
-                    <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Silakan cek kembali lain waktu atau hubungi pemilik.</p>
-                </div>
+                <x-empty-state
+                    icon="ri-door-closed-line"
+                    title="Belum ada kamar di kos ini"
+                    description="Silakan cek kembali lain waktu atau hubungi pemilik.">
+                </x-empty-state>
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($allKamar as $kamar)
                         @php
-                            $isAvailable = $kamar->status === 'available';
+                            $isAvailable = $kamar->isAvailableForBooking();
+                            $slotInfo = $kamar->capacity > 1 ? ($kamar->occupancy().'/'.$kamar->capacity.' terisi') : null;
                             $statusLabel = \StatusLabels::kamarLabel($kamar->status);
                             $statusColor = match($kamar->status) {
                                 'available' => 'text-green-700 dark:text-green-300',
@@ -275,13 +274,13 @@
                                 'booked' => 'bg-amber-50 dark:bg-amber-500/10',
                                 'occupied' => 'bg-blue-50 dark:bg-blue-500/10',
                                 'maintenance' => 'bg-red-50 dark:bg-red-500/10',
-                                default => 'bg-slate-50 dark:bg-slate-800',
+                                default => 'bg-slate-50 dark:bg-zinc-800',
                             };
                             $fasilitasCount = $kamar->fasilitas->count();
                             $showFasilitas = $kamar->fasilitas->take(3);
                             $extraCount = max(0, $fasilitasCount - 3);
                         @endphp
-                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden flex flex-col hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                        <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden flex flex-col hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                             <div class="relative h-28 overflow-hidden bg-gradient-to-br from-slate-50 to-primary-50 dark:from-slate-800 dark:to-slate-800">
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <div class="w-10 h-10 rounded-xl bg-white/90 dark:bg-slate-700 shadow-sm flex items-center justify-center">
@@ -294,7 +293,7 @@
                                          loading="lazy" onerror="this.style.display='none'">
                                 @endif
                                 <span class="absolute inset-0 flex items-center justify-center text-[4rem] leading-none font-black uppercase text-primary-900/[0.05] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($kamar->room_number, 0, 2) }}</span>
-                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur text-[10px] font-bold px-2 py-1 rounded-md shadow-sm {{ $statusColor }}">
+                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 bg-white/95 dark:bg-zinc-800/95 backdrop-blur text-[10px] font-bold px-2 py-1 rounded-md shadow-sm {{ $statusColor }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $isAvailable ? 'bg-green-500' : ($kamar->status === 'booked' ? 'bg-amber-500' : ($kamar->status === 'occupied' ? 'bg-blue-500' : 'bg-red-500')) }}"></span>
                                     {{ strtoupper($statusLabel) }}
                                 </span>
@@ -303,7 +302,7 @@
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="min-w-0">
                                         <p class="font-bold text-slate-900 dark:text-white">Kamar {{ $kamar->room_number }}</p>
-                                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5 truncate">{{ $kamar->room_name }} · Lantai {{ $kamar->floor }} · {{ $kamar->area }}</p>
+                                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5 truncate">{{ $kamar->room_name }} Â· Lantai {{ $kamar->floor }} Â· {{ $kamar->area }}</p>
                                     </div>
                                     <span class="shrink-0 text-[11px] font-bold px-2 py-1 rounded-lg bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300">{{ $kamar->room_type }}</span>
                                 </div>
@@ -312,7 +311,7 @@
                                 @if($fasilitasCount > 0)
                                     <div class="mt-3 flex flex-wrap gap-1.5">
                                         @foreach($showFasilitas as $f)
-                                            <span class="inline-flex items-center gap-1 text-[10px] font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-2 py-0.5 rounded-md">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700 px-2 py-0.5 rounded-md">
                                                 @if($f->icon)
                                                     <i class="{{ $f->icon }} text-[10px]"></i>
                                                 @endif
@@ -332,6 +331,10 @@
                                     @if($kamar->monthly_price)
                                         <p class="flex items-center justify-between"><span><i class="ri-calendar-2-line mr-1.5 text-primary-500"></i>Bulanan</span><span class="font-bold text-slate-800 dark:text-slate-100">Rp {{ number_format($kamar->monthly_price, 0, ',', '.') }}</span></p>
                                     @endif
+                                    @if($kamar->capacity > 1)
+                                        <p class="flex items-center justify-between text-sky-600 dark:text-sky-300 font-semibold"><span><i class="ri-team-line mr-1.5"></i>Patungan</span><span>Rp {{ number_format((int) round($kamar->monthly_price / max(1,$kamar->capacity)), 0, ',', '.') }}/orang</span></p>
+                                        <p class="text-[11px] text-slate-400 dark:text-slate-500 text-right">{{ $kamar->occupancy() }}/{{ $kamar->capacity }} terisi @if($isAvailable)· {{ $kamar->capacity - $kamar->occupancy() }} slot tersedia @endif</p>
+                                    @endif
                                 </div>
 
                                 <div class="mt-auto pt-4 flex gap-2">
@@ -350,7 +353,7 @@
                                         'photo' => $kamar->photo ? asset('storage/' . $kamar->photo) : null,
                                         'fasilitas' => $kamar->fasilitas->map(fn ($f) => ['name' => $f->name, 'icon' => $f->icon])->toArray(),
                                     ]) }}"
-                                    class="flex-1 text-center text-xs font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                    class="flex-1 text-center text-xs font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                                         Lihat Detail
                                     </button>
                                     @auth('web')
@@ -380,14 +383,14 @@
             <template x-if="detailKamar">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
                     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" x-on:click="detailKamar = null"></div>
-                    <div class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-800 w-full max-w-lg max-h-[85vh] overflow-y-auto"
+                    <div class="relative bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-zinc-700 w-full max-w-lg max-h-[85vh] overflow-y-auto"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 scale-95"
                          x-transition:enter-end="opacity-100 scale-100"
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95">
-                        <div class="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+                        <div class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-slate-100 dark:border-zinc-700 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white">Detail Kamar</h3>
                             <button type="button" x-on:click="detailKamar = null"
                                     class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -399,7 +402,7 @@
                         <div class="p-6 space-y-5">
                             {{-- Photo --}}
                             <template x-if="detailKamar.photo">
-                                <div class="rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                <div class="rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
                                     <img :src="detailKamar.photo" :alt="'Foto Kamar ' + detailKamar.room_number" class="w-full h-48 object-cover">
                                 </div>
                             </template>
@@ -436,25 +439,25 @@
                             {{-- Info Grid --}}
                             <div class="grid grid-cols-2 gap-3">
                                 <template x-if="detailKamar.floor">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Lantai</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="detailKamar.floor"></p>
                                     </div>
                                 </template>
                                 <template x-if="detailKamar.area">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Ukuran</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="detailKamar.area"></p>
                                     </div>
                                 </template>
                                 <template x-if="detailKamar.daily_price">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Harga Harian</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="'Rp ' + Number(detailKamar.daily_price).toLocaleString('id-ID')"></p>
                                     </div>
                                 </template>
                                 <template x-if="detailKamar.monthly_price">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Harga Bulanan</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="'Rp ' + Number(detailKamar.monthly_price).toLocaleString('id-ID')"></p>
                                     </div>
@@ -475,7 +478,7 @@
                                 <template x-if="detailKamar.fasilitas && detailKamar.fasilitas.length > 0">
                                     <ul class="mt-2.5 flex flex-wrap gap-2">
                                         <template x-for="f in detailKamar.fasilitas" :key="f.name">
-                                            <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-3 py-1.5 rounded-lg">
+                                            <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700 px-3 py-1.5 rounded-lg">
                                                 <i class="ri-check-line text-green-600 dark:text-green-400 font-bold"></i>
                                                 <span x-text="f.name"></span>
                                             </li>
@@ -504,7 +507,7 @@
                                     @endguest
                                 </template>
                                 <template x-if="detailKamar.status !== 'available'">
-                                    <div class="w-full text-center text-xs font-semibold py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500">
+                                    <div class="w-full text-center text-xs font-semibold py-3 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-400 dark:text-slate-500">
                                         Kamar Tidak Tersedia
                                     </div>
                                 </template>
@@ -516,7 +519,7 @@
         </div>
 
         {{-- Google Maps Location --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden">
             <div class="p-6">
                 @php
                     $hasCoordinates = $kos->hasValidCoordinates();
@@ -531,7 +534,7 @@
                 @if($hasCoordinates)
                     <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{{ $kos->address }}</p>
 
-                    <div class="mt-4 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                    <div class="mt-4 rounded-xl overflow-hidden border border-slate-100 dark:border-zinc-700 bg-white dark:bg-zinc-800">
                         <a href="{{ $googleMapsUrl }}"
                            target="_blank" rel="noopener noreferrer"
                            aria-label="Lihat lokasi {{ $kos->name }} di Google Maps"
@@ -546,7 +549,7 @@
                             <span aria-hidden="true"
                                   class="absolute inset-0 block cursor-pointer transition group-hover:bg-black/10 group-focus-visible:bg-black/10"></span>
                             <span aria-hidden="true"
-                                  class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur text-xs font-bold text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+                                  class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-white/95 dark:bg-zinc-800/95 backdrop-blur text-xs font-bold text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
                                 <i class="ri-external-link-line"></i> Klik untuk membuka Maps
                             </span>
                         </a>
@@ -562,7 +565,7 @@
                         <x-kos-directions-button :kos="$kos" label="Petunjuk Arah" variant="ghost" />
                     </div>
                 @elseif($directionsUrl)
-                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 p-5">
+                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-5">
                         <p class="text-sm text-slate-600 dark:text-slate-300 flex items-start gap-2">
                             <i class="ri-map-pin-2-line text-primary-500 shrink-0 mt-0.5" aria-hidden="true"></i>
                             <span>{{ $kos->address }}</span>
@@ -572,7 +575,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 p-5 text-center">
+                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-5 text-center">
                         <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto">
                             <i class="ri-map-pin-line text-lg text-slate-400 dark:text-slate-500"></i>
                         </div>
@@ -590,26 +593,26 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($similarKos as $sk)
                         <a href="{{ route('tenant.kos.show', $sk) }}"
-                           class="block bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
-                            <div class="relative h-36 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700">
+                           class="block bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                            <div class="relative h-36 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-primary-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700">
                                 <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-primary-100/70 dark:bg-slate-700/60"></div>
-                                <div class="absolute -left-8 bottom-[-2rem] w-28 h-28 rounded-full bg-blue-100/60 dark:bg-slate-700/40"></div>
+                                <div class="absolute -left-8 bottom-[-2rem] w-28 h-28 rounded-full bg-primary-100/60 dark:bg-slate-700/40"></div>
                                 @if($sk->photo)
                                     <img src="{{ asset('storage/' . $sk->photo) }}" alt="Foto {{ $sk->name }}"
                                          class="absolute inset-0 w-full h-full object-cover"
                                          loading="lazy" onerror="this.style.display='none'">
                                 @endif
                                 <span class="absolute inset-0 flex items-center justify-center text-[5rem] leading-none font-black uppercase text-primary-900/[0.06] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($sk->name, 0, 1) }}</span>
-                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 text-[10px] font-bold bg-white/95 dark:bg-slate-900/95 backdrop-blur px-2 py-1 rounded-md shadow-sm text-green-700 dark:text-green-300">
+                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 text-[10px] font-bold bg-white/95 dark:bg-zinc-800/95 backdrop-blur px-2 py-1 rounded-md shadow-sm text-green-700 dark:text-green-300">
                                     <i class="ri-door-open-line text-[10px]"></i> {{ $sk->kamar_tersedia }} kamar
                                 </span>
                             </div>
                             <div class="p-4">
-                                <h4 class="font-bold text-sm text-slate-900 dark:text-white leading-snug truncate">{{ $sk->name }}</h4>
+                                <h3 class="font-bold text-sm text-slate-900 dark:text-white leading-snug truncate">{{ $sk->name }}</h3>
                                 <p class="mt-0.5 text-[11px] text-slate-400 dark:text-slate-500 flex items-start gap-1 line-clamp-1">
                                     <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500"></i> {{ $sk->address }}
                                 </p>
-                                <div class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                <div class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-zinc-700 flex items-center justify-between">
                                     @if(!is_null($sk->harga_mulai))
                                         <p class="text-xs font-bold text-slate-900 dark:text-white">Rp {{ number_format($sk->harga_mulai, 0, ',', '.') }}<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500">/bln</span></p>
                                     @else
@@ -624,12 +627,12 @@
             </div>
         @endif
 
-        {{-- Iklan detail — advertiser PIHAK KETIGA, terpisah dari info kos organik --}}
+        {{-- Iklan detail â€” advertiser PIHAK KETIGA, terpisah dari info kos organik --}}
         @if(($detailAds ?? collect())->isNotEmpty())
             <div>
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <h2 class="text-base font-bold text-slate-900 dark:text-white">Partner untuk Penghuni Kos</h2>
-                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-slate-400">
                         Iklan
                     </span>
                 </div>
@@ -643,17 +646,17 @@
     </div>
 
     @if($kamarTersedia->count())
-        <div class="fixed bottom-16 inset-x-0 z-40 lg:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-4 py-3 safe-area-pb shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+        <div class="fixed inset-x-0 bottom-16 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] safe-area-bottom lg:hidden dark:border-zinc-700 dark:bg-zinc-800/95">
             <div class="flex items-center gap-3">
                 <div class="min-w-0 flex-1">
                     @if(!is_null($hargaMulai))
                         <p class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide">Mulai dari</p>
-                        <p class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Rp {{ number_format($hargaMulai, 0, ',', '.') }}<span class="text-xs font-medium text-slate-400 dark:text-slate-500">/bln</span></p>
+                        <p class="text-lg font-bold leading-tight text-slate-900 dark:text-white">Rp {{ number_format($hargaMulai, 0, ',', '.') }}<span class="text-xs font-medium text-slate-400 dark:text-slate-500">/bln</span></p>
                     @else
                         <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight">Tersedia untuk disewa</p>
                     @endif
                 </div>
-                <a href="#kamar" class="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-primary-600/25 transition active:scale-95">
+                <a href="#kamar" class="btn-primary shrink-0">
                     <i class="ri-door-open-line"></i> Pilih Kamar
                 </a>
             </div>

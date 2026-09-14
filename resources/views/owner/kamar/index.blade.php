@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $canManage = Auth::user()->hasRole('owner', 'super_admin'); @endphp
     <x-slot name="header">
         <x-page-header title="Manajemen Kamar" description="Kelola data kamar di seluruh properti Anda.">
@@ -13,31 +13,31 @@
     <div class="space-y-6">
         <x-alert />
 
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700">
             {{-- Filter bar --}}
-            <div class="p-4 border-b border-slate-100 dark:border-slate-800">
+            <div class="p-4 border-b border-slate-100 dark:border-zinc-700">
                 <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                     <div class="relative flex-1 min-w-0">
                         <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor atau nama kamar..." aria-label="Cari kamar"
-                               class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                               class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
                     </div>
                     <select name="kos_id" aria-label="Filter kos"
-                            class="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
+                            class="rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
                         <option value="">Semua Kos</option>
                         @foreach($kosList as $k)
                             <option value="{{ $k->id }}" {{ request('kos_id') == $k->id ? 'selected' : '' }}>{{ $k->name }}</option>
                         @endforeach
                     </select>
                     <select name="status" aria-label="Filter status kamar"
-                            class="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
+                            class="rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
                         <option value="">Semua Status</option>
                         @foreach(['available', 'booked', 'occupied', 'maintenance'] as $s)
                             <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ \StatusLabels::kamarLabel($s) }}</option>
                         @endforeach
                     </select>
                     <button type="submit"
-                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap">
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap">
                         <i class="ri-filter-3-line"></i> Terapkan
                     </button>
                 </form>
@@ -46,14 +46,15 @@
             {{-- Table --}}
             <div class="overflow-x-auto scrollbar-thin">
                 <table class="w-full text-sm">
-                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                        <tr>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold">Kamar</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden md:table-cell">Kos</th>
-                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Harga/Bulan</th>
-                            <th scope="col" class="px-4 py-3.5 text-center font-semibold">Status</th>
-                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Aksi</th>
-                        </tr>
+                    <thead class="bg-slate-50 dark:bg-zinc-800/50 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <tr>
+                                <th scope="col" class="px-4 py-3.5 text-left font-semibold">Kamar</th>
+                                <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden md:table-cell">Kos</th>
+                                <th scope="col" class="px-4 py-3.5 text-center font-semibold hidden sm:table-cell">Mode</th>
+                                <th scope="col" class="px-4 py-3.5 text-right font-semibold">Harga/Bulan</th>
+                                <th scope="col" class="px-4 py-3.5 text-center font-semibold">Status</th>
+                                <th scope="col" class="px-4 py-3.5 text-right font-semibold">Aksi</th>
+                            </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                         @forelse($kamars as $kamar)
@@ -69,14 +70,18 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3.5 text-slate-600 dark:text-slate-300 hidden md:table-cell">
-                                    {{ $kamar->kos->name }}
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ $kamar->room_type }}</p>
-                                </td>
-                                <td class="px-4 py-3.5 text-right">
-                                    <p class="font-semibold text-slate-900 dark:text-white">Rp {{ number_format($kamar->monthly_price, 0, ',', '.') }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">Rp {{ number_format($kamar->daily_price, 0, ',', '.') }}/hari</p>
-                                </td>
+                                    <td class="px-4 py-3.5 text-slate-600 dark:text-slate-300 hidden md:table-cell">
+                                        {{ $kamar->kos->name }}
+                                        <p class="text-xs text-slate-400 dark:text-slate-500">{{ $kamar->room_type }}</p>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center hidden sm:table-cell">
+                                        @php $bm = $kamar->billing_mode ?? 'personal'; @endphp
+                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $bm === 'shared' ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300' : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-slate-300' }}">{{ $bm === 'shared' ? 'Patungan' : 'Personal' }}</span>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-right">
+                                        <p class="font-semibold text-slate-900 dark:text-white">Rp {{ number_format($kamar->monthly_price, 0, ',', '.') }}</p>
+                                        <p class="text-xs text-slate-400 dark:text-slate-500">Rp {{ number_format($kamar->daily_price, 0, ',', '.') }}/hari Â· Rp {{ number_format($kamar->weekly_price, 0, ',', '.') }}/mgg</p>
+                                    </td>
                                 <td class="px-4 py-3.5 text-center"><x-status-badge :status="$kamar->status" context="kamar" /></td>
                                 <td class="px-4 py-3.5">
                                     <div class="flex items-center justify-end gap-1.5">
@@ -115,9 +120,9 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5">
-                                    <x-empty-state icon="ri-door-open-line" title="Belum ada data kamar"
-                                                   description="Tambahkan kamar untuk mulai menerima booking penghuni.">
+                                <td colspan="6">
+                                        <x-empty-state icon="ri-door-open-line" title="Belum ada data kamar"
+                                                       description="Tambahkan kamar untuk mulai menerima booking penghuni.">
                                         @if($canManage)
                                             <x-button href="{{ route('owner.kamar.create') }}" type="primary"><i class="ri-add-line"></i> Tambah Kamar</x-button>
                                         @endif
@@ -130,7 +135,7 @@
             </div>
 
             @if($kamars->hasPages())
-                <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+                <div class="p-4 border-t border-slate-100 dark:border-zinc-700">
                     {{ $kamars->links() }}
                 </div>
             @endif

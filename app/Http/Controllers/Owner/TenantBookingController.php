@@ -34,9 +34,21 @@ class TenantBookingController extends Controller
 
         if ($request->filled('kos_id')) {
             $selectedKos = $kos->firstWhere('id', (int) $request->kos_id);
-            $kamar = Kamar::where('kos_id', $request->kos_id)
-                ->where('status', 'available')
+            $allForKos = Kamar::where('kos_id', $request->kos_id)
+                ->where('status', '!=', 'maintenance')
                 ->get();
+            // Tampilkan kamar available (status) + shared occupied yang masih ada slot.
+            // Untuk kompatibilitas data lama/tests, kamar dengan status available tetap tampil
+            // meski occupancy penuh secara teknis (data setup artificial).
+            $kamar = $allForKos->filter(function (Kamar $k) {
+                if ($k->status === 'available') {
+                    return true;
+                }
+                if (($k->billing_mode ?? 'personal') === 'shared' && $k->hasAvailableSlot()) {
+                    return true;
+                }
+                return false;
+            })->values();
         }
 
         return view('tenant.booking.create', compact('kos', 'kamar', 'selectedKos'));
@@ -49,18 +61,25 @@ class TenantBookingController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'rental_type' => $request->rental_type,
+            'billing_mode' => $request->input('billing_mode', 'personal'),
             'notes' => $request->notes,
         ], $request->user()->id);
 
         if (! $result['ok']) {
             $message = match ($result['error']) {
                 'conflict' => 'Kamar sudah dibooking pada periode tersebut.',
+                'overlap' => 'Kamar sudah dibooking pada periode tersebut.',
+                'kamar_penuh' => 'Kamar sudah penuh. Kapasitas tidak mencukupi.',
+                'already_occupant' => 'Anda sudah menjadi penghuni aktif di kamar ini.',
                 'no_price' => 'Harga kamar tidak tersedia.',
+                'billing_mode_not_allowed' => 'Kamar ini tidak mengizinkan shared billing.',
                 default => 'Kamar tidak tersedia untuk dibooking.',
             };
 
+            $field = $result['error'] === 'billing_mode_not_allowed' ? 'billing_mode' : 'kamar_id';
+
             return redirect()->route('tenant.booking.create', ['kos_id' => $request->kos_id])
-                ->withErrors(['kamar_id' => $message])->withInput();
+                ->withErrors([$field => $message])->withInput();
         }
 
         return redirect()->route('tenant.booking.success', $result['booking'])

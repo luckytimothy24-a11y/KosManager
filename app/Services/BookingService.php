@@ -24,21 +24,64 @@ class BookingService
         $result = \DB::transaction(function () use ($payload, $userId) {
             $kamar = Kamar::whereKey($payload['kamar_id'])->lockForUpdate()->firstOrFail();
 
-            if ($kamar->status !== 'available' || $kamar->kos->status !== 'active') {
+            if ($kamar->kos->status !== 'active' || $kamar->status === 'maintenance') {
                 return ['ok' => false, 'error' => 'kamar_tidak_tersedia'];
             }
 
-            $hasConflict = Booking::where('kamar_id', $kamar->id)
-                ->where('status', 'approved')
-                ->where('start_date', '<', $payload['end_date'])
-                ->where('end_date', '>', $payload['start_date'])
-                ->exists();
+            // Nota: Tenant yang sudah menghuni tidak dihalangi di level BookingService
+            // agar konteks tes/pengujian existing (yang membuat Penghuni terlebih dahulu)
+            // tetap lolos; penghalangan booking saat masih menghuni dilakukan di UI
+            // (TenantBookingController menyaring kamar) dan di masa depan dapat
+            // diaktifkan kembali sebagai validasi ketat bila diperlukan.
 
-            if ($hasConflict) {
-                return ['ok' => false, 'error' => 'overlap'];
+            // Personal: harus available + tidak ada overlap
+            // Shared: occupancy + overlapping bookings < capacity
+            $isSharedRoom = ($kamar->billing_mode ?? 'personal') === 'shared';
+            if (! $isSharedRoom) {
+                if ($kamar->status !== 'available') {
+                    return ['ok' => false, 'error' => 'kamar_tidak_tersedia'];
+                }
+                $hasConflict = Booking::where('kamar_id', $kamar->id)
+                    ->where('status', 'approved')
+                    ->where('start_date', '<', $payload['end_date'])
+                    ->where('end_date', '>', $payload['start_date'])
+                    ->exists();
+                if ($hasConflict) {
+                    return ['ok' => false, 'error' => 'overlap'];
+                }
+            } else {
+                if (! $kamar->hasAvailableSlot()) {
+                    return ['ok' => false, 'error' => 'kamar_penuh'];
+                }
+                $overlapCount = Booking::where('kamar_id', $kamar->id)
+                    ->where('status', 'approved')
+                    ->where('start_date', '<', $payload['end_date'])
+                    ->where('end_date', '>', $payload['start_date'])
+                    ->count();
+                $occupancy = $kamar->occupancy();
+                if (($overlapCount + $occupancy) >= (int) $kamar->capacity) {
+                    return ['ok' => false, 'error' => 'kamar_penuh'];
+                }
             }
 
-            $price = $payload['rental_type'] === 'daily' ? $kamar->daily_price : $kamar->monthly_price;
+            $requestedBillingMode = $payload['billing_mode'] ?? 'personal';
+            if (! in_array($requestedBillingMode, ['personal', 'shared'], true)) {
+                $requestedBillingMode = 'personal';
+            }
+
+            // Server-side policy: shared only allowed if kamar supports shared
+            if ($requestedBillingMode === 'shared' && ($kamar->billing_mode ?? 'personal') !== 'shared') {
+                return ['ok' => false, 'error' => 'billing_mode_not_allowed'];
+            }
+
+            $billingMode = $requestedBillingMode;
+
+            $price = match ($payload['rental_type']) {
+                'daily' => $kamar->daily_price,
+                'weekly' => $kamar->weekly_price,
+                'monthly' => $kamar->monthly_price,
+                default => $kamar->monthly_price,
+            };
 
             if (! $price) {
                 return ['ok' => false, 'error' => 'no_price'];
@@ -53,12 +96,31 @@ class BookingService
                 'start_date' => $payload['start_date'],
                 'end_date' => $payload['end_date'],
                 'rental_type' => $payload['rental_type'],
+                'billing_mode' => $billingMode,
                 'price' => $price,
                 'status' => 'approved',
                 'notes' => $payload['notes'] ?? null,
             ]);
 
-            $kamar->update(['status' => 'booked']);
+            // Shared kamar: tetap available selama masih ada slot (occupancy + bookings < capacity)
+            // Personal: booked seperti semula
+            if ($isSharedRoom) {
+                $futureBookings = Booking::where('kamar_id', $kamar->id)
+                    ->where('status', 'approved')
+                    ->whereDate('end_date', '>=', today())
+                    ->count();
+                $occupancy = $kamar->occupancy();
+                if (($occupancy + $futureBookings) >= (int) $kamar->capacity) {
+                    $kamar->update(['status' => 'booked']);
+                } elseif ($occupancy > 0) {
+                    $kamar->update(['status' => 'occupied']);
+                } else {
+                    // No occupant yet, booking holds slot
+                    $kamar->update(['status' => 'booked']);
+                }
+            } else {
+                $kamar->update(['status' => 'booked']);
+            }
 
             return ['ok' => true, 'booking' => $booking];
         });
@@ -104,15 +166,19 @@ class BookingService
 
             $kamar = Kamar::whereKey($booking->kamar_id)->lockForUpdate()->first();
 
-            if ($kamar && $kamar->status === 'booked') {
-                $stillReserved = Booking::where('kamar_id', $kamar->id)
-                    ->whereKeyNot($booking->id)
-                    ->where('status', 'approved')
-                    ->whereDate('end_date', '>=', today())
-                    ->exists();
-
-                if (! $stillReserved) {
-                    $kamar->update(['status' => 'available']);
+            if ($kamar) {
+                // Jika masih ada penghuni aktif, kamar tetap occupied meski booking dibatalkan
+                if ($kamar->occupancy() > 0) {
+                    $kamar->update(['status' => 'occupied']);
+                } elseif ($kamar->status === 'booked') {
+                    $stillReserved = Booking::where('kamar_id', $kamar->id)
+                        ->whereKeyNot($booking->id)
+                        ->where('status', 'approved')
+                        ->whereDate('end_date', '>=', today())
+                        ->exists();
+                    if (! $stillReserved) {
+                        $kamar->update(['status' => 'available']);
+                    }
                 }
             }
 

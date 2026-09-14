@@ -8,6 +8,7 @@ use App\Models\Kontrak;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
+use App\Services\SharedBillingService;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -55,6 +56,20 @@ class TagihanController extends Controller
         return view($user->isTenant() ? 'tenant.tagihan.show' : 'owner.tagihan.show', compact('tagihan'));
     }
 
+    public function pay(Request $request)
+    {
+        $user = $request->user();
+        abort_unless($user->isTenant(), 403);
+
+        $tagihans = Tagihan::with(['penghuni.user', 'kontrak', 'kamar.kos'])
+            ->whereHas('penghuni', fn ($q) => $q->where('user_id', $user->id))
+            ->whereIn('status', Tagihan::PAYABLE)
+            ->latest()
+            ->get();
+
+        return view('tenant.tagihan.pay', compact('tagihans'));
+    }
+
     public function create(Request $request)
     {
         $user = $request->user();
@@ -67,37 +82,120 @@ class TagihanController extends Controller
                 $kosIds = $user->assignedKos()->pluck('kos.id');
                 $q->whereHas('kamar', fn ($kq) => $kq->whereIn('kos_id', $kosIds));
             })
-            ->with(['penghuni.user', 'kamar'])
+            ->with(['penghuni.user', 'kamar.kos'])
             ->get();
 
         return view('owner.tagihan.create', compact('kontraks'));
     }
 
-    public function store(StoreTagihanRequest $request)
+    public function store(StoreTagihanRequest $request, SharedBillingService $sharedBilling)
     {
         $user = $request->user();
-        $kontrak = Kontrak::with('penghuni', 'kamar')->findOrFail($request->kontrak_id);
+        $kontrak = Kontrak::with(['penghuni.user', 'kamar'])->findOrFail($request->kontrak_id);
 
         abort_unless($user->canAccessKos((int) $kontrak->kos_id), 403);
         abort_unless($kontrak->status === 'active', 400, 'Kontrak tidak aktif.');
 
         $periodStart = Carbon::parse($request->period_start);
         $periodEnd = Carbon::parse($request->period_end);
+        $discount = (float) ($request->discount ?? 0);
+        $penalty = (float) ($request->penalty ?? 0);
 
+        // ── Shared billing branch ───────────────────────────────────────
+        // Kontrak is source of truth for billing_mode (snapshot from booking).
+        $effectiveMode = $kontrak->billing_mode ?? $kontrak->kamar->billing_mode ?? 'personal';
+        if ($effectiveMode === 'shared') {
+            // Validate custom shares balance BEFORE creating any bills
+            $kamar = $kontrak->kamar;
+            // total_room_bill snapshot: price × units using existing weekly/daily/monthly logic
+            $totalRoomBill = $sharedBilling->calculateTotalRoomBill($kamar, $kontrak->rental_type, $periodStart, $periodEnd);
+
+            // If all active shared occupants have custom_share_amount, validate SUM == total
+            $activeShared = $kamar->activeKontraks()->get()->filter(fn ($k) => ($k->billing_mode ?? $k->kamar->billing_mode ?? 'personal') === 'shared');
+            // Fallback: if Kontrak billing_mode snapshot is null but kamar shared, use activeKontraks count
+            if ($activeShared->isEmpty()) {
+                $activeShared = $kamar->activeKontraks()->get();
+            }
+            $customShares = $activeShared->filter(fn ($k) => $k->custom_share_amount !== null);
+            if ($customShares->isNotEmpty() && $customShares->count() === $activeShared->count()) {
+                $sharesForValidation = $customShares->map(fn ($k) => ['kontrak_id' => $k->id, 'share' => (float) $k->custom_share_amount])->toArray();
+                if (! $sharedBilling->validateCustomShares($totalRoomBill, $sharesForValidation)) {
+                    return back()->withErrors([
+                        'kontrak_id' => 'Jumlah custom share (Rp '.number_format(array_sum(array_column($sharesForValidation, 'share')), 0, ',', '.').') tidak balance dengan total tagihan kamar (Rp '.number_format($totalRoomBill, 0, ',', '.').').',
+                    ])->withInput();
+                }
+            }
+
+            // Also reject if partial custom sum already exceeds total
+            if ($customShares->isNotEmpty()) {
+                $customTotal = $customShares->sum(fn ($k) => (float) $k->custom_share_amount);
+                if ($customTotal > $totalRoomBill + 0.005) {
+                    return back()->withErrors([
+                        'kontrak_id' => 'Jumlah custom share melebihi total tagihan kamar (Rp '.number_format($totalRoomBill, 0, ',', '.').').',
+                    ])->withInput();
+                }
+            }
+
+            // Use SharedBillingService as single source of truth for split/rounding/invariant/duplicate guard
+            $created = $sharedBilling->createSharedTagihans(
+                $kamar,
+                $request->bill_type,
+                $request->period_start,
+                $request->period_end,
+                $request->due_date,
+                $discount,
+                $penalty,
+            );
+
+            if (empty($created)) {
+                // Determine if duplicate vs no occupants
+                $exists = Tagihan::where('kontrak_id', $kontrak->id)
+                    ->where('period_start', $request->period_start)
+                    ->where('period_end', $request->period_end)
+                    ->exists();
+                if ($exists) {
+                    return back()->withErrors(['kontrak_id' => 'Tagihan untuk periode tersebut sudah ada.'])->withInput();
+                }
+
+                return back()->withErrors(['kontrak_id' => 'Tidak ada penghuni aktif untuk shared billing pada kamar ini.'])->withInput();
+            }
+
+            try {
+                foreach ($created as $tag) {
+                    $tag->loadMissing('kontrak.penghuni.user');
+                    NotificationService::billCreated($tag->kontrak->penghuni->user_id, $tag->bill_number, $request->due_date);
+                    AuditLogService::create('Tagihan', "Tagihan shared {$tag->bill_number} dibuat (total_room_bill Rp ".number_format((float) $tag->total_room_bill, 0, ',', '.').')', ['kontrak_id' => $tag->kontrak_id]);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Tagihan shared notification/audit failed: '.$e->getMessage());
+            }
+
+            $prefix = $user->isTenant() ? 'tenant' : ($user->isAdmin() ? 'admin' : 'owner');
+
+            return redirect()->route("$prefix.tagihan.index")->with('success', 'Tagihan shared berhasil dibuat untuk '.count($created).' penghuni.');
+        }
+
+        // ── Personal flow (regression-safe) ─────────────────────────────
         // Subtotal selalu dihitung dari kontrak (PRD §9), bukan dari input client.
         if ($kontrak->rental_type === 'daily') {
             $units = (int) $periodStart->copy()->startOfDay()->diffInDays($periodEnd->copy()->startOfDay()) + 1;
+        } elseif ($kontrak->rental_type === 'weekly') {
+            $days = (int) $periodStart->copy()->startOfDay()->diffInDays($periodEnd->copy()->startOfDay()) + 1;
+            $units = (int) ceil($days / 7);
         } else {
             $units = $this->ceilingMonths($periodStart, $periodEnd);
         }
         $subtotal = round((float) $kontrak->rental_price * $units, 2);
 
-        $discount = (float) ($request->discount ?? 0);
-        $penalty = (float) ($request->penalty ?? 0);
-
         if ($discount > $subtotal) {
             return back()->withErrors([
                 'discount' => 'Diskon tidak boleh melebihi subtotal tagihan (Rp '.number_format($subtotal, 0, ',', '.').').',
+            ])->withInput();
+        }
+
+        if ($penalty > $subtotal) {
+            return back()->withErrors([
+                'penalty' => 'Denda tidak boleh melebihi subtotal tagihan (Rp '.number_format($subtotal, 0, ',', '.').').',
             ])->withInput();
         }
 

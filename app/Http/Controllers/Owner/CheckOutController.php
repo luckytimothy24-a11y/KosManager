@@ -107,17 +107,17 @@ class CheckOutController extends Controller
             $penghuni->update(['status' => 'inactive']);
 
             if ($kamar) {
-                // Bila masih ada booking approved yang mencakup periode masa
-                // depan pada kamar ini, kamar kembali ke status 'booked', bukan
-                // 'available' — konsisten dengan booking:expire-old &
-                // BookingService::cancel. Kamar 'available' hanya bila tidak ada
-                // reservasi approved yang masih menutupi periode ke depan.
-                $stillReserved = Booking::where('kamar_id', $kamar->id)
-                    ->where('status', 'approved')
-                    ->whereDate('end_date', '>=', today())
-                    ->exists();
-
-                $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
+                // Occupancy-aware: jika masih ada penghuni aktif, tetap occupied
+                $remainingOccupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+                if ($remainingOccupancy > 0) {
+                    $kamar->update(['status' => 'occupied']);
+                } else {
+                    $stillReserved = Booking::where('kamar_id', $kamar->id)
+                        ->where('status', 'approved')
+                        ->whereDate('end_date', '>=', today())
+                        ->exists();
+                    $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
+                }
             }
 
             $kontrak = Kontrak::where('penghuni_id', $penghuni->id)

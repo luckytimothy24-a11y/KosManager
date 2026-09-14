@@ -21,6 +21,8 @@ class KamarResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // API spec fix: is_available must remain status === 'available' for backward compat
+        // (kos_kamar/listing contract). Slot-aware availability exposed via remaining_slots/capacity.
         return [
             'id' => $this->id,
             'name' => $this->room_name,
@@ -29,6 +31,11 @@ class KamarResource extends JsonResource
             'photo' => $this->photo,
             'status' => $this->status,
             'is_available' => $this->status === 'available',
+            'capacity' => (int) $this->capacity,
+            'occupancy' => $this->occupancy(),
+            'remaining_slots' => $this->remainingSlots(),
+            'billing_mode' => $this->billing_mode ?? 'personal',
+            'has_available_slot' => $this->hasAvailableSlot() && $this->status !== 'maintenance',
         ];
     }
 }

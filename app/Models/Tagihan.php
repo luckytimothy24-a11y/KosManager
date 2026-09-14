@@ -44,6 +44,7 @@ class Tagihan extends Model
         'discount',
         'penalty',
         'total',
+        'total_room_bill',
         'due_date',
         'status',
         'active_billing_key',
@@ -88,6 +89,7 @@ class Tagihan extends Model
         'discount' => 'decimal:2',
         'penalty' => 'decimal:2',
         'total' => 'decimal:2',
+        'total_room_bill' => 'decimal:2',
     ];
 
     public function penghuni()

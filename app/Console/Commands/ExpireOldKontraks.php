@@ -121,16 +121,17 @@ class ExpireOldKontraks extends Command
 
         $penghuni->update(['status' => 'inactive']);
 
-        if ($kamar && $kamar->status === 'occupied') {
-            // Konsisten dengan flow check-out: bila masih ada booking approved
-            // yang mencakup periode masa depan pada kamar ini, kamar kembali ke
-            // status 'booked', bukan 'available'.
-            $stillReserved = Booking::where('kamar_id', $kamar->id)
-                ->where('status', 'approved')
-                ->whereDate('end_date', '>=', today())
-                ->exists();
-
-            $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
+        if ($kamar) {
+            $remainingOccupancy = \App\Models\Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+            if ($remainingOccupancy > 0) {
+                $kamar->update(['status' => 'occupied']);
+            } elseif ($kamar->status === 'occupied') {
+                $stillReserved = Booking::where('kamar_id', $kamar->id)
+                    ->where('status', 'approved')
+                    ->whereDate('end_date', '>=', today())
+                    ->exists();
+                $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
+            }
         }
 
         CheckOut::create([
