@@ -10,7 +10,8 @@
             $greeting = $hour < 11 ? 'Selamat Pagi' : ($hour < 15 ? 'Selamat Siang' : ($hour < 19 ? 'Selamat Sore' : 'Selamat Malam'));
             $total = $stats['total_kamar'] ?: 0;
         @endphp
-        <header class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-800 px-5 py-5 text-white sm:px-8 sm:py-6">
+        <header class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 via-primary-700 to-indigo-800 dark:from-primary-700 dark:via-primary-800 dark:to-indigo-900 px-5 py-5 text-white sm:px-8 sm:py-6">
+            <div class="absolute inset-0 hidden rounded-2xl bg-black/10 dark:block" aria-hidden="true"></div>
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute top-0 right-0 h-56 w-56 rounded-full bg-white -translate-y-1/3 translate-x-1/3"></div>
                 <div class="absolute bottom-0 left-1/4 h-40 w-40 rounded-full bg-white translate-y-1/2"></div>
@@ -54,39 +55,39 @@
                 @php
                     $occupancy = $total > 0 ? (int) round(($stats['total_kamar_occupied'] / $total) * 100) : 0;
                 @endphp
-                <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:shadow-sm">
                     <div class="flex items-start justify-between">
                         <div class="min-w-0">
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Kamar Terisi</p>
                             <p class="mt-1 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{{ $stats['total_kamar_occupied'] }}</p>
                         </div>
-                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400 dark:ring-1 dark:ring-blue-500/20">
                             <i class="ri-lock-line text-2xl"></i>
                         </span>
                     </div>
-                    <p class="mt-3 text-xs font-medium text-slate-400 dark:text-slate-500">{{ $occupancy }}% okupansi</p>
+                    <p class="mt-3 text-xs font-medium text-slate-400 dark:text-slate-400">{{ $occupancy }}% okupansi</p>
                 </div>
 
-                <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:shadow-sm">
                     <div class="flex items-start justify-between">
                         <div class="min-w-0">
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Kamar Tersedia</p>
                             <p class="mt-1 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{{ $stats['total_kamar_available'] }}</p>
                         </div>
-                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400 dark:ring-1 dark:ring-emerald-500/20">
                             <i class="ri-checkbox-circle-line text-2xl"></i>
                         </span>
                     </div>
-                    <p class="mt-3 text-xs font-medium text-slate-400 dark:text-slate-500">{{ $stats['total_kamar_maintenance'] }} dalam perawatan</p>
+                    <p class="mt-3 text-xs font-medium text-slate-400 dark:text-slate-400">{{ $stats['total_kamar_maintenance'] }} dalam perawatan</p>
                 </div>
 
-                <div class="col-span-2 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:flex sm:items-center sm:justify-between lg:col-span-1 lg:block dark:border-slate-800 dark:bg-slate-900">
+                <div class="col-span-2 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:flex sm:items-center sm:justify-between lg:col-span-1 lg:block dark:border-slate-700 dark:bg-slate-900 dark:shadow-sm">
                     <div class="flex items-start justify-between">
                         <div class="min-w-0">
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Penghuni Aktif</p>
                             <p class="mt-1 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{{ $stats['total_penghunis'] }}</p>
                         </div>
-                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400">
+                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-green-50 text-green-600 dark:bg-green-500/15 dark:text-green-400 dark:ring-1 dark:ring-green-500/20">
                             <i class="ri-user-star-line text-2xl"></i>
                         </span>
                     </div>
@@ -146,7 +147,7 @@
                 </div>
             @else
                 {{-- Intentional empty state — no dummy data, real Rp 0 --}}
-                <div class="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center dark:border-slate-700 dark:bg-slate-800/40">
+                <div class="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center dark:border-slate-700 dark:bg-slate-900/50">
                     <span class="grid h-12 w-12 place-items-center rounded-2xl bg-white text-slate-400 shadow-sm dark:bg-slate-900 dark:text-slate-500">
                         <i class="ri-line-chart-line text-2xl" aria-hidden="true"></i>
                     </span>
