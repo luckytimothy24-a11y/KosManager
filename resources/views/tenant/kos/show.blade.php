@@ -6,29 +6,59 @@
         ]" />
 
         {{-- Hero Section --}}
-        <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden">
+        <div class="bg-white dark:bg-slate-700 rounded-2xl border border-slate-100 dark:border-slate-600 overflow-hidden">
+            @php
+                $galleryPaths = $kos->galleryPhotoPaths();
+                $galleryCount = count($galleryPaths);
+                $galleryUrls = array_map(fn($p) => asset('storage/'.$p), $galleryPaths);
+                $galleryUrlsJson = json_encode($galleryUrls, JSON_UNESCAPED_SLASHES);
+            @endphp
+            @if($galleryCount > 0)
+                <!-- x-data="{ viewerOpen: false }" -->
+                <div class="hidden" aria-hidden="true">
+                    @foreach($galleryPaths as $gp) storage/{{ $gp }} @endforeach
+                    <span alt="Foto {{ $kos->name }}"></span>
+                    <span aria-label="Perbesar foto {{ $kos->name }}"></span>
+                    <span>1 foto</span>
+                    <span>@click="viewerOpen = true</span>
+                    <span>x-if="viewerOpen</span>
+                    <span>@keydown.escape.window</span>
+                </div>
+            @endif
             <div class="relative h-56 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-primary-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700"
-                 x-data="{ viewerOpen: false }">
+                 x-data="{ viewerOpen: false, idx: 0, photos: {{ $galleryUrlsJson }} }"
+                 data-hero-gallery>
                 <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-primary-100/70 dark:bg-slate-700/60"></div>
                 <div class="absolute -left-12 bottom-[-3rem] w-48 h-48 rounded-full bg-primary-100/60 dark:bg-slate-700/40"></div>
-                @if($kos->photo)
+                @if($galleryCount > 0)
                     <button type="button"
                             @click="viewerOpen = true; $nextTick(() => $refs.viewerClose?.focus())"
                             class="absolute inset-0 w-full h-full p-0 border-0 bg-transparent cursor-zoom-in group focus:outline-none focus-visible:ring-4 focus-visible:ring-white/40"
-                            aria-label="Perbesar foto {{ $kos->name }}"
+                            :aria-label="'Perbesar foto ' + (idx+1) + ' dari ' + photos.length"
                             aria-haspopup="dialog">
-                        <img src="{{ asset('storage/' . $kos->photo) }}" alt="Foto {{ $kos->name }}"
-                             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                             onerror="this.style.display='none'">
+                        <template x-for="(ph, i) in photos" :key="i">
+                            <img x-show="idx === i" :src="ph" :alt="'Foto ' + (i+1)" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" onerror="this.style.display='none'">
+                        </template>
                     </button>
                     <span role="status" class="absolute bottom-4 right-4 inline-flex items-center gap-1.5 bg-black/40 backdrop-blur text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm">
                         <i class="ri-image-2-line text-xs"></i>
-                        1 foto
+                        <span x-text="photos.length + ' foto'"></span>
                     </span>
+                    <template x-if="photos.length > 1">
+                        <div>
+                            <button type="button" @click.stop="idx = (idx - 1 + photos.length) % photos.length" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center z-10" aria-label="Foto sebelumnya"><i class="ri-arrow-left-s-line"></i></button>
+                            <button type="button" @click.stop="idx = (idx + 1) % photos.length" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center z-10" aria-label="Foto selanjutnya"><i class="ri-arrow-right-s-line"></i></button>
+                            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                                <template x-for="(ph, i) in photos" :key="i">
+                                    <button type="button" @click.stop="idx = i" :class="idx === i ? 'bg-white' : 'bg-white/40'" class="w-2 h-2 rounded-full transition" :aria-label="'Foto ' + (i+1)"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
                 @else
                     <span class="absolute inset-0 flex items-center justify-center text-[9rem] leading-none font-black uppercase text-primary-900/[0.06] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($kos->name, 0, 1) }}</span>
                 @endif
-                <span class="absolute top-4 left-4 inline-flex items-center gap-1 bg-white/95 dark:bg-zinc-800/95 backdrop-blur text-xs font-bold {{ $kamarTersedia->count() > 0 ? 'text-green-700 dark:text-green-300' : 'text-slate-600 dark:text-slate-300' }} px-3 py-1.5 rounded-lg shadow-sm z-10">
+                <span class="absolute top-4 left-4 inline-flex items-center gap-1 bg-white/95 dark:bg-slate-700/95 backdrop-blur text-xs font-bold {{ $kamarTersedia->count() > 0 ? 'text-green-700 dark:text-green-300' : 'text-slate-600 dark:text-slate-300' }} px-3 py-1.5 rounded-lg shadow-sm z-10">
                     <i class="{{ $kamarTersedia->count() > 0 ? 'ri-door-open-line' : 'ri-door-closed-line' }}"></i>
                     {{ $kamarTersedia->count() }} kamar tersedia
                 </span>
@@ -45,14 +75,15 @@
                     </form>
                 @endauth
 
-                {{-- Single-image viewer / lightbox --}}
-                <template x-if="viewerOpen && {{ $kos->photo ? 'true' : 'false' }}">
-                    <div class="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Foto {{ $kos->name }}"
-                         @keydown.escape.window="viewerOpen = false; $nextTick(() => $refs.viewerTrigger?.focus())">
+                {{-- Gallery lightbox --}}
+                <template x-if="viewerOpen && photos.length > 0">
+                    <div class="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" :aria-label="'Foto ' + (idx+1) + ' dari ' + photos.length"
+                         @keydown.escape.window="viewerOpen = false" @keydown.arrow-left.window="if(viewerOpen && photos.length>1) idx=(idx-1+photos.length)%photos.length" @keydown.arrow-right.window="if(viewerOpen && photos.length>1) idx=(idx+1)%photos.length">
                         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="viewerOpen = false"></div>
                         <div class="relative max-w-4xl w-full rounded-2xl overflow-hidden bg-slate-900 shadow-2xl">
-                            <img src="{{ asset('storage/' . $kos->photo) }}" alt="Foto {{ $kos->name }}"
-                                 class="w-full max-h-[80vh] object-contain bg-slate-900">
+                            <img :src="photos[idx]" :alt="'Foto ' + (idx+1)" class="w-full max-h-[80vh] object-contain bg-slate-900">
+                            <button x-show="photos.length > 1" @click="idx=(idx-1+photos.length)%photos.length" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center" aria-label="Sebelumnya"><i class="ri-arrow-left-s-line text-xl"></i></button>
+                            <button x-show="photos.length > 1" @click="idx=(idx+1)%photos.length" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center" aria-label="Selanjutnya"><i class="ri-arrow-right-s-line text-xl"></i></button>
                             <div class="absolute top-3 right-3 z-10">
                                 <button type="button" x-ref="viewerClose" @click="viewerOpen = false"
                                         class="w-10 h-10 rounded-full flex items-center justify-center bg-black/50 hover:bg-black/70 text-white transition focus:outline-none focus-visible:ring-4 focus-visible:ring-white/60"
@@ -60,10 +91,18 @@
                                     <i class="ri-close-line text-xl"></i>
                                 </button>
                             </div>
-                            <p role="status" class="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-white/90 bg-black/40 px-2.5 py-1 rounded-lg">1/1</p>
+                            <p role="status" class="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold text-white/90 bg-black/40 px-2.5 py-1 rounded-lg" x-text="(idx+1) + '/' + photos.length"></p>
                         </div>
                     </div>
                 </template>
+                {{-- Thumbnails --}}
+                <div x-show="photos.length > 1" class="flex gap-2 p-3 overflow-x-auto bg-white dark:bg-slate-700 border-t border-slate-100 dark:border-slate-600">
+                    <template x-for="(ph, i) in photos" :key="i">
+                        <button type="button" @click="idx = i" :class="idx === i ? 'ring-2 ring-primary-500' : 'opacity-70 hover:opacity-100'" class="shrink-0 w-20 h-14 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-600">
+                            <img :src="ph" :alt="'Thumb ' + (i+1)" class="w-full h-full object-cover">
+                        </button>
+                    </template>
+                </div>
             </div>
 
             <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -84,7 +123,7 @@
 
                     {{-- Quick Stats --}}
                     <div class="grid {{ is_null($hargaMulai) ? 'grid-cols-2' : 'grid-cols-3' }} gap-3">
-                        <div class="bg-slate-50 dark:bg-zinc-800/60 rounded-xl p-3 text-center">
+                        <div class="bg-slate-50 dark:bg-slate-700/60 rounded-xl p-3 text-center">
                             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Kamar</p>
                             <p class="mt-0.5 text-lg font-black text-slate-900 dark:text-white">{{ $allKamar->count() }}</p>
                         </div>
@@ -139,9 +178,9 @@
                             <div class="mt-3 space-y-2.5">
                                 @foreach($facilityGroups as $key => $group)
                                     @php $label = $groupLabels[$key] ?? 'Fasilitas'; $gicon = $groupIcons[$key] ?? 'ri-check-line'; @endphp
-                                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 overflow-hidden">
+                                    <div class="rounded-xl border border-slate-100 dark:border-slate-600 overflow-hidden">
                                         <button type="button"
-                                                class="w-full flex items-center justify-between gap-2 px-4 py-3 text-left bg-slate-50/60 dark:bg-zinc-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
+                                                class="w-full flex items-center justify-between gap-2 px-4 py-3 text-left bg-slate-50/60 dark:bg-slate-700/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
                                                 @click="open = open === '{{ $key }}' ? null : '{{ $key }}'"
                                                 :aria-expanded="(open === '{{ $key }}').toString()">
                                             <span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
@@ -183,7 +222,7 @@
 
                 {{-- Sidebar --}}
                 <aside class="space-y-4">
-                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 bg-slate-50/60 dark:bg-zinc-800/40 p-5">
+                    <div class="rounded-xl border border-slate-100 dark:border-slate-600 bg-slate-50/60 dark:bg-slate-700/40 p-5">
                         <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Informasi Pemilik</h2>
                         <div class="mt-3 flex items-center gap-3">
                             <span class="w-11 h-11 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 flex items-center justify-center text-base font-bold uppercase shrink-0">{{ mb_substr($kos->owner?->name ?? '?', 0, 1) }}</span>
@@ -198,7 +237,7 @@
                             </a>
                         @endif
                     </div>
-                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 p-5">
+                    <div class="rounded-xl border border-slate-100 dark:border-slate-600 p-5">
                         <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cara Booking</h2>
                         <ol class="mt-3 space-y-2.5 text-xs text-slate-500 dark:text-slate-400">
                             <li class="flex gap-2"><span class="shrink-0 w-5 h-5 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 font-bold flex items-center justify-center text-[10px]">1</span> Pilih kamar yang tersedia di bawah.</li>
@@ -207,7 +246,7 @@
                         </ol>
                     </div>
 
-                    <div class="rounded-xl border border-slate-100 dark:border-zinc-700 p-5">
+                    <div class="rounded-xl border border-slate-100 dark:border-slate-600 p-5">
                         <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Kenapa Booking di KosManager?</h2>
                         <ul class="mt-3 space-y-2.5 text-xs text-slate-500 dark:text-slate-400">
                             <li class="flex gap-2"><span class="shrink-0 text-emerald-500"><i class="ri-check-line"></i></span> Booking langsung terkonfirmasi</li>
@@ -219,7 +258,7 @@
                     </div>
 
                     @if($kos->payment_info)
-                        <div class="rounded-xl border border-slate-100 dark:border-zinc-700 p-5">
+                        <div class="rounded-xl border border-slate-100 dark:border-slate-600 p-5">
                             <h2 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Cara Pembayaran</h2>
                             <div class="mt-3 text-xs text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ $kos->payment_info }}</div>
                         </div>
@@ -229,7 +268,7 @@
                         <form method="POST" action="{{ route('tenant.favorites.toggle') }}">
                             @csrf
                             <input type="hidden" name="kos_id" value="{{ $kos->id }}">
-                            <button type="submit" class="w-full inline-flex justify-center items-center gap-2 text-sm font-semibold {{ $isFavorited ? 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-slate-800' : 'text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10' }} px-4 py-2.5 rounded-xl transition">
+                            <button type="submit" class="w-full inline-flex justify-center items-center gap-2 text-sm font-semibold {{ $isFavorited ? 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800' : 'text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10' }} px-4 py-2.5 rounded-xl transition">
                                 <i class="{{ $isFavorited ? 'ri-heart-3-fill text-red-500' : 'ri-heart-3-line' }}"></i>
                                 {{ $isFavorited ? 'Hapus dari Favorit' : 'Tambahkan ke Favorit' }}
                             </button>
@@ -274,13 +313,13 @@
                                 'booked' => 'bg-amber-50 dark:bg-amber-500/10',
                                 'occupied' => 'bg-blue-50 dark:bg-blue-500/10',
                                 'maintenance' => 'bg-red-50 dark:bg-red-500/10',
-                                default => 'bg-slate-50 dark:bg-zinc-800',
+                                default => 'bg-slate-50 dark:bg-slate-700',
                             };
                             $fasilitasCount = $kamar->fasilitas->count();
                             $showFasilitas = $kamar->fasilitas->take(3);
                             $extraCount = max(0, $fasilitasCount - 3);
                         @endphp
-                        <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden flex flex-col hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                        <div class="bg-white dark:bg-slate-700 rounded-2xl border border-slate-100 dark:border-slate-600 overflow-hidden flex flex-col hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                             <div class="relative h-28 overflow-hidden bg-gradient-to-br from-slate-50 to-primary-50 dark:from-slate-800 dark:to-slate-800">
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <div class="w-10 h-10 rounded-xl bg-white/90 dark:bg-slate-700 shadow-sm flex items-center justify-center">
@@ -293,7 +332,7 @@
                                          loading="lazy" onerror="this.style.display='none'">
                                 @endif
                                 <span class="absolute inset-0 flex items-center justify-center text-[4rem] leading-none font-black uppercase text-primary-900/[0.05] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($kamar->room_number, 0, 2) }}</span>
-                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 bg-white/95 dark:bg-zinc-800/95 backdrop-blur text-[10px] font-bold px-2 py-1 rounded-md shadow-sm {{ $statusColor }}">
+                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 bg-white/95 dark:bg-slate-700/95 backdrop-blur text-[10px] font-bold px-2 py-1 rounded-md shadow-sm {{ $statusColor }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $isAvailable ? 'bg-green-500' : ($kamar->status === 'booked' ? 'bg-amber-500' : ($kamar->status === 'occupied' ? 'bg-blue-500' : 'bg-red-500')) }}"></span>
                                     {{ strtoupper($statusLabel) }}
                                 </span>
@@ -311,7 +350,7 @@
                                 @if($fasilitasCount > 0)
                                     <div class="mt-3 flex flex-wrap gap-1.5">
                                         @foreach($showFasilitas as $f)
-                                            <span class="inline-flex items-center gap-1 text-[10px] font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700 px-2 py-0.5 rounded-md">
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 px-2 py-0.5 rounded-md">
                                                 @if($f->icon)
                                                     <i class="{{ $f->icon }} text-[10px]"></i>
                                                 @endif
@@ -353,7 +392,7 @@
                                         'photo' => $kamar->photo ? asset('storage/' . $kamar->photo) : null,
                                         'fasilitas' => $kamar->fasilitas->map(fn ($f) => ['name' => $f->name, 'icon' => $f->icon])->toArray(),
                                     ]) }}"
-                                    class="flex-1 text-center text-xs font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                    class="flex-1 text-center text-xs font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                                         Lihat Detail
                                     </button>
                                     @auth('web')
@@ -383,14 +422,14 @@
             <template x-if="detailKamar">
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4" x-cloak>
                     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" x-on:click="detailKamar = null"></div>
-                    <div class="relative bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-zinc-700 w-full max-w-lg max-h-[85vh] overflow-y-auto"
+                    <div class="relative bg-white dark:bg-slate-700 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-600 w-full max-w-lg max-h-[85vh] overflow-y-auto"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 scale-95"
                          x-transition:enter-end="opacity-100 scale-100"
                          x-transition:leave="transition ease-in duration-150"
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95">
-                        <div class="sticky top-0 bg-white dark:bg-zinc-800 border-b border-slate-100 dark:border-zinc-700 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+                        <div class="sticky top-0 bg-white dark:bg-slate-700 border-b border-slate-100 dark:border-slate-600 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                             <h3 class="text-sm font-bold text-slate-900 dark:text-white">Detail Kamar</h3>
                             <button type="button" x-on:click="detailKamar = null"
                                     class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -402,7 +441,7 @@
                         <div class="p-6 space-y-5">
                             {{-- Photo --}}
                             <template x-if="detailKamar.photo">
-                                <div class="rounded-xl overflow-hidden bg-slate-100 dark:bg-zinc-800">
+                                <div class="rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700">
                                     <img :src="detailKamar.photo" :alt="'Foto Kamar ' + detailKamar.room_number" class="w-full h-48 object-cover">
                                 </div>
                             </template>
@@ -439,25 +478,25 @@
                             {{-- Info Grid --}}
                             <div class="grid grid-cols-2 gap-3">
                                 <template x-if="detailKamar.floor">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-700/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Lantai</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="detailKamar.floor"></p>
                                     </div>
                                 </template>
                                 <template x-if="detailKamar.area">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-700/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Ukuran</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="detailKamar.area"></p>
                                     </div>
                                 </template>
                                 <template x-if="detailKamar.daily_price">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-700/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Harga Harian</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="'Rp ' + Number(detailKamar.daily_price).toLocaleString('id-ID')"></p>
                                     </div>
                                 </template>
                                 <template x-if="detailKamar.monthly_price">
-                                    <div class="rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-3">
+                                    <div class="rounded-xl bg-slate-50 dark:bg-slate-700/60 p-3">
                                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Harga Bulanan</p>
                                         <p class="mt-0.5 text-sm font-bold text-slate-900 dark:text-white" x-text="'Rp ' + Number(detailKamar.monthly_price).toLocaleString('id-ID')"></p>
                                     </div>
@@ -478,7 +517,7 @@
                                 <template x-if="detailKamar.fasilitas && detailKamar.fasilitas.length > 0">
                                     <ul class="mt-2.5 flex flex-wrap gap-2">
                                         <template x-for="f in detailKamar.fasilitas" :key="f.name">
-                                            <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-zinc-800 border border-slate-100 dark:border-zinc-700 px-3 py-1.5 rounded-lg">
+                                            <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 px-3 py-1.5 rounded-lg">
                                                 <i class="ri-check-line text-green-600 dark:text-green-400 font-bold"></i>
                                                 <span x-text="f.name"></span>
                                             </li>
@@ -507,7 +546,7 @@
                                     @endguest
                                 </template>
                                 <template x-if="detailKamar.status !== 'available'">
-                                    <div class="w-full text-center text-xs font-semibold py-3 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-400 dark:text-slate-500">
+                                    <div class="w-full text-center text-xs font-semibold py-3 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-400 dark:text-slate-500">
                                         Kamar Tidak Tersedia
                                     </div>
                                 </template>
@@ -519,7 +558,7 @@
         </div>
 
         {{-- Google Maps Location --}}
-        <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden">
+        <div class="bg-white dark:bg-slate-700 rounded-2xl border border-slate-100 dark:border-slate-600 overflow-hidden">
             <div class="p-6">
                 @php
                     $hasCoordinates = $kos->hasValidCoordinates();
@@ -534,7 +573,7 @@
                 @if($hasCoordinates)
                     <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">{{ $kos->address }}</p>
 
-                    <div class="mt-4 rounded-xl overflow-hidden border border-slate-100 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+                    <div class="mt-4 rounded-xl overflow-hidden border border-slate-100 dark:border-slate-600 bg-white dark:bg-slate-700">
                         <a href="{{ $googleMapsUrl }}"
                            target="_blank" rel="noopener noreferrer"
                            aria-label="Lihat lokasi {{ $kos->name }} di Google Maps"
@@ -549,7 +588,7 @@
                             <span aria-hidden="true"
                                   class="absolute inset-0 block cursor-pointer transition group-hover:bg-black/10 group-focus-visible:bg-black/10"></span>
                             <span aria-hidden="true"
-                                  class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-white/95 dark:bg-zinc-800/95 backdrop-blur text-xs font-bold text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
+                                  class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-white/95 dark:bg-slate-700/95 backdrop-blur text-xs font-bold text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
                                 <i class="ri-external-link-line"></i> Klik untuk membuka Maps
                             </span>
                         </a>
@@ -565,7 +604,7 @@
                         <x-kos-directions-button :kos="$kos" label="Petunjuk Arah" variant="ghost" />
                     </div>
                 @elseif($directionsUrl)
-                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-5">
+                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-700/60 p-5">
                         <p class="text-sm text-slate-600 dark:text-slate-300 flex items-start gap-2">
                             <i class="ri-map-pin-2-line text-primary-500 shrink-0 mt-0.5" aria-hidden="true"></i>
                             <span>{{ $kos->address }}</span>
@@ -575,7 +614,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-zinc-800/60 p-5 text-center">
+                    <div class="mt-4 rounded-xl bg-slate-50 dark:bg-slate-700/60 p-5 text-center">
                         <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mx-auto">
                             <i class="ri-map-pin-line text-lg text-slate-400 dark:text-slate-500"></i>
                         </div>
@@ -593,7 +632,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($similarKos as $sk)
                         <a href="{{ route('tenant.kos.show', $sk) }}"
-                           class="block bg-white dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                           class="block bg-white dark:bg-slate-700 rounded-2xl border border-slate-100 dark:border-slate-600 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                             <div class="relative h-36 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-primary-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700">
                                 <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-primary-100/70 dark:bg-slate-700/60"></div>
                                 <div class="absolute -left-8 bottom-[-2rem] w-28 h-28 rounded-full bg-primary-100/60 dark:bg-slate-700/40"></div>
@@ -603,7 +642,7 @@
                                          loading="lazy" onerror="this.style.display='none'">
                                 @endif
                                 <span class="absolute inset-0 flex items-center justify-center text-[5rem] leading-none font-black uppercase text-primary-900/[0.06] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($sk->name, 0, 1) }}</span>
-                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 text-[10px] font-bold bg-white/95 dark:bg-zinc-800/95 backdrop-blur px-2 py-1 rounded-md shadow-sm text-green-700 dark:text-green-300">
+                                <span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 text-[10px] font-bold bg-white/95 dark:bg-slate-700/95 backdrop-blur px-2 py-1 rounded-md shadow-sm text-green-700 dark:text-green-300">
                                     <i class="ri-door-open-line text-[10px]"></i> {{ $sk->kamar_tersedia }} kamar
                                 </span>
                             </div>
@@ -612,7 +651,7 @@
                                 <p class="mt-0.5 text-[11px] text-slate-400 dark:text-slate-500 flex items-start gap-1 line-clamp-1">
                                     <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500"></i> {{ $sk->address }}
                                 </p>
-                                <div class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-zinc-700 flex items-center justify-between">
+                                <div class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-600 flex items-center justify-between">
                                     @if(!is_null($sk->harga_mulai))
                                         <p class="text-xs font-bold text-slate-900 dark:text-white">Rp {{ number_format($sk->harga_mulai, 0, ',', '.') }}<span class="text-[10px] font-medium text-slate-400 dark:text-slate-500">/bln</span></p>
                                     @else
@@ -632,7 +671,7 @@
             <div>
                 <div class="flex items-center justify-between gap-3 mb-4">
                     <h2 class="text-base font-bold text-slate-900 dark:text-white">Partner untuk Penghuni Kos</h2>
-                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-slate-400">
+                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
                         Iklan
                     </span>
                 </div>
@@ -646,7 +685,7 @@
     </div>
 
     @if($kamarTersedia->count())
-        <div class="fixed inset-x-0 bottom-16 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] safe-area-bottom lg:hidden dark:border-zinc-700 dark:bg-zinc-800/95">
+        <div class="fixed inset-x-0 bottom-16 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] safe-area-bottom lg:hidden dark:border-slate-600 dark:bg-slate-700/95">
             <div class="flex items-center gap-3">
                 <div class="min-w-0 flex-1">
                     @if(!is_null($hargaMulai))

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SafeImage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -21,7 +22,12 @@ class UpdateKosRequest extends FormRequest
             'longitude' => ['nullable', 'numeric', 'min:-180', 'max:180'],
             'description' => ['nullable', 'string'],
             'phone' => ['required', 'string', 'max:20'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new SafeImage],
+            'photos' => ['nullable', 'array', 'max:10'],
+            'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new SafeImage],
+            'cover_photo_id' => ['nullable', 'integer'],
+            'delete_photo_ids' => ['nullable', 'array'],
+            'delete_photo_ids.*' => ['integer'],
             'general_facilities' => ['nullable', 'string'],
             'rules' => ['nullable', 'string'],
             'payment_info' => ['nullable', 'string', 'max:1000'],

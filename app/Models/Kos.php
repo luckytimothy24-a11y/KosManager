@@ -72,6 +72,66 @@ class Kos extends Model
         return $this->hasMany(AdvertisingCampaign::class);
     }
 
+    public function photos()
+    {
+        return $this->hasMany(KosPhoto::class)->orderBy('position');
+    }
+
+    public function coverPhoto()
+    {
+        return $this->hasOne(KosPhoto::class)->where('is_cover', true);
+    }
+
+    public function coverPath(): ?string
+    {
+        if ($this->relationLoaded('coverPhoto') && $this->coverPhoto) {
+            return $this->coverPhoto->path;
+        }
+
+        $cover = $this->coverPhoto()->first();
+
+        if ($cover) {
+            return $cover->path;
+        }
+
+        $firstPhoto = $this->relationLoaded('photos')
+            ? $this->photos->first()
+            : $this->photos()->first();
+
+        if ($firstPhoto) {
+            return $firstPhoto->path;
+        }
+
+        return $this->photo;
+    }
+
+    public function galleryPhotoPaths(): array
+    {
+        $photos = $this->relationLoaded('photos')
+            ? $this->photos
+            : $this->photos()->get();
+
+        if ($photos->isNotEmpty()) {
+            return $photos->pluck('path')->all();
+        }
+
+        return $this->photo ? [$this->photo] : [];
+    }
+
+    protected static function booted(): void
+    {
+        static::forceDeleting(function (Kos $kos) {
+            $paths = $kos->photos()->pluck('path')->all();
+            foreach ($paths as $path) {
+                try {
+                    \Storage::disk('public')->delete($path);
+                } catch (\Throwable $e) {
+                    \Log::warning('Kos forceDeleting gallery cleanup failed', ['kos_id' => $kos->id, 'path' => $path, 'error' => $e->getMessage()]);
+                }
+            }
+        });
+    }
+
     public function favoriteCount(): int
     {
         return $this->favorites()->count();

@@ -21,6 +21,9 @@ class KosDetailResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $coverPath = method_exists($this->resource, 'coverPath') ? $this->resource->coverPath() : $this->photo;
+        $photos = method_exists($this->resource, 'galleryPhotoPaths') ? $this->resource->galleryPhotoPaths() : ($this->photo ? [$this->photo] : []);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -30,7 +33,9 @@ class KosDetailResource extends JsonResource
             'description' => $this->description,
             'price_min' => $this->price_min ?? null,
             'price_max' => $this->price_max ?? null,
-            'photos' => $this->photo ? [$this->photo] : [],
+            'photo' => $coverPath,
+            'cover_photo' => $coverPath,
+            'photos' => $photos,
             'facilities' => $this->whenLoaded('fasilitas', fn () => $this->fasilitas->pluck('name')->values()->all(), []),
             'available_rooms' => $this->available_rooms ?? 0,
             'is_available' => ($this->status === 'active') && ($this->available_rooms ?? 0) > 0,

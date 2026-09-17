@@ -14,10 +14,11 @@
     $adLink = fn () => route('tenant.kos.show', $kos);
 @endphp
 
-<div class="relative group bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col">
+<div class="relative group bg-white dark:bg-slate-700 rounded-2xl border border-slate-100 dark:border-slate-600 overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200 flex flex-col">
+    @php $coverPath = method_exists($kos, 'coverPath') ? $kos->coverPath() : $kos->photo; @endphp
     <a href="{{ $adLink() }}" class="block relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700" aria-label="Lihat detail {{ $kos->name }}">
-        @if($kos->photo)
-            <img src="{{ asset('storage/' . $kos->photo) }}" alt="Foto {{ $kos->name }}"
+        @if($coverPath)
+            <img src="{{ asset('storage/' . $coverPath) }}" alt="Foto {{ $kos->name }}"
                  class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                  loading="lazy"
                  onerror="this.style.display='none'">
@@ -26,7 +27,7 @@
         @endif
 
         {{-- Availability badge --}}
-        <span class="absolute top-3 right-3 inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm {{ $availableRooms > 0 ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur text-green-700 dark:text-green-300' : 'bg-slate-800/90 dark:bg-slate-950/90 backdrop-blur text-slate-200' }}">
+        <span class="absolute top-3 right-3 inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm {{ $availableRooms > 0 ? 'bg-white/95 dark:bg-slate-800/95 backdrop-blur text-green-700 dark:text-green-300' : 'bg-slate-800/90 dark:bg-slate-800/90 backdrop-blur text-slate-200' }}">
             <span class="w-1.5 h-1.5 rounded-full {{ $availableRooms > 0 ? 'bg-green-500' : 'bg-slate-400' }}"></span>
             {{ $availableRooms > 0 ? 'TERSEDIA · '.$availableRooms.' kamar' : 'PENUH' }}
         </span>
@@ -107,7 +108,7 @@
             </div>
         @endif
 
-        <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800 flex items-end justify-between gap-3">
+        <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-600 flex items-end justify-between gap-3">
             @if(!is_null($kos->harga_mulai))
                 <div class="min-w-0">
                     <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mulai dari</p>
