@@ -80,13 +80,16 @@
 
         $theme = $themes[$partnerSlug] ?? $themes['default'];
 
-        // Bramd mark: monogram dengan inisial, logo partner (jika ada) menutupi.
+        // Brand mark: monogram dengan inisial, logo partner (jika ada) menutupi.
         $monogram = static function ($logo, $initial, $mono) {
             return '<span class="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br sm:h-11 sm:w-11 ' . $mono . ' text-white text-sm sm:text-base font-black shadow-sm">'
                 . '<span aria-hidden="true">' . $initial . '</span>'
                 . ($logo ? '<img src="' . $logo . '" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">' : '')
                 . '</span>';
         };
+
+        $placementLabelText = \App\Support\AdvertisingLabels::placementLabel($ad->placement ?? $placement);
+        $placementBadgeClass = \App\Support\AdvertisingLabels::placementBadge($ad->placement ?? $placement);
     }
 @endphp
 
@@ -118,6 +121,7 @@
                         {!! $monogram($brandLogo, $initial, $theme['mono']) !!}
                         <span class="tracking-tight">{{ $brandName }}</span>
                     </span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
                 </div>
 
                 <h3 class="text-[15px] sm:text-lg font-black text-slate-900 dark:text-white leading-snug line-clamp-2 max-w-2xl">{{ $ad->displayHeadline() }}</h3>
@@ -128,10 +132,10 @@
                         {{ $cta }}
                         <i class="ri-arrow-right-line transition-transform duration-200 motion-safe:group-hover:translate-x-1"></i>
                     </span>
-                    <span class="text-[10px] font-medium text-slate-600 dark:text-slate-300">
-                        <span class="hidden sm:inline">Iklan · Partner KosManager</span>
-                        <span class="sm:hidden">Iklan</span>
+                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400">
+                        <i class="ri-information-line"></i> Iklan Partner
                     </span>
+                    <span class="hidden sm:inline text-[10px] text-slate-400 dark:text-slate-500">Iklan · Partner KosManager</span>
                 </div>
             </div>
         </a>
@@ -159,13 +163,14 @@
                         <span class="block text-[10px] font-black uppercase tracking-wider {{ $theme['accent'] }}">Sponsored</span>
                         <span class="block truncate text-sm font-bold text-slate-900 dark:text-white">{{ $brandName }}</span>
                     </span>
+                    <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
                 </div>
 
                 <h3 class="mt-3 text-[15px] font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2">{{ $ad->displayHeadline() }}</h3>
                 <p class="mt-1.5 text-xs text-slate-600 dark:text-slate-300 leading-snug line-clamp-2">{{ $ad->displayDescription() }}</p>
 
                 <div class="mt-auto pt-4 flex items-end justify-between gap-3">
-                    <span class="text-[10px] text-slate-600 dark:text-slate-300 font-medium">Iklan · Partner KosManager</span>
+                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400"><i class="ri-information-line"></i> Iklan Partner</span>
                     <span class="inline-flex min-h-[44px] items-center gap-1.5 rounded-2xl {{ $theme['cta'] }} text-white text-xs font-bold px-4 shadow-sm transition-colors duration-200 active:scale-95">
                         {{ $cta }} <i class="ri-arrow-right-line transition-transform motion-safe:group-hover:translate-x-0.5"></i>
                     </span>
@@ -176,25 +181,31 @@
     @else
         {{-- Compact: baris ramping — marketplace & detail kos. --}}
         <a href="{{ $adUrl }}" aria-label="{{ $a11y }}"
-           class="group flex items-center gap-3 sm:gap-4 rounded-2xl border {{ $theme['border'] }} {{ $theme['grad'] }} px-3.5 py-3 sm:px-4 transition-colors duration-200">
-            <span class="hidden sm:block">
-                {!! $monogram($brandLogo, $initial, $theme['mono']) !!}
-            </span>
-
-            <span class="min-w-0 flex-1">
-                <span class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] font-bold {{ $theme['accent'] }}">
-                    <span class="inline-flex items-center gap-1 uppercase tracking-wider">
-                        <span aria-hidden="true" class="h-1 w-1 rounded-full {{ $theme['cta'] }}"></span> Sponsored
-                    </span>
-                    <span class="truncate text-[11px] text-slate-600 dark:text-slate-300">· {{ $brandName }}</span>
+           class="group flex flex-col gap-1 rounded-2xl border {{ $theme['border'] }} {{ $theme['grad'] }} px-3.5 py-3 sm:px-4 transition-colors duration-200">
+            <div class="flex items-center gap-3 sm:gap-4">
+                <span class="hidden sm:block">
+                    {!! $monogram($brandLogo, $initial, $theme['mono']) !!}
                 </span>
-                <span class="mt-0.5 block truncate text-[13px] sm:text-sm font-bold text-slate-800 dark:text-slate-100">{{ $ad->displayHeadline() }}</span>
-            </span>
 
-            <span class="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl {{ $theme['cta'] }} text-white text-[11px] sm:text-xs font-bold px-3.5 sm:px-4 shadow-sm transition-colors duration-200 active:scale-95">
-                <span class="hidden sm:inline">{{ $cta }}</span>
-                <span class="sm:hidden" aria-hidden="true">{{ $cta }}</span>
-                <i class="ri-arrow-right-line transition-transform motion-safe:group-hover:translate-x-0.5"></i>
+                <span class="min-w-0 flex-1">
+                    <span class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] font-bold {{ $theme['accent'] }}">
+                        <span class="inline-flex items-center gap-1 uppercase tracking-wider">
+                            <span aria-hidden="true" class="h-1 w-1 rounded-full {{ $theme['cta'] }}"></span> Sponsored
+                        </span>
+                        <span class="truncate text-[11px] text-slate-600 dark:text-slate-300">· {{ $brandName }}</span>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold {{ $placementBadgeClass }} hidden sm:inline-flex">{{ $placementLabelText }}</span>
+                    </span>
+                    <span class="mt-0.5 block truncate text-[13px] sm:text-sm font-bold text-slate-800 dark:text-slate-100">{{ $ad->displayHeadline() }}</span>
+                </span>
+
+                <span class="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl {{ $theme['cta'] }} text-white text-[11px] sm:text-xs font-bold px-3.5 sm:px-4 shadow-sm transition-colors duration-200 active:scale-95">
+                    <span class="hidden sm:inline">{{ $cta }}</span>
+                    <span class="sm:hidden" aria-hidden="true">{{ $cta }}</span>
+                    <i class="ri-arrow-right-line transition-transform motion-safe:group-hover:translate-x-0.5"></i>
+                </span>
+            </div>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 self-start">
+                <i class="ri-information-line"></i> Iklan Partner
             </span>
         </a>
     @endif

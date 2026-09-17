@@ -4,8 +4,8 @@
         {{-- Hero Search --}}
         <div class="bg-gradient-to-br from-primary-600 via-primary-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">
             <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-white dark:bg-slate-900 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white dark:bg-slate-900 rounded-full translate-y-1/2 -translate-x-1/4"></div>
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white dark:bg-slate-700 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white dark:bg-slate-700 rounded-full translate-y-1/2 -translate-x-1/4"></div>
             </div>
             <div class="relative">
                 <h1 class="text-xl sm:text-2xl font-bold">Cari Kos Impianmu</h1>
@@ -15,7 +15,7 @@
                         <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
                         <label for="search-kos" class="sr-only">Cari kos, lokasi, atau fasilitas</label>
                         <input type="text" name="q" id="search-kos" value="{{ request('q') }}" placeholder="Cari kos, lokasi, atau fasilitas..." autocomplete="off"
-                               class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 transition border-0 shadow-lg">
+                               class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/95 dark:bg-slate-800/95 text-slate-900 dark:text-white text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 transition border-0 shadow-lg">
                     </div>
                     <button type="button" x-on:click="filterOpen = !filterOpen"
                             class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur text-sm font-semibold transition border border-white/20">
@@ -47,21 +47,6 @@
             </div>
         </div>
 
-        {{-- Iklan marketplace — advertiser PIHAK KETIGA, JELAS terpisah dari daftar kos organik.
-             Kompak (bukan banner besar) agar tidak mendominasi content organik.
-             Daftar kos di bawah TIDAK pernah diboost/diubah oleh iklan ini. --}}
-        @if(($marketplaceAds ?? collect())->isNotEmpty())
-            <section aria-label="Partner untuk penghuni kos" class="space-y-2.5">
-                @foreach($marketplaceAds as $ad)
-                    @include('tenant.partials.partner-ad', [
-                        'ad' => $ad,
-                        'placement' => 'marketplace',
-                        'variant' => 'compact',
-                    ])
-                @endforeach
-            </section>
-        @endif
-
         {{-- Quick Filter Chips (facilities ACTUAL dari master data) --}}
         @if($fasilitasList->isNotEmpty())
             <div class="flex items-start gap-2 flex-wrap" aria-label="Filter cepat">
@@ -76,7 +61,7 @@
                                 : array_values(array_merge($activeFids, [$f->id]));
                         @endphp
                         <a href="{{ request()->fullUrlWithQuery(['facilities' => $nextFids ?: null]) }}"
-                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition {{ $isActive ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-500/50' }}">
+                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition {{ $isActive ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30' : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-500/50' }}">
                             @if($f->icon)
                                 <i class="{{ $f->icon }} text-[11px]"></i>
                             @endif
@@ -98,7 +83,7 @@
                     @foreach($locations->take(10) as $loc)
                         @php $locActive = $selectedLocation === $loc->address; @endphp
                         <a href="{{ $locActive ? request()->fullUrlWithQuery(['loc' => null]) : request()->fullUrlWithQuery(['loc' => $loc->address, 'page' => null]) }}"
-                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition {{ $locActive ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-500/50' }}"
+                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition {{ $locActive ? 'bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30' : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-500/50' }}"
                            title="{{ $loc->address }}">
                             <i class="ri-map-pin-2-line text-[11px]"></i>
                             <span class="max-w-[12rem] truncate">{{ $loc->address }}</span>
@@ -129,7 +114,7 @@
              class="fixed inset-0 z-50">
             {{-- Overlay: blocks taps on mobile, transparent on desktop so results stay visible --}}
             <div class="absolute inset-0 bg-black/50 backdrop-blur-sm lg:bg-black/20 lg:pointer-events-none" x-on:click="filterOpen = false"></div>
-            <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-white dark:bg-slate-900 shadow-2xl overflow-y-auto"
+            <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-white dark:bg-slate-700 shadow-2xl overflow-y-auto"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="translate-x-full"
                  x-transition:enter-end="translate-x-0"
@@ -137,7 +122,7 @@
                  x-transition:leave-start="translate-x-0"
                  x-transition:leave-end="translate-x-full">
                 <form method="GET" action="{{ route('tenant.kos.index') }}" class="flex flex-col h-full">
-                    <div class="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between z-10">
+                    <div class="sticky top-0 bg-white dark:bg-slate-700 border-b border-slate-100 dark:border-slate-600 px-6 py-4 flex items-center justify-between z-10">
                         <h3 class="text-sm font-bold text-slate-900 dark:text-white">Filter & Urutkan</h3>
                         <button type="button" x-on:click="filterOpen = false"
                                 class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -165,7 +150,7 @@
                                     'terbanyak_disewa' => 'Terbanyak Disewa',
                                     'paling_banyak_favorit' => 'Paling Banyak Favorit',
                                 ] as $val => $label)
-                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border {{ request('sort', 'terbaru') === $val ? 'bg-primary-50 dark:bg-primary-500/10 border-primary-300 dark:border-primary-500/40' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-500/30' }}">
+                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border {{ request('sort', 'terbaru') === $val ? 'bg-primary-50 dark:bg-primary-500/10 border-primary-300 dark:border-primary-500/40' : 'bg-white dark:bg-slate-700 border-slate-100 dark:border-slate-600 hover:border-primary-200 dark:hover:border-primary-500/30' }}">
                                         <input type="radio" name="sort" value="{{ $val }}" {{ request('sort', 'terbaru') === $val ? 'checked' : '' }}
                                                class="w-4 h-4 border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500/20">
                                         <span class="text-sm text-slate-700 dark:text-slate-300">{{ $label }}</span>
@@ -181,13 +166,13 @@
                                 <div class="relative flex-1">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Rp</span>
                                     <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Min" min="0"
-                                           class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">
+                                           class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">
                                 </div>
                                 <span class="text-slate-400">—</span>
                                 <div class="relative flex-1">
                                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Rp</span>
                                     <input type="number" name="price_max" value="{{ request('price_max') }}" placeholder="Max" min="0"
-                                           class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">
+                                           class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">
                                 </div>
                             </div>
                         </div>
@@ -196,7 +181,7 @@
                         <div>
                             <label class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Ketersediaan</label>
                             <div class="mt-2">
-                                <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border {{ request('tersedia_only') ? 'bg-green-50 dark:bg-green-500/10 border-green-300 dark:border-green-500/40' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-500/30' }}">
+                                <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border {{ request('tersedia_only') ? 'bg-green-50 dark:bg-green-500/10 border-green-300 dark:border-green-500/40' : 'bg-white dark:bg-slate-700 border-slate-100 dark:border-slate-600 hover:border-primary-200 dark:hover:border-primary-500/30' }}">
                                     <input type="checkbox" name="tersedia_only" value="1" {{ request('tersedia_only') ? 'checked' : '' }}
                                            class="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary-500 focus:ring-primary-500/20">
                                     <div class="flex items-center gap-2">
@@ -228,7 +213,7 @@
                                             $label = $catLabels[$catKey] ?? 'Fasilitas';
                                             $activeInGroup = collect(request('facilities', []))->intersect($facilities->pluck('id'))->isNotEmpty();
                                         @endphp
-                                        <div class="rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+                                        <div class="rounded-xl border border-slate-100 dark:border-slate-600 overflow-hidden">
                                             <button type="button"
                                                     class="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-left bg-slate-50/60 dark:bg-slate-800/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
                                                     @click="openFacility = openFacility === '{{ $catKey }}' ? null : '{{ $catKey }}'"
@@ -245,7 +230,7 @@
                                                  class="px-3.5 py-3 flex flex-wrap gap-2">
                                                 @foreach($facilities as $f)
                                                     @php $checked = in_array($f->id, request('facilities', [])); @endphp
-                                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg cursor-pointer transition border {{ $checked ? 'bg-primary-50 dark:bg-primary-500/10 border-primary-300 dark:border-primary-500/40 text-primary-700 dark:text-primary-300' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-primary-300 dark:hover:border-primary-500/50' }}">
+                                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg cursor-pointer transition border {{ $checked ? 'bg-primary-50 dark:bg-primary-500/10 border-primary-300 dark:border-primary-500/40 text-primary-700 dark:text-primary-300' : 'bg-white dark:bg-slate-700 border-slate-100 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary-300 dark:hover:border-primary-500/50' }}">
                                                         <input type="checkbox" name="facilities[]" value="{{ $f->id }}" {{ $checked ? 'checked' : '' }}
                                                                class="sr-only">
                                                         @if($f->icon)
@@ -262,8 +247,8 @@
                         @endif
                     </div>
 
-                    <div class="sticky bottom-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center gap-3">
-                        <a href="{{ route('tenant.kos.index') }}" class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <div class="sticky bottom-0 bg-white dark:bg-slate-700 border-t border-slate-100 dark:border-slate-600 px-6 py-4 flex items-center gap-3">
+                        <a href="{{ route('tenant.kos.index') }}" class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                             Reset
                         </a>
                         <button type="submit" x-on:click="filterOpen = false"
@@ -279,7 +264,7 @@
         @if(request()->hasAny(['q', 'loc', 'price_min', 'price_max', 'facilities', 'tersedia_only']) || request('sort', 'terbaru') !== 'terbaru')
             <div class="flex flex-wrap items-center gap-2">
                 @if(request('loc'))
-                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-full">
                         <i class="ri-map-pin-2-line text-[10px]"></i>
                         <span class="max-w-[14rem] truncate">{{ request('loc') }}</span>
                         <a href="{{ request()->fullUrlWithQuery(['loc' => null]) }}" class="ml-0.5 hover:text-slate-900 dark:hover:text-white" aria-label="Hapus lokasi">&times;</a>
@@ -292,7 +277,7 @@
                     </span>
                 @endif
                 @if(request('price_min') || request('price_max'))
-                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-full">
                         @if(request('price_min') && request('price_max'))
                             Rp {{ number_format(request('price_min'), 0, ',', '.') }} - {{ number_format(request('price_max'), 0, ',', '.') }}
                         @elseif(request('price_min'))
@@ -306,7 +291,7 @@
                 @foreach(request('facilities', []) as $fid)
                     @php $fac = $fasilitasList->firstWhere('id', $fid); @endphp
                     @if($fac)
-                        <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
+                        <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-full">
                             {{ $fac->name }}
                             <a href="{{ request()->fullUrlWithQuery(['facilities' => collect(request('facilities', []))->filter(fn ($v) => $v != $fid)->values()->all() ?: null]) }}" class="ml-0.5 hover:text-slate-900 dark:hover:text-white" aria-label="Hapus {{ $fac->name }}">&times;</a>
                         </span>
@@ -319,7 +304,7 @@
                     </span>
                 @endif
                 @if(request('sort', 'terbaru') !== 'terbaru')
-                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
+                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 px-2.5 py-1 rounded-full">
                         @switch(request('sort'))
                             @case('harga_terendah') Harga Terendah @break
                             @case('harga_tertinggi') Harga Tertinggi @break
@@ -335,16 +320,15 @@
             </div>
         @endif
 
-        {{-- Promosi kos OWNER (featured/sponsored) — terpisah dari listing organik,
-             dan selalu menghormati search/filter/availability yang sedang aktif
-             (kos di luar filter tidak pernah tampil di sini). --}}
+        {{-- SECTION A — KOS TERPILIH (promosi kos owner) --}}
         @if(($promotedKos ?? collect())->isNotEmpty())
-            <section aria-label="Kos promosi" class="space-y-3">
+            <section aria-label="Kos terpilih" class="space-y-3">
                 <div class="flex items-center gap-2 flex-wrap">
+                    <h2 class="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Kos Terpilih</h2>
                     <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30">
                         <i class="ri-star-fill text-[11px]"></i> Kos Unggulan
                     </span>
-                    <span class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Iklan promosi kos owner — hasil pencarian di bawah tetap murni organik</span>
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Promosi Kos</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     @foreach($promotedKos as $promo)
@@ -352,6 +336,27 @@
                     @endforeach
                 </div>
             </section>
+            <div class="border-t border-slate-100 dark:border-slate-700"></div>
+        @endif
+
+        {{-- SECTION B — DARI PARTNER (iklan pihak ketiga) --}}
+        @if(($marketplaceAds ?? collect())->isNotEmpty())
+            <section aria-label="Dari partner" class="space-y-3">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h2 class="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">Dari Partner</h2>
+                    <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Iklan Partner</span>
+                </div>
+                <div class="bg-slate-50/60 dark:bg-slate-800/40 rounded-2xl p-3 sm:p-4 space-y-2.5">
+                    @foreach($marketplaceAds as $ad)
+                        @include('tenant.partials.partner-ad', [
+                            'ad' => $ad,
+                            'placement' => 'marketplace',
+                            'variant' => 'compact',
+                        ])
+                    @endforeach
+                </div>
+            </section>
+            <div class="border-t border-slate-100 dark:border-slate-700"></div>
         @endif
 
         {{-- Result Count --}}
@@ -376,7 +381,7 @@
                     @endforeach
                     <label for="sort-top" class="text-xs font-semibold text-slate-400 dark:text-slate-500">Urutkan</label>
                     <select id="sort-top" name="sort" onchange="this.form.submit()"
-                            class="text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 py-2 pl-3 pr-8 focus:border-primary-500 focus:ring-primary-500/10">
+                            class="text-sm rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 pl-3 pr-8 focus:border-primary-500 focus:ring-primary-500/10">
                         @foreach([
                             'terbaru' => 'Terbaru',
                             'harga_terendah' => 'Harga Terendah',
@@ -393,7 +398,7 @@
 
         @if($kosList->isEmpty())
             {{-- Empty State --}}
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-12 text-center">
+            <div class="bg-white dark:bg-slate-700 rounded-2xl border border-slate-100 dark:border-slate-600 p-12 text-center">
                 <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto">
                     @if(request('q'))
                         <i class="ri-search-line text-3xl text-slate-300 dark:text-slate-600"></i>
@@ -429,7 +434,7 @@
                             <i class="ri-close-circle-line"></i> Hapus Lokasi
                         </a>
                     @endif
-                    <a href="{{ route('tenant.kos.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-2.5 rounded-xl transition">
+                    <a href="{{ route('tenant.kos.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 px-4 py-2.5 rounded-xl transition">
                         <i class="ri-eye-line"></i> Lihat Semua Kos
                     </a>
                 </div>
