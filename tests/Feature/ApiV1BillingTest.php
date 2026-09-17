@@ -338,16 +338,57 @@ class ApiV1BillingTest extends TestCase
 
     public function test_payment_store_rejects_online_methods(): void
     {
-        foreach (['transfer_bank', 'e_wallet'] as $method) {
-            $this->withToken($this->token($this->tenant))
-                ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
-                    'amount' => 1500000,
-                    'payment_method' => $method,
-                    'proof_file' => UploadedFile::fake()->create('bukti.pdf', 200, 'application/pdf'),
-                ])
-                ->assertStatus(422)
-                ->assertJsonStructure(['errors' => ['payment_method']]);
-        }
+        // e_wallet stays rejected until product decision
+        $this->withToken($this->token($this->tenant))
+            ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
+                'amount' => 1500000,
+                'payment_method' => 'e_wallet',
+                'proof_file' => UploadedFile::fake()->create('bukti.pdf', 200, 'application/pdf'),
+            ])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['payment_method']]);
+    }
+
+    public function test_payment_store_accepts_transfer_bank_with_proof(): void
+    {
+        $tagihan = Tagihan::factory()->create([
+            'penghuni_id' => $this->penghuni->id,
+            'kamar_id' => $this->kamar->id,
+            'kontrak_id' => Kontrak::factory()->create([
+                'penghuni_id' => $this->penghuni->id,
+                'kos_id' => $this->kos->id,
+                'kamar_id' => $this->kamar->id,
+                'status' => 'active',
+            ])->id,
+            'status' => 'unpaid',
+            'total' => 1500000,
+            'subtotal' => 1500000,
+            'discount' => 0,
+            'penalty' => 0,
+            'due_date' => now()->addDays(7),
+        ]);
+
+        $response = $this->withToken($this->token($this->tenant))
+            ->postJson("/api/v1/tagihan/{$tagihan->id}/pembayaran", [
+                'amount' => 1500000,
+                'payment_method' => 'transfer_bank',
+                'proof_file' => UploadedFile::fake()->create('bukti.pdf', 200, 'application/pdf'),
+            ]);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('pembayarans', ['tagihan_id' => $tagihan->id, 'payment_method' => 'transfer_bank']);
+    }
+
+    public function test_payment_store_rejects_transfer_bank_without_proof(): void
+    {
+        $this->withToken($this->token($this->tenant))
+            ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
+                'amount' => 1500000,
+                'payment_method' => 'transfer_bank',
+            ])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['proof_file']]);
+        $this->assertDatabaseMissing('pembayarans', ['tagihan_id' => $this->tagihan->id, 'payment_method' => 'transfer_bank']);
     }
 
     public function test_payment_store_rejects_invalid_file_type(): void

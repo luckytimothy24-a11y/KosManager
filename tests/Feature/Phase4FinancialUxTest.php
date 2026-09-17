@@ -228,6 +228,9 @@ class Phase4FinancialUxTest extends TestCase
         $response->assertSee('id="proof_file"', false);
         $response->assertSee('aria-describedby="proof-feedback proof-hint"', false);
         $response->assertSee('name="payment_method" value="cash"', false);
+        $response->assertSee('name="payment_method" value="transfer_bank"', false);
+        $response->assertSee('Metode Pembayaran');
+        $response->assertSee('Transfer Bank');
         $response->assertSee('Pembayaran Tunai');
     }
 
@@ -236,15 +239,19 @@ class Phase4FinancialUxTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $this->tagihan));
 
         $response->assertOk();
+        $response->assertSee('Metode Pembayaran');
+        $response->assertSee('Transfer Bank');
+        $response->assertSee('Cash');
         $response->assertSee('Pembayaran Tunai');
-        $response->assertSee('Konfirmasi Pembayaran Tunai');
-        $response->assertDontSee('name="payment_method" value="transfer_bank"', false);
+        $response->assertSee('name="payment_method" value="transfer_bank"', false);
+        $response->assertSee('name="payment_method" value="cash"', false);
+        $response->assertSee('id="method-transfer_bank"', false);
         $response->assertDontSee('name="payment_method" value="e_wallet"', false);
-        $response->assertDontSee('id="method-transfer_bank"', false);
         $response->assertDontSee('id="method-e_wallet"', false);
         $response->assertDontSee('Bayar Online');
         $response->assertDontSee('QRIS');
         $response->assertDontSee('Virtual Account');
+        $response->assertDontSee('E-Wallet');
     }
 
     public function test_tenant_dashboard_belum_bayar_count_excludes_pending_verification(): void

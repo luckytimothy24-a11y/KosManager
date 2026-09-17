@@ -36,7 +36,7 @@
                             </p>
                         @endif
                         <p class="mt-1.5 text-xs text-red-600/80 dark:text-red-300/70">
-                            Silakan bayar tagihan kembali menggunakan metode tunai di bawah sesuai petunjuk pengelola.
+                            Silakan bayar tagihan kembali menggunakan metode Transfer Bank atau Tunai (Cash) di bawah sesuai petunjuk pengelola.
                         </p>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
                     <h4 class="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white mb-1">
                         <i class="ri-upload-cloud-2-line text-primary-500"></i> Bayar Tagihan Ini
                     </h4>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-5">Pembayaran dilakukan secara tunai langsung kepada pengelola kos.</p>
+                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-5">Pilih metode <strong>Transfer Bank</strong> atau <strong>Cash</strong> sesuai instruksi pengelola.</p>
 
                     {{-- Payment Instructions from Owner --}}
                     @if($tagihan->kamar->kos->payment_info)
@@ -209,7 +209,6 @@
                         @csrf
                         <input type="hidden" name="tagihan_id" value="{{ $tagihan->id }}">
                         <input type="hidden" name="amount" value="{{ $tagihan->total }}">
-                        <input type="hidden" name="payment_method" value="cash">
                         <div class="space-y-5 max-w-xl">
 
                             {{-- Total summary above submit --}}
@@ -229,8 +228,45 @@
                                 <p class="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-lock-line"></i> Nominal mengikuti total tagihan dan tidak dapat diubah.</p>
                             </div>
 
-                            {{-- Cash method info --}}
-                            <div class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
+                            {{-- Metode Pembayaran --}}
+                            <div>
+                                <p class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">Metode Pembayaran</p>
+                                <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Metode pembayaran">
+                                    <label for="method-transfer_bank"
+                                           class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
+                                           :class="method === 'transfer_bank'
+                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-600 dark:text-slate-400'">
+                                        <input type="radio" id="method-transfer_bank" name="payment_method" value="transfer_bank" x-model="method" class="sr-only">
+                                        <i class="ri-bank-line text-base"></i> Transfer Bank
+                                    </label>
+                                    <label for="method-cash"
+                                           class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
+                                           :class="method === 'cash'
+                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-600 dark:text-slate-400'">
+                                        <input type="radio" id="method-cash" name="payment_method" value="cash" x-model="method" class="sr-only">
+                                        <i class="ri-hand-coin-line text-base"></i> Cash
+                                    </label>
+                                </div>
+                                @error('payment_method') <p class="text-red-500 text-xs mt-1.5" aria-live="polite">{{ $message }}</p> @enderror
+                            </div>
+
+                            {{-- Transfer detail --}}
+                            <div x-show="method === 'transfer_bank'" x-cloak class="rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/[0.06] p-4" aria-live="polite">
+                                <p class="flex items-center gap-1.5 text-sm font-semibold text-blue-800 dark:text-blue-200">
+                                    <i class="ri-bank-line text-blue-600 dark:text-blue-300"></i> Transfer Bank
+                                </p>
+                                @if($tagihan->kamar->kos->payment_info)
+                                    <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ $tagihan->kamar->kos->payment_info }}</p>
+                                @else
+                                    <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">Transfer sebesar nominal di atas ke rekening pengelola kos, lalu unggah bukti transfer di bawah.</p>
+                                @endif
+                                <p class="mt-2 text-[11px] font-medium text-blue-700 dark:text-blue-300">Wajib unggah bukti transfer (JPG/PNG/PDF, maks 5MB).</p>
+                            </div>
+
+                            {{-- Cash detail --}}
+                            <div x-show="method === 'cash'" class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
                                 <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100">
                                     <i class="ri-hand-coin-line text-emerald-600 dark:text-emerald-300"></i> Pembayaran Tunai
                                 </p>
@@ -238,19 +274,22 @@
                                     Bayar sejumlah <strong class="text-slate-700 dark:text-slate-200">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</strong> langsung kepada pengelola/admin kos,
                                     lalu kirim konfirmasi di bawah. Pengelola akan memverifikasi pembayaran Anda.
                                 </p>
+                                <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Bukti pembayaran opsional untuk metode tunai.</p>
                             </div>
 
-                            {{-- Proof Upload (optional for cash) --}}
+                            {{-- Proof Upload --}}
                             <div>
                                 <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5" id="proof-label">
-                                    Bukti Pembayaran <span class="font-normal">(opsional — JPG/PNG/PDF, maks 5MB)</span>
+                                    Bukti Pembayaran
+                                    <span class="font-normal" x-text="method === 'transfer_bank' ? '(wajib — JPG/PNG/PDF, maks 5MB)' : '(opsional — JPG/PNG/PDF, maks 5MB)'"></span>
                                 </label>
                                 <input id="proof_file" type="file" name="proof_file" accept="image/jpeg,image/png,image/webp,application/pdf"
                                        x-ref="proofInput"
+                                       x-bind:required="method === 'transfer_bank'"
                                        @change="handleProofChange($event)"
                                        aria-describedby="proof-feedback proof-hint"
                                        class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-500/10 file:text-primary-600 dark:file:text-primary-300 hover:file:bg-primary-100 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-                                <p id="proof-hint" class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Unggah bukti jika diperlukan pengelola. Pastikan bukti jelas.</p>
+                                <p id="proof-hint" class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Unggah bukti jika diperlukan pengelola. Pastikan bukti jelas. Untuk Transfer Bank, bukti wajib diunggah.</p>
 
                                 {{-- Client-side proof feedback --}}
                                 <div x-show="proof.name" x-cloak id="proof-feedback"
@@ -277,12 +316,23 @@
                                 @error('proof_file') <p class="text-red-500 text-xs mt-1" aria-live="polite">{{ $message }}</p> @enderror
                             </div>
 
+                            {{-- Notes --}}
+                            <div>
+                                <label for="notes" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">Pesan <span class="font-normal">(opsional)</span></label>
+                                <textarea id="notes" name="notes" rows="2" placeholder="Contoh: Saya sudah melakukan transfer, mohon dicek..."
+                                          class="block w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100">{{ old('notes') }}</textarea>
+                                @error('notes') <p class="text-red-500 text-xs mt-1" aria-live="polite">{{ $message }}</p> @enderror
+                            </div>
+
                             @error('amount') <p class="text-red-500 text-xs" aria-live="polite">{{ $message }}</p> @enderror
 
                             <button type="submit" x-bind:disabled="submitting"
                                     class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
                                 <template x-if="!submitting">
-                                    <span class="flex items-center gap-2"><i class="ri-hand-coin-line"></i> Konfirmasi Pembayaran Tunai</span>
+                                    <span class="flex items-center gap-2">
+                                        <i :class="method === 'transfer_bank' ? 'ri-bank-line' : 'ri-hand-coin-line'"></i>
+                                        <span x-text="method === 'transfer_bank' ? 'Konfirmasi Transfer Bank' : 'Konfirmasi Pembayaran Tunai'"></span>
+                                    </span>
                                 </template>
                                 <template x-if="submitting" x-cloak>
                                     <span class="flex items-center gap-2"><i class="ri-loader-4-line animate-spin"></i> Mengirim...</span>
@@ -352,6 +402,7 @@
             window.paymentForm = function () {
                 return {
                     submitting: false,
+                    method: @js(old('payment_method', 'cash')),
                     proof: { name: '', size: 0, sizeLabel: '', isImage: false, preview: '', oversize: false },
                     handleProofChange(event) {
                         const file = event.target.files && event.target.files[0];
