@@ -51,6 +51,7 @@
                                                         data-weekly="{{ $k->weekly_price }}"
                                                         data-daily="{{ $k->daily_price }}"
                                                         data-billing-mode="{{ $k->billing_mode ?? 'personal' }}"
+                                                        data-capacity="{{ $k->capacity }}"
                                                         data-photo="{{ $k->photo ?? '' }}"
                                                         {{ (string) $preselectedKamarId === (string) $k->id ? 'selected' : '' }}>
                                                     {{ $k->room_number }} â€” {{ $k->room_name }} ({{ $k->room_type }}) Â· Rp {{ number_format($k->monthly_price, 0, ',', '.') }}/bulan
@@ -96,24 +97,41 @@
                                         </div>
                                     </fieldset>
 
-                                    {{-- F-01: Mode Tagihan (personal / patungan) --}}
+                                    {{-- F-04: Jumlah penghuni (human label, not requested_occupants) --}}
+                                    <div id="occupant-field">
+                                        <label for="occupant-count" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Berapa orang yang akan tinggal? <span class="text-red-500">*</span></label>
+                                        <p id="occupant-help" class="text-xs text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">Masukkan jumlah orang yang akan menempati kamar ini.</p>
+                                        <div class="flex items-center gap-3">
+                                            <button type="button" id="occupant-minus" aria-label="Kurangi jumlah penghuni" class="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 min-h-[44px] min-w-[44px]"><i class="ri-subtract-line"></i></button>
+                                            <input type="number" id="occupant-count" name="requested_occupants" value="{{ old('requested_occupants', 1) }}" min="1" max="10" required inputmode="numeric"
+                                                   aria-describedby="occupant-help occupant-capacity occupant-invite-help"
+                                                   class="w-20 text-center rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm font-semibold py-2.5 focus:border-primary-500 focus:ring-primary-500">
+                                            <button type="button" id="occupant-plus" aria-label="Tambah jumlah penghuni" class="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 min-h-[44px] min-w-[44px]"><i class="ri-add-line"></i></button>
+                                            <span id="occupant-suffix" class="text-sm text-slate-500 dark:text-slate-400">orang</span>
+                                        </div>
+                                        <p id="occupant-capacity" class="mt-2 text-xs text-slate-500 dark:text-slate-400"></p>
+                                        <p id="occupant-invite-help" class="mt-1.5 hidden rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/60 dark:bg-primary-500/[0.06] px-3 py-2.5 text-xs leading-relaxed text-primary-700 dark:text-primary-300"><i class="ri-mail-line mr-1"></i> Setelah booking dibuat, kamu dapat mengundang penghuni lain untuk bergabung.</p>
+                                        @error('requested_occupants') <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    {{-- F-04: Pembayaran kamar (human label, not billing_mode) --}}
                                     <fieldset id="billing-mode-fieldset" class="hidden">
-                                        <legend class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Mode Tagihan <span class="text-red-500">*</span></legend>
+                                        <legend class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">Pembayaran kamar <span class="text-red-500">*</span></legend>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <label class="flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
+                                            <label class="flex items-start gap-3 min-h-[44px] px-4 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
                                                 <input type="radio" name="billing_mode" value="personal" {{ old('billing_mode', 'personal') === 'personal' ? 'checked' : '' }}
                                                        class="mt-1 text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600">
                                                 <span class="min-w-0">
-                                                    <span class="block text-sm font-semibold text-slate-900 dark:text-white">Tagihan Pribadi</span>
-                                                    <span class="block text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Seluruh biaya kamar menjadi tanggungan Anda.</span>
+                                                    <span class="block text-sm font-semibold text-slate-900 dark:text-white">Saya tanggung sendiri</span>
+                                                    <span class="block text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Saya membayar seluruh biaya kamar.</span>
                                                 </span>
                                             </label>
-                                            <label class="flex items-start gap-3 px-4 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
+                                            <label class="flex items-start gap-3 min-h-[44px] px-4 py-3 rounded-xl border cursor-pointer transition bg-white dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700 hover:border-primary-300 has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50/60 has-[:checked]:dark:bg-primary-500/10">
                                                 <input type="radio" name="billing_mode" value="shared" {{ old('billing_mode') === 'shared' ? 'checked' : '' }}
                                                        class="mt-1 text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600">
                                                 <span class="min-w-0">
-                                                    <span class="block text-sm font-semibold text-slate-900 dark:text-white">Patungan Kamar</span>
-                                                    <span class="block text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Total biaya kamar dibagi sesuai jumlah penghuni.</span>
+                                                    <span class="block text-sm font-semibold text-slate-900 dark:text-white">Dibagi dengan penghuni lain</span>
+                                                    <span class="block text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Biaya kamar akan dibagi sesuai jumlah penghuni.</span>
                                                 </span>
                                             </label>
                                         </div>
@@ -194,6 +212,14 @@
                                                 <dd id="sum-kamar" class="font-semibold text-slate-900 dark:text-white text-right">â€”</dd>
                                             </div>
                                             <div class="flex items-start justify-between gap-3">
+                                                <dt class="text-slate-500 dark:text-slate-400 shrink-0">Jumlah penghuni</dt>
+                                                <dd id="sum-occupants" class="font-semibold text-slate-900 dark:text-white text-right">—</dd>
+                                            </div>
+                                            <div class="flex items-start justify-between gap-3">
+                                                <dt class="text-slate-500 dark:text-slate-400 shrink-0">Pembayaran</dt>
+                                                <dd id="sum-billing" class="font-semibold text-slate-900 dark:text-white text-right">—</dd>
+                                            </div>
+                                            <div class="flex items-start justify-between gap-3">
                                                 <dt class="text-slate-500 dark:text-slate-400 shrink-0">Tipe sewa</dt>
                                                 <dd id="sum-type" class="font-semibold text-slate-900 dark:text-white text-right">â€”</dd>
                                             </div>
@@ -201,8 +227,10 @@
                                                 <dt class="text-slate-500 dark:text-slate-400 shrink-0">Periode</dt>
                                                 <dd id="sum-periode" class="font-semibold text-slate-900 dark:text-white text-right">â€”</dd>
                                             </div>
-                                            <div class="pt-3 border-t border-primary-100 dark:border-primary-500/20 flex items-center justify-between gap-3">
-                                                <dt class="text-slate-500 dark:text-slate-400">Biaya sewa</dt>
+                                            <p id="sum-occupant-help" class="hidden text-[11px] text-primary-600 dark:text-primary-300 leading-relaxed rounded-xl border border-primary-100 dark:border-primary-500/20 bg-white/60 dark:bg-slate-700/40 px-3 py-2"></p>
+                                            <div class="pt-3 border-t border-primary-100 dark:border-primary-500/20">
+                                                <div class="flex items-center justify-between gap-3">
+                                                <dt class="text-slate-500 dark:text-slate-400">Total harga kamar</dt>
                                                 <dd id="sum-total" class="text-lg font-black text-primary-600 dark:text-primary-300">â€”</dd>
                                             </div>
                                         </dl>
@@ -263,10 +291,19 @@
                 var endIn = document.getElementById('end-date');
                 if (!roomSel) return;
 
+                var occupantInput = document.getElementById('occupant-count');
+                var occupantMinus = document.getElementById('occupant-minus');
+                var occupantPlus = document.getElementById('occupant-plus');
+                var occupantCapacity = document.getElementById('occupant-capacity');
+                var occupantInviteHelp = document.getElementById('occupant-invite-help');
                 var elKamar = document.getElementById('sum-kamar');
+                var elOccupants = document.getElementById('sum-occupants');
+                var elBilling = document.getElementById('sum-billing');
                 var elType = document.getElementById('sum-type');
                 var elPeriode = document.getElementById('sum-periode');
                 var elTotal = document.getElementById('sum-total');
+                var elOccupantHelp = document.getElementById('sum-occupant-help');
+                var elTotalNote = document.getElementById('sum-total-note');
                 var roomPhotoWrap = document.getElementById('room-photo-wrap');
                 var roomPhotoImg = document.getElementById('room-photo-img');
                 var roomPhotoLetter = document.getElementById('room-photo-letter');
@@ -277,6 +314,22 @@
                     var d1 = new Date(a + 'T00:00:00');
                     var d2 = new Date(b + 'T00:00:00');
                     return Math.round((d2 - d1) / 86400000);
+                }
+                function clampOccupant() {
+                    var v = parseInt(occupantInput.value, 10) || 1;
+                    var cap = parseInt((roomSel.options[roomSel.selectedIndex] || {}).dataset.capacity || '10', 10) || 10;
+                    if (v < 1) v = 1; if (v > cap) v = cap; if (v > 10) v = 10;
+                    occupantInput.value = v; return v;
+                }
+                function billingLabel(val) { return val === 'shared' ? 'Dibagi dengan penghuni lain' : 'Saya tanggung sendiri'; }
+                function updateOccupantUI() {
+                    var opt = roomSel.options[roomSel.selectedIndex];
+                    var cap = opt && opt.value ? parseInt(opt.dataset.capacity || '1', 10) || 1 : 1;
+                    var n = clampOccupant();
+                    if (!opt || !opt.value) { occupantCapacity.textContent = ''; occupantInviteHelp.classList.add('hidden'); occupantInput.max = 10; return; }
+                    occupantInput.max = Math.min(cap, 10);
+                    occupantCapacity.textContent = cap > 1 ? 'Kamar ini dapat dihuni hingga ' + cap + ' orang.' : 'Kamar ini untuk 1 orang.';
+                    if (n > 1 && cap > 1) occupantInviteHelp.classList.remove('hidden'); else occupantInviteHelp.classList.add('hidden');
                 }
 
                 function updateBillingMode() {
@@ -290,7 +343,7 @@
                     if (bm === 'shared') {
                         billingFieldset.classList.remove('hidden');
                         if (billingHelp) {
-                            billingHelp.textContent = 'Kamar ini mendukung patungan. Pilih Patungan Kamar jika ingin total biaya dibagi penghuni.';
+                            billingHelp.textContent = 'Kamar ini mendukung patungan. Pilih Dibagi dengan penghuni lain jika ingin total biaya dibagi penghuni.';
                             billingHelp.classList.remove('hidden');
                         }
                     } else {
@@ -319,6 +372,11 @@
                     var unit = unitLabels[rentalType] || '/bulan';
 
                     elKamar.textContent = opt.dataset.room || ('Kamar #' + opt.value);
+                    var n = clampOccupant();
+                    var billingVal = (document.querySelector('input[name="billing_mode"]:checked') || {}).value || 'personal';
+                    var cap = parseInt(opt.dataset.capacity || '1', 10) || 1;
+                    if (elOccupants) elOccupants.textContent = n + ' orang' + (n === 1 ? '' : ' · ' + cap + ' maks');
+                    if (elBilling) elBilling.textContent = billingLabel(billingVal);
                     elType.textContent = (typeLabels[rentalType] || 'Bulanan') + ' Â· ' + fmt(price) + unit;
 
                     var s = startIn.value, e = endIn.value;
@@ -339,6 +397,15 @@
                     }
 
                     elTotal.textContent = total > 0 ? fmt(total) : (price > 0 ? fmt(price) : 'Hubungi pemilik');
+                    if (elOccupantHelp) {
+                        if (n > 1) { elOccupantHelp.textContent = 'Kamu bisa mengundang penghuni lain setelah booking dibuat.'; elOccupantHelp.classList.remove('hidden'); }
+                        else { elOccupantHelp.textContent = 'Jumlah penghuni 1 orang.'; elOccupantHelp.classList.remove('hidden'); }
+                    }
+                    if (elTotalNote) {
+                        if (billingVal === 'shared' && n > 1) { elTotalNote.textContent = 'Total harga kamar akan dibagi sesuai jumlah penghuni.'; elTotalNote.classList.remove('hidden'); }
+                        else if (billingVal === 'shared') { elTotalNote.textContent = 'Total harga kamar — siap dibagi jika mengundang penghuni lain.'; elTotalNote.classList.remove('hidden'); }
+                        else { elTotalNote.textContent = 'Total yang kamu bayar untuk periode ini.'; elTotalNote.classList.remove('hidden'); }
+                    }
 
                     var photo = opt.dataset.photo;
                     var roomLabel = (opt.dataset.room || '').split(' â€” ')[0] || '';
@@ -354,19 +421,17 @@
                         roomPhotoLetter.textContent = roomLabel.substring(0, 2);
                         roomPhotoWrap.classList.remove('hidden');
                     }
-                    updateBillingMode();
+                    updateBillingMode(); updateOccupantUI();
                 }
 
-                [roomSel, startIn, endIn].forEach(function (el) {
-                    el.addEventListener('change', update);
-                    el.addEventListener('input', update);
-                });
-                Array.prototype.forEach.call(document.querySelectorAll('input[name="rental_type"]'), function (el) {
-                    el.addEventListener('change', update);
-                });
-                roomSel.addEventListener('change', updateBillingMode);
-                update();
-                updateBillingMode();
+                if (occupantMinus) occupantMinus.addEventListener('click', function(){ var v=Math.max(1,(parseInt(occupantInput.value,10)||1)-1); occupantInput.value=v; updateOccupantUI(); update(); });
+                if (occupantPlus) occupantPlus.addEventListener('click', function(){ var cap=parseInt((roomSel.options[roomSel.selectedIndex]||{}).dataset.capacity||'10',10)||10; var v=Math.min(cap,(parseInt(occupantInput.value,10)||1)+1); occupantInput.value=v; updateOccupantUI(); update(); });
+                if (occupantInput) { occupantInput.addEventListener('change', function(){ updateOccupantUI(); update(); }); occupantInput.addEventListener('input', function(){ updateOccupantUI(); update(); }); }
+                [roomSel, startIn, endIn].forEach(function (el) { el.addEventListener('change', update); el.addEventListener('input', update); });
+                Array.prototype.forEach.call(document.querySelectorAll('input[name="rental_type"]'), function (el) { el.addEventListener('change', update); });
+                Array.prototype.forEach.call(document.querySelectorAll('input[name="billing_mode"]'), function (el) { el.addEventListener('change', update); });
+                roomSel.addEventListener('change', function(){ updateOccupantUI(); updateBillingMode(); update(); });
+                update(); updateBillingMode(); updateOccupantUI();
             })();
         </script>
     @endif

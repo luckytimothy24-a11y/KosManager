@@ -1,11 +1,11 @@
-<x-app-layout>
+﻿<x-app-layout>
     <div class="max-w-2xl mx-auto space-y-6">
         <x-alert />
 
         {{-- Success hero --}}
         <div class="text-center">
             <div class="w-20 h-20 rounded-full bg-green-50 dark:bg-green-500/10 mx-auto flex items-center justify-center animate-bounce">
-                <span class="text-4xl">🎉</span>
+                <span class="text-4xl">≡ƒÄë</span>
             </div>
 
             {{-- Foto kamar yang baru dipesan --}}
@@ -33,7 +33,7 @@
         <div class="flex items-start gap-3 rounded-2xl border border-green-100 dark:border-green-500/20 bg-green-50/70 dark:bg-green-500/[0.06] px-5 py-4">
             <i class="ri-flashlight-line text-green-600 dark:text-green-400 text-xl mt-0.5"></i>
             <div>
-                <p class="text-sm font-bold text-green-800 dark:text-green-300">⚡ Booking langsung terkonfirmasi</p>
+                <p class="text-sm font-bold text-green-800 dark:text-green-300">ΓÜí Booking langsung terkonfirmasi</p>
                 <p class="text-xs text-green-700/80 dark:text-green-300/80 mt-0.5">Kamar telah langsung dipesan untukmu. Tidak perlu menunggu persetujuan.</p>
             </div>
         </div>
@@ -59,15 +59,31 @@
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-door-open-line text-slate-400"></i> Kamar</dt>
-                    <dd class="font-semibold text-slate-900 dark:text-white">Kamar {{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</dd>
+                    <dd class="font-semibold text-slate-900 dark:text-white">Kamar {{ $booking->kamar->room_number }} ┬╖ {{ $booking->kamar->room_type }}</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-money-dollar-circle-line text-slate-400"></i> Harga</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-team-line text-slate-400"></i> Jumlah penghuni</dt>
+                    <dd class="font-semibold text-slate-900 dark:text-white">{{ (int) ($booking->requested_occupants ?? 1) }} orang</dd>
+                </div>
+                <div class="flex items-center justify-between gap-4">
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-wallet-3-line text-slate-400"></i> Pembayaran</dt>
+                    <dd class="font-semibold text-slate-900 dark:text-white">{{ ($booking->billing_mode ?? 'personal') === 'shared' ? 'Dibagi dengan penghuni lain' : 'Saya tanggung sendiri' }}</dd>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 -mt-2">
+                    @if((int)($booking->requested_occupants ?? 1) > 1)
+                        Kamar ini untuk {{ (int)($booking->requested_occupants ?? 1) }} orang — kamu bisa mengundang penghuni lain setelah booking dibuat.
+                    @else
+                        Total harga kamar untuk periode ini.
+                    @endif
+                    @if(($booking->billing_mode ?? 'personal') === 'shared') Biaya kamar akan dibagi sesuai jumlah penghuni. @endif
+                </p>
+                <div class="flex items-center justify-between gap-4">
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-money-dollar-circle-line text-slate-400"></i> Total harga kamar</dt>
                     <dd class="font-semibold text-slate-900 dark:text-white">Rp {{ number_format($booking->price, 0, ',', '.') }}<span class="text-xs text-slate-400">/{{ $booking->rental_type === 'daily' ? 'hari' : 'bulan' }}</span></dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-line text-slate-400"></i> Periode</dt>
-                    <dd class="font-semibold text-slate-900 dark:text-white text-right">{{ $booking->start_date->format('d M Y') }} — {{ $booking->end_date->format('d M Y') }}</dd>
+                    <dd class="font-semibold text-slate-900 dark:text-white text-right">{{ $booking->start_date->format('d M Y') }} ΓÇö {{ $booking->end_date->format('d M Y') }}</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-check-line text-slate-400"></i> Tanggal Booking</dt>

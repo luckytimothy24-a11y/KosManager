@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
         <x-page-header title="Booking {{ $booking->booking_code }}" description="Detail booking kamar Anda.">
             <x-button href="{{ route('tenant.booking.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
@@ -109,7 +109,7 @@
                             @endif
                             <span class="absolute inset-0 flex items-center justify-center text-[4rem] leading-none font-black uppercase text-primary-900/[0.08] dark:text-white/5 select-none pointer-events-none" aria-hidden="true">{{ mb_substr($booking->kamar->room_number, 0, 2) }}</span>
                         </div>
-                        <p class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">Kamar {{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</p>
+                        <p class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-300">Kamar {{ $booking->kamar->room_number }} ┬╖ {{ $booking->kamar->room_type }}</p>
                     </div>
                 </div>
             </div>
@@ -257,7 +257,7 @@
                         <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
-                            <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</dd>
+                            <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} ┬╖ {{ $booking->kamar->room_type }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
@@ -281,6 +281,25 @@
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($booking->rental_type) }}</dd>
                         </div>
                     </div>
+                    <div class="flex items-start gap-2.5">
+                        <i class="ri-team-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Jumlah penghuni</dt>
+                            <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ (int) ($booking->requested_occupants ?? 1) }} orang</dd>
+                            <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Kamar ini dapat dihuni hingga {{ (int) ($booking->kamar->capacity ?? 1) }} orang.</p>
+                            @if((int) ($booking->requested_occupants ?? 1) > 1)
+                                <p class="mt-1.5 inline-flex text-[11px] leading-relaxed text-primary-600 dark:text-primary-300 rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/60 dark:bg-primary-500/[0.06] px-2.5 py-1.5">Kamu bisa mengundang penghuni lain setelah booking dibuat.</p>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <i class="ri-wallet-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Pembayaran</dt>
+                            <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ ($booking->billing_mode ?? 'personal') === 'shared' ? 'Dibagi dengan penghuni lain' : 'Saya tanggung sendiri' }}</dd>
+                            <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">{{ ($booking->billing_mode ?? 'personal') === 'shared' ? 'Biaya kamar akan dibagi sesuai jumlah penghuni.' : 'Seluruh biaya kamar menjadi tanggunganmu.' }}</p>
+                        </div>
+                    </div>
                 </dl>
             </div>
 
@@ -291,8 +310,8 @@
                 </h3>
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-slate-500 dark:text-slate-400">
-                        <p>Harga sewa ({{ \StatusLabels::rentalTypeLabel($booking->rental_type) }})</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Tarif {{ $booking->priceUnitLabel() }} untuk periode yang dipilih.</p>
+                        <p>Total harga kamar ({{ \StatusLabels::rentalTypeLabel($booking->rental_type) }})</p>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Tarif {{ $booking->priceUnitLabel() }} untuk periode yang dipilih. @if(($booking->billing_mode ?? 'personal') === 'shared' && (int)($booking->requested_occupants ?? 1) > 1) Akan dibagi sesuai jumlah penghuni. @endif</p>
                     </div>
                     <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format($booking->price, 0, ',', '.') }}</span>
                 </div>
