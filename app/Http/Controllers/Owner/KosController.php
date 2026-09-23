@@ -368,15 +368,17 @@ class KosController extends Controller
         return redirect()->route($request->user()->isAdmin() ? 'admin.kos.index' : 'owner.kos.index')->with('success', 'Kos berhasil diperbarui.');
     }
 
-    public function destroy(Kos $kos)
+    public function destroy(Request $request, Kos $kos)
     {
         $this->authorize('delete', $kos);
+
+        $prefix = $request->user()->isAdmin() ? 'admin' : 'owner';
 
         $hasActivePenghuni = $kos->penghunis()->where('status', 'active')->exists();
         $hasActiveBooking = $kos->bookings()->whereIn('status', Booking::activeStatuses())->exists();
 
         if ($hasActivePenghuni || $hasActiveBooking) {
-            return redirect()->route('owner.kos.index')
+            return redirect()->route("$prefix.kos.index")
                 ->with('error', 'Kos tidak dapat dihapus karena masih memiliki penghuni aktif atau booking aktif.');
         }
 
@@ -385,7 +387,7 @@ class KosController extends Controller
             ->exists();
 
         if ($hasUnpaidTagihan) {
-            return redirect()->route('owner.kos.index')
+            return redirect()->route("$prefix.kos.index")
                 ->with('error', 'Kos tidak dapat dihapus karena masih memiliki tagihan yang belum lunas.');
         }
 
@@ -394,13 +396,13 @@ class KosController extends Controller
             || $kos->bookings()->exists();
 
         if ($hasHistory) {
-            return redirect()->route('owner.kos.index')
+            return redirect()->route("$prefix.kos.index")
                 ->with('error', 'Kos tidak dapat dihapus karena masih memiliki riwayat kamar, penghuni, atau booking.');
         }
 
         $kos->delete();
 
-        return redirect()->route('owner.kos.index')->with('success', 'Kos berhasil dihapus.');
+        return redirect()->route("$prefix.kos.index")->with('success', 'Kos berhasil dihapus.');
     }
 
     private function authUserIsOwner(): bool
