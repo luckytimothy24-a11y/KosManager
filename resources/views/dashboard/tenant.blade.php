@@ -42,115 +42,139 @@
             </a>
         </header>
 
-        {{-- ============================================================
-             PROMO & PARTNER PILIHAN
-             Menggunakan data iklan partner homepage yang sudah ada di
-             backend (controller melakukan impression tracking). Iklan
-             dirender lewat partial partner-ad (premium, data-driven).
-             Jika tidak ada iklan live, tampilkan slide layanan statis yang
-             sepenuhnya terisolasi dari backend (visual semata).
-             ============================================================ --}}
-        @php
-            $promoSlides = [];
-            if (($partnerAds ?? collect())->isNotEmpty()) {
-                foreach ($partnerAds as $ad) {
-                    $promoSlides[] = [
-                        'type' => 'ad',
-                        'campaign' => $ad,
-                        'headline' => $ad->displayHeadline(),
-                    ];
-                }
-            }
-            if (empty($promoSlides)) {
-                $promoSlides = [
-                    ['type' => 'static', 'label' => 'Layanan', 'headline' => 'Laundry Antar Jemput', 'desc' => 'Praktis, bersih, langsung dari kos.', 'cta' => 'Pesan Sekarang', 'tone' => 'bg-sky-50', 'icon' => 'ri-shirt-line'],
-                    ['type' => 'static', 'label' => 'Layanan', 'headline' => 'Cleaning Service Kamar', 'desc' => 'Freskan kamar kamu dalam 1 jam.', 'cta' => 'Jadwalkan', 'tone' => 'bg-emerald-50', 'icon' => 'ri-plant-line'],
-                    ['type' => 'static', 'label' => 'Info', 'headline' => 'Promo Pembayaran Tagihan', 'desc' => 'Bayar tunai langsung ke pengelola, praktis tanpa ribet.', 'cta' => 'Bayar Sekarang', 'tone' => 'bg-amber-50', 'icon' => 'ri-wallet-3-line'],
-                ];
-            }
-        @endphp
-        <section aria-label="Promo & Partner Pilihan"
-                 class="select-none">
-            <div class="mb-3">
-                <h2 class="text-base font-black text-slate-900 dark:text-white">Promo &amp; Partner Pilihan</h2>
-                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Temukan penawaran menarik untuk menemani kebutuhan harianmu.</p>
+{{-- ============================================================
+     PROMO PARTNER — carousel responsive iklan partner
+     Layout sama dengan welcome.blade.php IKLAN PROMO PARTNER section
+     ============================================================ --}}
+@if(($partnerAds ?? collect())->isNotEmpty())
+<section aria-label="Promo Partner" class="relative overflow-hidden bg-white dark:bg-slate-950 py-8 md:py-10">
+    <div class="pointer-events-none absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, #f97316 1px, transparent 0); background-size: 24px 24px;"></div>
+
+    <div class="relative max-w-[1170px] mx-auto px-4 sm:px-6" x-data="{
+        slide: 0,
+        timer: null,
+        totalSlides: {{ $partnerAds->count() }},
+        paused: false,
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        init() {
+            if (!this.reducedMotion) { this.startTimer(); }
+            this.$watch('paused', (val) => {
+                if (val) { clearInterval(this.timer); this.timer = null; }
+                else if (!this.reducedMotion) { this.startTimer(); }
+            });
+        },
+        destroy() { clearInterval(this.timer); },
+        startTimer() {
+            this.timer = setInterval(() => { this.slide = (this.slide + 1) % this.totalSlides; }, 5000);
+        },
+        prev() { this.slide = (this.slide - 1 + this.totalSlides) % this.totalSlides; this.resetTimer(); },
+        next() { this.slide = (this.slide + 1) % this.totalSlides; this.resetTimer(); },
+        resetTimer() { clearInterval(this.timer); this.timer = null; if (!this.reducedMotion) { this.startTimer(); } },
+        goTo(i) { this.slide = i; this.resetTimer(); },
+    }">
+        <div class="mb-6 md:mb-8">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="inline-flex items-center gap-1.5 bg-orange-50 text-primary-600 text-[11px] font-bold px-3 py-1 rounded-full">
+                    <i class="ri-megaphone-2-fill text-[10px]"></i> Promo Spesial
+                </span>
             </div>
-                 <div x-data="{
-                     index: 0,
-                     total: {{ count($promoSlides) }},
-                     touchX: 0,
-                     drag: false,
-                     dragStartX: 0,
-                     dragMoved: false,
-                     go(i) { this.index = Math.max(0, Math.min(this.total - 1, i)); },
-                     prev() { this.go(this.index - 1); },
-                     next() { this.go(this.index + 1); },
-                     onTouchStart(e) { this.touchX = e.changedTouches[0].clientX; },
-                     onTouchEnd(e) {
-                         const dx = e.changedTouches[0].clientX - this.touchX;
-                         if (Math.abs(dx) > 40) { dx < 0 ? this.next() : this.prev(); }
-                     },
-                     startDrag(e) { if (!this.drag) { this.drag = true; this.dragMoved = false; this.dragStartX = e.clientX; } },
-                     moveDrag(e) {
-                         if (this.drag && !this.dragMoved && Math.abs(e.clientX - this.dragStartX) > 40) { this.dragMoved = true; }
-                     },
-                     endDrag(e) {
-                         if (this.drag) {
-                             const dx = e.clientX - this.dragStartX;
-                             if (this.dragMoved && Math.abs(dx) > 40) { dx < 0 ? this.next() : this.prev(); }
-                             this.drag = false;
-                         }
-                     },
-                     cancelDrag() { this.drag = false; this.dragMoved = false; }
-                 }">
-            <div class="relative overflow-hidden rounded-[1.25rem] w-full"
-                 :class="total > 1 ? 'cursor-grab active:cursor-grabbing' : ''"
-                 role="region" aria-roledescription="karusel" aria-label="Promo dan partner pilihan"
-                 tabindex="0"
-                 @touchstart.passive="onTouchStart($event)"
-                 @touchend.passive="onTouchEnd($event)"
-                 @mousedown="startDrag($event)"
-                 @mousemove="moveDrag($event)"
-                 @mouseup="endDrag($event)"
-                 @mouseleave="cancelDrag()"
-                 @keydown.arrow-left.prevent="prev()"
-                 @keydown.arrow-right.prevent="next()"
-                 @click.capture="if (dragMoved) { $event.preventDefault(); $event.stopPropagation(); dragMoved = false; }">
-                <div class="flex transition-transform duration-500 ease-out motion-reduce:transition-none"
-:style="'transform: translateX(-' + (index * (total > 0 ? 100 / total : 0)) + '%)'">
-                     @foreach($promoSlides as $slide)
-                         @if($slide['type'] === 'ad')
-                             <div class="w-full flex-shrink-0 min-w-0">
-                                 @include('tenant.partials.partner-ad', ['ad' => $slide['campaign'], 'placement' => 'homepage', 'variant' => 'banner'])
-                             </div>
-                         @else
-                             <div class="w-full flex-shrink-0 min-w-0">
-                                 <div class="relative flex min-h-[12rem] sm:min-h-[12.5rem] items-center justify-between gap-4 rounded-[1.25rem] {{ $slide['tone'] }} p-5"
-                                      role="group" aria-label="{{ $slide['headline'] }}">
-                                     <div class="min-w-0">
-                                         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">{{ $slide['label'] }}</span>
-                                         <h2 class="mt-1 text-lg font-black leading-snug text-slate-900">{{ $slide['headline'] }}</h2>
-                                         <p class="mt-1 text-xs text-slate-500">{{ $slide['desc'] }}</p>
-                                     </div>
-                                     <span class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/80 text-3xl text-primary-500 shadow-sm">
-                                         <i class="{{ $slide['icon'] }}"></i>
-                                     </span>
-                                 </div>
-                             </div>
-                         @endif
-                     @endforeach
+            <h2 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight">Penawaran Terbaik untuk Pencari Kos</h2>
+            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Temukan promo menarik dari partner kami</p>
+
+        <div class="relative">
+            <div class="overflow-hidden rounded-2xl" @mouseenter="paused = true" @mouseleave="paused = false">
+                <div class="flex transition-transform duration-500 ease-out" :style="'transform: translateX(-' + slide * (100 / totalSlides) + '%)'">
+                    @foreach($partnerAds as $ad)
+                        @php
+                            $clickUrl = route('ad.click', ['campaign' => $ad->id, 'placement' => 'homepage']);
+                            $imgSrc = $ad->displayImage() ? asset('storage/' . $ad->displayImage()) : null;
+                            $logoSrc = $ad->partner?->logo ? asset('storage/' . $ad->partner->logo) : null;
+                        @endphp
+                        <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/3 shrink-0 px-2">
+                            <a href="{{ $clickUrl }}"
+                               data-ad-id="{{ $ad->id }}"
+                               class="group relative block overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
+                                <div class="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-slate-800">
+                                    @if($imgSrc)
+                                        <img src="{{ $imgSrc }}" alt="{{ e($ad->displayHeadline()) }}" loading="lazy"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    @endif
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                    <span class="absolute top-3 left-3 inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                        <i class="ri-fire-fill"></i> Promo
+                                    </span>
+                                    <span class="absolute top-3 left-[4.5rem] inline-flex items-center gap-1 bg-primary-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                                        Sponsored
+                                    </span>
+                                    <span class="absolute bottom-3 left-3 right-3 inline-flex items-center justify-between">
+                                        <span class="inline-flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 text-gray-800 dark:text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow">
+                                            @if($logoSrc)
+                                                <img src="{{ $logoSrc }}" alt="" class="w-4 h-4 rounded-full object-cover">
+                                            @else
+                                                <span class="w-4 h-4 rounded-full bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-300 text-[8px] font-bold flex items-center justify-center uppercase">{{ mb_substr($ad->displayLabel(), 0, 1) }}</span>
+                                            @endif
+                                            {{ e($ad->displayLabel()) }}
+                                        </span>
+                                        <span class="inline-flex items-center gap-0.5 bg-white/90 dark:bg-slate-800/90 text-primary-600 dark:text-primary-400 text-[11px] font-bold px-2 py-0.5 rounded-full shadow">
+                                            Lihat <i class="ri-arrow-right-line text-[9px]"></i>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="p-3">
+                                    <h3 class="text-sm font-bold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-primary-500 transition">{{ e($ad->displayHeadline()) }}</h3>
+                                    <p class="mt-1 text-xs text-gray-400 dark:text-slate-500 line-clamp-1">{{ e($ad->displayDescription()) }}</p>
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-600 dark:text-primary-400 mt-1"><i class="ri-information-line"></i> Iklan Partner</span>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
-            @if(count($promoSlides) > 1)
-                <div class="pointer-events-none mt-3 flex items-center justify-center gap-1.5" aria-hidden="true">
-                    @foreach($promoSlides as $i => $slide)
-                        <span :class="index === {{ $i }} ? 'w-5 bg-primary-500' : 'w-1.5 bg-slate-300 dark:bg-slate-700'"
-                              class="h-1.5 rounded-full transition-all duration-300"></span>
-                    @endforeach
+            @if($partnerAds->count() > 1)
+            <div class="flex items-center justify-center gap-3 mt-5">
+                <button x-on:click="prev()" aria-label="Sebelumnya"
+                        class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                    <i class="ri-arrow-left-s-line text-sm"></i>
+                </button>
+                <div class="flex items-center gap-1.5">
+                    @for($i = 0; $i < $partnerAds->count(); $i++)
+                        <button x-on:click="goTo({{ $i }})"
+                                :class="slide === {{ $i }} ? 'bg-primary-500 w-5 h-2' : 'bg-gray-300 dark:bg-slate-600 h-2'"
+                                class="rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                                aria-label="Slide {{ $i + 1 }}"></button>
+                    @endfor
                 </div>
+                <button x-on:click="next()" aria-label="Berikutnya"
+                        class="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                    <i class="ri-arrow-right-s-line text-sm"></i>
+                </button>
+            </div>
             @endif
-        </section>
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- Promosi kos OWNER ber-placement homepage (is_homepage, kos_id TIDAK NULL) --}}
+@if(($kosPromosHome ?? collect())->isNotEmpty())
+<section aria-label="Promosi kos di beranda" class="space-y-3">
+    <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-500/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-amber-700 dark:border-amber-500/30 dark:text-amber-400">
+            <i class="ri-star-fill text-[11px]"></i> Promosi Kos
+        </span>
+        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+              aria-label="Konten iklan berbayar">
+            <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
+        </span>
+    </div>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        @foreach($kosPromosHome as $promo)
+            @include('tenant.partials.promoted-kos', ['campaign' => $promo, 'placement' => 'homepage'])
+        @endforeach
+    </div>
+</section>
+@endif
 
         {{-- ============================================================
              KOS SAYA — RESIDENCE (hanya untuk penghuni aktif)
