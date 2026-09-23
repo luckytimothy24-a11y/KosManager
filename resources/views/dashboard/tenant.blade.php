@@ -103,7 +103,7 @@
                      },
                      cancelDrag() { this.drag = false; this.dragMoved = false; }
                  }">
-            <div class="relative overflow-hidden rounded-[1.25rem]"
+            <div class="relative overflow-hidden rounded-[1.25rem] w-full"
                  :class="total > 1 ? 'cursor-grab active:cursor-grabbing' : ''"
                  role="region" aria-roledescription="karusel" aria-label="Promo dan partner pilihan"
                  tabindex="0"
@@ -117,28 +117,28 @@
                  @keydown.arrow-right.prevent="next()"
                  @click.capture="if (dragMoved) { $event.preventDefault(); $event.stopPropagation(); dragMoved = false; }">
                 <div class="flex transition-transform duration-500 ease-out motion-reduce:transition-none"
-                     :style="'transform: translateX(-' + (index * 100) + '%)'">
-                    @foreach($promoSlides as $slide)
-                        @if($slide['type'] === 'ad')
-                            <div class="w-full shrink-0 px-1 sm:px-1.5">
-                                @include('tenant.partials.partner-ad', ['ad' => $slide['campaign'], 'placement' => 'homepage', 'variant' => 'banner'])
-                            </div>
-                        @else
-                            <div class="w-full shrink-0 px-1 sm:px-1.5">
-                                <div class="relative flex min-h-[12rem] sm:min-h-[12.5rem] items-center justify-between gap-4 rounded-[1.25rem] {{ $slide['tone'] }} p-5"
-                                     role="group" aria-label="{{ $slide['headline'] }}">
-                                    <div class="min-w-0">
-                                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">{{ $slide['label'] }}</span>
-                                        <h2 class="mt-1 text-lg font-black leading-snug text-slate-900">{{ $slide['headline'] }}</h2>
-                                        <p class="mt-1 text-xs text-slate-500">{{ $slide['desc'] }}</p>
-                                    </div>
-                                    <span class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/80 text-3xl text-primary-500 shadow-sm">
-                                        <i class="{{ $slide['icon'] }}"></i>
-                                    </span>
-                                </div>
-                            </div>
-                        @endif
-                    @endforeach
+:style="'transform: translateX(-' + (index * (total > 0 ? 100 / total : 0)) + '%)'">
+                     @foreach($promoSlides as $slide)
+                         @if($slide['type'] === 'ad')
+                             <div class="w-full flex-shrink-0 min-w-0">
+                                 @include('tenant.partials.partner-ad', ['ad' => $slide['campaign'], 'placement' => 'homepage', 'variant' => 'banner'])
+                             </div>
+                         @else
+                             <div class="w-full flex-shrink-0 min-w-0">
+                                 <div class="relative flex min-h-[12rem] sm:min-h-[12.5rem] items-center justify-between gap-4 rounded-[1.25rem] {{ $slide['tone'] }} p-5"
+                                      role="group" aria-label="{{ $slide['headline'] }}">
+                                     <div class="min-w-0">
+                                         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">{{ $slide['label'] }}</span>
+                                         <h2 class="mt-1 text-lg font-black leading-snug text-slate-900">{{ $slide['headline'] }}</h2>
+                                         <p class="mt-1 text-xs text-slate-500">{{ $slide['desc'] }}</p>
+                                     </div>
+                                     <span class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-white/80 text-3xl text-primary-500 shadow-sm">
+                                         <i class="{{ $slide['icon'] }}"></i>
+                                     </span>
+                                 </div>
+                             </div>
+                         @endif
+                     @endforeach
                 </div>
             </div>
 
@@ -309,16 +309,47 @@
                 </div>
             </section>
 
-            {{-- Aksi bantuan (sekunder, shortcut chat langsung ke Owner) --}}
-            <a href="{{ route('tenant.messages.index') }}"
-               class="group inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white py-2 pl-2.5 pr-3 text-[13px] font-medium text-slate-600 transition hover:border-primary-300 hover:bg-primary-50/60 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-primary-500/40 dark:hover:bg-primary-500/[0.08] dark:hover:text-primary-200"
-               aria-label="Hubungi owner kos">
-                <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary-50 text-primary-500 transition group-hover:bg-primary-100 dark:bg-primary-500/10 dark:group-hover:bg-primary-500/20">
-                    <i class="ri-chat-smile-3-line text-sm" aria-hidden="true"></i>
-                </span>
-                <span class="min-w-0 whitespace-nowrap">Butuh bantuan? Hubungi Owner</span>
-                <i class="ri-arrow-right-s-line shrink-0 text-base text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-primary-500" aria-hidden="true"></i>
-            </a>
+            {{-- Aksi bantuan premium — Chat Owner + Undangan (selalu tampil, bahkan sebelum check-in) --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="{{ route('tenant.messages.index') }}"
+                   class="group relative overflow-hidden flex items-center gap-3 rounded-2xl border border-orange-100 dark:border-orange-500/20 bg-gradient-to-br from-orange-50 to-white dark:from-slate-800 dark:to-slate-900 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
+                    <div class="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-gradient-to-br from-orange-500/10 to-amber-500/10 blur-2xl pointer-events-none"></div>
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20">
+                        <i class="ri-customer-service-2-line text-xl"></i>
+                    </span>
+                    <span class="min-w-0 flex-1 text-left">
+                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Hubungi Owner @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-orange-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadMessages'] }}</span>@endif</span>
+                        <span class="block text-xs text-slate-500 dark:text-slate-400">Chat langsung — kamar, tagihan, fasilitas</span>
+                    </span>
+                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-400 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
+                </a>
+                <a href="{{ route('tenant.invitations.index') }}"
+                   class="group relative overflow-hidden flex items-center gap-3 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:border-amber-200 dark:hover:border-amber-500/30 hover:shadow-md hover:-translate-y-0.5 transition-all">
+                    <div class="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 blur-2xl pointer-events-none"></div>
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
+                        <i class="ri-mail-send-line text-xl"></i>
+                    </span>
+                    <span class="min-w-0 flex-1 text-left">
+                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="text-[11px] font-medium text-slate-400">Belum ada undangan</span>@endif</span>
+                        <span class="block text-xs text-slate-500 dark:text-slate-400">Ajakan tinggal bersama dari teman</span>
+                    </span>
+                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition"><i class="ri-arrow-right-line"></i></span>
+                </a>
+            </div>
+        @endif
+
+        {{-- Undangan — selalu tampil untuk discoverability (Phase32) bahkan jika belum punya penghuni --}}
+        @if(!$penghuni)
+            <section aria-label="Undangan Kos" class="rounded-[20px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="grid h-10 w-10 place-items-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900"><i class="ri-mail-send-line text-lg"></i></span>
+                    <div class="min-w-0 flex-1">
+                        <h2 class="text-sm font-black text-slate-900 dark:text-white">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="ml-1 inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="ml-1 text-xs font-medium text-slate-400">Belum ada undangan</span>@endif</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Jika teman mengajakmu, undangan muncul di sini.</p>
+                    </div>
+                    <a href="{{ route('tenant.invitations.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 transition">Lihat <i class="ri-arrow-right-s-line"></i></a>
+                </div>
+            </section>
         @endif
 
         {{-- ============================================================
