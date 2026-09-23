@@ -151,7 +151,7 @@ class KosController extends Controller
             throw $e;
         }
 
-        return redirect()->route('owner.kos.index')->with('success', 'Kos berhasil ditambahkan.');
+        return redirect()->route($request->user()->isAdmin() ? 'admin.kos.index' : 'owner.kos.index')->with('success', 'Kos berhasil ditambahkan.');
     }
 
     public function show(Kos $kos)
@@ -365,7 +365,7 @@ class KosController extends Controller
             throw $e;
         }
 
-        return redirect()->route('owner.kos.index')->with('success', 'Kos berhasil diperbarui.');
+        return redirect()->route($request->user()->isAdmin() ? 'admin.kos.index' : 'owner.kos.index')->with('success', 'Kos berhasil diperbarui.');
     }
 
     public function destroy(Kos $kos)

@@ -31,12 +31,20 @@ use App\Http\Controllers\SuperAdmin\FasilitasController;
 use App\Http\Controllers\SuperAdmin\LaporanController;
 use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\UserController;
+use App\Http\Controllers\Tenant\BookingOccupantIdentityController;
+use App\Http\Controllers\Tenant\TenantBookingOccupantController;
 use App\Http\Controllers\Tenant\TenantCheckInController;
+use App\Http\Controllers\Tenant\TenantInvitationController;
+use App\Http\Controllers\Owner\OwnerBookingOccupantController;
 use App\Http\Controllers\Webhook\PaymentGatewayWebhookController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', WelcomeController::class);
+Route::get('/', WelcomeController::class)->name('welcome');
+
+Route::get('/ad/click/{campaign}', [AdvertisingClickController::class, 'track'])
+    ->where('campaign', '[0-9]+')
+    ->name('ad.click');
 
 Route::get('/health', HealthController::class)->name('health');
 Route::get('/up', HealthController::class)->name('up');
@@ -154,6 +162,12 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm');
     Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject');
 
+    // Booking occupants — owner manages per-orang identity & check-in
+    Route::get('booking/{booking}/occupants', [OwnerBookingOccupantController::class, 'index'])->name('booking-occupants.index');
+    Route::post('booking-occupants/{occupant}/confirm', [OwnerBookingOccupantController::class, 'confirmIdentity'])->name('booking-occupants.confirm');
+    Route::post('booking-occupants/{occupant}/reject', [OwnerBookingOccupantController::class, 'rejectIdentity'])->name('booking-occupants.reject');
+    Route::post('booking-occupants/{occupant}/checkin', [OwnerBookingOccupantController::class, 'checkIn'])->name('booking-occupants.checkin');
+
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
     Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve');
@@ -165,7 +179,7 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
 });
 
 // Admin Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('admin.')->group(function () {
     // Advertising (Admin moderation)
     Route::get('advertising', [AdminAdvertisingController::class, 'index'])->name('advertising.index');
     Route::get('advertising/create', [AdminAdvertisingController::class, 'create'])->name('advertising.create');
@@ -181,8 +195,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
 
-    Route::get('kamar', [KamarController::class, 'index'])->name('kamar.index');
-    Route::get('kamar/{kamar}', [KamarController::class, 'show'])->name('kamar.show');
+    Route::resource('kos', KosController::class)->parameter('kos', 'kos');
+    Route::resource('kamar', KamarController::class);
+    Route::post('kamar/{kamar}/penghuni', [KamarController::class, 'addPenghuni'])->name('kamar.add-penghuni');
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
@@ -220,11 +235,6 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('kos', [TenantKosController::class, 'index'])->name('kos.index');
     Route::get('kos/{kos}', [TenantKosController::class, 'show'])->name('kos.show');
 
-    // Click tracking iklan (sponsored/featured) -> redirect ke detail kos.
-    Route::get('ad/click/{campaign}', [AdvertisingClickController::class, 'track'])
-        ->where('campaign', '[0-9]+')
-        ->name('ad.click');
-
     Route::get('booking', [TenantBookingController::class, 'index'])->name('booking.index');
     Route::get('booking/create', [TenantBookingController::class, 'create'])->name('booking.create');
     Route::post('booking', [TenantBookingController::class, 'store'])->name('booking.store');
@@ -252,6 +262,21 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
 
     Route::get('messages', [TenantMessageController::class, 'index'])->name('messages.index');
     Route::post('messages', [TenantMessageController::class, 'store'])->name('messages.store');
+
+    // Undangan tinggal bersama — orange modern
+    Route::get('invitations', [TenantInvitationController::class, 'index'])->name('invitations.index');
+    Route::get('invitations/{token}', [TenantInvitationController::class, 'show'])->where('token', '[a-f0-9]{64}')->name('invitations.show');
+    Route::post('invitations/{token}/accept', [TenantInvitationController::class, 'accept'])->where('token', '[a-f0-9]{64}')->name('invitations.accept');
+    Route::post('invitations/{token}/decline', [TenantInvitationController::class, 'decline'])->where('token', '[a-f0-9]{64}')->name('invitations.decline');
+    Route::post('invitations/{occupant}/accept', [TenantInvitationController::class, 'acceptById'])->where('occupant', '[0-9]+')->name('invitations.acceptId');
+    Route::post('invitations/{occupant}/decline', [TenantInvitationController::class, 'declineById'])->where('occupant', '[0-9]+')->name('invitations.declineId');
+    Route::get('invitations/{token}/identity', [BookingOccupantIdentityController::class, 'show'])->where('token', '[a-f0-9]{64}')->name('invitations.identity');
+    Route::post('invitations/{token}/identity', [BookingOccupantIdentityController::class, 'submit'])->where('token', '[a-f0-9]{64}')->name('invitations.identity.submit');
+
+    // Booking occupants — kelola penghuni tambahan dalam 1 booking
+    Route::get('booking/{booking}/occupants', [TenantBookingOccupantController::class, 'index'])->name('booking.occupants.index');
+    Route::post('booking/{booking}/invite', [TenantBookingOccupantController::class, 'invite'])->name('booking.invite');
+    Route::delete('booking/{booking}/occupants/{occupant}', [TenantBookingOccupantController::class, 'cancel'])->name('booking.occupants.cancel');
 
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
