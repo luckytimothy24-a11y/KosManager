@@ -7,16 +7,25 @@
         @apply bg-primary-500/20 text-primary-900 dark:text-primary-100;
     }
 
-    /* Cegah horizontal scroll tak disengaja di layar sempit (mobile-first) */
     html {
         overflow-x: clip;
+        scroll-behavior: smooth;
     }
 
     body {
         overflow-x: clip;
+        @apply bg-slate-50 dark:bg-slate-950;
     }
 
-    /* Konsistensi focus state keyboard (accessibility) */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+
     a:focus-visible,
     button:focus-visible,
     [role='button']:focus-visible {
@@ -25,6 +34,38 @@
 
     input[type='file']::file-selector-button {
         @apply mr-3 py-1.5 px-3 rounded-lg border-0 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600 transition;
+    }
+}
+
+@layer components {
+    .card-surface {
+        @apply bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm;
+    }
+    .card-glass {
+        @apply bg-white/80 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800;
+    }
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-primary-500/25 transition hover:from-primary-600 hover:to-primary-700 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed;
+    }
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition;
+    }
+    .badge-orange {
+        @apply inline-flex items-center gap-1 rounded-full bg-primary-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm;
+    }
+
+    .carousel-track {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .carousel-card {
+        contain: layout style;
+    }
+
+    .carousel-nav-btn {
+        min-width: 36px;
+        min-height: 36px;
     }
 }
 
