@@ -352,7 +352,7 @@ class AdvertisingCampaignTest extends TestCase
         ]);
 
         $this->actingAs($tenant)
-            ->get(route('tenant.ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']))
+            ->get(route('ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']))
             ->assertRedirect(route('tenant.kos.show', $kos));
 
         $this->assertDatabaseHas('advertising_events', [
@@ -395,7 +395,7 @@ class AdvertisingCampaignTest extends TestCase
             'package_id' => $package->id,
         ]);
 
-        $this->actingAs($tenant)->get(route('tenant.ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']));
+        $this->actingAs($tenant)->get(route('ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']));
 
         $this->assertTrue(session()->has('ad_click'));
 
@@ -406,6 +406,9 @@ class AdvertisingCampaignTest extends TestCase
                 'start_date' => now()->addDays(1)->format('Y-m-d'),
                 'end_date' => now()->addDays(5)->format('Y-m-d'),
                 'rental_type' => 'daily',
+                'identity_number' => '1234567890',
+                'phone' => '81234567890',
+                'address' => 'Jl. Contoh No. 123',
             ])
             ->assertSessionHasNoErrors();
 

@@ -25,7 +25,7 @@ class AdvertisingClickController extends Controller
     {
         $campaign = AdvertisingCampaign::find($campaignId);
 
-        $fallback = redirect()->route('tenant.kos.index');
+        $fallback = redirect()->route('welcome');
 
         if (! $campaign) {
             return $fallback;
@@ -78,6 +78,10 @@ class AdvertisingClickController extends Controller
 
         if (! $kos) {
             return $fallback;
+        }
+
+        if (! $user) {
+            return redirect()->route('login');
         }
 
         return redirect()->route('tenant.kos.show', $kos);

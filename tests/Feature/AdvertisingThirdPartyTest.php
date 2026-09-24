@@ -159,7 +159,7 @@ class AdvertisingThirdPartyTest extends TestCase
         ]);
 
         $this->actingAs($tenant)
-            ->get(route('tenant.ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']))
+            ->get(route('ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']))
             ->assertRedirect('https://example.com/landing');
 
         $this->assertDatabaseHas('advertising_events', [
@@ -206,7 +206,7 @@ class AdvertisingThirdPartyTest extends TestCase
             'destination_url' => 'https://example.com/landing',
         ]);
 
-        $this->actingAs($tenant)->get(route('tenant.ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']));
+        $this->actingAs($tenant)->get(route('ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']));
 
         $this->actingAs($tenant)
             ->post(route('tenant.booking.store'), [
@@ -215,6 +215,9 @@ class AdvertisingThirdPartyTest extends TestCase
                 'start_date' => now()->addDays(1)->format('Y-m-d'),
                 'end_date' => now()->addDays(3)->format('Y-m-d'),
                 'rental_type' => 'daily',
+                'identity_number' => '1234567890',
+                'phone' => '81234567890',
+                'address' => 'Jl. Contoh No. 123',
             ])
             ->assertSessionHasNoErrors();
 
@@ -234,8 +237,8 @@ class AdvertisingThirdPartyTest extends TestCase
         ]);
 
         $this->actingAs($tenant)
-            ->get(route('tenant.ad.click', ['campaign' => $campaign->id]))
-            ->assertRedirect(route('tenant.kos.index'));
+            ->get(route('ad.click', ['campaign' => $campaign->id]))
+            ->assertRedirect(route('welcome'));
     }
 
     public function test_super_admin_can_review_third_party_campaign(): void

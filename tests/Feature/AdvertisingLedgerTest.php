@@ -534,7 +534,9 @@ class AdvertisingLedgerTest extends TestCase
         // Kampanye partner ternama (DANA/Shopee/GoPay) yang LIVE: ACTIVE dan
         // order-nya PAID (dana sudah diterima) — konsisten dengan aturan ledger:
         // revenue hanya dihitung setelah order di-mark paid.
-        foreach (['AD-DANA-1', 'AD-SHOPEE-1', 'AD-GOPAY-1', 'AD-GOPAY-2', 'AD-DANA-2', 'AD-SHOPEE-2', 'AD-GOPAY-3'] as $num) {
+        // Setiap slot limit-3 (marketplace/detail/tenant_dashboard/homepage)
+        // diisi penuh 3 live agar UI selalu menampilkan 3 iklan.
+        foreach (['AD-DANA-1', 'AD-SHOPEE-1', 'AD-GOPAY-1', 'AD-GOPAY-2', 'AD-DANA-2', 'AD-SHOPEE-2', 'AD-GOPAY-3', 'AD-DANA-3', 'AD-SHOPEE-3', 'AD-GOPAY-4', 'AD-DANA-4', 'AD-SHOPEE-4'] as $num) {
             $campaign = AdvertisingCampaign::where('campaign_number', $num)->first();
             $this->assertNotNull($campaign);
             $this->assertEquals(AdvertisingCampaign::STATUS_ACTIVE, $campaign->status);
@@ -550,6 +552,6 @@ class AdvertisingLedgerTest extends TestCase
         // Idempotent: seed ulang tidak menggandakan kampanye/order.
         $this->seed(AdvertisingSeeder::class);
         $this->assertEquals(4, AdvertisingOrder::where('status', 'pending')->count());
-        $this->assertEquals(10, AdvertisingOrder::where('status', 'paid')->count());
+        $this->assertEquals(15, AdvertisingOrder::where('status', 'paid')->count());
     }
 }

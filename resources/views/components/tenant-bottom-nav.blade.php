@@ -3,6 +3,7 @@
     $user = Auth::user();
     $bookingBadge = (int) ($sidebarBadges['activeBooking'] ?? 0);
     $tagihanBadge = (int) ($sidebarBadges['tagihanBelum'] ?? 0);
+    $chatBadge = (int) ($sidebarBadges['unreadMessages'] ?? 0);
 @endphp
 
 @if($user->isTenant())

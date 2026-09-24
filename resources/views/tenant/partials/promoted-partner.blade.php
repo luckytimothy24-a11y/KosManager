@@ -4,7 +4,7 @@
     $ad = $ad ?? null;
     $placement = $placement ?? 'marketplace';
     $variant = $variant ?? 'banner';
-    $adUrl = $ad ? route('tenant.ad.click', ['campaign' => $ad->id, 'placement' => $placement]) : '#';
+    $adUrl = $ad ? route('ad.click', ['campaign' => $ad->id, 'placement' => $placement]) : '#';
     $image = $ad ? $ad->displayImage() : null;
     $initial = $ad ? mb_strtoupper(trim(mb_substr((string) $ad->advertiser_name, 0, 1))) : 'P';
 @endphp

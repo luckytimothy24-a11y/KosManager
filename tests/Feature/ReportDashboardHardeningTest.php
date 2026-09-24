@@ -197,7 +197,7 @@ class ReportDashboardHardeningTest extends TestCase
             'payment_date' => now(),
         ]);
 
-        $response = $this->actingAs($owner)->get('/owner/laporan/export-pdf/pendapatan');
+        $response = $this->actingAs($owner)->get('/owner/laporan/export-pdf/gabungan');
 
         $response->assertOk();
 
@@ -214,7 +214,7 @@ class ReportDashboardHardeningTest extends TestCase
         Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'maintenance']);
 
-        $response = $this->actingAs($owner)->get('/owner/laporan/export-excel/kamar');
+        $response = $this->actingAs($owner)->get('/owner/laporan/export-excel/gabungan');
 
         $response->assertOk();
         $this->assertSame(3, Kamar::count());
@@ -249,7 +249,7 @@ class ReportDashboardHardeningTest extends TestCase
             'booking_date' => now()->subDays(1),
         ]);
 
-        $response = $this->actingAs($owner)->get('/owner/laporan/export-excel/booking');
+        $response = $this->actingAs($owner)->get('/owner/laporan/export-excel/gabungan');
 
         $response->assertOk();
 
@@ -299,7 +299,7 @@ class ReportDashboardHardeningTest extends TestCase
         $end = now()->toDateString();
 
         $response = $this->actingAs($owner)
-            ->get("/owner/laporan/export-excel/pendapatan?start_date={$start}&end_date={$end}");
+            ->get("/owner/laporan/export-excel/gabungan?start_date={$start}&end_date={$end}");
 
         $response->assertOk();
 

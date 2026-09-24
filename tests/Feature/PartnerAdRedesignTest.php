@@ -18,7 +18,7 @@ use Tests\TestCase;
  * - layout per variant (banner | card | compact) & perilaku responsif
  * - tema visual per partner (DANA/Shopee/GoPay) yang TIDAK identik
  * - fallback aman saat logo/gambar kampanye tidak ada (tidak ada gambar rusak)
- * - keamanan: link iklan selalu lewat route tracking internal (tenant.ad.click),
+ * - keamanan: link iklan selalu lewat route tracking internal (ad.click),
  *   TIDAK target=_blank, punya aria-label (name aksesibel)
  * - tracking klik tetap tercatat
  */
@@ -70,7 +70,7 @@ class PartnerAdRedesignTest extends TestCase
         $this->assertStringContainsString('Iklan · Partner KosManager', $html);
 
         // Link iklan = route tracking internal, bukan langsung ke advertiser.
-        $this->assertStringContainsString('/tenant/ad/click/'.$ad->id, $html);
+        $this->assertStringContainsString('/ad/click/'.$ad->id, $html);
         $this->assertStringContainsString('placement=homepage', $html);
     }
 
@@ -190,7 +190,7 @@ class PartnerAdRedesignTest extends TestCase
         $this->assertStringNotContainsString('target="_blank"', $html);
         $this->assertStringContainsString('aria-label="Selengkapnya Gopay"', $html);
         // CTA berupa link menuju route tracking internal (bukan langsung brand).
-        $expectedUrl = route('tenant.ad.click', ['campaign' => $ad->id, 'placement' => 'detail']);
+        $expectedUrl = route('ad.click', ['campaign' => $ad->id, 'placement' => 'detail']);
         $this->assertStringContainsString('href="'.$expectedUrl.'"', $html);
     }
 
@@ -267,10 +267,10 @@ class PartnerAdRedesignTest extends TestCase
         ]);
 
         $html = $this->renderAd($ad, 'marketplace', 'banner');
-        $this->assertStringContainsString('/tenant/ad/click/'.$ad->id.'?placement=marketplace', $html);
+        $this->assertStringContainsString('/ad/click/'.$ad->id.'?placement=marketplace', $html);
 
         $this->actingAs($tenant)
-            ->get(route('tenant.ad.click', ['campaign' => $ad->id, 'placement' => 'marketplace']))
+            ->get(route('ad.click', ['campaign' => $ad->id, 'placement' => 'marketplace']))
             ->assertRedirect('https://destination.example/dana');
 
         $this->assertDatabaseHas('advertising_events', [
@@ -307,8 +307,12 @@ class PartnerAdRedesignTest extends TestCase
         $this->assertStringContainsString('@touchstart.passive="onTouchStart($event)"', $html);
 
         // Tombol navigasi & dot dijalankan oleh Alpine (bukan statis).
-        $this->assertStringContainsString('aria-label="Slide berikutnya"', $html);
-        $this->assertStringContainsString('@click="go(', $html);
+        // Tombol navigasi & dot dijalankan oleh Alpine (bukan statis).
+// Navigasi via keyboard arrow keys dengan Alpine methods prev()/next().
+$this->assertStringContainsString('prev()', $html);
+$this->assertStringContainsString('next()', $html);
+// Carousel region memiliki accessible labeling (section label).
+$this->assertStringContainsString('aria-label="Promo dan partner pilihan"', $html);
     }
 
     public function test_marketplace_facility_accordion_xdata_uses_quoted_json_values(): void

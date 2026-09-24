@@ -56,14 +56,14 @@ class NotificationService
         return $notification;
     }
 
-    public static function bookingNew(int $ownerId, string $tenantName, string $roomNumber): void
+    public static function bookingNew(int $ownerId, string $tenantName, string $roomNumber, ?string $url = null): void
     {
-        self::create($ownerId, NotificationType::BOOKING, 'Booking Baru', "{$tenantName} melakukan booking untuk kamar {$roomNumber}");
+        self::create($ownerId, NotificationType::BOOKING, 'Booking Baru', "{$tenantName} melakukan booking untuk kamar {$roomNumber}", ['url' => $url]);
     }
 
-    public static function bookingInstantConfirmation(int $tenantId, string $bookingCode, string $roomNumber): void
+    public static function bookingInstantConfirmation(int $tenantId, string $bookingCode, string $roomNumber, ?string $url = null): void
     {
-        self::create($tenantId, NotificationType::BOOKING, 'Booking Berhasil', "Booking {$bookingCode} untuk kamar {$roomNumber} telah terkonfirmasi. Silakan lakukan check-in sesuai jadwal.");
+        self::create($tenantId, NotificationType::BOOKING, 'Booking Berhasil', "Booking {$bookingCode} untuk kamar {$roomNumber} telah terkonfirmasi. Silakan lakukan check-in sesuai jadwal.", ['url' => $url]);
     }
 
     public static function bookingExpired(int $tenantId, string $bookingCode, ?string $uniqueKey = null): void
@@ -154,6 +154,16 @@ class NotificationService
     public static function advertisingPaymentReceived(int $moderatorId, string $ownerName, string $kosName): void
     {
         self::create($moderatorId, NotificationType::ADVERTISING, 'Pembayaran Kampanye Diterima', "{$ownerName} telah membayar kampanye iklan untuk kos {$kosName}.");
+    }
+
+    public static function messageSent(int $ownerId, string $tenantName, string $kosName, string $url): void
+    {
+        self::create($ownerId, NotificationType::MESSAGE, 'Pesan Baru', "{$tenantName} mengirim pesan terkait {$kosName}", ['url' => $url]);
+    }
+
+    public static function messageReplied(int $tenantId, string $ownerName, string $url): void
+    {
+        self::create($tenantId, NotificationType::MESSAGE, 'Balasan Pesan', "{$ownerName} membalas pesan Anda", ['url' => $url]);
     }
 
     public static function cleanup(int $olderThanDays = 90): int

@@ -18,16 +18,16 @@ class CheckOutPolicy
     public function view(User $user, CheckOut $checkOut): bool
     {
         return $user->isSuperAdmin()
-            || ($user->isAdmin() && $user->canAccessKos((int) $checkOut->kamar->kos_id))
-            || (int) $checkOut->kamar->kos->owner_id === (int) $user->id
+            || ($user->isAdmin() && $user->canAccessKos((int) $checkOut->penghuni->kos_id))
+            || (int) $checkOut->penghuni->kos->owner_id === (int) $user->id
             || (int) $checkOut->penghuni->user_id === (int) $user->id;
     }
 
     public function approve(User $user, CheckOut $checkOut): bool
     {
         return $user->isSuperAdmin()
-            || ($user->isAdmin() && $user->canAccessKos((int) $checkOut->kamar->kos_id))
-            || (int) $checkOut->kamar->kos->owner_id === (int) $user->id;
+            || ($user->isAdmin() && $user->canAccessKos((int) $checkOut->penghuni->kos_id))
+            || (int) $checkOut->penghuni->kos->owner_id === (int) $user->id;
     }
 
     public function reject(User $user, CheckOut $checkOut): bool

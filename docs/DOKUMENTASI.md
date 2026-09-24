@@ -197,7 +197,7 @@ mengarah ke controller milik `Owner\` (mis. `TenantKosController`, `TagihanContr
   **`promoted-kos.blade.php`** (slot iklan) — :19-21.
 - **Favorit**: toggle `tenant.favorites` (`FavoriteController::toggle`/`index`) —
   routes/web.php:226-227; relasi `User::favorites` + `hasFavorited()` — User.php:100-123.
-- **Iklan di marketplace**: klik iklan `tenant/ad/click/{campaign}` mencatat event
+- **Iklan di marketplace**: klik iklan `ad/click/{campaign}` mencatat event
   (tabel `advertising_events`, atribusi via session `ad_click`) lalu redirect ke detail kos —
   routes/web.php:214-217 → `AdvertisingClickController`.
 - **Peta/lokasi**: kolom `kos.location` (migrasi `add_location_to_kos`) — koordinat vs teks tergantung data; UI menampilkan lokasi dalam kartu kos.

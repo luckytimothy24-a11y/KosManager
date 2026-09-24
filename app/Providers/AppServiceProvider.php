@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Booking;
+use App\Models\Message;
 use App\Models\Notification;
 use App\Models\Tagihan;
 use Illuminate\Pagination\Paginator;
@@ -21,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultView('vendor.pagination.custom');
         Paginator::defaultSimpleView('vendor.pagination.custom-simple');
 
-        View::composer(['layouts.app', 'layouts.sidebar', 'components.tenant-bottom-nav'], function ($view) {
+        View::composer('*', function ($view) {
             $user = auth()->user();
 
             $badges = [
@@ -29,12 +30,20 @@ class AppServiceProvider extends ServiceProvider
                 'tagihanBelum' => 0,
                 'unreadNotif' => 0,
                 'activeBooking' => 0,
+                'unreadMessages' => 0,
+                'invitationPending' => 0,
             ];
 
             if ($user) {
                 $badges['unreadNotif'] = Notification::where('user_id', $user->id)
                     ->where('is_read', false)
                     ->count();
+                // Badge pesan untuk semua role (tenant maupun owner/super_admin) — aman via try/catch
+                try {
+                    $badges['unreadMessages'] = Message::where('receiver_id', $user->id)->whereNull('read_at')->count();
+                } catch (\Throwable $e) {
+                    $badges['unreadMessages'] = 0;
+                }
                 if ($user->hasRole('super_admin')) {
                     $badges['bookingPending'] = Booking::where('status', 'approved')
                         ->withoutActivePenghuni()
@@ -57,6 +66,16 @@ class AppServiceProvider extends ServiceProvider
                         ->whereIn('status', Booking::activeStatuses())
                         ->whereDate('end_date', '>=', today()->toDateString())
                         ->count();
+                    // Undangan pending (jika tabel booking_occupants ada)
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('booking_occupants')) {
+                            $badges['invitationPending'] = \App\Models\BookingOccupant::where(function ($q) use ($user) {
+                                $q->whereRaw('LOWER(email) = ?', [strtolower($user->email)])->orWhere('user_id', $user->id);
+                            })->where('status', \App\Models\BookingOccupant::STATUS_INVITED)->count();
+                        }
+                    } catch (\Throwable $e) {
+                        $badges['invitationPending'] = 0;
+                    }
                 }
             }
 

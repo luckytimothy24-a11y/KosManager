@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdvertisingCampaign;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\User;
+use App\Services\AdvertisingService;
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, AdvertisingService $advertisingService)
     {
         $q = trim((string) $request->query('q', ''));
 
@@ -34,6 +36,8 @@ class WelcomeController extends Controller
             'owners' => User::where('role', 'owner')->count(),
         ];
 
-        return view('welcome', compact('featuredKos', 'stats', 'q'));
+        $partnerAds = $advertisingService->partnerAds(AdvertisingCampaign::PLACEMENT_HOMEPAGE, 4);
+
+        return view('welcome', compact('featuredKos', 'stats', 'q', 'partnerAds'));
     }
 }

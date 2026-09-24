@@ -3,7 +3,9 @@
         <x-page-header title="{{ $kos->name }}" description="Informasi lengkap properti kos Anda.">
             <div class="flex items-center gap-2">
                 <x-button href="{{ route('owner.kos.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
+                @if(auth()->user()->isOwner() || auth()->user()->isSuperAdmin())
                 <x-button href="{{ route('owner.kos.edit', $kos) }}" type="primary"><i class="ri-edit-line"></i> Edit</x-button>
+                @endif
             </div>
         </x-page-header>
     </x-slot>

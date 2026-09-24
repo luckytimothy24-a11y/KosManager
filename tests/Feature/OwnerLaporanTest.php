@@ -30,7 +30,7 @@ class OwnerLaporanTest extends TestCase
         $response = $this->actingAs($owner)->get('/owner/laporan');
 
         $response->assertOk();
-        $response->assertSee('Laporan Pendapatan');
+        $response->assertSee('Laporan Kos');
         $response->assertSee('Kos Milik A');
     }
 
@@ -38,7 +38,7 @@ class OwnerLaporanTest extends TestCase
     {
         [$owner, $kos] = $this->createOwnerWithKos('Kos Milik A');
 
-        $response = $this->actingAs($owner)->get('/owner/laporan/export-pdf/kamar');
+        $response = $this->actingAs($owner)->get('/owner/laporan/export-pdf');
 
         $response->assertOk();
     }
@@ -79,7 +79,7 @@ class OwnerLaporanTest extends TestCase
             'verification_status' => 'approved',
         ]);
 
-        $response = $this->actingAs($ownerA)->get('/owner/laporan/export-excel/pendapatan');
+        $response = $this->actingAs($ownerA)->get('/owner/laporan/export-excel');
 
         $response->assertOk();
         $csv = $response->getContent();
@@ -94,7 +94,7 @@ class OwnerLaporanTest extends TestCase
         [, $kosB] = $this->createOwnerWithKos('KOSMILIK-B');
 
         $response = $this->actingAs($ownerA)
-            ->get("/owner/laporan/export-excel/kamar?kos_id={$kosB->id}");
+            ->get("/owner/laporan/export-excel?kos_id={$kosB->id}");
 
         $response->assertForbidden();
     }

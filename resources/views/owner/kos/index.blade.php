@@ -1,9 +1,12 @@
 <x-app-layout>
+    @php $isAdminView = auth()->check() && auth()->user()->hasRole('admin'); $kosPrefix = $isAdminView ? 'admin' : 'owner'; @endphp
     <x-slot name="header">
-        <x-page-header title="Kelola Kos" description="Daftar seluruh properti kos Anda.">
+        <x-page-header title="Kelola Kos" description="{{ $isAdminView ? 'Daftar kos yang ditugaskan kepada Anda.' : 'Daftar seluruh properti kos Anda.' }}">
+            @if(!$isAdminView)
             <x-button href="{{ route('owner.kos.create') }}" type="primary">
                 <i class="ri-add-line text-base"></i> Tambah Kos
             </x-button>
+            @endif
         </x-page-header>
     </x-slot>
 
@@ -80,10 +83,11 @@
                                 </td>
                                 <td class="px-4 py-3.5">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route("owner.kos.show", $item) }}"
+                                        <a href="{{ route("$kosPrefix.kos.show", $item) }}"
                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail {{ $item->name }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
+                                        @if(!$isAdminView)
                                         <a href="{{ route("owner.kos.edit", $item) }}"
                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit" aria-label="Edit {{ $item->name }}">
                                             <i class="ri-edit-line"></i>
@@ -108,6 +112,7 @@
                                                 </form>
                                             </x-slot>
                                         </x-confirm-dialog>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -115,8 +120,7 @@
                             <tr>
                                 <td colspan="5">
                                     <x-empty-state icon="ri-building-2-line" title="Belum ada data kos"
-                                                   description="Tambahkan kos pertama Anda untuk mulai mengelola kamar dan penghuni.">
-                                        <x-button href="{{ route('owner.kos.create') }}" type="primary"><i class="ri-add-line"></i> Tambah Kos</x-button>
+                                                   description="Belum ada Kos yang ditugaskan kepada Anda.">
                                     </x-empty-state>
                                 </td>
                             </tr>

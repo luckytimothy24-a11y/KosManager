@@ -1,7 +1,7 @@
 @php
     // Promosi kos OWNER (kampanye is_featured / is_sponsored / is_homepage dengan
     // kos_id TIDAK NULL). Jelas berlabel iklan, terpisah dari listing organik.
-    // Link memakai tenant.ad.click agar klik tercatat + atribusi conversion hanya
+    // Link memakai ad.click agar klik tercatat + atribusi conversion hanya
     // berlaku untuk kos ini (bukan advertiser pihak ketiga).
     // Placement badge adalah sumber utama; legacy label disimpan sebagai aksesori teks.
     $campaign = $campaign ?? null;
@@ -15,9 +15,7 @@
 
 @if($campaign && $kos)
     @php
-        $adUrl = auth()->check()
-            ? route('tenant.ad.click', ['campaign' => $campaign->id, 'placement' => $placement])
-            : route('ad.click', ['campaign' => $campaign->id, 'placement' => $placement]);
+        $adUrl = route('ad.click', ['campaign' => $campaign->id, 'placement' => $placement]);
     @endphp
     <div class="group relative flex flex-col bg-white dark:bg-slate-700 rounded-2xl border border-amber-200/70 dark:border-amber-500/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 hover:border-amber-300 dark:hover:border-amber-500/40 transition-all duration-200">
         <a href="{{ $adUrl }}" class="block relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700" aria-label="Lihat detail {{ $kos->name }}">

@@ -141,6 +141,13 @@ class CheckInController extends Controller
         $result = \DB::transaction(function () use ($booking, $request, $data) {
             $locked = Booking::whereKey($booking->id)->lockForUpdate()->first();
             abort_unless($locked && $locked->status === 'approved', 400, 'Booking sudah diproses sebelumnya.');
+            $authUser = $request->user();
+            if ($authUser->isOwner() && (int) $locked->kos->owner_id !== (int) $authUser->id) {
+                abort(403, 'Bukan kos Anda.');
+            }
+            if ($authUser->isAdmin() && ! $authUser->canAccessKos((int) $locked->kos_id)) {
+                abort(403, 'Bukan kos yang ditugaskan kepada Anda.');
+            }
             abort_unless(now()->startOfDay()->lessThanOrEqualTo($locked->end_date), 400, 'Masa booking sudah berakhir.');
             abort_unless($locked->identity_confirmed_at !== null, 400, 'Identitas tenant belum dikonfirmasi owner. Menunggu konfirmasi owner terlebih dahulu.');
             abort_unless($locked->hasIdentityData(), 400, 'Data identitas tenant belum lengkap. Tenant harus melengkapi data identitas terlebih dahulu.');

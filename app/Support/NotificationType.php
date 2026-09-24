@@ -18,6 +18,10 @@ class NotificationType
 
     public const ADVERTISING = 'advertising';
 
+    public const MESSAGE = 'message';
+
+    public const IDENTITY = 'identity';
+
     public static function label(string $type): string
     {
         return match ($type) {
@@ -28,6 +32,8 @@ class NotificationType
             self::CHECKIN => 'Check-In',
             self::CHECKOUT => 'Check-Out',
             self::ADVERTISING => 'Advertising',
+            self::MESSAGE => 'Pesan',
+            self::IDENTITY => 'Identitas',
             default => 'Lainnya',
         };
     }
@@ -42,6 +48,8 @@ class NotificationType
             self::CHECKIN => self::label(self::CHECKIN),
             self::CHECKOUT => self::label(self::CHECKOUT),
             self::ADVERTISING => self::label(self::ADVERTISING),
+            self::MESSAGE => self::label(self::MESSAGE),
+            self::IDENTITY => self::label(self::IDENTITY),
         ];
     }
 }

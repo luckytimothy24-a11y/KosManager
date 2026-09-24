@@ -13,7 +13,7 @@
     $variant = $variant ?? 'banner';
 
     if ($ad) {
-        $adUrl = route('tenant.ad.click', ['campaign' => $ad->id, 'placement' => $placement]);
+        $adUrl = route('ad.click', ['campaign' => $ad->id, 'placement' => $placement]);
         $image = $ad->displayImage();
         $brandLogo = $ad->partner && $ad->partner->logo ? $ad->partner->logo : ($ad->advertiser_logo ?: null);
         $brandName = $ad->partnerLabel() ?: $ad->advertiser_name ?: 'Partner';

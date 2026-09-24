@@ -62,7 +62,11 @@ class TenantBookingController extends Controller
             'end_date' => $request->end_date,
             'rental_type' => $request->rental_type,
             'billing_mode' => $request->input('billing_mode', 'personal'),
+            'requested_occupants' => $request->input('requested_occupants', 1),
             'notes' => $request->notes,
+            'identity_number' => $request->identity_number,
+            'phone' => $request->phone,
+            'address' => $request->address,
         ], $request->user()->id);
 
         if (! $result['ok']) {

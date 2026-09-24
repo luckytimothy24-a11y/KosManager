@@ -33,6 +33,7 @@ class Booking extends Model
         'end_date',
         'rental_type',
         'billing_mode',
+        'requested_occupants',
         'price',
         'status',
         'identity_confirmed_at',
@@ -56,7 +57,13 @@ class Booking extends Model
         'identity_data_submitted_at' => 'datetime',
         'price' => 'decimal:2',
         'billing_mode' => 'string',
+        'requested_occupants' => 'integer',
     ];
+
+    public function occupants()
+    {
+        return $this->hasMany(BookingOccupant::class);
+    }
 
     public function identityConfirmed(): bool
     {

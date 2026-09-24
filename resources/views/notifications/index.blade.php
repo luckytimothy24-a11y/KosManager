@@ -23,7 +23,13 @@
 
         <div class="space-y-3">
             @forelse($notifications as $n)
-                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border p-5 flex flex-col lg:flex-row lg:items-center gap-4 transition-colors {{ $n->is_read ? 'border-slate-100 dark:border-slate-800' : 'border-primary-100 dark:border-primary-500/20' }}">
+                @php
+                    $url = $n->data['url'] ?? null;
+                    $isClickable = ! $n->is_read && $url;
+                @endphp
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border p-5 flex flex-col lg:flex-row lg:items-center gap-4 transition-colors {{ $n->is_read ? 'border-slate-100 dark:border-slate-800' : 'border-primary-100 dark:border-primary-500/20' }} {{ $isClickable ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : '' }}"
+                     @if($isClickable) x-data="{ submitting: false }" @endif
+                     @if($isClickable) @click="if(!submitting) { submitting = true; document.querySelector('#mark-read-{{ $n->id }}').submit(); setTimeout(() => window.location.href = '{{ $url }}', 300); }" @endif>
                     <div class="flex-1 min-w-0 flex items-start gap-3">
                         <div class="w-9 h-9 rounded-xl shrink-0 flex items-center justify-center {{ $n->is_read ? 'bg-slate-100 dark:bg-slate-800 text-slate-400' : 'bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-400' }}">
                             <i class="{{ $n->is_read ? 'ri-checkbox-circle-line' : 'ri-notification-3-line' }} text-base"></i>
@@ -42,13 +48,13 @@
 
                     <div class="shrink-0 lg:text-right lg:pl-6 lg:border-l border-slate-100 dark:border-slate-800">
                         @if(! $n->is_read)
-                            <form method="POST" action="{{ route('notifications.read', $n) }}">
+                            <form id="mark-read-{{ $n->id }}" method="POST" action="{{ route('notifications.read', $n) }}" class="hidden">
                                 @csrf
-                                <button type="submit"
-                                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                    <i class="ri-check-line"></i> Tandai Dibaca
-                                </button>
                             </form>
+                            <button type="submit" form="mark-read-{{ $n->id }}"
+                                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                <i class="ri-check-line"></i> Tandai Dibaca
+                            </button>
                         @else
                             <span class="text-xs text-slate-400 dark:text-slate-500">Sudah dibaca</span>
                         @endif

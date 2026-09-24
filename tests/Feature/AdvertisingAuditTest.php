@@ -142,7 +142,7 @@ class AdvertisingAuditTest extends TestCase
         ]);
 
         $this->actingAs($tenant)
-            ->get(route('tenant.ad.click', ['campaign' => $camp->id, 'placement' => 'marketplace']))
+            ->get(route('ad.click', ['campaign' => $camp->id, 'placement' => 'marketplace']))
             ->assertRedirect(route('tenant.kos.show', $kos));
 
         $this->assertDatabaseMissing('advertising_events', ['campaign_id' => $camp->id, 'type' => 'click']);
@@ -166,7 +166,7 @@ class AdvertisingAuditTest extends TestCase
             ]);
 
             $this->actingAs($tenant)
-                ->get(route('tenant.ad.click', ['campaign' => $camp->id]));
+                ->get(route('ad.click', ['campaign' => $camp->id]));
             $this->assertDatabaseMissing('advertising_events', ['campaign_id' => $camp->id, 'type' => 'click']);
         }
     }
@@ -186,6 +186,9 @@ class AdvertisingAuditTest extends TestCase
             'start_date' => now()->addDays(1)->format('Y-m-d'),
             'end_date' => now()->addDays(3)->format('Y-m-d'),
             'rental_type' => 'daily',
+            'identity_number' => '1234567890',
+            'phone' => '81234567890',
+            'address' => 'Jl. Contoh No. 123',
         ])->assertSessionHasNoErrors();
 
         $this->assertDatabaseMissing('advertising_events', ['campaign_id' => $camp->id, 'type' => 'conversion']);

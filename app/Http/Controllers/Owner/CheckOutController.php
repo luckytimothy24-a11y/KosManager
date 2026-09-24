@@ -23,10 +23,10 @@ class CheckOutController extends Controller
         $query = CheckOut::with(['penghuni.user', 'kamar.kos', 'verifier']);
 
         if ($user->isOwner()) {
-            $query->whereHas('kamar.kos', fn ($q) => $q->where('owner_id', $user->id));
+            $query->whereHas('penghuni.kos', fn ($q) => $q->where('owner_id', $user->id));
         } elseif ($user->isAdmin()) {
             $kosIds = $user->assignedKos()->pluck('kos.id');
-            $query->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds));
+            $query->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds));
         }
 
         $checkOuts = $query->latest()->paginate(10)->withQueryString();

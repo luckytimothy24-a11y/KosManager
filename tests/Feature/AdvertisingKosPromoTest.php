@@ -151,7 +151,7 @@ class AdvertisingKosPromoTest extends TestCase
         $campaign = $this->kosPromoCampaign($owner, $kos);
 
         $this->actingAs($tenant)
-            ->get(route('tenant.ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']))
+            ->get(route('ad.click', ['campaign' => $campaign->id, 'placement' => 'marketplace']))
             ->assertRedirect(route('tenant.kos.show', $kos));
 
         $this->assertDatabaseHas('advertising_events', [

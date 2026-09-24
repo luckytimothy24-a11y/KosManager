@@ -87,6 +87,12 @@ class BookingService
                 return ['ok' => false, 'error' => 'no_price'];
             }
 
+            $requestedOccupants = max(1, min(10, (int) ($payload['requested_occupants'] ?? 1)));
+            $capacity = (int) ($kamar->capacity ?? 1);
+            if ($requestedOccupants > $capacity) {
+                return ['ok' => false, 'error' => 'capacity_exceeded'];
+            }
+
             $booking = Booking::create([
                 'booking_code' => 'BK-'.strtoupper(Str::random(8)),
                 'user_id' => $userId,
@@ -96,11 +102,36 @@ class BookingService
                 'start_date' => $payload['start_date'],
                 'end_date' => $payload['end_date'],
                 'rental_type' => $payload['rental_type'],
-                'billing_mode' => $billingMode,
                 'price' => $price,
-                'status' => 'approved',
+                'billing_mode' => $payload['billing_mode'] ?? 'personal',
                 'notes' => $payload['notes'] ?? null,
+                'identity_number' => trim($payload['identity_number'] ?? ''),
+                'phone' => $payload['phone'] ?? '',
+                'address' => trim($payload['address'] ?? ''),
+                'identity_data_submitted_at' => now(),
+                'status' => 'approved',
             ]);
+
+            // Ensure primary booking occupant exists for group flow
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('booking_occupants')) {
+                    $user = \App\Models\User::find($userId);
+                    \App\Models\BookingOccupant::firstOrCreate(
+                        ['booking_id' => $booking->id, 'occupant_index' => 1],
+                        [
+                            'user_id' => $userId,
+                            'email' => strtolower($user?->email ?? ''),
+                            'display_name' => $user?->name ?? null,
+                            'status' => \App\Models\BookingOccupant::STATUS_ACCEPTED,
+                            'identity_status' => \App\Models\BookingOccupant::IDENTITY_PENDING,
+                            'identity_number' => trim($payload['identity_number'] ?? ''),
+                            'phone' => $payload['phone'] ?? '',
+                            'address' => trim($payload['address'] ?? ''),
+                            'identity_data_submitted_at' => now(),
+                        ]
+                    );
+                }
+            } catch (\Throwable $e) {}
 
             // Shared kamar: tetap available selama masih ada slot (occupancy + bookings < capacity)
             // Personal: booked seperti semula
@@ -129,10 +160,10 @@ class BookingService
             $booking = $result['booking'];
             $booking->load(['user', 'kos', 'kamar']);
 
-            try {
-                NotificationService::bookingInstantConfirmation($booking->user_id, $booking->booking_code, $booking->kamar->room_number);
-                NotificationService::bookingNew($booking->kos->owner_id, $booking->user->name, $booking->kamar->room_number);
-                AuditLogService::create('Booking', "Booking baru {$booking->user->name} untuk kamar {$booking->kamar->room_number} (instant booking)", ['kos_id' => $booking->kos_id, 'kamar_id' => $booking->kamar_id]);
+             try {
+                 NotificationService::bookingInstantConfirmation($booking->user_id, $booking->booking_code, $booking->kamar->room_number, url('/tenant/booking/'.$booking->id));
+                 NotificationService::bookingNew($booking->kos->owner_id, $booking->user->name, $booking->kamar->room_number, url('/owner/booking/'.$booking->id));
+                 AuditLogService::create('Booking', "Booking baru {$booking->user->name} untuk kamar {$booking->kamar->room_number} (instant booking)", ['kos_id' => $booking->kos_id, 'kamar_id' => $booking->kamar_id]);
 
                 // Atribusi conversion advertising bila booking berasal dari klik iklan.
                 app(AdvertisingService::class)->recordConversionIfApplicable($userId, $booking->kos_id);

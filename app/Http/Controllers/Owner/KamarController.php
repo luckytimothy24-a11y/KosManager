@@ -92,7 +92,8 @@ class KamarController extends Controller
         $kamar = Kamar::create($data);
         $kamar->fasilitas()->sync($fasilitasIds);
 
-        return redirect()->route('owner.kamar.index')->with('success', 'Kamar berhasil ditambahkan.');
+        $prefix = $request->user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin';
+        return redirect()->route("$prefix.kamar.index")->with('success', 'Kamar berhasil ditambahkan.');
     }
 
     public function show(Kamar $kamar)
@@ -101,7 +102,7 @@ class KamarController extends Controller
 
         $kamar->load(['kos', 'fasilitas', 'penghunis.user', 'penghunis.kontraks', 'bookings']);
 
-        $tenantCandidates = request()->user()->hasRole('owner', 'super_admin')
+        $tenantCandidates = request()->user()->hasRole('owner', 'super_admin', 'admin')
             ? User::where('role', 'tenant')
                 ->whereDoesntHave('penghunis', fn ($q) => $q->where('kamar_id', $kamar->id)->where('status', 'active'))
                 ->orderBy('name')
@@ -303,7 +304,8 @@ class KamarController extends Controller
             $kamar->fasilitas()->sync($fasilitasIds);
         }
 
-        return redirect()->route('owner.kamar.index')->with('success', 'Kamar berhasil diperbarui.');
+        $prefix = request()->user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin';
+        return redirect()->route("$prefix.kamar.index")->with('success', 'Kamar berhasil diperbarui.');
     }
 
     public function destroy(Kamar $kamar)
@@ -331,6 +333,7 @@ class KamarController extends Controller
 
         $kamar->delete();
 
-        return redirect()->route('owner.kamar.index')->with('success', 'Kamar berhasil dihapus.');
+        $prefix = request()->user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin';
+        return redirect()->route("$prefix.kamar.index")->with('success', 'Kamar berhasil dihapus.');
     }
 }

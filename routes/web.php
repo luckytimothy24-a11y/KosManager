@@ -81,8 +81,8 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::resource('fasilitas', FasilitasController::class)->except(['show'])->parameter('fasilitas', 'fasilitas');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('laporan/export-pdf/{type}', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
-    Route::get('laporan/export-excel/{type}', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
+    Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
+    Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
 
     Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 
@@ -174,8 +174,8 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('laporan/export-pdf/{type}', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
-    Route::get('laporan/export-excel/{type}', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
+    Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
+    Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
 });
 
 // Admin Routes
@@ -226,8 +226,8 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('laporan/export-pdf/{type}', [LaporanController::class, 'exportPdf'])->name('laporan.export-pdf');
-    Route::get('laporan/export-excel/{type}', [LaporanController::class, 'exportExcel'])->name('laporan.export-excel');
+    Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
+    Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
 });
 
 // Tenant Routes

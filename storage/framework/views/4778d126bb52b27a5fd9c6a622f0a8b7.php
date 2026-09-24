@@ -1,0 +1,5 @@
+<button <?php echo e($attributes->merge(['type' => 'submit', 'class' => 'inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 border border-transparent rounded-xl font-semibold text-sm text-white shadow-sm shadow-red-600/25 hover:bg-red-700 active:bg-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 transition ease-in-out duration-150'])); ?>>
+    <?php echo e($slot); ?>
+
+</button>
+<?php /**PATH C:\Users\ASUS\KosManager\resources\views/components/danger-button.blade.php ENDPATH**/ ?>
