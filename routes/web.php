@@ -28,7 +28,7 @@ use App\Http\Controllers\SuperAdmin\AdvertisingDashboardController;
 use App\Http\Controllers\SuperAdmin\AdvertisingPackageController;
 use App\Http\Controllers\SuperAdmin\AuditLogController;
 use App\Http\Controllers\SuperAdmin\FasilitasController;
-use App\Http\Controllers\SuperAdmin\LaporanController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\Tenant\BookingOccupantIdentityController;
@@ -80,9 +80,9 @@ Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('su
     Route::resource('users', UserController::class)->except(['show']);
     Route::resource('fasilitas', FasilitasController::class)->except(['show'])->parameter('fasilitas', 'fasilitas');
 
-    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
-    Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
+    Route::get('laporan', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/export-pdf', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
+    Route::get('laporan/export-excel', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
 
     Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 
