@@ -85,9 +85,14 @@ public function test_owner_a_cannot_access_kamar_of_owner_b_kos(): void
         $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id]);
 
         // Owner should be denied from another owner's kamar - policy blocks access
+        // Use valid data that passes FormRequest validation so authorization (403) is actually tested
         $this->actingAs($this->owner)->get(route('owner.kamar.show', $kamarB))->assertStatus(403);
         $this->actingAs($this->owner)->put(route('owner.kamar.update', $kamarB), [
-            'name' => 'Hacked',
+            'room_number' => '999',
+            'room_name' => 'Hacked',
+            'room_type' => 'Standard',
+            'daily_price' => 100000,
+            'monthly_price' => 1000000,
         ])->assertStatus(403);
     }
 
