@@ -48,6 +48,7 @@ class BookingController extends Controller
             'end_date' => $request->end_date,
             'rental_type' => $request->rental_type,
             'billing_mode' => $request->input('billing_mode', 'personal'),
+            'requested_occupants' => $request->input('requested_occupants', 1),
             'notes' => $request->notes,
         ], $request->user()->id);
 
@@ -59,10 +60,15 @@ class BookingController extends Controller
                 'already_occupant' => 'Anda sudah menjadi penghuni aktif di kamar ini.',
                 'no_price' => 'Harga kamar tidak tersedia.',
                 'billing_mode_not_allowed' => 'Kamar ini tidak mengizinkan shared billing.',
+                'personal_multi_rejected' => 'Booking personal hanya dapat untuk 1 orang.',
                 default => 'Kamar tidak tersedia untuk dibooking.',
             };
 
-            $field = $result['error'] === 'billing_mode_not_allowed' ? 'billing_mode' : 'kamar_id';
+            $field = match ($result['error']) {
+                'billing_mode_not_allowed' => 'billing_mode',
+                'personal_multi_rejected' => 'requested_occupants',
+                default => 'kamar_id',
+            };
 
             return response()->json([
                 'message' => 'The given data was invalid.',

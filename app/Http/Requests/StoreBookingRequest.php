@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Kamar;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreBookingRequest extends FormRequest
 {
@@ -30,5 +32,23 @@ class StoreBookingRequest extends FormRequest
             'phone' => ['required', 'string', 'min:9', 'max:30'],
             'address' => ['required', 'string', 'min:5'],
         ];
+    }
+
+    protected function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $kamarId = $this->input('kamar_id');
+            $occupants = (int) ($this->input('requested_occupants', 1));
+
+            if ($kamarId && $occupants > 0) {
+                $kamar = Kamar::find($kamarId);
+                if ($kamar) {
+                    $capacity = (int) $kamar->capacity;
+                    if ($occupants > $capacity) {
+                        $validator->errors()->add('requested_occupants', "Jumlah penghuni tidak boleh melebihi kapasitas kamar ({$capacity} orang).");
+                    }
+                }
+            }
+        });
     }
 }
