@@ -77,8 +77,8 @@ Route::middleware(['auth', 'active'])->group(function () {
 
 // Super Admin Routes
 Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
-    Route::resource('users', UserController::class)->except(['show']);
-    Route::resource('fasilitas', FasilitasController::class)->except(['show'])->parameter('fasilitas', 'fasilitas');
+    Route::resource('users', UserController::class);
+    Route::resource('fasilitas', FasilitasController::class)->parameter('fasilitas', 'fasilitas');
 
     Route::get('laporan', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export-pdf', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
@@ -199,6 +199,8 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::resource('kamar', KamarController::class);
     Route::post('kamar/{kamar}/penghuni', [KamarController::class, 'addPenghuni'])->name('kamar.add-penghuni');
 
+    Route::resource('fasilitas', \App\Http\Controllers\Admin\FasilitasController::class);
+
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
 
@@ -281,6 +283,9 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
+
+    Route::resource('damage-reports', \App\Http\Controllers\Owner\DamageReportController::class)->only(['create', 'store', 'show']);
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/damage-report.php';

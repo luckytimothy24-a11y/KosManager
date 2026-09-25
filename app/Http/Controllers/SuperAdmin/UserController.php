@@ -14,6 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
         $query = User::withCount('ownedKos', 'bookings');
 
         if ($request->filled('search')) {
@@ -35,11 +36,13 @@ class UserController extends Controller
 
     public function create()
     {
+        $this->authorize('create', User::class);
         return view('super-admin.users.create');
     }
 
     public function store(StoreUserRequest $request)
     {
+        $this->authorize('create', User::class);
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -53,13 +56,23 @@ class UserController extends Controller
         return redirect()->route('super-admin.users.index')->with('success', 'User berhasil ditambahkan.');
     }
 
+    public function show(User $user)
+    {
+        $this->authorize('view', $user);
+        $user->load('ownedKos', 'bookings', 'penghunis');
+
+        return view('super-admin.users.show', compact('user'));
+    }
+
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('super-admin.users.edit', compact('user'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('update', $user);
         $data = $request->only('name', 'email', 'role', 'phone', 'is_active');
         $data['is_active'] = filter_var($data['is_active'] ?? $user->is_active, FILTER_VALIDATE_BOOLEAN);
 
@@ -93,6 +106,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
         abort_if($user->id === auth()->id(), 400, 'Anda tidak dapat menghapus akun Anda sendiri.');
 
         if ($user->role === 'super_admin') {

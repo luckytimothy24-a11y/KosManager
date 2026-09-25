@@ -87,6 +87,11 @@
                                             <i class="ri-edit-line"></i>
                                         </a>
 
+                                        <a href="{{ route('super-admin.users.show', $u) }}"
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Lihat user" aria-label="Lihat {{ $u->name }}">
+                                            <i class="ri-eye-line"></i>
+                                        </a>
+
                                         <x-confirm-dialog
                                             title="Hapus user ini?"
                                             description="{{ $u->name }} akan dihapus permanen beserta data terkait. Tindakan ini tidak dapat dibatalkan."
