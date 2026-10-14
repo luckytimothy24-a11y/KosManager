@@ -16,6 +16,8 @@ use App\Models\Tagihan;
 use App\Models\User;
 use App\Services\PropertyOwnerPayoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -43,6 +45,7 @@ class ParallelDisbursementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Storage::fake('private');
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
         $tenant = User::factory()->create(['role' => 'tenant']);
@@ -66,7 +69,7 @@ class ParallelDisbursementTest extends TestCase
     public function test_scenario_a_same_key_identical_payload_no_duplicate(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $data = ['amount' => 1000000, 'idempotency_key' => 'parallel-a-aaaaaaaa', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20', 'notes' => 'Transfer 1'];
+        $data = ['amount' => 1000000, 'idempotency_key' => 'parallel-a-aaaaaaaa', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20', 'notes' => 'Transfer 1'];
         $before = PayoutDisbursement::where('payout_id', $this->payout->id)->count();
         $r1 = $svc->recordDisbursement($this->owner, $this->payout, $data);
         $r2 = $svc->recordDisbursement($this->owner, $this->payout, $data);
@@ -83,7 +86,7 @@ class ParallelDisbursementTest extends TestCase
     public function test_scenario_b_same_key_different_payload_conflict(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $base = ['idempotency_key' => 'parallel-b-bbbbbbbb', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20', 'notes' => 'Transfer 1'];
+        $base = ['idempotency_key' => 'parallel-b-bbbbbbbb', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20', 'notes' => 'Transfer 1'];
 
         $r1 = $svc->recordDisbursement($this->owner, $this->payout, array_merge($base, ['amount' => 1000000]));
         $this->assertTrue($r1['ok']);
@@ -105,12 +108,12 @@ class ParallelDisbursementTest extends TestCase
     public function test_scenario_c_overpayment_race_two_keys_exceeding_remaining(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2000000, 'idempotency_key' => 'parallel-c-11111111', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2000000, 'idempotency_key' => 'parallel-c-11111111', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertTrue($r1['ok']);
-        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 800000, 'idempotency_key' => 'parallel-c-22222222', 'proof_path' => 'payout-proof/b.pdf', 'transferred_at' => '2026-09-20']);
+        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 800000, 'idempotency_key' => 'parallel-c-22222222', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertFalse($r2['ok']);
         $this->assertSame('overpayment', $r2['error']);
-        $r3 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 700000, 'idempotency_key' => 'parallel-c-33333333', 'proof_path' => 'payout-proof/c.pdf', 'transferred_at' => '2026-09-20']);
+        $r3 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 700000, 'idempotency_key' => 'parallel-c-33333333', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertTrue($r3['ok']);
         $totalPendingVerified = (float) PayoutDisbursement::where('payout_id', $this->payout->id)->whereIn('status', ['pending', 'verified'])->sum('amount');
         $this->assertLessThanOrEqual(2700000.0 + 0.005, $totalPendingVerified);
@@ -121,12 +124,12 @@ class ParallelDisbursementTest extends TestCase
     {
         $svc = app(PropertyOwnerPayoutService::class);
         $this->assertSame(Payout::STATUS_PENDING, $this->payout->fresh()->status);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2700000, 'idempotency_key' => 'parallel-d-44444444', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2700000, 'idempotency_key' => 'parallel-d-44444444', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertTrue($r1['ok']);
         $this->assertSame(Payout::STATUS_PENDING, $this->payout->fresh()->status);
         $svc->verifyDisbursement($this->superAdmin, $r1['disbursement']);
         $this->assertSame(Payout::STATUS_VERIFIED, $this->payout->fresh()->status);
-        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 100000, 'idempotency_key' => 'parallel-d-55555555', 'proof_path' => 'payout-proof/b.pdf', 'transferred_at' => '2026-09-21']);
+        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 100000, 'idempotency_key' => 'parallel-d-55555555', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-21']);
         $this->assertFalse($r2['ok']);
         $this->assertSame('already_verified', $r2['error']);
     }

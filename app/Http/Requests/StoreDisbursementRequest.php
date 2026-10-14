@@ -9,6 +9,7 @@ class StoreDisbursementRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
+
         return $user ? ($user->isOwner() || $user->isSuperAdmin()) : false;
     }
 
@@ -17,8 +18,8 @@ class StoreDisbursementRequest extends FormRequest
         return [
             'amount' => ['required', 'numeric', 'min:0.01'],
             'idempotency_key' => ['required', 'string', 'min:8', 'max:64'],
-            'proof_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
-            'proof_path' => ['nullable', 'string', 'max:500'],
+            'proof_file' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'proof_path' => ['prohibited'],
             'transferred_at' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];

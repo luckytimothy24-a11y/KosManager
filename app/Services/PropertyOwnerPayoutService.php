@@ -288,16 +288,14 @@ class PropertyOwnerPayoutService
 
                     return $dup;
                 }
-                $proofPath = null;
-                $newProofStored = false;
-                if (! empty($data['proof_file'])) {
-                    $proofPath = $data['proof_file']->store('payout-proof', 'private');
-                    $newProofStored = true;
-                }
-                if (! $proofPath && empty($data['proof_path'])) {
+                if (empty($data['proof_file'])) {
                     throw new \RuntimeException('proof_required');
                 }
-                $proofPath = $proofPath ?? $data['proof_path'] ?? null;
+                $proofPath = $data['proof_file']->store('payout-proof', 'private');
+                $newProofStored = true;
+                if (! $proofPath || ! \Storage::disk('private')->exists($proofPath)) {
+                    throw new \RuntimeException('proof_required');
+                }
 
                 return PayoutDisbursement::create([
                     'payout_id' => $payout->id,
@@ -451,7 +449,7 @@ class PropertyOwnerPayoutService
 
     public function createAdjustment(User $actor, array $data): array
     {
-        if (! $actor->isSuperAdmin() && ! $actor->isOwner()) {
+        if (! $actor->isSuperAdmin()) {
             return ['ok' => false, 'error' => 'forbidden'];
         }
         $pembayaranId = $data['pembayaran_id'] ?? null;
@@ -470,22 +468,22 @@ class PropertyOwnerPayoutService
             return ['ok' => false, 'error' => 'pembayaran_not_found'];
         }
         $payout = $payoutId ? Payout::find($payoutId) : PayoutItem::where('pembayaran_id', $pembayaranId)->first()?->payout;
+        $pembayaran->loadMissing(['penghuni.kos', 'booking.kos']);
+        $derivedKos = null;
+        if ($pembayaran->penghuni?->kos) {
+            $derivedKos = $pembayaran->penghuni->kos;
+        } elseif ($pembayaran->booking?->kos) {
+            $derivedKos = $pembayaran->booking->kos;
+        }
         if ($payout) {
             if (! $this->canManageKos($actor, $payout->kos)) {
                 return ['ok' => false, 'error' => 'forbidden'];
             }
-            if ($actor->isOwner() && ! $actor->isSuperAdmin()) {
-                return ['ok' => false, 'error' => 'forbidden'];
+            if (! $derivedKos || (int) $payout->kos_id !== (int) $derivedKos->id) {
+                return ['ok' => false, 'error' => 'kos_mismatch'];
             }
         } else {
-            $kos = null;
-            $pembayaran->loadMissing(['penghuni.kos', 'booking.kos']);
-            if ($pembayaran->penghuni?->kos) {
-                $kos = $pembayaran->penghuni->kos;
-            } elseif ($pembayaran->booking?->kos) {
-                $kos = $pembayaran->booking->kos;
-            }
-            if (! $kos || ! $this->canManageKos($actor, $kos)) {
+            if (! $derivedKos || ! $this->canManageKos($actor, $derivedKos)) {
                 return ['ok' => false, 'error' => 'forbidden'];
             }
         }
@@ -528,6 +526,9 @@ class PropertyOwnerPayoutService
                 }
                 if (isset($data['commission_delta']) && $actor->isSuperAdmin()) {
                     $commissionDelta = round((float) $data['commission_delta'], 2);
+                }
+                if ($commissionDelta > $amount + 0.005) {
+                    throw new \RuntimeException('commission_delta_exceeds_amount');
                 }
 
                 return PayoutAdjustment::create([

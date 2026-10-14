@@ -16,4 +16,25 @@ class MeController extends Controller
             'data' => new UserResource($request->user()),
         ]);
     }
+
+    public function update(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
+            'address' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'identity_number' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'role' => ['prohibited'],
+            'is_active' => ['prohibited'],
+        ]);
+
+        $user = $request->user();
+        $user->fill($validated);
+        $user->save();
+
+        return response()->json([
+            'data' => new UserResource($user->fresh()),
+            'message' => 'Profil berhasil diperbarui.',
+        ]);
+    }
 }

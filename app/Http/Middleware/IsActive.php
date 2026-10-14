@@ -12,8 +12,13 @@ class IsActive
     public static function guardActive(Request $request): ?Response
     {
         if (Auth::check() && ! Auth::user()->is_active) {
-            // API stateless: jangan akses session web, kembalikan JSON 403
-            // sesuai kontrak API (terautentikasi tetapi akun nonaktif/diblokir).
+            try {
+                $user = Auth::user();
+                if (method_exists($user, 'tokens')) {
+                    $user->tokens()->delete();
+                }
+            } catch (\Throwable $e) {
+            }
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.',

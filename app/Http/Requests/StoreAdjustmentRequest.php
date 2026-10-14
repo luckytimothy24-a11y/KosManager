@@ -9,7 +9,8 @@ class StoreAdjustmentRequest extends FormRequest
     public function authorize(): bool
     {
         $user = $this->user();
-        return $user ? ($user->isOwner() || $user->isSuperAdmin()) : false;
+
+        return $user ? $user->isSuperAdmin() : false;
     }
 
     public function rules(): array

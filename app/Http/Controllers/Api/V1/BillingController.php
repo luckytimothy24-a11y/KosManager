@@ -72,7 +72,7 @@ class BillingController extends Controller
             'amount' => $request->amount,
             'payment_method' => $request->payment_method,
             'proof_file' => $request->hasFile('proof_file')
-                ? $request->file('proof_file')->store('bukti-pembayaran')
+                ? $request->file('proof_file')->store('bukti-pembayaran', 'private')
                 : null,
         ]);
 

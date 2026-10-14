@@ -16,6 +16,8 @@ use App\Models\Tagihan;
 use App\Models\User;
 use App\Services\PropertyOwnerPayoutService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class DisbursementTest extends TestCase
@@ -35,6 +37,7 @@ class DisbursementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Storage::fake('private');
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->ownerOther = User::factory()->create(['role' => 'owner']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
@@ -59,7 +62,7 @@ class DisbursementTest extends TestCase
     public function test_retry_same_key_same_payload_is_idempotent(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $data = ['amount' => 1000000, 'idempotency_key' => 'key-idempotent-11111111', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20'];
+        $data = ['amount' => 1000000, 'idempotency_key' => 'key-idempotent-11111111', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20'];
         $r1 = $svc->recordDisbursement($this->owner, $this->payout, $data);
         $this->assertTrue($r1['ok']);
         $r2 = $svc->recordDisbursement($this->owner, $this->payout, $data);
@@ -72,9 +75,9 @@ class DisbursementTest extends TestCase
     public function test_same_key_different_payload_returns_conflict(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1000000, 'idempotency_key' => 'key-conflict-22222222', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1000000, 'idempotency_key' => 'key-conflict-22222222', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertTrue($r1['ok']);
-        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 500000, 'idempotency_key' => 'key-conflict-22222222', 'proof_path' => 'payout-proof/b.pdf', 'transferred_at' => '2026-09-20']);
+        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 500000, 'idempotency_key' => 'key-conflict-22222222', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertFalse($r2['ok']);
         $this->assertSame('idempotency_conflict', $r2['error']);
         $this->assertSame(1, PayoutDisbursement::where('idempotency_key', 'key-conflict-22222222')->count());
@@ -83,9 +86,9 @@ class DisbursementTest extends TestCase
     public function test_overpayment_rejected(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2000000, 'idempotency_key' => 'key-overpay-aa-33333333', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2000000, 'idempotency_key' => 'key-overpay-aa-33333333', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertTrue($r1['ok']);
-        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 800000, 'idempotency_key' => 'key-overpay-bb-44444444', 'proof_path' => 'payout-proof/b.pdf', 'transferred_at' => '2026-09-21']);
+        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 800000, 'idempotency_key' => 'key-overpay-bb-44444444', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-21']);
         $this->assertFalse($r2['ok']);
         $this->assertSame('overpayment', $r2['error']);
     }
@@ -93,13 +96,13 @@ class DisbursementTest extends TestCase
     public function test_rejected_not_counted_and_overpayment_still_enforced(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1000000, 'idempotency_key' => 'key-reject-55555555', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1000000, 'idempotency_key' => 'key-reject-55555555', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertTrue($r1['ok']);
         $rej = $svc->rejectDisbursement($this->superAdmin, $r1['disbursement'], 'salah bukti');
         $this->assertTrue($rej['ok']);
-        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2700000, 'idempotency_key' => 'key-reject-66666666', 'proof_path' => 'payout-proof/b.pdf', 'transferred_at' => '2026-09-21']);
+        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 2700000, 'idempotency_key' => 'key-reject-66666666', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-21']);
         $this->assertTrue($r2['ok'], json_encode($r2));
-        $r3 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 10000, 'idempotency_key' => 'key-reject-77777777', 'proof_path' => 'payout-proof/c.pdf', 'transferred_at' => '2026-09-22']);
+        $r3 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 10000, 'idempotency_key' => 'key-reject-77777777', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-22']);
         $this->assertFalse($r3['ok']);
         $this->assertSame('overpayment', $r3['error']);
     }
@@ -107,8 +110,8 @@ class DisbursementTest extends TestCase
     public function test_partial_transitions_to_verified_when_fully_verified(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1700000, 'idempotency_key' => 'key-partial-88888888', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
-        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1000000, 'idempotency_key' => 'key-partial-99999999', 'proof_path' => 'payout-proof/b.pdf', 'transferred_at' => '2026-09-21']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1700000, 'idempotency_key' => 'key-partial-88888888', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
+        $r2 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 1000000, 'idempotency_key' => 'key-partial-99999999', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-21']);
         $this->assertTrue($r1['ok']);
         $this->assertTrue($r2['ok']);
         $this->assertSame('pending', $this->payout->fresh()->status);
@@ -121,7 +124,7 @@ class DisbursementTest extends TestCase
     public function test_owner_cannot_verify_disbursement(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 500000, 'idempotency_key' => 'key-auth-10101010', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $r1 = $svc->recordDisbursement($this->owner, $this->payout, ['amount' => 500000, 'idempotency_key' => 'key-auth-10101010', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $res = $svc->verifyDisbursement($this->owner, $r1['disbursement']);
         $this->assertFalse($res['ok']);
         $this->assertSame('forbidden', $res['error']);
@@ -132,7 +135,7 @@ class DisbursementTest extends TestCase
     public function test_idor_other_owner_forbidden(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);
-        $res = $svc->recordDisbursement($this->ownerOther, $this->payout, ['amount' => 100000, 'idempotency_key' => 'key-idor-12121212', 'proof_path' => 'payout-proof/a.pdf', 'transferred_at' => '2026-09-20']);
+        $res = $svc->recordDisbursement($this->ownerOther, $this->payout, ['amount' => 100000, 'idempotency_key' => 'key-idor-12121212', 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'), 'transferred_at' => '2026-09-20']);
         $this->assertFalse($res['ok']);
         $this->assertSame('forbidden', $res['error']);
     }

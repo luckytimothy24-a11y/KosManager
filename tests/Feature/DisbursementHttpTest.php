@@ -7,6 +7,7 @@ use App\Models\Kontrak;
 use App\Models\Kos;
 use App\Models\ManagementAgreement;
 use App\Models\Payout;
+use App\Models\PayoutDisbursement;
 use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\PropertyOwner;
@@ -24,8 +25,11 @@ class DisbursementHttpTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $ownerOther;
+
     private User $superAdmin;
+
     private Payout $payout;
 
     protected function setUp(): void
@@ -75,9 +79,9 @@ class DisbursementHttpTest extends TestCase
             'amount' => 500000,
             'idempotency_key' => 'http-key-bbbbbbbb',
             'transferred_at' => '2026-09-20',
-            'proof_path' => 'payout-proof/b.pdf',
+            'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
         ])->assertRedirect();
-        $this->assertSame(1, \App\Models\PayoutDisbursement::where('idempotency_key', 'http-key-bbbbbbbb')->count());
+        $this->assertSame(1, PayoutDisbursement::where('idempotency_key', 'http-key-bbbbbbbb')->count());
     }
 
     public function test_same_key_different_payload_conflict_http(): void
@@ -92,7 +96,7 @@ class DisbursementHttpTest extends TestCase
             'amount' => 500000,
             'idempotency_key' => 'http-key-cccccccc',
             'transferred_at' => '2026-09-20',
-            'proof_path' => 'payout-proof/b.pdf',
+            'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
         ])->assertStatus(409)->assertJsonFragment(['error' => 'idempotency_conflict']);
     }
 
@@ -108,7 +112,7 @@ class DisbursementHttpTest extends TestCase
             'amount' => 800000,
             'idempotency_key' => 'http-key-eeeeeeee',
             'transferred_at' => '2026-09-21',
-            'proof_path' => 'payout-proof/b.pdf',
+            'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
         ])->assertStatus(422);
     }
 
@@ -120,7 +124,7 @@ class DisbursementHttpTest extends TestCase
             'transferred_at' => '2026-09-20',
             'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
         ]);
-        $d = \App\Models\PayoutDisbursement::where('idempotency_key', 'http-key-ffffffff')->firstOrFail();
+        $d = PayoutDisbursement::where('idempotency_key', 'http-key-ffffffff')->firstOrFail();
         $this->actingAs($this->owner)->post(route('owner.disbursements.verify', $d))->assertForbidden();
     }
 
@@ -132,7 +136,7 @@ class DisbursementHttpTest extends TestCase
             'transferred_at' => '2026-09-20',
             'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
         ]);
-        $d = \App\Models\PayoutDisbursement::where('idempotency_key', 'http-key-gggggggg')->firstOrFail();
+        $d = PayoutDisbursement::where('idempotency_key', 'http-key-gggggggg')->firstOrFail();
         $this->actingAs($this->superAdmin)->post(route('owner.disbursements.verify', $d))->assertRedirect();
         $this->assertSame('verified', $d->fresh()->status);
     }
