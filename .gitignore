@@ -27,3 +27,25 @@ yarn-error.log
 /AUTHORIZATION_ANALYSIS_REPORT.md
 /authorization_report.md
 /PRESENTATION.md
+
+# --- bersih-bersih snapshot ---
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/.recovery-backup-*/
+/debug*.log
+/debug_output.txt
+/log*.txt
+/output.txt
+/test_*.txt
+/testout.txt
+/full_test_output.txt
+/fulltest.txt
+/gitdiff.txt
+/phpunit_output.txt
+/route_list.txt
+/temp_pattern.txt
+/check_*.php
+/fix_login*.php
+/test_kos.php
+/test_login.php
+*.orig
