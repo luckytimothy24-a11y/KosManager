@@ -247,4 +247,29 @@ class SecurityHardeningTest extends TestCase
         $this->assertGuest();
         $response->assertSessionHasErrors('email');
     }
+
+    public function test_inactive_user_mid_session_cannot_access(): void
+    {
+        $user = User::factory()->create(['is_active' => true, 'role' => 'tenant']);
+
+        $this->actingAs($user);
+
+        // Step 3: Pastikan request awal ke route terlindungi berhasil
+        $response = $this->get('/profile');
+        $response->assertOk();
+
+        // Step 4: Nonaktifkan user melalui database
+        $user->update(['is_active' => false]);
+
+        // Step 5 & 6: Gunakan session autentikasi yang sama (tanpa memanggil actingAs lagi)
+        // Verifikasi respons sesuai kontrak aktual middleware
+        $response = $this->get('/profile');
+
+        // Contract: IsActive middleware untuk web request mengredirect ke login dengan error
+        $response->assertRedirect('login')
+            ->assertSessionHas('error', 'Akun Anda telah dinonaktifkan. Hubungi administrator.');
+
+        // Step 7: Verifikasi tidak ada mutasi data terlindungi yang seharusnya ditolak
+        $this->assertDatabaseHas('users', ['id' => $user->id, 'is_active' => false]);
+    }
 }

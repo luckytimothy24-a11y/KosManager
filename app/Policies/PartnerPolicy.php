@@ -12,12 +12,12 @@ class PartnerPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();
+        return $user->isSuperAdmin();
     }
 
     public function view(User $user, Partner $partner): bool
     {
-        return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();
+        return $user->isSuperAdmin();
     }
 
     public function create(User $user): bool

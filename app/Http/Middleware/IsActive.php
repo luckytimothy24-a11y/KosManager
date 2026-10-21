@@ -19,15 +19,20 @@ class IsActive
                 }
             } catch (\Throwable $e) {
             }
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.',
                 ], 403);
             }
 
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            try {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            } catch (\Throwable $e) {
+                // Session may not exist (API requests); continue with redirect
+            }
 
             return redirect()->route('login')
                 ->with('error', 'Akun Anda telah dinonaktifkan. Hubungi administrator.');

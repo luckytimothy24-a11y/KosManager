@@ -25,7 +25,7 @@ class PembayaranFactory extends Factory
             'penghuni_id' => Penghuni::factory(),
             'amount' => fake()->numberBetween(1000000, 5000000),
             'payment_date' => fake()->dateTimeBetween('-1 month', 'now'),
-            'payment_method' => fake()->randomElement(['transfer_bank', 'cash', 'e_wallet']),
+            'payment_method' => fake()->randomElement(['transfer_bank', 'cash']),
             'verification_status' => 'pending',
         ];
     }

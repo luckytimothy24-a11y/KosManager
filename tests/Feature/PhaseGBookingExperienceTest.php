@@ -61,9 +61,15 @@ class PhaseGBookingExperienceTest extends TestCase
 
         $this->actingAs($this->tenant)
             ->post(route('tenant.booking.cancel', $booking))
-            ->assertRedirect(route('tenant.booking.index'));
+            ->assertRedirect(route('tenant.booking.index'))
+            ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
+        // Tenant cancel = REQUEST saja — booking tidak langsung cancelled
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('booking_cancellation_requests', [
+            'booking_id' => $booking->id,
+            'status' => 'pending',
+        ]);
     }
 
     public function test_tenant_can_cancel_own_pending_booking(): void
@@ -75,7 +81,11 @@ class PhaseGBookingExperienceTest extends TestCase
             ->post(route('tenant.booking.cancel', $booking))
             ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'pending']);
+        $this->assertDatabaseHas('booking_cancellation_requests', [
+            'booking_id' => $booking->id,
+            'status' => 'pending',
+        ]);
     }
 
     public function test_tenant_cannot_cancel_completed_booking(): void

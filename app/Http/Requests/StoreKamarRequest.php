@@ -10,7 +10,9 @@ class StoreKamarRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin', 'owner', 'admin');
+        $user = $this->user();
+
+        return $user->isSuperAdmin() || $user->isOwner() || $user->isAdmin();
     }
 
     public function rules(): array
@@ -21,8 +23,12 @@ class StoreKamarRequest extends FormRequest
             'room_name' => ['required', 'string', 'max:255'],
             'floor' => ['nullable', 'integer', 'min:0'],
             'room_type' => ['required', 'string', 'max:100'],
+            // 1 kamar = 1 penghuni — patungan/multi dihapus
+            'capacity' => ['nullable', 'integer', 'in:1'],
+            'billing_mode' => ['nullable', 'string', 'in:personal'],
             'daily_price' => ['required', 'numeric', 'min:0'],
             'monthly_price' => ['required', 'numeric', 'min:0'],
+            'weekly_price' => ['nullable', 'numeric', 'min:0'],
             'area' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new SafeImage],
@@ -33,5 +39,20 @@ class StoreKamarRequest extends FormRequest
                 Rule::exists('fasilitas', 'id')->where('type', 'kamar')->where('is_active', true),
             ],
         ];
+    }
+
+    protected function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $capacity = $this->input('capacity');
+            $billingMode = $this->input('billing_mode');
+
+            if ($capacity !== null && (int) $capacity > 1) {
+                $validator->errors()->add('capacity', 'Satu kamar hanya untuk satu penghuni. Patungan tidak lagi didukung.');
+            }
+            if ($billingMode !== null && $billingMode !== 'personal') {
+                $validator->errors()->add('billing_mode', 'Patungan tidak lagi didukung. Satu kamar untuk satu penghuni.');
+            }
+        });
     }
 }

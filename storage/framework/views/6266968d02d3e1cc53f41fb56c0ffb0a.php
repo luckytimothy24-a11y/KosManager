@@ -13,7 +13,7 @@
 <?php unset($__defined_vars); ?>
 
 <?php if($messages): ?>
-    <ul <?php echo e($attributes->merge(['class' => 'text-sm text-red-600 dark:text-red-400 space-y-1'])); ?>>
+    <ul <?php echo e($attributes->merge(['class' => 'text-sm text-red-600 dark:text-red-400 space-y-1'])); ?> role="alert" aria-live="polite">
         <?php $__currentLoopData = (array) $messages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <li><?php echo e($message); ?></li>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

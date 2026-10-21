@@ -27,13 +27,16 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $this->authorize('update', $user);
+
+        $user->fill($request->validated());
 
         if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -43,11 +46,12 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = $request->user();
+        $this->authorize('delete', $user);
+
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
-
-        $user = $request->user();
 
         if ($user->isOwner() && $user->ownedKos()->exists()) {
             return Redirect::route('profile.edit')->with('error', 'Akun tidak dapat dihapus karena masih memiliki kos. Alihkan atau hapus kos terlebih dahulu.');

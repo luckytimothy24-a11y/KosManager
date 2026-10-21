@@ -18,7 +18,7 @@
         }
     </script>
 </head>
-<body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+<body class="font-sans antialiased bg-slate-50 dark:bg-surface-elevated text-slate-800 dark:text-slate-200">
     <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
         <a href="/" class="flex items-center gap-2 mb-8">
             <div class="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center">
@@ -27,28 +27,28 @@
             <span class="text-lg font-bold tracking-tight">KosManager</span>
         </a>
 
-        <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/70 dark:border-slate-800 shadow-sm p-8 sm:p-10 text-center">
+        <div class="w-full max-w-md bg-white dark:bg-surface-elevated rounded-2xl border border-slate-200/70 dark:border-white/10 shadow-sm p-8 sm:p-10 text-center">
             <div class="mx-auto w-16 h-16 rounded-2xl <?php echo $__env->yieldContent('tone'); ?> flex items-center justify-center">
                 <i class="<?php echo $__env->yieldContent('icon'); ?> text-3xl"></i>
             </div>
-            <p class="mt-6 text-5xl font-black tracking-tight text-slate-900 dark:text-white"><?php echo $__env->yieldContent('code'); ?></p>
-            <h1 class="mt-2 text-lg font-bold text-slate-900 dark:text-white"><?php echo $__env->yieldContent('title'); ?></h1>
+            <p class="mt-6 text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-50"><?php echo $__env->yieldContent('code'); ?></p>
+            <h1 class="mt-2 text-lg font-bold text-slate-900 dark:text-slate-50"><?php echo $__env->yieldContent('title'); ?></h1>
             <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400"><?php echo $__env->yieldContent('description'); ?></p>
 
             <div class="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
                 <?php if(auth()->guard()->check()): ?>
                     <a href="/dashboard"
-                       class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                       class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
                         <i class="ri-dashboard-3-line"></i> Ke Dashboard
                     </a>
                 <?php else: ?>
                     <a href="/login"
-                       class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+                       class="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
                         <i class="ri-login-circle-line"></i> Masuk
                     </a>
                 <?php endif; ?>
                 <button onclick="window.history.length > 1 ? window.history.back() : window.location.href = '/'"
-                        class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-surface-elevated hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                     <i class="ri-arrow-go-back-line"></i> Kembali
                 </button>
             </div>

@@ -11,6 +11,11 @@ class KosPhotoPolicy
 {
     use HandlesAuthorization;
 
+    public function viewAny(User $user): bool
+    {
+        return $user->isSuperAdmin() || $user->isAdmin();
+    }
+
     public function create(User $user, Kos $kos): bool
     {
         if ($user->isSuperAdmin()) {
@@ -23,6 +28,19 @@ class KosPhotoPolicy
 
         if ($user->isOwner()) {
             return (int) $kos->owner_id === (int) $user->id;
+        }
+
+        return false;
+    }
+
+    public function moderate(User $user, KosPhoto $photo): bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isAdmin()) {
+            return $user->canAccessKos((int) $photo->kos_id);
         }
 
         return false;

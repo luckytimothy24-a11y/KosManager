@@ -17,7 +17,7 @@
                 <i class="ri-error-warning-line text-xl text-red-600 dark:text-red-400"></i>
             </div>
             <div class="min-w-0">
-                <h2 class="text-base font-bold text-slate-900 dark:text-white">
+                <h2 id="confirm-user-deletion-title" class="text-base font-bold text-slate-900 dark:text-slate-50">
                     Yakin ingin menghapus akun Anda?
                 </h2>
                 <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">

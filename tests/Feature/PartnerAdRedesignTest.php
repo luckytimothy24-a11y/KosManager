@@ -308,11 +308,11 @@ class PartnerAdRedesignTest extends TestCase
 
         // Tombol navigasi & dot dijalankan oleh Alpine (bukan statis).
         // Tombol navigasi & dot dijalankan oleh Alpine (bukan statis).
-// Navigasi via keyboard arrow keys dengan Alpine methods prev()/next().
-$this->assertStringContainsString('prev()', $html);
-$this->assertStringContainsString('next()', $html);
-// Carousel region memiliki accessible labeling (section label).
-$this->assertStringContainsString('aria-label="Promo dan partner pilihan"', $html);
+        // Navigasi via keyboard arrow keys dengan Alpine methods prev()/next().
+        $this->assertStringContainsString('prev()', $html);
+        $this->assertStringContainsString('next()', $html);
+        // Carousel region memiliki accessible labeling (section label).
+        $this->assertStringContainsString('aria-label="Promo dan partner pilihan"', $html);
     }
 
     public function test_marketplace_facility_accordion_xdata_uses_quoted_json_values(): void

@@ -44,13 +44,13 @@
         @endif
 
         {{-- Tagihan Summary Card --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+        <div class="card-surface overflow-hidden">
             {{-- Top: Bill Info --}}
             <div class="p-6 sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 font-mono">{{ $tagihan->bill_number }}</p>
-                        <p class="mt-1 text-3xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</p>
+                        <p class="text-meta font-mono uppercase tracking-wide">{{ $tagihan->bill_number }}</p>
+                        <p class="mt-1 text-3xl font-semibold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</p>
                     </div>
                     <x-status-badge :status="$tagihan->status" context="tagihan" />
                 </div>
@@ -59,29 +59,29 @@
                     <div class="flex items-start gap-2.5 min-w-0">
                         <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div class="min-w-0">
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                            <dt class="text-label">Kamar</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200 truncate">{{ $tagihan->kamar->room_number }} — {{ $tagihan->kamar->room_name }}</dd>
-                            <dd class="text-xs text-slate-400 dark:text-slate-500">{{ $tagihan->kamar->kos->name }}</dd>
+                            <dd class="text-meta">{{ $tagihan->kamar->kos->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-calendar-range-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Periode Sewa</dt>
+                            <dt class="text-label">Periode Sewa</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->period_start->translatedFormat('d M Y') }} — {{ $tagihan->period_end->translatedFormat('d M Y') }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tipe Tagihan</dt>
+                            <dt class="text-label">Tipe Tagihan</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \PaymentLabels::billType($tagihan->bill_type) }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-calendar-deadline-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Jatuh Tempo</dt>
+                            <dt class="text-label">Jatuh Tempo</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->due_date->translatedFormat('d F Y') }}</dd>
                             @if($canPay && $tagihan->due_date->isPast())
                                 <dd class="text-xs text-red-500 font-semibold">{{ abs($tagihan->due_date->diffInDays(now())) }} hari terlambat</dd>
@@ -92,25 +92,25 @@
 
                 {{-- Contract context --}}
                 @if($kontrak)
-                    <div class="mt-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                    <div class="mt-5 rounded-xl border border-slate-100 dark:border-white/[0.08] section-tint p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                         <div class="flex items-start gap-2.5 min-w-0">
                             <i class="ri-file-text-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
                             <div class="min-w-0">
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">No. Kontrak</dt>
+                                <dt class="text-label">No. Kontrak</dt>
                                 <dd class="mt-0.5 font-mono font-semibold text-slate-700 dark:text-slate-200 truncate">{{ $kontrak->contract_number }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
                             <i class="ri-home-4-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tipe Sewa</dt>
+                                <dt class="text-label">Tipe Sewa</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($kontrak->rental_type) }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
                             <i class="ri-calendar-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Periode Kontrak</dt>
+                                <dt class="text-label">Periode Kontrak</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $kontrak->start_date->translatedFormat('d M Y') }} – {{ $kontrak->end_date->translatedFormat('d M Y') }}</dd>
                             </div>
                         </div>
@@ -119,12 +119,12 @@
             </div>
 
             {{-- Breakdown --}}
-            <div class="border-t border-slate-100 dark:border-slate-800 px-6 sm:px-8 py-5">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Rincian Biaya</h4>
-                <div class="rounded-xl border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+            <div class="border-t border-slate-100 dark:border-white/[0.08] px-6 sm:px-8 py-5">
+                <h4 class="text-label mb-3">Rincian Biaya</h4>
+                <div class="rounded-xl border border-slate-100 dark:border-white/10 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                     <div class="flex items-center justify-between px-4 py-3">
                         <span class="text-slate-500 dark:text-slate-400">Subtotal</span>
-                        <span class="font-medium text-slate-900 dark:text-white">Rp {{ number_format($tagihan->subtotal, 0, ',', '.') }}</span>
+                        <span class="font-medium text-slate-900 dark:text-slate-50">Rp {{ number_format($tagihan->subtotal, 0, ',', '.') }}</span>
                     </div>
                     @if($tagihan->discount > 0)
                         <div class="flex items-center justify-between px-4 py-3">
@@ -138,16 +138,16 @@
                             <span class="font-medium text-red-600 dark:text-red-400">+ Rp {{ number_format($tagihan->penalty, 0, ',', '.') }}</span>
                         </div>
                     @endif
-                    <div class="flex items-center justify-between px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 rounded-b-xl">
-                        <span class="font-semibold text-slate-900 dark:text-white">Total</span>
+                    <div class="flex items-center justify-between px-4 py-3 bg-slate-50/70 dark:bg-surface-elevated/40 rounded-b-xl">
+                        <span class="font-semibold text-slate-900 dark:text-slate-50">Total</span>
                         <span class="font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</span>
                     </div>
                 </div>
             </div>
 
             {{-- Status timeline --}}
-            <div class="border-t border-slate-100 dark:border-slate-800 px-6 sm:px-8 py-5">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4">Riwayat Status</h4>
+            <div class="border-t border-slate-100 dark:border-white/[0.08] px-6 sm:px-8 py-5">
+                <h4 class="text-label mb-4">Riwayat Status</h4>
                 <ol class="space-y-0">
                     @php
                         $steps = [
@@ -162,10 +162,10 @@
                     @foreach($steps as $i => $step)
                         <li class="relative flex gap-3 pb-4 last:pb-0">
                             @if(!$loop->last)
-                                <span class="absolute left-[9px] top-5 bottom-0 w-px {{ $step['done'] ? 'bg-emerald-300 dark:bg-emerald-500/40' : 'bg-slate-200 dark:bg-slate-700' }}"></span>
+                                <span class="absolute left-[9px] top-5 bottom-0 w-px {{ $step['done'] ? 'bg-emerald-300 dark:bg-emerald-500/40' : 'bg-slate-200 dark:bg-surface-elevated' }}"></span>
                             @endif
                             <span class="relative z-10 w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5
-                                {{ isset($step['rejected']) ? 'bg-red-100 dark:bg-red-500/20' : ($step['done'] ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-slate-100 dark:bg-slate-700') }}">
+                                {{ isset($step['rejected']) ? 'bg-red-100 dark:bg-red-500/20' : ($step['done'] ? 'bg-emerald-100 dark:bg-emerald-500/20' : 'bg-slate-100 dark:bg-surface-elevated') }}">
                                 @if(isset($step['rejected']))
                                     <i class="ri-close-circle-line text-sm text-red-600 dark:text-red-400"></i>
                                 @elseif($step['done'])
@@ -175,7 +175,7 @@
                                 @endif
                             </span>
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold {{ isset($step['rejected']) ? 'text-red-700 dark:text-red-300' : ($step['done'] ? 'text-slate-800 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500') }}">{{ $step['label'] }}</p>
+                                <p class="text-sm font-semibold {{ isset($step['rejected']) ? 'text-red-700 dark:text-red-300' : ($step['done'] ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500') }}">{{ $step['label'] }}</p>
                                 <p class="text-xs text-slate-400 dark:text-slate-500">{{ $step['desc'] }}</p>
                             </div>
                         </li>
@@ -186,22 +186,19 @@
 
         {{-- Payment Section --}}
         @if($canPay)
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-primary-100 dark:border-primary-500/20 overflow-hidden">
+            <div class="card-surface border-primary-100 dark:border-primary-500/20 overflow-hidden">
                 <div class="p-6 sm:p-8">
-                    <h4 class="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-white mb-1">
+                    <h4 class="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-slate-50 mb-1">
                         <i class="ri-upload-cloud-2-line text-primary-500"></i> Bayar Tagihan Ini
                     </h4>
                     <p class="text-xs text-slate-400 dark:text-slate-500 mb-5">Pilih metode <strong>Transfer Bank</strong> atau <strong>Cash</strong> sesuai instruksi pengelola.</p>
 
-                    {{-- Payment Instructions from Owner --}}
-                    @if($tagihan->kamar->kos->payment_info)
-                        <div class="mb-5 rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/[0.06] p-4">
-                            <p class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 mb-1.5">
-                                <i class="ri-bank-card-line"></i> Instruksi Pembayaran
-                            </p>
-                            <p class="text-xs text-blue-800/90 dark:text-blue-200/90 leading-relaxed whitespace-pre-line">{{ $tagihan->kamar->kos->payment_info }}</p>
-                        </div>
-                    @endif
+                    {{-- Rekening tujuan pembayaran Owner (server-side: tagihan → kamar → kos → owner) --}}
+                    @include('tenant.partials.owner-bank-account', [
+                        'bankAccount' => $tagihan->kamar->kos->owner?->bankAccount,
+                        'paymentInfo' => $tagihan->kamar->kos->payment_info,
+                        'title' => 'Bayar ke Pemilik Kos',
+                    ])
 
                     <form method="POST" action="{{ route('tenant.pembayaran.store') }}" enctype="multipart/form-data"
                           x-data="paymentForm()"
@@ -214,29 +211,29 @@
                             {{-- Total summary above submit --}}
                             <div class="rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/60 dark:bg-primary-500/10 p-4 flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-sm font-semibold text-slate-900 dark:text-white">Total yang harus dibayar</p>
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-slate-50">Total yang harus dibayar</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400">Sudah termasuk rincian di atas.</p>
                                 </div>
-                                <p class="text-xl font-black text-primary-600 dark:text-primary-300 whitespace-nowrap" id="total-due">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</p>
+                                <p class="text-xl font-bold text-primary-600 dark:text-primary-300 whitespace-nowrap" id="total-due">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</p>
                             </div>
 
                             {{-- Amount (read-only) --}}
                             <div>
-                                <label for="amount_display" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nominal Pembayaran</label>
+                                <label for="amount_display" class="field-label">Nominal Pembayaran</label>
                                 <input id="amount_display" type="text" value="Rp {{ number_format($tagihan->total, 0, ',', '.') }}" readonly disabled
-                                       class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 dark:text-slate-200 text-sm font-bold cursor-not-allowed">
-                                <p class="mt-1.5 flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-lock-line"></i> Nominal mengikuti total tagihan dan tidak dapat diubah.</p>
+                                       class="field-input bg-slate-50 dark:bg-surface-elevated/60 font-semibold cursor-not-allowed">
+                                <p class="mt-1.5 flex items-center gap-1 text-meta"><i class="ri-lock-line"></i> Nominal mengikuti total tagihan dan tidak dapat diubah.</p>
                             </div>
 
                             {{-- Metode Pembayaran --}}
                             <div>
-                                <p class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">Metode Pembayaran</p>
+                                <p class="field-label mb-2">Metode Pembayaran</p>
                                 <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Metode pembayaran">
                                     <label for="method-transfer_bank"
                                            class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
                                            :class="method === 'transfer_bank'
                                                ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-600 dark:text-slate-400'">
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
                                         <input type="radio" id="method-transfer_bank" name="payment_method" value="transfer_bank" x-model="method" class="sr-only">
                                         <i class="ri-bank-line text-base"></i> Transfer Bank
                                     </label>
@@ -244,7 +241,7 @@
                                            class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
                                            :class="method === 'cash'
                                                ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-600 dark:text-slate-400'">
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
                                         <input type="radio" id="method-cash" name="payment_method" value="cash" x-model="method" class="sr-only">
                                         <i class="ri-hand-coin-line text-base"></i> Cash
                                     </label>
@@ -257,7 +254,11 @@
                                 <p class="flex items-center gap-1.5 text-sm font-semibold text-blue-800 dark:text-blue-200">
                                     <i class="ri-bank-line text-blue-600 dark:text-blue-300"></i> Transfer Bank
                                 </p>
-                                @if($tagihan->kamar->kos->payment_info)
+                                @if($tagihan->kamar->kos->owner?->bankAccount)
+                                    <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                                        Transfer sebesar nominal di atas ke rekening pemilik kos yang tercantum di atas, lalu unggah bukti transfer di bawah.
+                                    </p>
+                                @elseif($tagihan->kamar->kos->payment_info)
                                     <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300 whitespace-pre-line">{{ $tagihan->kamar->kos->payment_info }}</p>
                                 @else
                                     <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">Transfer sebesar nominal di atas ke rekening pengelola kos, lalu unggah bukti transfer di bawah.</p>
@@ -266,8 +267,8 @@
                             </div>
 
                             {{-- Cash detail --}}
-                            <div x-show="method === 'cash'" class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
-                                <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                            <div x-show="method === 'cash'" x-cloak class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
+                                <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
                                     <i class="ri-hand-coin-line text-emerald-600 dark:text-emerald-300"></i> Pembayaran Tunai
                                 </p>
                                 <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
@@ -279,7 +280,7 @@
 
                             {{-- Proof Upload --}}
                             <div>
-                                <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5" id="proof-label">
+                                <label for="proof_file" class="field-label" id="proof-label">
                                     Bukti Pembayaran
                                     <span class="font-normal" x-text="method === 'transfer_bank' ? '(wajib — JPG/PNG/PDF, maks 5MB)' : '(opsional — JPG/PNG/PDF, maks 5MB)'"></span>
                                 </label>
@@ -288,20 +289,20 @@
                                        x-bind:required="method === 'transfer_bank'"
                                        @change="handleProofChange($event)"
                                        aria-describedby="proof-feedback proof-hint"
-                                       class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-500/10 file:text-primary-600 dark:file:text-primary-300 hover:file:bg-primary-100 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
-                                <p id="proof-hint" class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Unggah bukti jika diperlukan pengelola. Pastikan bukti jelas. Untuk Transfer Bank, bukti wajib diunggah.</p>
+                                       class="field-input file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-500/10 file:text-primary-600 dark:file:text-primary-300 hover:file:bg-primary-100 cursor-pointer">
+                                <p id="proof-hint" class="mt-1.5 text-meta">Unggah bukti jika diperlukan pengelola. Pastikan bukti jelas. Untuk Transfer Bank, bukti wajib diunggah.</p>
 
                                 {{-- Client-side proof feedback --}}
                                 <div x-show="proof.name" x-cloak id="proof-feedback"
-                                     class="mt-2.5 flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/50 p-3">
+                                     class="mt-2.5 flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-surface-elevated/50 p-3">
                                     <template x-if="proof.isImage">
-                                        <img :src="proof.preview" :alt="'Pratinjau ' + proof.name" class="w-14 h-14 rounded-lg object-cover border border-slate-200 dark:border-slate-700 shrink-0">
+                                        <img :src="proof.preview" :alt="'Pratinjau ' + proof.name" class="w-14 h-14 rounded-lg object-cover border border-slate-200 dark:border-white/[0.08] shrink-0">
                                     </template>
                                     <template x-if="!proof.isImage">
                                         <span class="w-14 h-14 rounded-lg bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0"><i class="ri-file-pdf-line text-2xl text-red-500"></i></span>
                                     </template>
                                     <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate" x-text="proof.name"></p>
+                                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate" x-text="proof.name"></p>
                                         <p class="text-xs text-slate-500 dark:text-slate-400">
                                             <span x-text="proof.sizeLabel"></span>
                                             <template x-if="proof.oversize"><span class="text-red-600 dark:text-red-400 font-semibold"> · Melebihi 5MB</span></template>
@@ -318,16 +319,16 @@
 
                             {{-- Notes --}}
                             <div>
-                                <label for="notes" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5">Pesan <span class="font-normal">(opsional)</span></label>
+                                <label for="notes" class="field-label">Pesan <span class="font-normal">(opsional)</span></label>
                                 <textarea id="notes" name="notes" rows="2" placeholder="Contoh: Saya sudah melakukan transfer, mohon dicek..."
-                                          class="block w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100">{{ old('notes') }}</textarea>
+                                          class="field-input resize-none">{{ old('notes') }}</textarea>
                                 @error('notes') <p class="text-red-500 text-xs mt-1" aria-live="polite">{{ $message }}</p> @enderror
                             </div>
 
                             @error('amount') <p class="text-red-500 text-xs" aria-live="polite">{{ $message }}</p> @enderror
 
                             <button type="submit" x-bind:disabled="submitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
+                                    class="btn-primary w-full py-3">
                                 <template x-if="!submitting">
                                     <span class="flex items-center gap-2">
                                         <i :class="method === 'transfer_bank' ? 'ri-bank-line' : 'ri-hand-coin-line'"></i>
@@ -338,31 +339,31 @@
                                     <span class="flex items-center gap-2"><i class="ri-loader-4-line animate-spin"></i> Mengirim...</span>
                                 </template>
                             </button>
-                            <p class="text-[11px] text-center text-slate-400 dark:text-slate-500">Setelah dikirim, status menjadi <strong>Menunggu Verifikasi</strong> oleh pengelola.</p>
+                            <p class="text-meta text-center">Setelah dikirim, status menjadi <strong>Menunggu Verifikasi</strong> oleh pengelola.</p>
                         </div>
                     </form>
                 </div>
             </div>
         @elseif($tagihan->status === 'pending_verification')
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-yellow-100 dark:border-yellow-500/20 p-6 sm:p-8">
+            <div class="card-surface border-yellow-100 dark:border-yellow-500/20 p-6 sm:p-8">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-yellow-100 dark:bg-yellow-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-time-line text-xl text-yellow-600 dark:text-yellow-400"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-slate-900 dark:text-white">Menunggu Verifikasi</h4>
+                        <h4 class="font-bold text-slate-900 dark:text-slate-50">Menunggu Verifikasi</h4>
                         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Pembayaran Anda sedang diperiksa oleh pengelola kos. Anda akan menerima notifikasi setelah diverifikasi.</p>
                     </div>
                 </div>
             </div>
         @elseif($tagihan->status === 'paid')
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-green-100 dark:border-green-500/20 p-6 sm:p-8">
+            <div class="card-surface border-green-100 dark:border-green-500/20 p-6 sm:p-8">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-checkbox-circle-line text-xl text-green-600 dark:text-green-400"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-slate-900 dark:text-white">Tagihan Lunas</h4>
+                        <h4 class="font-bold text-slate-900 dark:text-slate-50">Tagihan Lunas</h4>
                         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Tagihan ini sudah dibayar. Terima kasih.</p>
                     </div>
                 </div>
@@ -371,22 +372,22 @@
 
         {{-- Riwayat Pembayaran --}}
         @if($tagihan->pembayarans->isNotEmpty())
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+            <div class="card-surface overflow-hidden">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 px-6 py-4 border-b border-slate-100 dark:border-white/[0.08]">
                     <i class="ri-history-line text-primary-500"></i> Riwayat Pembayaran
                 </h3>
-                <div class="divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="divide-y divide-slate-100 dark:divide-white/[0.06]">
                     @foreach($tagihan->pembayarans->sortByDesc('created_at') as $p)
-                        <a href="{{ route('tenant.pembayaran.show', $p) }}" class="block px-6 py-4 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                        <a href="{{ route('tenant.pembayaran.show', $p) }}" class="block px-6 py-4 hover:bg-slate-50/60 dark:hover:bg-white/[0.03] transition-colors">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div class="min-w-0">
                                     <span class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">{{ $p->payment_number }}</span>
                                     <span class="text-slate-300 dark:text-slate-600 mx-1.5">·</span>
-                                    <span class="font-semibold text-slate-900 dark:text-white whitespace-nowrap">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
+                                    <span class="font-semibold text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium {{ \PaymentLabels::verificationBadge($p->verification_status) }}">{{ \PaymentLabels::verificationLabel($p->verification_status) }}</span>
-                                    <span class="text-slate-400 dark:text-slate-500 text-xs">{{ $p->payment_date->translatedFormat('d M Y') }}</span>
+                                    <x-status-badge :status="$p->verification_status" context="verification" />
+                                    <span class="text-meta">{{ $p->payment_date->translatedFormat('d M Y') }}</span>
                                     <i class="ri-arrow-right-up-line text-slate-400"></i>
                                 </div>
                             </div>

@@ -24,6 +24,7 @@ class StoreFasilitasRequest extends FormRequest
             ],
             'icon' => ['nullable', 'string', 'max:255'],
             'type' => ['sometimes', 'in:kos,kamar'],
+            'category' => ['nullable', 'in:room,bathroom,common,parking,security,service'],
             'description' => ['nullable', 'string'],
             'is_active' => ['sometimes', 'boolean'],
         ];

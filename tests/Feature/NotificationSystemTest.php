@@ -213,12 +213,17 @@ class NotificationSystemTest extends TestCase
             'start_date' => now()->addDay()->toDateString(),
             'end_date' => now()->addDays(2)->toDateString(),
             'rental_type' => 'daily',
+            'identity_number' => '12345678',
+            'phone' => '081234567890',
+            'address' => 'Jl. Test No. 1',
             'notes' => null,
         ]);
 
         $response->assertRedirect();
-        $this->assertSame(1, Notification::forUser($tenant)->where('type', NotificationType::BOOKING)->where('title', 'Booking Berhasil')->count());
+        $this->assertSame(1, Notification::forUser($tenant)->where('type', NotificationType::BOOKING)->where('title', 'Booking Dibuat')->count());
         $this->assertSame(1, Notification::forUser($owner)->where('type', NotificationType::BOOKING)->where('title', 'Booking Baru')->count());
+        // Booking baru = pending, bukan auto-confirm
+        $this->assertDatabaseHas('bookings', ['user_id' => $tenant->id, 'status' => 'pending']);
     }
 
     public function test_cash_payment_submitted_notifies_owner(): void

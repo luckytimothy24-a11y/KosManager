@@ -10,6 +10,8 @@ class PenghuniController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Penghuni::class);
+
         $user = $request->user();
 
         $query = Penghuni::with(['user', 'kos', 'kamar']);

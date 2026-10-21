@@ -28,8 +28,8 @@ class SuperAdminSmokeTest extends TestCase
             ['GET', '/super-admin/fasilitas/1/edit'],
             ['GET', '/super-admin/laporan'],
             ['GET', '/super-admin/audit-log'],
-            ['GET', '/super-admin/laporan/export-pdf/gabungan'],
-            ['GET', '/super-admin/laporan/export-excel/gabungan'],
+            ['GET', '/super-admin/laporan/export-pdf'],
+            ['GET', '/super-admin/laporan/export-excel'],
         ];
 
         foreach ($routes as [$method, $uri]) {

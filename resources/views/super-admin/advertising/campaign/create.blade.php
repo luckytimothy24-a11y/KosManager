@@ -7,7 +7,7 @@
                 <i class="ri-arrow-left-line"></i>
             </a>
             <div>
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Buat Iklan Pihak Ketiga</h1>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50">Buat Iklan Pihak Ketiga</h1>
                 <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Kampanye advertiser pihak ketiga (kos_id NULL, tanpa alur pembayaran owner).</p>
             </div>
         </div>

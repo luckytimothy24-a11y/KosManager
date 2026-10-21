@@ -44,7 +44,7 @@ class KosSeeder extends Seeder
                 'description' => 'Kost campuran nyaman dengan taman asri. Cocok untuk mahasiswa dan pekerja. Dekat Gejayan Food Street dan kafe-kafe populer.',
                 'phone' => '081234567893',
                 'status' => 'active',
-                'photo' => 'kos/kos-melati.jpg',
+                'photo' => 'kos/kos-fasad-1.jpg',
             ],
             [
                 'name' => 'Rumah Kos Srikandi',
@@ -52,7 +52,7 @@ class KosSeeder extends Seeder
                 'description' => 'Kost putri tradisional dengan nuansa rumah tinggal. Pemilik tinggal di tempat, cocok untuk yang mencari suasana kekeluargaan.',
                 'phone' => '081234567894',
                 'status' => 'active',
-                'photo' => 'kos/kos-kenanga.jpg',
+                'photo' => 'kos/kos-tradisional-1.jpg',
             ],
             [
                 'name' => 'Kos Pondok Pogung',
@@ -60,7 +60,7 @@ class KosSeeder extends Seeder
                 'description' => 'Kost campuran strategis di pinggir ring road. Akses cepat ke UGM, UPN, dan pusat perbelanjaan. Parkir luas.',
                 'phone' => '081234567895',
                 'status' => 'active',
-                'photo' => 'kos/kos-mawar.jpg',
+                'photo' => 'kos/kos-exterior-1.jpg',
             ],
             [
                 'name' => 'Kost Cendana Jakal',
@@ -68,7 +68,7 @@ class KosSeeder extends Seeder
                 'description' => 'Kost putri asri di area Jakal. Suasana tenang, jauh dari keramaian namun tetap dekat kampus. Taman dan area jemur luas.',
                 'phone' => '081234567896',
                 'status' => 'active',
-                'photo' => 'kos/kos-melati.jpg',
+                'photo' => 'kos/kos-taman-1.jpg',
             ],
             [
                 'name' => 'Kos Adikara Residence',
@@ -76,21 +76,19 @@ class KosSeeder extends Seeder
                 'description' => 'Kost premium dekat Malioboro dan kraton. Strategis untuk mahasiswa UGM, UNY, dan pekerja pusat kota. Fully furnished.',
                 'phone' => '081234567897',
                 'status' => 'active',
-                'photo' => 'kos/kos-kenanga.jpg',
+                'photo' => 'kos/kos-mewah-1.jpg',
             ],
         ];
 
         foreach ($kosData as $data) {
-            $kos = Kos::create(array_merge($data, ['owner_id' => $owner->id]));
+            $kos = Kos::firstOrCreate(
+                ['name' => $data['name'], 'owner_id' => $owner->id],
+                array_merge($data, ['owner_id' => $owner->id])
+            );
             if (Storage::disk('public')->exists($data['photo'])) {
                 $kos->update(['photo' => $data['photo']]);
             }
         }
-
-        $admin = User::where('email', 'admin@example.com')->first();
-        Kos::all()->each(fn (Kos $kos) => $kos->admins()->syncWithoutDetaching([$admin->id]));
-    }
-}
 
         $admin = User::where('email', 'admin@example.com')->first();
         Kos::all()->each(fn (Kos $kos) => $kos->admins()->syncWithoutDetaching([$admin->id]));

@@ -57,11 +57,33 @@ class BookingLogicTest extends TestCase
     {
         $booking = Booking::factory()->create(['status' => 'pending']);
 
+        // pending -> approved (confirmed) adalah transisi valid
+        $this->assertTrue($booking->canTransitionTo(Booking::STATUS_APPROVED));
         $booking->update(['status' => 'approved']);
         $this->assertEquals('approved', $booking->fresh()->status);
 
+        // approved -> completed adalah transisi valid
+        $this->assertTrue($booking->canTransitionTo(Booking::STATUS_COMPLETED));
         $booking->update(['status' => 'completed']);
         $this->assertEquals('completed', $booking->fresh()->status);
+    }
+
+    public function test_tenant_cannot_force_pending_to_completed_or_approved_from_rejected(): void
+    {
+        $pending = Booking::factory()->create(['status' => 'pending']);
+        $this->assertFalse($pending->canTransitionTo(Booking::STATUS_COMPLETED));
+        $this->assertFalse($pending->transitionTo(Booking::STATUS_COMPLETED));
+        $this->assertEquals('pending', $pending->fresh()->status);
+
+        $rejected = Booking::factory()->create(['status' => 'rejected']);
+        $this->assertFalse($rejected->canTransitionTo(Booking::STATUS_APPROVED));
+        $this->assertFalse($rejected->transitionTo(Booking::STATUS_APPROVED));
+        $this->assertEquals('rejected', $rejected->fresh()->status);
+
+        $cancelled = Booking::factory()->create(['status' => 'cancelled']);
+        $this->assertFalse($cancelled->canTransitionTo(Booking::STATUS_APPROVED));
+        $this->assertFalse($cancelled->transitionTo(Booking::STATUS_APPROVED));
+        $this->assertEquals('cancelled', $cancelled->fresh()->status);
     }
 
     public function test_booking_reject_does_not_change_room_status(): void

@@ -8,7 +8,9 @@ class StoreTagihanRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin', 'admin', 'owner');
+        $user = $this->user();
+
+        return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();
     }
 
     public function rules(): array

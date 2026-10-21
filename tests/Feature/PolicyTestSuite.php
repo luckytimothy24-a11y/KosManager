@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Booking;
+use App\Models\DamageReport;
 use App\Models\Fasilitas;
 use App\Models\Kamar;
-use App\Models\Kos;
 use App\Models\Kontrak;
+use App\Models\Kos;
+use App\Models\Message;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
@@ -18,10 +21,15 @@ class PolicyTestSuite extends TestCase
     use RefreshDatabase;
 
     private User $superAdmin;
+
     private User $admin;
+
     private User $owner;
+
     private User $ownerB;
+
     private User $tenant;
+
     private User $tenantB;
 
     protected function setUp(): void
@@ -43,6 +51,7 @@ class PolicyTestSuite extends TestCase
     private function createKamar(User $owner): Kamar
     {
         $kos = $this->createKos($owner);
+
         return Kamar::factory()->create(['kos_id' => $kos->id]);
     }
 
@@ -328,10 +337,10 @@ class PolicyTestSuite extends TestCase
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenant->id]);
         $tagihan = Tagihan::factory()->create(['kamar_id' => $kamar->id, 'penghuni_id' => $penghuni->id]);
-        $pembayaran = \App\Models\Pembayaran::factory()->create(['tagihan_id' => $tagihan->id, 'penghuni_id' => $penghuni->id]);
+        $pembayaran = Pembayaran::factory()->create(['tagihan_id' => $tagihan->id, 'penghuni_id' => $penghuni->id]);
 
         $otherTenant = Penghuni::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenantB->id]);
-        $otherPembayaran = \App\Models\Pembayaran::factory()->create(['tagihan_id' => $tagihan->id, 'penghuni_id' => $otherTenant->id]);
+        $otherPembayaran = Pembayaran::factory()->create(['tagihan_id' => $tagihan->id, 'penghuni_id' => $otherTenant->id]);
 
         $this->actingAs($this->tenant)->get(route('tenant.pembayaran.show', $pembayaran))->assertOk();
         $this->actingAs($this->tenant)->get(route('tenant.pembayaran.show', $otherPembayaran))->assertForbidden();
@@ -343,13 +352,13 @@ class PolicyTestSuite extends TestCase
         $kosB = $this->createKos($this->ownerB);
         $penghuni = Penghuni::factory()->create(['kos_id' => $kos->id]);
         $tagihan = Tagihan::factory()->create(['kamar_id' => Kamar::factory()->create(['kos_id' => $kos->id])->id, 'penghuni_id' => $penghuni->id]);
-        $pembayaran = \App\Models\Pembayaran::factory()->create(['tagihan_id' => $tagihan->id]);
+        $pembayaran = Pembayaran::factory()->create(['tagihan_id' => $tagihan->id]);
 
         $this->actingAs($this->owner)->post(route('owner.pembayaran.verify', $pembayaran))->assertOk();
 
         $otherPenghuni = Penghuni::factory()->create(['kos_id' => $kosB->id]);
         $otherTagihan = Tagihan::factory()->create(['kamar_id' => Kamar::factory()->create(['kos_id' => $kosB->id])->id, 'penghuni_id' => $otherPenghuni->id]);
-        $otherPembayaran = \App\Models\Pembayaran::factory()->create(['tagihan_id' => $otherTagihan->id]);
+        $otherPembayaran = Pembayaran::factory()->create(['tagihan_id' => $otherTagihan->id]);
 
         $this->actingAs($this->owner)->post(route('owner.pembayaran.verify', $otherPembayaran))->assertForbidden();
     }
@@ -359,8 +368,8 @@ class PolicyTestSuite extends TestCase
     public function test_tenant_can_only_see_own_damage_report(): void
     {
         $kos = $this->createKos($this->owner);
-        $report = \App\Models\DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenant->id]);
-        $otherReport = \App\Models\DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenantB->id]);
+        $report = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenant->id]);
+        $otherReport = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenantB->id]);
 
         $this->actingAs($this->tenant)->get(route('tenant.damage-reports.show', $report))->assertOk();
         $this->actingAs($this->tenant)->get(route('tenant.damage-reports.show', $otherReport))->assertForbidden();
@@ -372,7 +381,7 @@ class PolicyTestSuite extends TestCase
     {
         $sender = User::factory()->create(['role' => 'tenant']);
         $receiver = User::factory()->create(['role' => 'owner']);
-        $message = \App\Models\Message::factory()->create(['sender_id' => $sender->id, 'receiver_id' => $receiver->id]);
+        $message = Message::factory()->create(['sender_id' => $sender->id, 'receiver_id' => $receiver->id]);
 
         $this->actingAs($sender)->get(route('messages.show', $receiver))->assertOk();
         $this->actingAs($receiver)->get(route('messages.show', $sender))->assertOk();

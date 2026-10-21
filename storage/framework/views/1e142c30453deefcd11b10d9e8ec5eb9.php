@@ -74,7 +74,7 @@
 <?php endif; ?>
 
         
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
+        <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Tagihan</p>
                 <p class="mt-1 text-3xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp <?php echo e(number_format($tagihan->total, 0, ',', '.')); ?></p>
@@ -111,8 +111,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
             
             <div class="lg:col-span-3 space-y-6">
-                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 overflow-hidden">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 px-6 py-4 border-b border-slate-100 dark:border-white/10">
                         <i class="ri-file-list-3-line text-primary-500"></i> Rincian Biaya
                     </h3>
 
@@ -148,10 +148,10 @@
                     </dl>
 
                     
-                    <div class="mx-6 mb-6 rounded-xl border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                    <div class="mx-6 mb-6 rounded-xl border border-slate-100 dark:border-white/10 divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                         <div class="flex items-center justify-between px-4 py-3">
                             <span class="text-slate-500 dark:text-slate-400">Subtotal</span>
-                            <span class="font-medium text-slate-900 dark:text-white">Rp <?php echo e(number_format($tagihan->subtotal, 0, ',', '.')); ?></span>
+                            <span class="font-medium text-slate-900 dark:text-slate-50">Rp <?php echo e(number_format($tagihan->subtotal, 0, ',', '.')); ?></span>
                         </div>
                         <div class="flex items-center justify-between px-4 py-3">
                             <span class="text-slate-500 dark:text-slate-400">Diskon</span>
@@ -161,8 +161,8 @@
                             <span class="text-slate-500 dark:text-slate-400">Denda</span>
                             <span class="font-medium text-red-600 dark:text-red-400">+ Rp <?php echo e(number_format($tagihan->penalty, 0, ',', '.')); ?></span>
                         </div>
-                        <div class="flex items-center justify-between px-4 py-3 bg-slate-50/70 dark:bg-slate-800/40 rounded-b-xl">
-                            <span class="font-semibold text-slate-900 dark:text-white">Total</span>
+                        <div class="flex items-center justify-between px-4 py-3 bg-slate-50/70 dark:bg-surface-elevated/40 rounded-b-xl">
+                            <span class="font-semibold text-slate-900 dark:text-slate-50">Total</span>
                             <span class="font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp <?php echo e(number_format($tagihan->total, 0, ',', '.')); ?></span>
                         </div>
                     </div>
@@ -171,8 +171,8 @@
 
             
             <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 overflow-hidden">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 px-6 py-4 border-b border-slate-100 dark:border-white/10">
                         <i class="ri-history-line text-primary-500"></i> Riwayat Pembayaran
                     </h3>
 
@@ -190,14 +190,14 @@
                                         <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5"><?php echo e($p->payment_date->translatedFormat('d M Y')); ?></p>
                                     </div>
                                     <div class="text-right shrink-0">
-                                        <p class="text-sm font-semibold text-slate-900 dark:text-white whitespace-nowrap">Rp <?php echo e(number_format($p->amount, 0, ',', '.')); ?></p>
+                                        <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp <?php echo e(number_format($p->amount, 0, ',', '.')); ?></p>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium <?php echo e(\PaymentLabels::verificationBadge($p->verification_status)); ?>"><?php echo e(\PaymentLabels::verificationLabel($p->verification_status)); ?></span>
                                     </div>
                                 </div>
                             </a>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <div class="py-8 text-center">
-                                <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                                <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">
                                     <i class="ri-money-dollar-circle-line text-lg text-slate-300 dark:text-slate-600"></i>
                                 </span>
                                 <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Belum ada pembayaran.</p>
@@ -207,8 +207,8 @@
                 </div>
 
                 <?php if(Auth::user()->isTenant() && !in_array($tagihan->status, ['paid', 'cancelled'])): ?>
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-primary-100 dark:border-primary-500/20 p-6">
-                        <h4 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white mb-1">
+                    <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-primary-100 dark:border-primary-500/20 p-6">
+                        <h4 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-1">
                             <i class="ri-hand-coin-line text-primary-500"></i> Konfirmasi Pembayaran Tunai
                         </h4>
                         <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Pembayaran tunai akan diverifikasi oleh pemilik kos dalam 1&times;24 jam.</p>
@@ -221,7 +221,7 @@
                                 <div>
                                     <label for="amount_display" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nominal</label>
                                     <input id="amount_display" type="text" value="Rp <?php echo e(number_format($tagihan->total, 0, ',', '.')); ?>" readonly disabled
-                                           class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/60 dark:text-slate-100 text-sm font-bold cursor-not-allowed">
+                                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-surface-elevated/60 dark:text-slate-200 text-sm font-bold cursor-not-allowed">
                                 </div>
                                 <div>
                                     <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Bukti Pembayaran <span class="font-normal">(opsional)</span></label>

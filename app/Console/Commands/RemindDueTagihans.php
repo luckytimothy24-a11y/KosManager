@@ -17,7 +17,7 @@ class RemindDueTagihans extends Command
         $days = (int) $this->option('days');
         $targetDate = today()->addDays($days);
 
-        $tagihans = Tagihan::with('penghuni')
+        $tagihans = Tagihan::with(['penghuni.user', 'kontrak.kos.owner'])
             ->where('status', 'unpaid')
             ->whereDate('due_date', '=', $targetDate)
             ->get();
@@ -36,6 +36,20 @@ class RemindDueTagihans extends Command
                 );
             } catch (\Exception $e) {
                 \Log::warning("tagihan:remind-due-soon notification failed for tagihan {$tagihan->id}: {$e->getMessage()}");
+            }
+
+            if ($tagihan->kontrak?->kos?->owner) {
+                try {
+                    NotificationService::billDueSoonOwner(
+                        $tagihan->kontrak->kos->owner->id,
+                        $tagihan->penghuni->user->name ?? 'N/A',
+                        $tagihan->bill_number,
+                        $tagihan->due_date->format('d/m/Y'),
+                        "bill-due-owner:{$tagihan->id}"
+                    );
+                } catch (\Exception $e) {
+                    \Log::warning("tagihan:remind-due-soon owner notification failed for tagihan {$tagihan->id}: {$e->getMessage()}");
+                }
             }
         }
 

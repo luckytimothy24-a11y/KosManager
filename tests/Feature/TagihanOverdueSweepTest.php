@@ -46,7 +46,7 @@ class TagihanOverdueSweepTest extends TestCase
             'status' => 'overdue',
         ]);
         Mail::assertQueued(KosManagerMail::class, function ($mail) use ($tagihan) {
-            return $mail->mailSubject === 'Tagihan Overdue'
+            return $mail->mailSubject === 'Tagihan Terlambat'
                 && str_contains($mail->bodyMessage, $tagihan->bill_number);
         });
     }
@@ -79,6 +79,6 @@ class TagihanOverdueSweepTest extends TestCase
         $this->assertDatabaseHas('tagihans', ['id' => $paidPastDue->id, 'status' => 'paid']);
         $this->assertDatabaseHas('tagihans', ['id' => $futureUnpaid->id, 'status' => 'unpaid']);
 
-        Mail::assertQueued(KosManagerMail::class, 1);
+        Mail::assertQueued(KosManagerMail::class, 2);
     }
 }

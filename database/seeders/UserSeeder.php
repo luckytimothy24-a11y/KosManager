@@ -10,9 +10,16 @@ class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * @throws ValidationException
      */
     public function run(): void
     {
+        // Production environment: skip creating demo users to avoid affecting live data
+        if (app()->environment('production')) {
+            return;
+        }
+
         User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@example.com',

@@ -226,6 +226,9 @@ class TenantRoomDetailTest extends TestCase
             'start_date' => now()->addDays(1)->format('Y-m-d'),
             'end_date' => now()->addMonths(3)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertRedirect();
@@ -233,8 +236,9 @@ class TenantRoomDetailTest extends TestCase
             'user_id' => $tenant->id,
             'kamar_id' => $kamar->id,
             'price' => 1500000,
-            'status' => 'approved',
+            'status' => 'pending',
         ]);
+        $this->assertDatabaseMissing('penghunis', ['user_id' => $tenant->id, 'status' => 'active']);
     }
 
     public function test_cannot_book_unavailable_room(): void
@@ -249,6 +253,9 @@ class TenantRoomDetailTest extends TestCase
             'start_date' => now()->addDays(1)->format('Y-m-d'),
             'end_date' => now()->addMonths(2)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors('kamar_id');
@@ -582,18 +589,22 @@ class TenantRoomDetailTest extends TestCase
             'end_date' => now()->addMonths(2)->format('Y-m-d'),
             'rental_type' => 'monthly',
             'notes' => 'Tennis',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('bookings', [
             'user_id' => $tenant->id,
             'kamar_id' => $kamar->id,
-            'status' => 'approved',
+            'status' => 'pending',
         ]);
         $this->assertDatabaseHas('kamar', [
             'id' => $kamar->id,
             'status' => 'booked',
         ]);
+        $this->assertDatabaseMissing('penghunis', ['user_id' => $tenant->id, 'status' => 'active']);
     }
 
     public function test_booking_cancel_still_works(): void
@@ -612,7 +623,12 @@ class TenantRoomDetailTest extends TestCase
 
         $response = $this->actingAs($tenant)->post(route('tenant.booking.cancel', $booking));
 
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
-        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'available']);
+        // Tenant cancel = request saja — booking tidak langsung cancelled
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('booking_cancellation_requests', [
+            'booking_id' => $booking->id,
+            'status' => 'pending',
+        ]);
+        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'booked']);
     }
 }

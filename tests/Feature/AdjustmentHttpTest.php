@@ -6,6 +6,7 @@ use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
 use App\Models\ManagementAgreement;
+use App\Models\Payout;
 use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\PropertyOwner;
@@ -21,8 +22,11 @@ class AdjustmentHttpTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $superAdmin;
+
     private Kos $kos;
+
     private Pembayaran $pembayaran;
 
     protected function setUp(): void
@@ -67,14 +71,14 @@ class AdjustmentHttpTest extends TestCase
 
     public function test_owner_linked_payout_forbidden_via_http(): void
     {
-        $payout = \App\Models\Payout::firstOrFail();
+        $payout = Payout::firstOrFail();
         $this->actingAs($this->owner)->post(route('owner.adjustments.store'), [
             'pembayaran_id' => $this->pembayaran->id,
             'payout_id' => $payout->id,
             'type' => 'refund',
             'amount' => 100000,
             'reason' => 'owner coba via http',
-        ])->assertSessionHas('error');
+        ])->assertForbidden();
     }
 
     public function test_reason_too_short_validation(): void

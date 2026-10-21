@@ -1,4 +1,4 @@
-﻿<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
 <?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('app-layout'); ?>
@@ -12,14 +12,14 @@
      <?php $__env->slot('header', null, []); ?> 
         <?php if (isset($component)) { $__componentOriginalf8d4ea307ab1e58d4e472a43c8548d8e = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf8d4ea307ab1e58d4e472a43c8548d8e = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.page-header','data' => ['title' => 'Check-In','description' => 'Review pengajuan check-in tenant — konfirmasi atau tolak. Lalu proses check-in final.']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.page-header','data' => ['title' => 'Check-In','description' => 'Review pengajuan check-in tenant — konfirmasi atau tolak. Lalu proses check-in final.','icon' => 'ri-login-box-line']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('page-header'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
 <?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => 'Check-In','description' => 'Review pengajuan check-in tenant — konfirmasi atau tolak. Lalu proses check-in final.']); ?>
+<?php $component->withAttributes(['title' => 'Check-In','description' => 'Review pengajuan check-in tenant — konfirmasi atau tolak. Lalu proses check-in final.','icon' => 'ri-login-box-line']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalf8d4ea307ab1e58d4e472a43c8548d8e)): ?>
@@ -55,7 +55,7 @@
 <?php endif; ?>
 
         <?php if($errors->any()): ?>
-            <div class="rounded-2xl border border-red-200 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] p-4" role="alert">
+            <div class="rounded-2xl border border-red-200/80 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] p-4" role="alert">
                 <div class="flex items-start gap-3">
                     <div class="w-9 h-9 rounded-xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-error-warning-line text-red-600 dark:text-red-400"></i>
@@ -74,16 +74,16 @@
 
         
         <?php if($readyBookings->isNotEmpty()): ?>
-            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 p-5 sm:p-6">
-                <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100 dark:border-zinc-700">
+            <div class="card-surface p-5 sm:p-6">
+                <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100 dark:border-white/[0.06]">
                     <span class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-shield-check-line text-lg text-amber-600 dark:text-amber-400"></i>
                     </span>
                     <div>
-                        <h2 class="font-bold text-slate-900 dark:text-white text-sm">Pengajuan Check-In</h2>
+                        <h2 class="font-bold text-slate-900 dark:text-slate-50 text-sm">Pengajuan Check-In</h2>
                         <p class="text-xs text-slate-400 dark:text-slate-500">Tenant mengisi KTP & WhatsApp — Anda hanya perlu verifikasi & konfirmasi.</p>
                     </div>
-                    <span class="ml-auto px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300"><?php echo e($readyBookings->count()); ?> booking</span>
+                    <span class="ml-auto px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300"><?php echo e($readyBookings->count()); ?> booking</span>
                 </div>
 
                 <div class="space-y-3">
@@ -93,16 +93,16 @@
                             <?php if($identityStatus === 'pending'): ?> border-amber-200 dark:border-amber-500/30
                             <?php elseif($identityStatus === 'confirmed'): ?> border-green-200 dark:border-green-500/20
                             <?php elseif($identityStatus === 'rejected'): ?> border-red-200 dark:border-red-500/20
-                            <?php else: ?> border-slate-200 dark:border-zinc-700 <?php endif; ?>"
+                            <?php else: ?> border-slate-200 dark:border-white/[0.08] <?php endif; ?>"
                              :class="open && 'border-primary-200 dark:border-primary-500/30'">
                             <button type="button" @click="open = !open"
-                                    class="group w-full flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition"
+                                    class="group w-full flex flex-wrap items-center justify-between gap-3 px-4 py-3.5 text-left hover:bg-slate-50/60 dark:hover:bg-white/[0.03] transition"
                                     :aria-expanded="open.toString()" aria-controls="checkin-form-<?php echo e($rb->id); ?>">
                                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm min-w-0">
                                     <span class="inline-flex items-center gap-2 min-w-0">
                                         <span class="font-mono text-xs font-semibold text-slate-500 dark:text-slate-400"><?php echo e($rb->booking_code); ?></span>
                                         <span class="text-slate-300 dark:text-slate-600" aria-hidden="true">•</span>
-                                        <span class="min-w-0 truncate font-semibold text-slate-900 dark:text-white"><?php echo e($rb->user->name); ?></span>
+                                        <span class="min-w-0 truncate font-semibold text-slate-900 dark:text-slate-50"><?php echo e($rb->user->name); ?></span>
                                     </span>
                                     <span class="text-slate-500 dark:text-slate-400 truncate hidden sm:inline"><?php echo e($rb->kos->name); ?> · Kamar <?php echo e($rb->kamar->room_number); ?></span>
                                     <span class="text-slate-400 dark:text-slate-500 text-xs"><?php echo e($rb->start_date->format('d M Y')); ?> – <?php echo e($rb->end_date->format('d M Y')); ?></span>
@@ -124,7 +124,7 @@
                                             <span class="text-red-700 dark:text-red-300">Ditolak</span>
                                         </span>
                                     <?php else: ?>
-                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-zinc-700 px-2.5 py-1">
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-white/[0.06] px-2.5 py-1">
                                             <i class="ri-information-line text-slate-500"></i>
                                             <span class="text-slate-600 dark:text-slate-300">Belum Mengisi</span>
                                         </span>
@@ -141,7 +141,7 @@
 
                                 
                                 <?php if($identityStatus === 'pending'): ?>
-                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-zinc-700 mt-1">
+                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] mt-1">
                                         <div class="flex items-start gap-3 rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/[0.06] px-4 py-4 mb-4">
                                             <span class="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/15 flex items-center justify-center shrink-0">
                                                 <i class="ri-user-follow-line text-amber-600 dark:text-amber-400"></i>
@@ -152,21 +152,21 @@
                                                 <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                                     <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Nama Tenant</span>
-                                                        <p class="mt-0.5 font-semibold text-slate-900 dark:text-white"><?php echo e($rb->user->name); ?></p>
+                                                        <p class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50"><?php echo e($rb->user->name); ?></p>
                                                         <p class="text-xs text-slate-500"><?php echo e($rb->user->email); ?></p>
                                                     </div>
                                                     <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Kos / Kamar</span>
-                                                        <p class="mt-0.5 font-medium text-slate-900 dark:text-white"><?php echo e($rb->kos->name); ?> · Kamar <?php echo e($rb->kamar->room_number); ?></p>
+                                                        <p class="mt-0.5 font-medium text-slate-900 dark:text-slate-50"><?php echo e($rb->kos->name); ?> · Kamar <?php echo e($rb->kamar->room_number); ?></p>
                                                     </div>
                                                     <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Nomor KTP</span>
-                                                        <p class="mt-0.5 font-mono font-medium text-slate-900 dark:text-white"><?php echo e($rb->maskedIdentityNumber()); ?></p>
+                                                        <p class="mt-0.5 font-mono font-medium text-slate-900 dark:text-slate-50"><?php echo e($rb->maskedIdentityNumber()); ?></p>
                                                         <p class="text-[11px] text-slate-400">Masking penuh untuk keamanan — data lengkap tersimpan di sistem.</p>
                                                     </div>
                                                     <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">WhatsApp</span>
-                                                        <p class="mt-0.5 font-mono font-medium text-slate-900 dark:text-white"><?php echo e($rb->phone ?: '-'); ?></p>
+                                                        <p class="mt-0.5 font-mono font-medium text-slate-900 dark:text-slate-50"><?php echo e($rb->phone ?: '-'); ?></p>
                                                     </div>
                                                     <div class="sm:col-span-2">
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Alamat</span>
@@ -179,7 +179,7 @@
 
                                                     </p>
                                                 <?php endif; ?>
-                                                <span class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                                <span class="mt-3 inline-flex items-center gap-1.5 rounded-full bg-amber-100 dark:bg-amber-500/15 px-2.5 py-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
                                                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Menunggu Konfirmasi
                                                 </span>
                                             </div>
@@ -187,18 +187,18 @@
 
                                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5">
                                             <button type="button" @click="showReject = !showReject"
-                                                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-500/30 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                                                    class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 bg-white dark:bg-surface-elevated border border-red-200 dark:border-red-500/30 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition">
                                                 <i class="ri-close-line"></i> Tolak
                                             </button>
                                             <form method="POST" action="<?php echo e(route("$prefix.checkin.confirm", $rb)); ?>" class="flex-1 sm:flex-none">
                                                 <?php echo csrf_field(); ?>
                                                 <button type="submit"
-                                                        class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-green-600 hover:bg-green-700 active:bg-green-800 rounded-xl transition shadow-sm shadow-green-500/20">
+                                                        class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl transition disabled:opacity-50">
                                                     <i class="ri-check-line"></i> Konfirmasi Check-In
                                                 </button>
                                             </form>
                                             <a href="<?php echo e(route("$prefix.booking.show", $rb)); ?>"
-                                               class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition text-center">Detail</a>
+                                               class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200/60 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.06] transition text-center">Detail</a>
                                         </div>
 
                                         
@@ -207,13 +207,13 @@
                                                 <?php echo csrf_field(); ?>
                                                 <label for="reason_<?php echo e($rb->id); ?>" class="block text-xs font-semibold text-red-800 dark:text-red-300">Alasan Penolakan <span class="text-red-500">*</span></label>
                                                 <textarea id="reason_<?php echo e($rb->id); ?>" name="reason" required minlength="5" maxlength="500" rows="2"
-                                                          class="w-full rounded-xl border-red-200 dark:border-red-500/20 dark:bg-zinc-800/60 dark:text-slate-100 text-sm placeholder-slate-400 focus:border-red-400 focus:ring-red-400/20"
+                                                          class="w-full rounded-xl border-red-200 dark:border-red-500/20 bg-white dark:bg-surface-elevated dark:text-slate-200 text-sm placeholder-slate-400 focus:border-red-400 focus:ring-red-400/20 outline-none transition"
                                                           placeholder="Contoh: Nomor WhatsApp tidak dapat dihubungi. Mohon perbaiki."></textarea>
                                                 <div class="flex items-center justify-end gap-2.5">
                                                     <button type="button" @click="showReject = false"
-                                                            class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl hover:bg-slate-50 transition">Batal</button>
+                                                            class="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-white/[0.08] bg-white dark:bg-surface-elevated rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.06] transition">Batal</button>
                                                     <button type="submit"
-                                                            class="px-5 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition shadow-sm">Tolak Check-In</button>
+                                                            class="px-5 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition disabled:opacity-50">Tolak Check-In</button>
                                                 </div>
                                             </form>
                                         </div>
@@ -221,7 +221,7 @@
 
                                 
                                 <?php elseif($identityStatus === 'confirmed'): ?>
-                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-zinc-700 mt-1">
+                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] mt-1">
                                         <div class="flex items-start gap-3 rounded-xl border border-green-100 dark:border-green-500/20 bg-green-50/70 dark:bg-green-500/[0.06] px-4 py-4 mb-4">
                                             <span class="w-9 h-9 rounded-full bg-green-100 dark:bg-green-500/15 flex items-center justify-center shrink-0">
                                                 <i class="ri-shield-check-line text-green-600 dark:text-green-400"></i>
@@ -259,14 +259,14 @@
                                             <div>
                                                 <label for="notes_<?php echo e($rb->id); ?>" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Catatan (opsional)</label>
                                                 <input type="text" id="notes_<?php echo e($rb->id); ?>" name="notes" maxlength="1000"
-                                                       class="w-full rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm placeholder-slate-400 focus:border-primary-500 focus:ring-primary-500 dark:placeholder-slate-500"
+                                                       class="field-input"
                                                        placeholder="Opsional">
                                             </div>
                                             <div class="mt-4 flex flex-col items-stretch justify-end gap-3 sm:flex-row sm:items-center">
                                                 <a href="<?php echo e(route("$prefix.booking.show", $rb)); ?>"
-                                                   class="inline-flex w-full items-center justify-center px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition sm:w-auto">Detail Booking</a>
+                                                   class="inline-flex w-full items-center justify-center px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200/60 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.06] transition sm:w-auto">Detail Booking</a>
                                                 <button type="submit" :disabled="submitting"
-                                                        class="inline-flex w-full items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed sm:w-auto">
+                                                        class="btn-primary w-full sm:w-auto disabled:opacity-60">
                                                     <i class="ri-login-box-line"></i> Proses Check-In
                                                 </button>
                                             </div>
@@ -275,7 +275,7 @@
 
                                 
                                 <?php elseif($identityStatus === 'rejected'): ?>
-                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-zinc-700 mt-1">
+                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] mt-1">
                                         <div class="flex items-start gap-3 rounded-xl border border-red-100 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] px-4 py-4">
                                             <span class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">
                                                 <i class="ri-close-circle-line text-red-600 dark:text-red-400"></i>
@@ -284,7 +284,7 @@
                                                 <p class="text-sm font-bold text-red-800 dark:text-red-300">Check-In Ditolak</p>
                                                 <p class="mt-1 text-sm text-red-700/90 dark:text-red-300/90">Menunggu tenant memperbaiki data.</p>
                                                 <?php if($rb->identity_rejection_reason): ?>
-                                                    <div class="mt-3 rounded-xl bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-500/20 px-4 py-3">
+                                                    <div class="mt-3 rounded-xl bg-white dark:bg-surface-elevated border border-red-200 dark:border-red-500/20 px-4 py-3">
                                                         <p class="text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">Alasan</p>
                                                         <p class="mt-1 text-sm text-slate-700 dark:text-slate-200"><?php echo e($rb->identity_rejection_reason); ?></p>
                                                     </div>
@@ -298,23 +298,23 @@
                                             </div>
                                         </div>
                                         <a href="<?php echo e(route("$prefix.booking.show", $rb)); ?>"
-                                           class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                                           class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-surface-elevated border border-slate-200/60 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.06] transition">
                                             <i class="ri-eye-line"></i> Detail Booking
                                         </a>
                                     </div>
 
                                 
                                 <?php else: ?>
-                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-zinc-700 mt-1">
-                                        <div class="flex items-start gap-3 rounded-xl border border-slate-100 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/40 px-4 py-4">
-                                            <span class="w-9 h-9 rounded-full bg-slate-100 dark:bg-zinc-700 flex items-center justify-center shrink-0">
+                                    <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] mt-1">
+                                        <div class="flex items-start gap-3 rounded-xl border border-slate-100 dark:border-white/[0.08] bg-slate-50 dark:bg-white/[0.04] px-4 py-4">
+                                            <span class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
                                                 <i class="ri-information-line text-slate-500"></i>
                                             </span>
                                             <div>
                                                 <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Menunggu Data Identitas Tenant</p>
                                                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Tenant belum mengajukan check-in. Minta tenant membuka menu <span class="font-semibold">Booking Saya → Pengajuan Check-In</span> pada akunnya.</p>
                                                 <a href="<?php echo e(route("$prefix.booking.show", $rb)); ?>"
-                                                   class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                                                   class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-surface-elevated border border-slate-200/60 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.06] transition">
                                                     <i class="ri-eye-line"></i> Detail Booking
                                                 </a>
                                             </div>
@@ -329,38 +329,40 @@
         <?php endif; ?>
 
         
-        <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 overflow-hidden">
-            <h2 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-zinc-700">
-                <i class="ri-history-line text-primary-500"></i> Riwayat Check-In
-            </h2>
+        <div class="table-card">
+            <div class="px-4 sm:px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+                <h2 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50">
+                    <i class="ri-history-line text-primary-500"></i> Riwayat Check-In
+                </h2>
+            </div>
 
-            <div class="overflow-x-auto scrollbar-thin">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-slate-50 dark:bg-zinc-800/50 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <thead>
                         <tr>
-                            <th scope="col" class="px-6 py-3.5 text-left font-semibold">Penghuni</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold">Kamar</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden md:table-cell">Kos</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden sm:table-cell">Tanggal &amp; Jam</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden lg:table-cell">Petugas</th>
+                            <th class="px-4 sm:px-6">Penghuni</th>
+                            <th>Kamar</th>
+                            <th class="hidden md:table-cell">Kos</th>
+                            <th class="hidden sm:table-cell">Tanggal &amp; Jam</th>
+                            <th class="hidden lg:table-cell">Petugas</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tbody>
                         <?php $__empty_1 = true; $__currentLoopData = $checkIns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ci): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                                <td class="px-6 py-3.5">
+                            <tr>
+                                <td class="px-4 sm:px-6">
                                     <div class="flex items-center gap-2.5">
                                         <span class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 flex items-center justify-center text-xs font-bold shrink-0"><?php echo e(strtoupper(substr($ci->penghuni->user->name, 0, 1))); ?></span>
-                                        <span class="font-medium text-slate-900 dark:text-white truncate max-w-[10rem]"><?php echo e($ci->penghuni->user->name); ?></span>
+                                        <span class="font-medium text-slate-900 dark:text-slate-50 truncate max-w-[10rem]"><?php echo e($ci->penghuni->user->name); ?></span>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3.5 font-medium text-slate-700 dark:text-slate-200"><?php echo e($ci->kamar->room_number); ?></td>
-                                <td class="px-4 py-3.5 text-slate-600 dark:text-slate-300 hidden md:table-cell"><?php echo e($ci->kamar->kos->name); ?></td>
-                                <td class="px-4 py-3.5 hidden sm:table-cell">
+                                <td class="font-medium text-slate-700 dark:text-slate-200"><?php echo e($ci->kamar->room_number); ?></td>
+                                <td class="text-slate-600 dark:text-slate-300 hidden md:table-cell"><?php echo e($ci->kamar->kos->name); ?></td>
+                                <td class="hidden sm:table-cell">
                                     <p class="text-slate-600 dark:text-slate-300 whitespace-nowrap"><?php echo e(\Carbon\Carbon::parse($ci->check_in_date)->format('d M Y')); ?></p>
                                     <p class="text-xs text-slate-400 dark:text-slate-500"><?php echo e($ci->check_in_time); ?></p>
                                 </td>
-                                <td class="px-4 py-3.5 text-slate-600 dark:text-slate-300 hidden lg:table-cell"><?php echo e($ci->officer->name); ?></td>
+                                <td class="text-slate-600 dark:text-slate-300 hidden lg:table-cell"><?php echo e($ci->officer->name); ?></td>
                             </tr>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
@@ -391,13 +393,7 @@
                     </tbody>
                 </table>
             </div>
-
-            <?php if($checkIns->hasPages()): ?>
-                <div class="p-4 border-t border-slate-100 dark:border-zinc-700">
-                    <?php echo e($checkIns->links()); ?>
-
-                </div>
-            <?php endif; ?>
+            <div class="px-4 py-3 border-t border-slate-100 dark:border-white/[0.06]"><?php echo e($checkIns->links()); ?></div>
         </div>
     </div>
  <?php echo $__env->renderComponent(); ?>

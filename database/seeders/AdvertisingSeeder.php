@@ -51,6 +51,20 @@ class AdvertisingSeeder extends Seeder
             );
         }
 
+        $owner = User::where('email', 'owner@example.com')->first();
+        if (! $owner) {
+            $owner = User::factory()->create(['email' => 'owner@example.com', 'role' => 'owner']);
+        }
+
+        $kosFeatured = Kos::where('name', 'Kost Nawasena Seturan')->first()
+            ?? Kos::where('owner_id', $owner->id)->inRandomOrder()->first();
+
+        $kosSponsored = Kos::where('name', 'Kos Arunika Babarsari')->first()
+            ?? Kos::where('owner_id', $owner->id)->inRandomOrder()->first();
+
+        $kosSecond = Kos::where('name', 'Kos Maleo Residence')->first()
+            ?? Kos::where('owner_id', $owner->id)->inRandomOrder()->first();
+
         $packages = [
             [
                 'code' => 'FEATURED',

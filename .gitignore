@@ -17,3 +17,13 @@ yarn-error.log
 /.idea
 /.vscode
 /.phpunit.result.cache
+/tmp-qa
+/routes.txt
+/testlist.txt
+/tmp_log.txt
+/create-kos-gallery.php
+/demo-patungan-full.php
+/fix-kos-foto.php
+/AUTHORIZATION_ANALYSIS_REPORT.md
+/authorization_report.md
+/PRESENTATION.md

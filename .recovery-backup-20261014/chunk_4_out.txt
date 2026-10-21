@@ -1,0 +1,431 @@
+PHPUnit 10.5.64 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.2.12
+Configuration: C:\Users\ASUS\KosManager\phpunit.xml
+
+...................FFFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFFF.FFF.....  63 / 224 ( 28%)
+.....................................................F...FF.... 126 / 224 ( 56%)
+...FFFFFE...F.FF.FFF...FF.FF.................F...E............. 189 / 224 ( 84%)
+...................................                             224 / 224 (100%)
+
+Time: 01:18.498, Memory: 78.00 MB
+
+There were 2 errors:
+
+1) Tests\Feature\KamarCapacityThreeTest::test_replacement_tenant_after_checkout
+Illuminate\Routing\Exceptions\UrlGenerationException: Missing required parameter for [Route: tenant.checkout.request] [URI: tenant/check-out/{penghuni}/request] [Missing parameter: penghuni].
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\Exceptions\UrlGenerationException.php:35
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\RouteUrlGenerator.php:90
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php:500
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php:469
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:811
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:167
+
+2) Tests\Feature\KamarPhotoSeedingTest::test_kamar_occupancy_awareness
+Error: Call to undefined method Tests\Feature\KamarPhotoSeedingTest::assertMethodExists()
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarPhotoSeedingTest.php:72
+
+--
+
+There were 56 failures:
+
+1) Tests\Feature\GroupBookingInvitationTest::test_primary_can_invite
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:81
+
+2) Tests\Feature\GroupBookingInvitationTest::test_non_primary_cannot_invite
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:90
+
+3) Tests\Feature\GroupBookingInvitationTest::test_owner_cannot_create_invitation
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:98
+
+4) Tests\Feature\GroupBookingInvitationTest::test_cannot_invite_beyond_requested
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:105
+
+5) Tests\Feature\GroupBookingInvitationTest::test_duplicate_email_rejected
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:113
+
+6) Tests\Feature\GroupBookingInvitationTest::test_primary_cannot_invite_self
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:121
+
+7) Tests\Feature\GroupBookingInvitationTest::test_expired_token_rejected
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:136
+
+8) Tests\Feature\GroupBookingInvitationTest::test_accepted_token_cannot_be_reused
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:147
+
+9) Tests\Feature\GroupBookingInvitationTest::test_matching_email_can_accept
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:158
+
+10) Tests\Feature\GroupBookingInvitationTest::test_wrong_email_rejected
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:168
+
+11) Tests\Feature\GroupBookingInvitationTest::test_unauthenticated_cannot_accept
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:177
+
+12) Tests\Feature\GroupBookingInvitationTest::test_friend_can_accept_and_decline
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:186
+
+13) Tests\Feature\GroupBookingInvitationTest::test_primary_can_cancel_own_invitation
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:208
+
+14) Tests\Feature\GroupBookingInvitationTest::test_friend_can_submit_own_identity
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:219
+
+15) Tests\Feature\GroupBookingInvitationTest::test_primary_cannot_submit_friend_identity
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:235
+
+16) Tests\Feature\GroupBookingInvitationTest::test_owner_can_confirm_occupant_identity
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:247
+
+17) Tests\Feature\GroupBookingInvitationTest::test_accepted_and_confirmed_can_check_in
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:263
+
+18) Tests\Feature\GroupBookingInvitationTest::test_invited_not_accepted_cannot_check_in
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:282
+
+19) Tests\Feature\GroupBookingInvitationTest::test_requested_occupants_unchanged_after_accept_decline_expire
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:292
+
+20) Tests\Feature\GroupBookingInvitationTest::test_actual_occupancy_remains_zero_before_checkin
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:307
+
+21) Tests\Feature\GroupBookingInvitationTest::test_isolation_tenant_cannot_view_other_occupant
+billing_mode_not_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:53
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingInvitationTest.php:317
+
+22) Tests\Feature\GroupBookingReservationTest::test_solo_booking_requested_one
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:63
+
+23) Tests\Feature\GroupBookingReservationTest::test_booking_two_people
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:72
+
+24) Tests\Feature\GroupBookingReservationTest::test_booking_three_people
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:81
+
+25) Tests\Feature\GroupBookingReservationTest::test_capacity_two_request_three_rejected
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'capacity_exceeded'
++'billing_mode_not_allowed'
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:91
+
+26) Tests\Feature\GroupBookingReservationTest::test_capacity_three_request_four_rejected
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'capacity_exceeded'
++'billing_mode_not_allowed'
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:100
+
+27) Tests\Feature\GroupBookingReservationTest::test_capacity_three_empty_request_three_pass
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:108
+
+28) Tests\Feature\GroupBookingReservationTest::test_existing_reservation_two_plus_request_one_pass
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:117
+
+29) Tests\Feature\GroupBookingReservationTest::test_existing_reservation_two_plus_request_two_reject
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'kamar_penuh'
++'billing_mode_not_allowed'
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:130
+
+30) Tests\Feature\GroupBookingReservationTest::test_occupancy_two_plus_request_one_pass
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:145
+
+31) Tests\Feature\GroupBookingReservationTest::test_occupancy_two_plus_request_two_reject
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'kamar_penuh'
++'kamar_tidak_tersedia'
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:160
+
+32) Tests\Feature\GroupBookingReservationTest::test_cancelled_booking_releases_slots
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:169
+
+33) Tests\Feature\GroupBookingReservationTest::test_expired_booking_releases_slots
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:188
+
+34) Tests\Feature\GroupBookingReservationTest::test_rejected_booking_releases_slots
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:202
+
+35) Tests\Feature\GroupBookingReservationTest::test_shared_billing_with_requested_two_accepted
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:219
+
+36) Tests\Feature\GroupBookingReservationTest::test_shared_billing_with_requested_three_accepted
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:227
+
+37) Tests\Feature\GroupBookingReservationTest::test_existing_old_booking_defaults_to_one
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\GroupBookingReservationTest.php:243
+
+38) Tests\Feature\KamarCapacityTest::test_kamar_can_be_created_with_capacity
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'http://127.0.0.1:8000/owner/kamar'
++'http://127.0.0.1:8000'
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:312
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:179
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityTest.php:65
+
+39) Tests\Feature\KamarCapacityTest::test_kamar_can_be_updated_with_capacity
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'http://127.0.0.1:8000/owner/kamar'
++'http://127.0.0.1:8000'
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:312
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:179
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityTest.php:99
+
+40) Tests\Feature\KamarCapacityTest::test_owner_can_add_penghuni_until_capacity_full
+Expected response status code [201, 301, 302, 303, 307, 308] but received 400.
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:173
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityTest.php:113
+
+41) Tests\Feature\KamarCapacityThreeTest::test_one_of_three
+Failed asserting that 0 is identical to 1.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:77
+
+42) Tests\Feature\KamarCapacityThreeTest::test_two_of_three
+Failed asserting that 0 is identical to 2.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:91
+
+43) Tests\Feature\KamarCapacityThreeTest::test_full_three_of_three
+Failed asserting that 0 is identical to 3.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:105
+
+44) Tests\Feature\KamarCapacityThreeTest::test_fourth_tenant_rejected_for_capacity_three
+Expected response status code [400] but received 302.
+Failed asserting that 302 is identical to 400.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:127
+
+45) Tests\Feature\KamarCapacityThreeTest::test_checkout_one_from_three_keeps_occupied_and_bookable
+Failed asserting that 0 is identical to 3.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:143
+
+46) Tests\Feature\KamarCapacityThreeTest::test_custom_share_three_under_rejected_when_full
+Expected response status code [422] but received 302.
+Failed asserting that 302 is identical to 422.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:270
+
+47) Tests\Feature\KamarCapacityThreeTest::test_booking_shared_capacity_three_allows_until_full
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:321
+
+48) Tests\Feature\KamarCapacityThreeTest::test_booking_shared_capacity_three_rejects_when_full
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'kamar_penuh'
++'kamar_tidak_tersedia'
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityThreeTest.php:346
+
+49) Tests\Feature\KamarCapacityValidationTest::test_capacity_can_be_2
+Failed asserting that a row in the table [kamar] matches the attributes {
+    "room_number": "S-02",
+    "capacity": 2,
+    "billing_mode": "shared"
+}.
+
+The table is empty.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase.php:29
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:61
+
+50) Tests\Feature\KamarCapacityValidationTest::test_capacity_can_be_3
+Failed asserting that a row in the table [kamar] matches the attributes {
+    "room_number": "S-03",
+    "capacity": 3,
+    "billing_mode": "shared"
+}.
+
+The table is empty.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase.php:29
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:78
+
+51) Tests\Feature\KamarCapacityValidationTest::test_capacity_can_be_4
+Failed asserting that a row in the table [kamar] matches the attributes {
+    "room_number": "S-04",
+    "capacity": 4,
+    "billing_mode": "shared"
+}.
+
+The table is empty.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase.php:29
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:95
+
+52) Tests\Feature\KamarCapacityValidationTest::test_booking_with_occupants_exceeding_capacity_is_rejected
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'capacity_exceeded'
++'billing_mode_not_allowed'
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:169
+
+53) Tests\Feature\KamarCapacityValidationTest::test_booking_with_occupants_equal_to_capacity_is_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:194
+
+54) Tests\Feature\KamarCapacityValidationTest::test_booking_occupant_count_within_capacity_allowed
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:245
+
+55) Tests\Feature\KamarCapacityValidationTest::test_owner_can_add_occupants_up_to_capacity
+Expected response status code [201, 301, 302, 303, 307, 308] but received 400.
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:173
+C:\Users\ASUS\KosManager\tests\Feature\KamarCapacityValidationTest.php:270
+
+56) Tests\Feature\KamarPhotoSeedingTest::test_every_kos_has_at_least_one_photo
+Kos Kos Putri Melati should have at least 1 photo
+Failed asserting that 0 is equal to 1 or is greater than 1.
+
+C:\Users\ASUS\KosManager\tests\Feature\KamarPhotoSeedingTest.php:32
+
+ERRORS!
+Tests: 224, Assertions: 747, Errors: 2, Failures: 56.

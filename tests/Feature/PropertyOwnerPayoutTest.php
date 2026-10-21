@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 /**
@@ -36,16 +37,27 @@ class PropertyOwnerPayoutTest extends TestCase
     private const PERIOD_END = '2026-09-30';
 
     private User $owner;
+
     private User $ownerB;
+
     private User $superAdmin;
+
     private User $tenant;
+
     private Kos $kos;
+
     private Kos $kosB;
+
     private PropertyOwner $propertyOwner;
+
     private Penghuni $penghuni;
+
     private Kontrak $kontrak;
+
     private Tagihan $tagihan;
+
     private Kamar $kamar;
+
     private Booking $booking;
 
     protected function setUp(): void
@@ -170,7 +182,7 @@ class PropertyOwnerPayoutTest extends TestCase
         ]);
     }
 
-    private function createPayoutViaHttp(array $overrides = []): \Illuminate\Testing\TestResponse
+    private function createPayoutViaHttp(array $overrides = []): TestResponse
     {
         return $this->actingAs($this->owner)->post(route('owner.payouts.store'), array_merge([
             'kos_id' => $this->kos->id,
@@ -179,7 +191,7 @@ class PropertyOwnerPayoutTest extends TestCase
         ], $overrides));
     }
 
-    private function transferViaHttp(Payout $payout, array $overrides = []): \Illuminate\Testing\TestResponse
+    private function transferViaHttp(Payout $payout, array $overrides = []): TestResponse
     {
         return $this->actingAs($this->owner)->post(route('owner.payouts.transfer', $payout), array_merge([
             'proof_file' => UploadedFile::fake()->create('bukti-transfer.pdf', 200, 'application/pdf'),

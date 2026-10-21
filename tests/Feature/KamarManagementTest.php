@@ -33,6 +33,7 @@ class KamarManagementTest extends TestCase
             'room_number' => '101',
             'room_name' => 'Kamar Mawar',
             'room_type' => 'standard',
+            'capacity' => 1,
             'daily_price' => 50000,
             'monthly_price' => 1000000,
         ], $overrides);

@@ -40,6 +40,12 @@ class CheckInOutTest extends TestCase
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
             'status' => 'approved',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test',
+            'identity_data_submitted_at' => now(),
+            'identity_confirmed_at' => now(),
+            'identity_confirmed_by' => $this->owner->id,
         ]);
 
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
@@ -91,6 +97,12 @@ class CheckInOutTest extends TestCase
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
             'status' => 'approved',
+            'identity_number' => '3201234567890002',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test',
+            'identity_data_submitted_at' => now(),
+            'identity_confirmed_at' => now(),
+            'identity_confirmed_by' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)->post(route('admin.checkin.process', $booking), [
@@ -115,6 +127,12 @@ class CheckInOutTest extends TestCase
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
             'status' => 'approved',
+            'identity_number' => '3201234567890003',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test',
+            'identity_data_submitted_at' => now(),
+            'identity_confirmed_at' => now(),
+            'identity_confirmed_by' => $this->owner->id,
         ]);
 
         $this->actingAs($admin)->post(route('admin.checkin.process', $booking), [

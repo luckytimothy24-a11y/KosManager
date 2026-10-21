@@ -64,14 +64,14 @@
                 'blob2' => 'bg-[#3fce55]/10 dark:bg-[#45d060]/10',
             ],
             'default' => [
-                'grad' => 'bg-gradient-to-br from-slate-50 via-white to-primary-50 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800',
+                'grad' => 'bg-gradient-to-br from-slate-50 via-white to-primary-50 dark:from-slate-700 dark:via-surface-elevated dark:to-slate-800',
                 'badge' => 'bg-white/85 text-primary-600 border-primary-500/15 dark:bg-primary-500/15 dark:text-primary-300 dark:border-primary-400/20',
                 'cta' => 'bg-primary-600 text-white hover:bg-primary-700',
                 'ctaGhost' => 'text-primary-600 dark:text-primary-400',
                 'mono' => 'from-primary-600 to-primary-500',
                 'accent' => 'text-primary-600 dark:text-primary-400',
                 'soft' => 'bg-primary-500/10 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300',
-                'overlay' => 'from-slate-50 via-white/70 to-transparent dark:from-slate-800 dark:via-slate-800/70 dark:to-transparent',
+                'overlay' => 'from-slate-50 via-white/70 to-transparent dark:from-slate-700 dark:via-slate-700/70 dark:to-transparent',
                 'border' => 'border-slate-200/70 hover:border-primary-300 dark:border-white/5 dark:hover:border-primary-400/30',
                 'blob' => 'bg-primary-500/10 dark:bg-primary-400/15',
                 'blob2' => 'bg-indigo-400/10 dark:bg-primary-400/10',
@@ -80,9 +80,19 @@
 
         $theme = $themes[$partnerSlug] ?? $themes['default'];
 
+        $partnerLogos = [
+            'dana' => asset('images/partners/dana.svg'),
+            'shopee' => asset('images/partners/shopee.svg'),
+            'gopay' => asset('images/partners/gopay.svg'),
+        ];
+        $officialLogo = $partnerLogos[$partnerSlug] ?? null;
+        if ($officialLogo) {
+            $brandLogo = $officialLogo;
+        }
+
         // Brand mark: monogram dengan inisial, logo partner (jika ada) menutupi.
         $monogram = static function ($logo, $initial, $mono) {
-            return '<span class="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br sm:h-11 sm:w-11 ' . $mono . ' text-white text-sm sm:text-base font-black shadow-sm">'
+            return '<span class="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br sm:h-11 sm:w-11 ' . $mono . ' text-white text-sm sm:text-base font-bold shadow-sm">'
                 . '<span aria-hidden="true">' . $initial . '</span>'
                 . ($logo ? '<img src="' . $logo . '" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">' : '')
                 . '</span>';
@@ -113,7 +123,7 @@
 
             <div class="relative flex flex-col justify-center gap-2.5 p-4 sm:p-6 lg:p-7 min-h-[12.5rem] sm:min-h-[13rem] {{ $image ? 'md:pr-[46%]' : '' }}">
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] rounded-full px-2.5 py-1 border {{ $theme['badge'] }}">
+                    <span class="inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2.5 py-1 border {{ $theme['badge'] }}">
                         <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full {{ $theme['cta'] }}"></span>
                         Sponsored
                     </span>
@@ -121,10 +131,10 @@
                         {!! $monogram($brandLogo, $initial, $theme['mono']) !!}
                         <span class="tracking-tight">{{ $brandName }}</span>
                     </span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
+                    <span class="inline-flex items-center rounded-full text-[11px] font-semibold px-2 py-0.5 {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
                 </div>
 
-                <h3 class="text-[15px] sm:text-lg font-black text-slate-900 dark:text-white leading-snug line-clamp-2 max-w-2xl">{{ $ad->displayHeadline() }}</h3>
+                <h3 class="text-[15px] sm:text-lg font-bold text-slate-900 dark:text-slate-50 leading-snug line-clamp-2 max-w-2xl">{{ $ad->displayHeadline() }}</h3>
                 <p class="text-xs text-slate-600 dark:text-slate-300 leading-snug line-clamp-2 max-w-xl">{{ $ad->displayDescription() }}</p>
 
                 <div class="mt-1 flex flex-wrap items-center gap-3">
@@ -149,7 +159,7 @@
             @if($image)
                 <div class="relative aspect-[16/7] shrink-0 overflow-hidden">
                     <img src="{{ $image }}" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 motion-safe:group-hover:scale-[1.03]" onerror="this.style.display='none'">
-                    <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.14em] rounded-full px-2 py-0.5 border {{ $theme['badge'] }}">
+                    <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2 py-0.5 border {{ $theme['badge'] }}">
                         <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full {{ $theme['cta'] }}"></span>
                         Sponsored
                     </span>
@@ -160,13 +170,13 @@
                 <div class="flex items-center gap-2.5">
                     {!! $monogram($brandLogo, $initial, $theme['mono']) !!}
                     <span class="min-w-0">
-                        <span class="block text-[10px] font-black uppercase tracking-wider {{ $theme['accent'] }}">Sponsored</span>
-                        <span class="block truncate text-sm font-bold text-slate-900 dark:text-white">{{ $brandName }}</span>
+                        <span class="block text-[11px] font-semibold uppercase tracking-wide {{ $theme['accent'] }}">Sponsored</span>
+                        <span class="block truncate text-sm font-bold text-slate-900 dark:text-slate-50">{{ $brandName }}</span>
                     </span>
-                    <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
+                    <span class="ml-auto inline-flex items-center rounded-full text-[11px] font-semibold px-2 py-0.5 {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
                 </div>
 
-                <h3 class="mt-3 text-[15px] font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2">{{ $ad->displayHeadline() }}</h3>
+                <h3 class="mt-3 text-[15px] font-semibold text-slate-900 dark:text-slate-50 leading-snug line-clamp-2">{{ $ad->displayHeadline() }}</h3>
                 <p class="mt-1.5 text-xs text-slate-600 dark:text-slate-300 leading-snug line-clamp-2">{{ $ad->displayDescription() }}</p>
 
                 <div class="mt-auto pt-4 flex items-end justify-between gap-3">
@@ -193,9 +203,9 @@
                             <span aria-hidden="true" class="h-1 w-1 rounded-full {{ $theme['cta'] }}"></span> Sponsored
                         </span>
                         <span class="truncate text-[11px] text-slate-600 dark:text-slate-300">· {{ $brandName }}</span>
-                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold {{ $placementBadgeClass }} hidden sm:inline-flex">{{ $placementLabelText }}</span>
+                        <span class="inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2 py-0.5 border {{ $theme['badge'] }} hidden sm:inline-flex">{{ $placementLabelText }}</span>
                     </span>
-                    <span class="mt-0.5 block truncate text-[13px] sm:text-sm font-bold text-slate-800 dark:text-slate-100">{{ $ad->displayHeadline() }}</span>
+                    <span class="mt-0.5 block truncate text-[13px] sm:text-sm font-bold text-slate-800 dark:text-slate-200">{{ $ad->displayHeadline() }}</span>
                 </span>
 
                 <span class="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl {{ $theme['cta'] }} text-white text-[11px] sm:text-xs font-bold px-3.5 sm:px-4 shadow-sm transition-colors duration-200 active:scale-95">

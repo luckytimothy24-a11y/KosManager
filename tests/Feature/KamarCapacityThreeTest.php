@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
+use App\Services\BookingService;
 use App\Services\SharedBillingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,6 +19,7 @@ class KamarCapacityThreeTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private Kos $kos;
 
     protected function setUp(): void
@@ -141,7 +144,7 @@ class KamarCapacityThreeTest extends TestCase
         // Checkout one via CheckOut flow (request + approve)
         $penghuni = Penghuni::where('user_id', $users[0]->id)->first();
         $this->actingAs($users[0])->post(route('tenant.checkout.request', $penghuni))->assertRedirect();
-        $checkOut = \App\Models\CheckOut::where('penghuni_id', $penghuni->id)->first();
+        $checkOut = CheckOut::where('penghuni_id', $penghuni->id)->first();
         $this->actingAs($this->owner)->post(route('owner.checkout.approve', $checkOut))->assertRedirect();
         $kamar->refresh();
         $this->assertSame(2, $kamar->occupancy());
@@ -162,7 +165,7 @@ class KamarCapacityThreeTest extends TestCase
         // Checkout first
         $penghuni = Penghuni::where('user_id', $users[0]->id)->first();
         $this->actingAs($users[0])->post(route('tenant.checkout.request', $penghuni));
-        $checkOut = \App\Models\CheckOut::where('penghuni_id', $penghuni->id)->first();
+        $checkOut = CheckOut::where('penghuni_id', $penghuni->id)->first();
         $this->actingAs($this->owner)->post(route('owner.checkout.approve', $checkOut));
         // Add replacement
         $replacement = User::factory()->create(['role' => 'tenant']);
@@ -307,7 +310,7 @@ class KamarCapacityThreeTest extends TestCase
         $this->assertSame(2, $kamar->occupancy());
         // Third booking should succeed
         $tenant = User::factory()->create(['role' => 'tenant']);
-        $svc = app(\App\Services\BookingService::class);
+        $svc = app(BookingService::class);
         $result = $svc->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(5)->format('Y-m-d'),
@@ -331,7 +334,7 @@ class KamarCapacityThreeTest extends TestCase
         }
         $kamar->update(['status' => 'occupied']);
         $tenant = User::factory()->create(['role' => 'tenant']);
-        $svc = app(\App\Services\BookingService::class);
+        $svc = app(BookingService::class);
         $result = $svc->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(5)->format('Y-m-d'),

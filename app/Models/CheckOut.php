@@ -16,6 +16,8 @@ class CheckOut extends Model
 
     public const STATUS_REJECTED = 'rejected';
 
+    public const STATUS_CANCELLED = 'cancelled';
+
     /**
      * Status check-out yang masih berjalan / sudah disetujui (menghalangi duplikasi).
      */

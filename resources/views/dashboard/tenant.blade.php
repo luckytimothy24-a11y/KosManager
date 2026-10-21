@@ -42,127 +42,8 @@
             </a>
         </header>
 
-{{-- ============================================================
-     PROMO PARTNER — carousel responsive iklan partner
-     Layout sama dengan welcome.blade.php IKLAN PROMO PARTNER section
-     ============================================================ --}}
-@if(($partnerAds ?? collect())->isNotEmpty())
-<section aria-label="Promo Partner" class="relative bg-white dark:bg-slate-950 py-6 md:py-8">
-    <div class="pointer-events-none absolute inset-0 opacity-[0.05]" style="background-image: radial-gradient(circle at 1px 1px, #f97316 1px, transparent 0); background-size: 24px 24px;"></div>
+<x-ads-carousel :ads="$partnerAds ?? collect()" />
 
-    <div class="relative max-w-[1170px] mx-auto px-4 sm:px-6" x-data="{
-        slide: 0,
-        timer: null,
-        totalSlides: {{ $partnerAds->count() }},
-        paused: false,
-        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-        init() {
-            if (!this.reducedMotion) { this.startTimer(); }
-            this.$watch('paused', (val) => {
-                if (val) { clearInterval(this.timer); this.timer = null; }
-                else if (!this.reducedMotion) { this.startTimer(); }
-            });
-        },
-        destroy() { clearInterval(this.timer); },
-        startTimer() {
-            this.timer = setInterval(() => { this.slide = (this.slide + 1) % this.totalSlides; }, 5000);
-        },
-        prev() { this.slide = (this.slide - 1 + this.totalSlides) % this.totalSlides; this.resetTimer(); },
-        next() { this.slide = (this.slide + 1) % this.totalSlides; this.resetTimer(); },
-        resetTimer() { clearInterval(this.timer); this.timer = null; if (!this.reducedMotion) { this.startTimer(); } },
-        goTo(i) { this.slide = i; this.resetTimer(); },
-        getSlidePercent() {
-            const visible = window.innerWidth < 640 ? 1 : window.innerWidth < 768 ? 2 : 3;
-            return this.totalSlides > 0 ? (100 / Math.min(visible, this.totalSlides)) : 100;
-        },
-    }">
-        <div class="mb-5 md:mb-6">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="inline-flex items-center gap-1.5 bg-orange-50 text-primary-600 text-[11px] font-bold px-3 py-1 rounded-full">
-                    <i class="ri-megaphone-2-fill text-[10px]"></i> Promo Spesial
-                </span>
-            </div>
-            <h2 class="text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight">Penawaran Terbaik untuk Pencari Kos</h2>
-            <p class="mt-0.5 text-sm text-gray-500 dark:text-slate-400">Temukan promo menarik dari partner kami</p>
-        </div>
-
-        <div class="relative">
-            <div class="overflow-hidden rounded-2xl" @mouseenter="paused = true" @mouseleave="paused = false">
-                <div class="flex gap-3 transition-transform duration-500 ease-out" :style="'transform: translateX(-' + slide * getSlidePercent() + '%)'">
-                    @foreach($partnerAds as $ad)
-                        @php
-                            $clickUrl = route('ad.click', ['campaign' => $ad->id, 'placement' => 'homepage']);
-                            $imgSrc = $ad->displayImage() ? asset('storage/' . $ad->displayImage()) : null;
-                            $logoSrc = $ad->partner?->logo ? asset('storage/' . $ad->partner->logo) : null;
-                        @endphp
-                        <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 xl:w-1/3 shrink-0">
-                            <a href="{{ $clickUrl }}"
-                               data-ad-id="{{ $ad->id }}"
-                               class="group relative block overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
-                                <div class="relative aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-slate-800">
-                                    @if($imgSrc)
-                                        <img src="{{ $imgSrc }}" alt="{{ e($ad->displayHeadline()) }}" loading="lazy"
-                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                    @endif
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                                    <span class="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10">
-                                        <i class="ri-fire-fill"></i> Promo
-                                    </span>
-                                    <span class="absolute top-2.5 left-[3.25rem] inline-flex items-center gap-1 bg-primary-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg z-10">
-                                        Sponsored
-                                    </span>
-                                    <span class="absolute bottom-2.5 left-2.5 right-2.5 inline-flex items-center justify-between gap-2">
-                                        <span class="inline-flex items-center gap-1.5 bg-white/90 dark:bg-slate-800/90 text-gray-800 dark:text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow truncate max-w-[55%]">
-                                            @if($logoSrc)
-                                                <img src="{{ $logoSrc }}" alt="" class="w-4 h-4 rounded-full object-cover shrink-0">
-                                            @else
-                                                <span class="w-4 h-4 rounded-full bg-primary-100 dark:bg-primary-500/20 text-primary-600 dark:text-primary-300 text-[8px] font-bold flex items-center justify-center uppercase shrink-0">{{ mb_substr($ad->displayLabel(), 0, 1) }}</span>
-                                            @endif
-                                            <span class="truncate">{{ e($ad->displayLabel()) }}</span>
-                                        </span>
-                                        <span class="inline-flex items-center gap-0.5 bg-white/90 dark:bg-slate-800/90 text-primary-600 dark:text-primary-400 text-[11px] font-bold px-2 py-0.5 rounded-full shadow shrink-0">
-                                            Lihat <i class="ri-arrow-right-line text-[9px]"></i>
-                                        </span>
-                                    </span>
-                                </div>
-                                <div class="p-4">
-                                    <h3 class="text-sm font-bold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-primary-500 transition">{{ e($ad->displayHeadline()) }}</h3>
-                                    <p class="mt-1 text-xs text-gray-400 dark:text-slate-500 line-clamp-1">{{ e($ad->displayDescription()) }}</p>
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-600 dark:text-primary-400 mt-1.5"><i class="ri-information-line"></i> Iklan Partner</span>
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            @if($partnerAds->count() > 1)
-            <div class="flex items-center justify-center gap-3 mt-4">
-                <button x-on:click="prev()" aria-label="Sebelumnya"
-                        class="w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                        style="min-width: 36px; min-height: 36px;">
-                    <i class="ri-arrow-left-s-line text-base"></i>
-                </button>
-                <div class="flex items-center gap-1.5">
-                    @for($i = 0; $i < $partnerAds->count(); $i++)
-                        <button x-on:click="goTo({{ $i }})"
-                                :class="slide === {{ $i }} ? 'bg-primary-500 w-5 h-2' : 'bg-gray-300 dark:bg-slate-600 h-2'"
-                                class="rounded-full transition-all duration-300 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                                style="min-width: 24px; min-height: 8px;"
-                                aria-label="Slide {{ $i + 1 }}"></button>
-                    @endfor
-                </div>
-                <button x-on:click="next()" aria-label="Berikutnya"
-                        class="w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-300 flex items-center justify-center transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                        style="min-width: 36px; min-height: 36px;">
-                    <i class="ri-arrow-right-s-line text-base"></i>
-                </button>
-            </div>
-            @endif
-        </div>
-    </div>
-</section>
-@endif
 
 {{-- Promosi kos OWNER ber-placement homepage (is_homepage, kos_id TIDAK NULL) --}}
 @if(($kosPromosHome ?? collect())->isNotEmpty())
@@ -899,7 +780,7 @@
         {{-- ============================================================
              FINAL CTA
              ============================================================ --}}
-        <section class="relative overflow-hidden rounded-[1.25rem] bg-gradient-to-br from-primary-600 via-primary-700 to-indigo-800 p-8 text-center text-white">
+        <section class="relative overflow-hidden rounded-[1.25rem] bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 p-8 text-center text-white">
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute -right-1/4 -top-1/4 h-56 w-56 rounded-full bg-white"></div>
                 <div class="absolute -bottom-1/4 -left-1/4 h-48 w-48 rounded-full bg-white"></div>

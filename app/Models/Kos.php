@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,6 +15,7 @@ class Kos extends Model
 
     protected $fillable = [
         'owner_id',
+        'property_owner_id',
         'name',
         'address',
         'latitude',
@@ -25,16 +27,31 @@ class Kos extends Model
         'rules',
         'payment_info',
         'status',
+        'auto_billing_enabled',
+        'billing_day',
+        'due_days',
+        'moderation_status',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
+        'auto_billing_enabled' => 'boolean',
     ];
 
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * Pemilik Kos Asli (property owner) — pihak penerima payout.
+     * BERBEDA dari owner() (pengelola/partner role owner).
+     */
+    public function propertyOwner()
+    {
+        return $this->belongsTo(PropertyOwner::class);
     }
 
     public function kamar()
@@ -84,14 +101,18 @@ class Kos extends Model
 
     public function coverPath(): ?string
     {
-        if ($this->relationLoaded('coverPhoto') && $this->coverPhoto) {
-            return $this->coverPhoto->path;
-        }
+        // Jangan query ulang bila relasi sudah di-eager-load (walau null) —
+        // menghemat 2 query per kos pada listing (N+1).
+        if ($this->relationLoaded('coverPhoto')) {
+            if ($this->coverPhoto) {
+                return $this->coverPhoto->path;
+            }
+        } else {
+            $cover = $this->coverPhoto()->first();
 
-        $cover = $this->coverPhoto()->first();
-
-        if ($cover) {
-            return $cover->path;
+            if ($cover) {
+                return $cover->path;
+            }
         }
 
         $firstPhoto = $this->relationLoaded('photos')
@@ -216,5 +237,22 @@ class Kos extends Model
         }
 
         return 'https://www.google.com/maps/search/?api=1&query='.$query;
+    }
+
+    /**
+     * Hitung tanggal billing berikutnya berdasarkan billing_day.
+     * Jika billing_day bulan ini sudah lewat, ambil bulan depan.
+     */
+    public function nextBillingDate(): Carbon
+    {
+        $now = Carbon::today();
+        $candidate = $now->copy()->day(min($this->billing_day, $now->daysInMonth));
+
+        if ($now->greaterThan($candidate)) {
+            $candidate->addMonthNoOverflow();
+            $candidate->day(min($this->billing_day, $candidate->daysInMonth));
+        }
+
+        return $candidate;
     }
 }

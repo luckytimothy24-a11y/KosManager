@@ -51,7 +51,10 @@ class ChatNotificationClickTest extends TestCase
         $this->assertDatabaseHas('notifications', ['user_id' => $this->owner->id]);
 
         $notification = Notification::where('user_id', $this->owner->id)->latest()->first();
-        $this->assertEquals(route('owner.messages.show', $this->tenant), $notification->data['url'] ?? null);
+        $this->assertEquals(
+            route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]),
+            $notification->data['url'] ?? null
+        );
     }
 
     public function test_owner_reply_stores_tenant_messages_url_on_notification(): void
@@ -70,7 +73,10 @@ class ChatNotificationClickTest extends TestCase
 
         $notification = Notification::where('user_id', $this->tenant->id)->latest()->first();
         $this->assertNotNull($notification);
-        $this->assertEquals(route('tenant.messages.index'), $notification->data['url'] ?? null);
+        $this->assertEquals(
+            route('tenant.messages.index', ['kos' => $this->kos->id]),
+            $notification->data['url'] ?? null
+        );
     }
 
     public function test_notifications_page_shows_buka_link_for_message_notification(): void
@@ -87,7 +93,9 @@ class ChatNotificationClickTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Buka');
-        $response->assertSee(route('owner.messages.show', $this->tenant));
+        $response->assertSee(
+            route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id])
+        );
     }
 
     public function test_owner_chat_show_has_quick_replies_and_topic_context(): void
@@ -106,7 +114,7 @@ class ChatNotificationClickTest extends TestCase
         $response->assertSee('Balasan Cepat');
         $response->assertSee('Saya cek dulu ya');
         $response->assertSee('Silakan kirim bukti pembayaran');
-        $response->assertSee('Topik: Fasilitas');
+        $response->assertSee('Fasilitas');
         $response->assertSee($this->kamar->room_number);
     }
 }

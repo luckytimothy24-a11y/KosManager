@@ -34,7 +34,7 @@ class TransferBankPaymentTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->tenant = User::factory()->create(['role' => 'tenant']);

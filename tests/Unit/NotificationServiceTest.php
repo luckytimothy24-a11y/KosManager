@@ -39,16 +39,29 @@ class NotificationServiceTest extends TestCase
         ]);
     }
 
-    public function test_booking_instant_confirmation_notification(): void
+    public function test_booking_created_notification(): void
     {
         $tenant = User::factory()->create();
 
-        NotificationService::bookingInstantConfirmation($tenant->id, 'BK123', '101');
+        NotificationService::bookingCreated($tenant->id, 'BK123', '101');
 
         $this->assertDatabaseHas('notifications', [
             'user_id' => $tenant->id,
             'type' => 'booking',
-            'title' => 'Booking Berhasil',
+            'title' => 'Booking Dibuat',
+        ]);
+    }
+
+    public function test_booking_approved_notification(): void
+    {
+        $tenant = User::factory()->create();
+
+        NotificationService::bookingApproved($tenant->id, 'BK123', '101');
+
+        $this->assertDatabaseHas('notifications', [
+            'user_id' => $tenant->id,
+            'type' => 'booking',
+            'title' => 'Booking Dikonfirmasi',
         ]);
     }
 

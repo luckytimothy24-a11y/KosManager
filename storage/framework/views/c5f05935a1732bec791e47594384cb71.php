@@ -2,7 +2,7 @@
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <?php
         $routeName = optional(request()->route())->getName();
@@ -59,22 +59,33 @@
         .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }
     </style>
 </head>
-<body class="font-sans antialiased bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100">
+<body class="font-sans antialiased bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
     <a href="#main-content"
        class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-500 focus:text-white focus:text-sm focus:font-semibold"
        aria-label="Lewati ke konten utama">Lewati ke konten utama</a>
-    <div class="min-h-screen flex" x-data="{ sidebarOpen: false }">
+    <!-- Sidebar collapse state: persisted to localStorage, restored before first render -->
+<script>
+    try {
+        const saved = localStorage.getItem('kosmanager.sidebar.collapsed');
+        if (saved !== null) {
+            document.documentElement.dataset.sidebarCollapsed = saved;
+        }
+    } catch (e) {}
+</script>
+
+<div class="min-h-screen flex" :class="{ 'overflow-hidden lg:overflow-visible': sidebarOpen }" x-data="() => ({ sidebarCollapsed: document.documentElement.dataset.sidebarCollapsed === 'true', sidebarOpen: false })">
         <?php echo $__env->make('layouts.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
-        <div class="flex-1 min-w-0 flex flex-col min-h-screen lg:ml-64 transition-all duration-300">
+        <div class="flex-1 min-w-0 flex flex-col min-h-screen transition-all duration-300" :class="{ 'lg:ml-64': !sidebarCollapsed, 'lg:ml-16': sidebarCollapsed }">
 
             
-            <header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800 sticky top-0 z-30">
+            <header class="bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700 sticky top-0 z-30">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-3">
                         <button @click="sidebarOpen = !sidebarOpen"
                                 class="lg:hidden p-2 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                                aria-label="Buka menu navigasi" :aria-expanded="sidebarOpen.toString()">
+                                aria-label="Buka menu navigasi" :aria-expanded="sidebarOpen.toString()"
+                                id="hamburger-btn">
                             <i class="ri-menu-line text-xl"></i>
                         </button>
                         <div class="hidden lg:block">
@@ -90,18 +101,19 @@
                             $unreadCount = $sidebarBadges['unreadNotif'] ?? 0;
                         ?>
 
-                        <button x-data
+<?php if (! (auth()->user()?->isTenant())): ?>
+<button x-data
                                 @click="
                                     document.documentElement.classList.toggle('dark');
                                     localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
                                 "
                                 class="p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                 title="Ganti tema" aria-label="Ganti tema terang/gelap">
-                            <i class="ri-moon-line text-xl dark:hidden"></i>
-                            <i class="ri-sun-line text-xl hidden dark:block"></i>
-                        </button>
-
-                        <div class="relative" x-data="{ open: false }">
+                                <i class="ri-moon-line text-xl dark:hidden"></i>
+                                <i class="ri-sun-line text-xl hidden dark:block"></i>
+                            </button>
+                            <?php endif; ?>
+<div class="relative" x-data="{ open: false }">
                             <button @click="open = !open"
                                     class="relative p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                     aria-label="Notifikasi" :aria-expanded="open.toString()">
@@ -117,7 +129,7 @@
                                  x-transition:leave="transition ease-in duration-150"
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-100 dark:border-slate-800 z-50 overflow-hidden">
+                                 class="absolute right-0 mt-2 w-80 bg-slate-100 dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-200 dark:border-slate-700 z-50 overflow-hidden">
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                                     <h3 class="font-semibold text-slate-900 dark:text-white text-sm tracking-tight">Notifikasi</h3>
                                     <?php if($unreadCount > 0): ?>
@@ -162,17 +174,25 @@
 
                         <div class="w-px h-5 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-                        <div class="relative" x-data="{ open: false }">
+<div class="relative" x-data="{ open: false }">
                             <button @click="open = !open"
-                                    class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                                    aria-label="Menu akun" :aria-expanded="open.toString()">
-                                <div class="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center text-white font-bold text-xs">
-                                    <?php echo e(strtoupper(substr(Auth::user()->name, 0, 1))); ?>
+                                     class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                     aria-label="Menu akun" :aria-expanded="open.toString()" aria-controls="account-dropdown">
+                                <div class="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white font-bold text-xs">
+                                    <?php if(Auth::check()): ?>
+                                        <?php echo e(strtoupper(substr(Auth::user()->name, 0, 1))); ?>
 
+                                    <?php else: ?>
+                                        K
+                                    <?php endif; ?>
                                 </div>
                                 <div class="hidden sm:block text-left">
-                                    <p class="text-sm font-semibold text-slate-900 dark:text-white leading-tight"><?php echo e(Auth::user()->name); ?></p>
-                                    <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium"><?php echo e(ucfirst(str_replace('_', ' ', Auth::user()->role))); ?></p>
+                                    <?php if(Auth::check()): ?>
+                                        <p class="text-sm font-semibold text-slate-900 dark:text-white leading-tight"><?php echo e(Auth::user()->name); ?></p>
+                                        <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium"><?php echo e(ucfirst(str_replace('_', ' ', Auth::user()->role))); ?></p>
+                                    <?php else: ?>
+                                        <p class="text-[10px] font-medium text-slate-500">Login</p>
+                                    <?php endif; ?>
                                 </div>
                                 <i class="ri-arrow-down-s-line text-slate-400 dark:text-slate-500 hidden sm:block text-sm"></i>
                             </button>
@@ -183,24 +203,35 @@
                                  x-transition:leave="transition ease-in duration-150"
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-100 dark:border-slate-800 z-50 overflow-hidden">
-                                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-                                    <p class="text-sm font-semibold text-slate-900 dark:text-white"><?php echo e(Auth::user()->name); ?></p>
-                                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5"><?php echo e(Auth::user()->email); ?></p>
+                                 class="absolute right-0 mt-2 w-52 bg-slate-100 dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-200 dark:border-slate-700 z-50 overflow-hidden">
+<div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+                                    <?php if(Auth::check()): ?>
+                                        <p class="text-sm font-semibold text-slate-900 dark:text-white"><?php echo e(Auth::user()->name); ?></p>
+                                        <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5"><?php echo e(Auth::user()->email); ?></p>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="py-1">
-                                    <a href="<?php echo e(route('profile.edit')); ?>"
-                                       class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                                        <i class="ri-user-settings-line text-slate-400 dark:text-slate-500"></i> Profile
-                                    </a>
-                                    <form method="POST" action="<?php echo e(route('logout')); ?>">
-                                        <?php echo csrf_field(); ?>
-                                        <button type="submit"
-                                                class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/50 transition">
-                                            <i class="ri-logout-box-r-line"></i> Keluar
-                                        </button>
-                                    </form>
-                                </div>
+<?php if(Auth::check()): ?>
+                                 <div class="py-1">
+                                     <a href="<?php echo e(route('profile.edit')); ?>"
+                                        class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100/40 dark:hover:bg-slate-800/[0.06] transition">
+                                         <i class="ri-user-settings-line text-slate-400 dark:text-slate-500"></i> Profil
+                                     </a>
+                                     <form method="POST" action="<?php echo e(route('logout')); ?>">
+                                         <?php echo csrf_field(); ?>
+                                         <button type="submit"
+                                                 class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/50 transition">
+                                             <i class="ri-logout-box-r-line"></i> Keluar
+                                         </button>
+                                     </form>
+                                 </div>
+<?php else: ?>
+                                  <div class="py-1">
+                                      <a href="<?php echo e(route('login')); ?>"
+                                         class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100/40 dark:hover:bg-slate-800/[0.06] transition">
+                                         <i class="ri-login-box-line"></i> Masuk
+                                      </a>
+                                 </div>
+                             <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -212,8 +243,8 @@
 
             </main>
         </div>
-    </div>
-    <?php if (isset($component)) { $__componentOriginal377555ad845bd37f3d2d2a208bb4e0fb = $component; } ?>
+        <div x-show="!sidebarOpen">
+        <?php if (isset($component)) { $__componentOriginal377555ad845bd37f3d2d2a208bb4e0fb = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal377555ad845bd37f3d2d2a208bb4e0fb = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.tenant-bottom-nav','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('tenant-bottom-nav'); ?>
@@ -233,6 +264,9 @@
 <?php $component = $__componentOriginal377555ad845bd37f3d2d2a208bb4e0fb; ?>
 <?php unset($__componentOriginal377555ad845bd37f3d2d2a208bb4e0fb); ?>
 <?php endif; ?>
+    </div>
+    </div>
+
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>

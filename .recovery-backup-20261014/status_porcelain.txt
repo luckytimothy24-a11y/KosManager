@@ -1,0 +1,563 @@
+ M .env.example
+ M .gitignore
+ M app/Console/Commands/MarkOverdueTagihans.php
+ M app/Console/Commands/RemindDueTagihans.php
+ M app/Console/Kernel.php
+ M app/Exceptions/Handler.php
+ M app/Http/Controllers/Admin/FasilitasController.php
+ M app/Http/Controllers/AdvertisingClickController.php
+ M app/Http/Controllers/Api/V1/BookingController.php
+ M app/Http/Controllers/Api/V1/Owner/OwnerBookingController.php
+ M app/Http/Controllers/DashboardController.php
+ M app/Http/Controllers/LaporanController.php
+ M app/Http/Controllers/Owner/BookingController.php
+ M app/Http/Controllers/Owner/CheckInController.php
+ M app/Http/Controllers/Owner/CheckOutController.php
+ M app/Http/Controllers/Owner/KamarController.php
+ M app/Http/Controllers/Owner/KontrakController.php
+ M app/Http/Controllers/Owner/KosController.php
+ M app/Http/Controllers/Owner/MessageController.php
+ M app/Http/Controllers/Owner/OwnerBookingOccupantController.php
+ M app/Http/Controllers/Owner/PenghuniController.php
+ M app/Http/Controllers/Owner/TenantBookingController.php
+ M app/Http/Controllers/Owner/TenantKontrakController.php
+ M app/Http/Controllers/Owner/TenantKosController.php
+ M app/Http/Controllers/Owner/TenantMessageController.php
+ M app/Http/Controllers/ProfileController.php
+ M app/Http/Controllers/SuperAdmin/AuditLogController.php
+ M app/Http/Controllers/SuperAdmin/FasilitasController.php
+ M app/Http/Controllers/SuperAdmin/UserController.php
+ M app/Http/Controllers/Tenant/BookingOccupantIdentityController.php
+ M app/Http/Controllers/Tenant/TenantBookingOccupantController.php
+ M app/Http/Controllers/Tenant/TenantCheckInController.php
+ M app/Http/Controllers/Webhook/PaymentGatewayWebhookController.php
+ M app/Http/Kernel.php
+ M app/Http/Requests/Auth/LoginRequest.php
+ M app/Http/Requests/StoreBookingRequest.php
+ M app/Http/Requests/StoreCheckInRequest.php
+ M app/Http/Requests/StoreCheckOutRequest.php
+ M app/Http/Requests/StoreFasilitasRequest.php
+ M app/Http/Requests/StoreKamarRequest.php
+ M app/Http/Requests/StoreKosRequest.php
+ M app/Http/Requests/StoreMessageRequest.php
+ M app/Http/Requests/StorePembayaranRequest.php
+ M app/Http/Requests/StoreTagihanRequest.php
+ M app/Http/Requests/StoreUserRequest.php
+ M app/Http/Requests/UpdateKamarRequest.php
+ M app/Http/Requests/UpdateKosRequest.php
+ M app/Http/Requests/UpdateUserRequest.php
+ M app/Http/Resources/OwnerKamarResource.php
+ M app/Http/Resources/PembayaranResource.php
+ M app/Models/AuditLog.php
+ M app/Models/Booking.php
+ M app/Models/CheckOut.php
+ M app/Models/Kamar.php
+ M app/Models/Kos.php
+ M app/Models/KosPhoto.php
+ M app/Models/Pembayaran.php
+ M app/Models/User.php
+ M app/Policies/AdvertisingCampaignPolicy.php
+ M app/Policies/BookingOccupantPolicy.php
+ M app/Policies/BookingPolicy.php
+ M app/Policies/CheckInPolicy.php
+ M app/Policies/CheckOutPolicy.php
+ M app/Policies/FasilitasPolicy.php
+ M app/Policies/KamarPolicy.php
+ M app/Policies/KontrakPolicy.php
+ M app/Policies/KosPhotoPolicy.php
+ M app/Policies/KosPolicy.php
+ M app/Policies/MessagePolicy.php
+ M app/Policies/PartnerPolicy.php
+ M app/Policies/PembayaranPolicy.php
+ M app/Policies/PenghuniPolicy.php
+ M app/Policies/TagihanPolicy.php
+ M app/Providers/AppServiceProvider.php
+ M app/Providers/AuthServiceProvider.php
+ M app/Services/AdvertisingService.php
+ M app/Services/AuditLogService.php
+ M app/Services/BookingService.php
+ M app/Services/NotificationService.php
+ M app/Support/NotificationType.php
+ M app/Support/PaymentLabels.php
+ M app/Support/StatusLabels.php
+ M app/Traits/HasRole.php
+ M config/filesystems.php
+ M database/factories/BookingFactory.php
+ M database/factories/KamarFactory.php
+ M database/factories/PembayaranFactory.php
+ M database/factories/UserFactory.php
+ M database/seeders/AdvertisingSeeder.php
+ M database/seeders/DatabaseSeeder.php
+ M database/seeders/DemoPhotoSeeder.php
+ M database/seeders/KamarSeeder.php
+ M database/seeders/KosSeeder.php
+ M database/seeders/UserSeeder.php
+ M docs/DOKUMENTASI.md
+ M public/apple-touch-icon.png
+ M public/favicon.ico
+ M public/favicon.svg
+ M resources/css/app.css
+ M resources/js/app.js
+ M resources/views/admin/advertising/create.blade.php
+ M resources/views/admin/advertising/edit.blade.php
+ M resources/views/admin/advertising/index.blade.php
+ M resources/views/admin/advertising/show.blade.php
+ M resources/views/auth/confirm-password.blade.php
+ M resources/views/auth/forgot-password.blade.php
+ M resources/views/auth/login.blade.php
+ M resources/views/auth/register.blade.php
+ M resources/views/auth/reset-password.blade.php
+ M resources/views/auth/verify-email.blade.php
+ M resources/views/components/application-logo.blade.php
+ M resources/views/components/bar-chart.blade.php
+ M resources/views/components/breadcrumb.blade.php
+ M resources/views/components/button.blade.php
+ M resources/views/components/confirm-dialog.blade.php
+ M resources/views/components/dropdown.blade.php
+ M resources/views/components/empty-state.blade.php
+ M resources/views/components/input-error.blade.php
+ M resources/views/components/input-label.blade.php
+ M resources/views/components/kos-directions-button.blade.php
+ M resources/views/components/modal.blade.php
+ M resources/views/components/nav-link.blade.php
+ M resources/views/components/page-header.blade.php
+ M resources/views/components/primary-button.blade.php
+ M resources/views/components/secondary-button.blade.php
+ M resources/views/components/status-badge.blade.php
+ M resources/views/components/tenant-bottom-nav.blade.php
+ M resources/views/components/text-input.blade.php
+ M resources/views/components/workflow-guide.blade.php
+ M resources/views/dashboard/admin.blade.php
+ M resources/views/dashboard/owner.blade.php
+ M resources/views/dashboard/super-admin.blade.php
+ M resources/views/dashboard/tenant.blade.php
+ M resources/views/errors/minimal.blade.php
+ M resources/views/laporan/kos.blade.php
+ M resources/views/layouts/app.blade.php
+ M resources/views/layouts/guest.blade.php
+ M resources/views/layouts/sidebar.blade.php
+ M resources/views/notifications/index.blade.php
+ M resources/views/owner/advertising/create.blade.php
+ M resources/views/owner/advertising/dashboard.blade.php
+ M resources/views/owner/advertising/index.blade.php
+ M resources/views/owner/advertising/show.blade.php
+ M resources/views/owner/booking/index.blade.php
+ M resources/views/owner/booking/show.blade.php
+ M resources/views/owner/checkin/index.blade.php
+ M resources/views/owner/checkout/index.blade.php
+ M resources/views/owner/kamar/create.blade.php
+ M resources/views/owner/kamar/edit.blade.php
+ M resources/views/owner/kamar/index.blade.php
+ M resources/views/owner/kamar/show.blade.php
+ M resources/views/owner/kontrak/index.blade.php
+ M resources/views/owner/kontrak/show.blade.php
+ M resources/views/owner/kos/create.blade.php
+ M resources/views/owner/kos/edit.blade.php
+ M resources/views/owner/kos/index.blade.php
+ M resources/views/owner/kos/show.blade.php
+ M resources/views/owner/messages/index.blade.php
+ M resources/views/owner/messages/show.blade.php
+ M resources/views/owner/pembayaran/index.blade.php
+ M resources/views/owner/pembayaran/show.blade.php
+ M resources/views/owner/penghuni/index.blade.php
+ M resources/views/owner/penghuni/show.blade.php
+ M resources/views/owner/tagihan/create.blade.php
+ M resources/views/owner/tagihan/index.blade.php
+ M resources/views/owner/tagihan/show.blade.php
+ M resources/views/partials/advertising-third-party-form.blade.php
+ M resources/views/profile/edit.blade.php
+ M resources/views/profile/partials/delete-user-form.blade.php
+ M resources/views/profile/partials/update-profile-information-form.blade.php
+ M resources/views/super-admin/advertising/campaign/create.blade.php
+ M resources/views/super-admin/advertising/campaign/edit.blade.php
+ M resources/views/super-admin/advertising/campaign/index.blade.php
+ M resources/views/super-admin/advertising/campaign/show.blade.php
+ M resources/views/super-admin/advertising/dashboard.blade.php
+ M resources/views/super-admin/advertising/package/create.blade.php
+ M resources/views/super-admin/advertising/package/edit.blade.php
+ M resources/views/super-admin/advertising/package/index.blade.php
+ M resources/views/super-admin/advertising/revenue.blade.php
+ M resources/views/super-admin/audit-log/index.blade.php
+ M resources/views/super-admin/fasilitas/create.blade.php
+ M resources/views/super-admin/fasilitas/edit.blade.php
+ M resources/views/super-admin/fasilitas/index.blade.php
+ M resources/views/super-admin/partner/create.blade.php
+ M resources/views/super-admin/partner/edit.blade.php
+ M resources/views/super-admin/partner/index.blade.php
+ M resources/views/super-admin/users/create.blade.php
+ M resources/views/super-admin/users/edit.blade.php
+ M resources/views/super-admin/users/index.blade.php
+ M resources/views/super-admin/users/show.blade.php
+ M resources/views/tenant/booking/create.blade.php
+ M resources/views/tenant/booking/index.blade.php
+ M resources/views/tenant/booking/show.blade.php
+ M resources/views/tenant/booking/success.blade.php
+ M resources/views/tenant/checkin/_form-fields.blade.php
+ M resources/views/tenant/checkin/identity.blade.php
+ M resources/views/tenant/favorite/index.blade.php
+ M resources/views/tenant/invitations/identity.blade.php
+ M resources/views/tenant/invitations/index.blade.php
+ M resources/views/tenant/invitations/show.blade.php
+ M resources/views/tenant/kontrak/index.blade.php
+ M resources/views/tenant/kontrak/show.blade.php
+ M resources/views/tenant/kos/index.blade.php
+ M resources/views/tenant/kos/show.blade.php
+ M resources/views/tenant/messages/index.blade.php
+ M resources/views/tenant/partials/kos-card.blade.php
+ M resources/views/tenant/partials/partner-ad.blade.php
+ M resources/views/tenant/partials/promoted-kos.blade.php
+ M resources/views/tenant/partials/promoted-partner.blade.php
+ M resources/views/tenant/pembayaran/index.blade.php
+ M resources/views/tenant/tagihan/index.blade.php
+ M resources/views/tenant/tagihan/pay.blade.php
+ M resources/views/tenant/tagihan/show.blade.php
+ M resources/views/vendor/pagination/custom-simple.blade.php
+ M resources/views/welcome.blade.php
+ M routes.txt
+ M routes/web.php
+ M storage/framework/views/03c1402ab89fef245e5e94e34c69aed3.php
+ M storage/framework/views/06849ed5e9441abc10e533c2d6eebff7.php
+ M storage/framework/views/09d37162bab280516def17812d3547dc.php
+ M storage/framework/views/0c99fbef2c98d2d700110de78ddfb5c4.php
+ M storage/framework/views/0f293ae1d05ee5ee0c3ecfdb45f264c6.php
+ M storage/framework/views/133f6a5fd8e5a734d6aff2eb128d080d.php
+ M storage/framework/views/181409c15218c5f4e8a205859d8c8610.php
+ M storage/framework/views/1a003c19e32be307b6a744aa3207a227.php
+ M storage/framework/views/1e142c30453deefcd11b10d9e8ec5eb9.php
+ M storage/framework/views/20abbe72bb19a080476f3c441611fec1.php
+ M storage/framework/views/24ef9a3f5fb377c1b08456c1ea8b030a.php
+ M storage/framework/views/2c7cab55eaeed446141ae1219d638a06.php
+ M storage/framework/views/2eb6c83361cd8b441901e715e4c0bdbb.php
+ M storage/framework/views/303ff548b4ef7930cecb9a4463aa0a59.php
+ M storage/framework/views/316782908dadbf4ea2c91bd025723c5d.php
+ M storage/framework/views/350564c2dd01a3b2a1716a2e7afcee08.php
+ M storage/framework/views/35f93160e12def1036564dfc05109546.php
+ M storage/framework/views/36caa119d1c56f973fa6e7c4c7c56c1b.php
+ M storage/framework/views/36d567b206b0fc10325d2c2cc2911d81.php
+ M storage/framework/views/3e89758aaff94663485f9619d885b010.php
+ M storage/framework/views/4aeeb083d7f9f18806ef296c5ff13b99.php
+ M storage/framework/views/4b2885e3cb95bd950606f8b3400f3e06.php
+ M storage/framework/views/4f1afd53a54ec45ef772c3db76617e1c.php
+ M storage/framework/views/4fe91a2bde9c0d4c8e6f66af72b3c953.php
+ M storage/framework/views/50b9e124ff5ff20dc1e7b5f28b1fbf69.php
+ M storage/framework/views/522185e82a025236a06554219f4148d9.php
+ M storage/framework/views/59ee29a77b123160dde62aed2bbdd60b.php
+ M storage/framework/views/5e1671a4ed5d1bb22c6eddb6a794b697.php
+ M storage/framework/views/5f8e24697aba1c4c554d0cde946ced56.php
+ M storage/framework/views/618e30f24f93bedb336b682d57959fb3.php
+ M storage/framework/views/6266968d02d3e1cc53f41fb56c0ffb0a.php
+ M storage/framework/views/63a882b78a1e96e87904bafd042a045a.php
+ M storage/framework/views/6812716b9ce9bc659b3dfc582b8112ea.php
+ M storage/framework/views/6a3da5b79c1e1f6b84611091923e8971.php
+ M storage/framework/views/6b9c95e899c17b309171d336ef1dc88a.php
+ M storage/framework/views/6e1e887bab49c0fd28103021f2162129.php
+ M storage/framework/views/751b0e4ba060dbafd5f89978645f02d1.php
+ M storage/framework/views/76374ee84ba695ba06aa624fe2a6a20d.php
+ M storage/framework/views/790ef6014566d181110827d9ba73cd2d.php
+ M storage/framework/views/7cad0a709e5f7a6183c21652ae4dae95.php
+ M storage/framework/views/7e7a20dc2694087989cebcc49a4b11a0.php
+ M storage/framework/views/7ed130bb81369cc2e0030a6865230098.php
+ M storage/framework/views/80f64bf928a951c1f7c72b8606748333.php
+ M storage/framework/views/8657db01cb7ce67f88d19604fc03946c.php
+ M storage/framework/views/87933395da127c232a40b34c5a096657.php
+ M storage/framework/views/8cc2f554a8061f4374c5d3c1b7d0476c.php
+ M storage/framework/views/8ff6c6a3d9af76ee366ca7edc1ff3c2e.php
+ M storage/framework/views/9032f73ba4e5c724ed98bb1247beb71a.php
+ M storage/framework/views/985e1370f69e89e097aba578bbda147b.php
+ M storage/framework/views/9cc6590fcb9c43b6fcb1389eeef3bd28.php
+ M storage/framework/views/ac0b6c5278d35fcfd479e225886637fe.php
+ M storage/framework/views/aff36f2892ebb918fae62bfa0f53bba5.php
+ M storage/framework/views/b20b2f81edd3497cd23c6a898d21643b.php
+ M storage/framework/views/b30429d9b54d8421b4be0bef43a30b42.php
+ M storage/framework/views/b4c7d3feb5727f475f917a9ac0500d6c.php
+ M storage/framework/views/b54817601bce3d79865a1c1db089ad84.php
+ M storage/framework/views/b8d241c5f004d41eb259fccbe5882dcd.php
+ M storage/framework/views/b96866354e80088b97d3c2028fc5eefe.php
+ M storage/framework/views/bb181e15adb3eafd312c3ae41b838df4.php
+ M storage/framework/views/c5f05935a1732bec791e47594384cb71.php
+ M storage/framework/views/cb575657f9fa34fa6586aa7cc498e589.php
+ M storage/framework/views/ce4978414e504c21dd1fbe0be4534684.php
+ M storage/framework/views/cf37626e3a8cb5a27434532abe809129.php
+ M storage/framework/views/d503fdda9325e1fe22e7da3bd45049e6.php
+ M storage/framework/views/dc76b91b8c042734ea5d25578d0bf76c.php
+ M storage/framework/views/dc8a6c0b77f943cf1700dc1558ccdecf.php
+ M storage/framework/views/dddab043a22ec489039a2608dcd520c4.php
+ M storage/framework/views/dfd0f9c3384306bc5791e9f38efcb9d2.php
+ M storage/framework/views/e12138a109d3080e073f78f9dca89802.php
+ M storage/framework/views/e27c6988f0d576dc44bd78d9a88e47f7.php
+ M storage/framework/views/e6f308e4811ef843d9de121c2844c8e2.php
+ M storage/framework/views/eae174225b55474f60534a931fd5a578.php
+ M storage/framework/views/f46a9edb04b9a8fe1049654b19e320d6.php
+ M storage/framework/views/f6449eded092a91488de135a94ca1c48.php
+ M storage/framework/views/f9223ac68266d375bc1d0ad7aa7182cf.php
+ M storage/framework/views/fb60871ebc76f117d7fc46ce41831507.php
+ M tailwind.config.js
+ M tests/Feature/ApiV1BookingTest.php
+ M tests/Feature/BookingTest.php
+ M tests/Feature/BusinessFlowTest.php
+ M tests/Feature/ChatMessageTest.php
+ M tests/Feature/ChatNotificationClickTest.php
+ M tests/Feature/CheckInOutTest.php
+ M tests/Feature/GroupBookingInvitationTest.php
+ M tests/Feature/IdentityConfirmationTest.php
+ M tests/Feature/KamarCapacityTest.php
+ M tests/Feature/KamarManagementTest.php
+ M tests/Feature/NotificationSystemTest.php
+ M tests/Feature/P8Batch7CheckoutFutureBookingSchedulerTest.php
+ M tests/Feature/Phase33BookingCopyTest.php
+ M tests/Feature/Phase34CapacityErrorTest.php
+ M tests/Feature/Phase44TenantMarketplaceTest.php
+ M tests/Feature/Phase45TenantMarketplaceTest.php
+ M tests/Feature/Phase46TenantMarketplaceUltimateTest.php
+ M tests/Feature/PhaseGBookingExperienceTest.php
+ M tests/Feature/SecurityHardeningTest.php
+ M tests/Feature/SuperAdminSmokeTest.php
+ M tests/Feature/TagihanOverdueSweepTest.php
+ M tests/Feature/TenantRoomDetailTest.php
+ M tests/Unit/BookingLogicTest.php
+ M tests/Unit/KosKamarTest.php
+ M tests/Unit/MultiOccupantTest.php
+ M tests/Unit/NotificationServiceTest.php
+ M vite.config.js
+?? .recovery-backup-20261014/
+?? FORENSIC_DIAGNOSIS_REPORT.md
+?? app/Console/Commands/GenerateTagihans.php
+?? app/Console/Commands/RemindOverdueEscalation.php
+?? app/Console/Commands/SeedDemoPenghuni.php
+?? app/Console/Commands/SeedSharingRooms.php
+?? app/Enums/
+?? app/Http/Controllers/Admin/OwnerController.php
+?? app/Http/Controllers/Api/V1/Admin/
+?? app/Http/Controllers/Api/V1/CheckoutController.php
+?? app/Http/Controllers/Api/V1/DamageReportController.php
+?? app/Http/Controllers/Api/V1/InquiryController.php
+?? app/Http/Controllers/Api/V1/Owner/OwnerActionController.php
+?? app/Http/Controllers/Api/V1/Owner/OwnerBankAccountController.php
+?? app/Http/Controllers/Api/V1/Owner/OwnerPaymentDistributionController.php
+?? app/Http/Controllers/Owner/AdminOwnerMessageController.php
+?? app/Http/Controllers/Owner/DamageReportController.php
+?? app/Http/Controllers/Owner/ManagementAgreementController.php
+?? app/Http/Controllers/Owner/OwnerBankAccountController.php
+?? app/Http/Controllers/Owner/OwnerPaymentDistributionController.php
+?? app/Http/Controllers/Owner/TenantLaporanController.php
+?? app/Http/Controllers/SuperAdmin/AdminController.php
+?? app/Http/Controllers/SuperAdmin/HealthController.php
+?? app/Http/Controllers/SuperAdmin/ModerationController.php
+?? app/Http/Controllers/SuperAdmin/OwnerController.php
+?? app/Http/Controllers/SuperAdmin/SettingsController.php
+?? app/Http/Middleware/BillingGuard.php
+?? app/Http/Requests/Api/V1/StoreBookingRequest.php
+?? app/Http/Requests/AssignAdminRequest.php
+?? app/Http/Requests/CreateAdminRequest.php
+?? app/Http/Requests/ModerationActionRequest.php
+?? app/Http/Requests/SetPropertyOwnerRequest.php
+?? app/Http/Requests/StoreBookingPaymentRequest.php
+?? app/Http/Requests/StoreManagementAgreementRequest.php
+?? app/Http/Requests/StoreOwnerBankAccountRequest.php
+?? app/Http/Requests/UpdateSettingRequest.php
+?? app/Models/BookingCancellationRequest.php
+?? app/Models/DamageReport.php
+?? app/Models/ManagementAgreement.php
+?? app/Models/OwnerBankAccount.php
+?? app/Models/PaymentDistribution.php
+?? app/Models/PropertyOwner.php
+?? app/Models/PropertyOwnerBankAccount.php
+?? app/Models/Setting.php
+?? app/Models/Topik.php
+?? app/Policies/AdminPolicy.php
+?? app/Policies/AuditLogPolicy.php
+?? app/Policies/BookingCancellationRequestPolicy.php
+?? app/Policies/DamageReportPolicy.php
+?? app/Policies/FavoritePolicy.php
+?? app/Policies/LaporanPolicy.php
+?? app/Policies/OwnerBankAccountPolicy.php
+?? app/Policies/OwnerPolicy.php
+?? app/Policies/PaymentDistributionPolicy.php
+?? app/Policies/PropertyOwnerPolicy.php
+?? app/Policies/UserPolicy.php
+?? app/Services/BillingService.php
+?? app/Services/BookingStatusService.php
+?? app/Services/PaymentDistributionService.php
+?? app/Support/NumberToWords.php
+?? app/View/Composers/
+?? check_backup.php
+?? check_dashboard.php
+?? check_login.php
+?? check_tenant_full.php
+?? config/page-titles.php
+?? database/factories/BookingCancellationRequestFactory.php
+?? database/factories/ManagementAgreementFactory.php
+?? database/factories/PropertyOwnerBankAccountFactory.php
+?? database/factories/PropertyOwnerFactory.php
+?? database/factories/TopikFactory.php
+?? database/migrations/2024_01_01_000016_add_kos_id_to_audit_logs_table.php
+?? database/migrations/2026_09_24_102126_create_damage_reports_table.php
+?? database/migrations/2026_09_25_094202_create_topik_table.php
+?? database/migrations/2026_09_26_000001_add_auto_billing_settings_to_kos_table.php
+?? database/migrations/2026_09_27_000001_create_settings_table.php
+?? database/migrations/2026_09_27_000002_add_moderation_to_kos_table.php
+?? database/migrations/2026_09_27_193106_add_status_to_kos_photos_table.php
+?? database/migrations/2026_09_28_000001_add_cancelled_to_check_outs_status.php
+?? database/migrations/2026_09_28_000002_add_identity_number_to_users_table.php
+?? database/migrations/2026_09_28_000003_add_soft_deletes_to_damage_reports_table.php
+?? database/migrations/2026_09_30_143349_add_indexes_to_messages_table.php
+?? database/migrations/2026_10_02_000001_restore_booking_default_status_to_pending.php
+?? database/migrations/2026_10_02_000002_create_booking_cancellation_requests_table.php
+?? database/migrations/2026_10_02_000003_add_booking_id_to_pembayarans_table.php
+?? database/migrations/2026_10_02_000004_create_owner_bank_accounts_table.php
+?? database/migrations/2026_10_02_000005_create_payment_distributions_table.php
+?? database/migrations/2026_10_02_000006_backfill_personal_only_rooms.php
+?? database/migrations/2026_10_05_000001_create_property_owners_table.php
+?? database/migrations/2026_10_05_000002_create_property_owner_bank_accounts_table.php
+?? database/migrations/2026_10_05_000004_add_property_owner_id_to_kos_table.php
+?? database/migrations/2026_10_06_000001_create_management_agreements_table.php
+?? database/seeders/DemoDataSeeder.php
+?? database/seeders/ShowcaseSeeder.php
+?? database/seeders/TopikSeeder.php
+?? debug.log
+?? debug_output.txt
+?? fix_login2.php
+?? fix_login_verify.php
+?? gitdiff.txt
+?? lang/
+?? log.txt
+?? log2.txt
+?? output.txt
+?? public/images/demo/kos/kamar-atas-1.jpg
+?? public/images/demo/kos/kamar-atas-2.jpg
+?? public/images/demo/kos/kamar-cozy-1.jpg
+?? public/images/demo/kos/kamar-kos-1.jpg
+?? public/images/demo/kos/kamar-mewah-1.jpg
+?? public/images/demo/kos/kamar-modern-1.jpg
+?? public/images/demo/kos/kamar-putih-1.jpg
+?? public/images/demo/kos/kos-exterior-1.jpg
+?? public/images/demo/kos/kos-fasad-1.jpg
+?? public/images/demo/kos/kos-fasad-2.jpg
+?? public/images/demo/kos/kos-fasad-3.jpg
+?? public/images/demo/kos/kos-interior-1.jpg
+?? public/images/demo/kos/kos-mewah-1.jpg
+?? public/images/demo/kos/kos-parkir-1.jpg
+?? public/images/demo/kos/kos-taman-1.jpg
+?? public/images/demo/kos/kos-tradisional-1.jpg
+?? public/images/partners/
+?? resources/views/admin/fasilitas/
+?? resources/views/admin/messages/
+?? resources/views/admin/owner-messages/
+?? resources/views/admin/owners/
+?? resources/views/components/ads-carousel.blade.php
+?? resources/views/components/chat-bubble.blade.php
+?? resources/views/components/chat-list-item.blade.php
+?? resources/views/components/chat-poll-script.blade.php
+?? resources/views/components/chat-shell.blade.php
+?? resources/views/components/guest-bottom-nav.blade.php
+?? resources/views/components/notification-icon.blade.php
+?? resources/views/exports/pdf/kuitansi.blade.php
+?? resources/views/owner/bank-account/
+?? resources/views/owner/booking/occupants.blade.php
+?? resources/views/owner/damage-reports/
+?? resources/views/owner/distribution/
+?? resources/views/owner/messages/inquiries.blade.php
+?? resources/views/super-admin/admins/
+?? resources/views/super-admin/fasilitas/show.blade.php
+?? resources/views/super-admin/moderation/
+?? resources/views/super-admin/owners/
+?? resources/views/super-admin/settings/
+?? resources/views/super-admin/system-health/
+?? resources/views/tenant/checkin/index.blade.php
+?? resources/views/tenant/damage-reports/
+?? resources/views/tenant/inquiries/
+?? resources/views/tenant/laporan/
+?? resources/views/tenant/messages/ask.blade.php
+?? resources/views/tenant/partials/owner-bank-account.blade.php
+?? route_list.txt
+?? routes/damage-report.php
+?? storage/bootstrap.php
+?? storage/framework/views/01a155d10414374875b284ad64b8b6c7.php
+?? storage/framework/views/07e8174e47677cee13dc26bdab663fb6.php
+?? storage/framework/views/0c8d811a6ec5ae7f38054802d367c840.php
+?? storage/framework/views/0daf9eeb33ca25121c318abb2a0a4d55.php
+?? storage/framework/views/19cbef5da9f3ed7f08d67245b786b72d.php
+?? storage/framework/views/1c044e58003d6d3db19cd06907726560.php
+?? storage/framework/views/1d02484d4050e79b72644fc50e935329.php
+?? storage/framework/views/2a9c534d151e0d1e241c3a2260f39572.php
+?? storage/framework/views/2d671893a0d0beeb2552c3c7688da8ab.php
+?? storage/framework/views/31d43e24071bbba7c78f24ea242388a9.php
+?? storage/framework/views/33807c8c0bcc9be4f721c7736bd38a40.php
+?? storage/framework/views/3815e8368aec1dd4415c53d5e7e30acc.php
+?? storage/framework/views/3a8502a71282b42136279f11cf1bb6e3.php
+?? storage/framework/views/41c890bdce9ba2e31660314f0a4d0885.php
+?? storage/framework/views/47cb2edf2fe11aa1c0206566d0e6814c.php
+?? storage/framework/views/48e50188e3929f8cf141bd498c32e4c1.php
+?? storage/framework/views/4d4b9a8b25331b2be4612d366fcb6002.php
+?? storage/framework/views/4e268a68ea00e607ab9a128797b62e44.php
+?? storage/framework/views/50be71f3bf55dda4c1aa8d675824aea8.php
+?? storage/framework/views/515c7e6d922a1b4710d9e6cb451b1f38.php
+?? storage/framework/views/5627aa83c7e2a324d4d223a4e49adfca.php
+?? storage/framework/views/5ec0b224a2f76471b69c7d6b55b7f66a.php
+?? storage/framework/views/5f0b49840d858e3c1ba3e0ff8d4ffbf7.php
+?? storage/framework/views/63ac3416f9783fd64ea7bcafee70c053.php
+?? storage/framework/views/66415995e89de37c705d02a4b812ae1e.php
+?? storage/framework/views/6b445579adeaf3c5fe5170e9c428dd8f.php
+?? storage/framework/views/6c691eeeef2980c7de87b13e4ca800c4.php
+?? storage/framework/views/6dd161b4281cfa4eab60c93c446d49c7.php
+?? storage/framework/views/6fddbeb6146684c04adfc816d931d4bc.php
+?? storage/framework/views/759a48793f5b5900d43d63d3ddcf9f74.php
+?? storage/framework/views/7f5f389dbd109d5c1e71b2e76d095a81.php
+?? storage/framework/views/824851e8c2e7c5163ab33e78a6742775.php
+?? storage/framework/views/8425e53293eaf4506b20be61e45373f7.php
+?? storage/framework/views/8968bb3ea9ed05f8d8ccbcfff53e963e.php
+?? storage/framework/views/906af40b238d83de02d129659b1a39cf.php
+?? storage/framework/views/9bd919a42eee5efe698a7433ed34e548.php
+?? storage/framework/views/bfb8cd83bb865a92742d3db0ee5a4584.php
+?? storage/framework/views/c0ca5f15e63c1041f666b08a1eaf0669.php
+?? storage/framework/views/c0f4cb97e9cf704fb39f69134203363a.php
+?? storage/framework/views/c2ef09eae4bb0780674d0453de78fdf9.php
+?? storage/framework/views/ce6d0b5c2cdc0a3b9d75f51ccb0cd4f8.php
+?? storage/framework/views/d5c18a479e7cf494055c1b3789164bc0.php
+?? storage/framework/views/dc377e9a835d36b765af2f67332e50be.php
+?? storage/framework/views/df0aa3c2bcd8b9ced82fa85929f2dd5e.php
+?? storage/framework/views/e2d6bef6dc52e586be344eb9eb55b61c.php
+?? storage/framework/views/f6ec3369b81fb65612710b15bc001e73.php
+?? test_kos.php
+?? test_login.php
+?? test_out.txt
+?? test_output.txt
+?? test_result.txt
+?? testout.txt
+?? tests/Feature/Admin/
+?? tests/Feature/AdminAuthorizationBoundaryTest.php
+?? tests/Feature/AdminCapabilityTest.php
+?? tests/Feature/AdminManagementTest.php
+?? tests/Feature/AdminOwnerMessageTest.php
+?? tests/Feature/AdminRoleLaporanScopeTest.php
+?? tests/Feature/AdminScopedCapabilityTest.php
+?? tests/Feature/AgreementOverlapTest.php
+?? tests/Feature/ApiAuthorizationHardeningTest.php
+?? tests/Feature/Auth/SeekerLoginTest.php
+?? tests/Feature/BookingCancellationRequestTest.php
+?? tests/Feature/BookingPaymentMethodCleanupTest.php
+?? tests/Feature/BookingPaymentPrerequisiteTest.php
+?? tests/Feature/BookingStatusSeparationSecurityTest.php
+?? tests/Feature/GapPriorityTest.php
+?? tests/Feature/KamarCapacityValidationTest.php
+?? tests/Feature/KamarPhotoSeedingTest.php
+?? tests/Feature/ModerationTest.php
+?? tests/Feature/NotificationDesignTest.php
+?? tests/Feature/OwnerBankAccountDistributionTest.php
+?? tests/Feature/OwnerBankAccountTenantDisplayTest.php
+?? tests/Feature/OwnerCapabilityCompletionTest.php
+?? tests/Feature/OwnerManagementTest.php
+?? tests/Feature/OwnerProductivityTest.php
+?? tests/Feature/PersonalOnlyBookingTest.php
+?? tests/Feature/ShowcaseFeasibilityTest.php
+?? tests/Feature/SuperAdminAuthorizationTest.php
+?? tests/Feature/SuperAdminProductivityTest.php
+?? tests/Feature/SystemSettingsTest.php
+?? tests/Feature/TenantBookingStartDateTest.php
+?? tests/Feature/TenantCapabilityFollowUpTest.php
+?? tests/Feature/TenantInquiryTest.php
+?? tests/Feature/TenantLanguageTest.php
+?? tests/Feature/TenantSelfServiceTest.php
+?? tests/Feature/WebhookTest.php
+?? tests/Feature/WelcomePromoCtaRefreshTest.php
+?? tests/Unit/UserRoleTest.php

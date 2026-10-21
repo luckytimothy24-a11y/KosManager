@@ -1,68 +1,92 @@
 <x-guest-layout>
-    @if(session('status'))
-        <div class="mb-5 flex items-start gap-2.5 rounded-xl border border-green-200 bg-green-50 dark:border-green-500/20 dark:bg-green-500/10 px-3.5 py-3 text-sm text-green-700 dark:text-green-300">
-            <i class="ri-checkbox-circle-line text-base mt-0.5 shrink-0"></i>
-            <span>{{ session('status') }}</span>
+    <div class="flex flex-col items-center justify-center min-h-[85vh] px-4">
+        {{-- Logo & Header --}}
+        <div class="text-center mb-8 fade-up animate-delay-1">
+            <a href="/" class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-600 shadow-lg shadow-primary-600/25 mb-4">
+                <img src="{{ asset('favicon.svg') }}" alt="KosManager" class="w-8 h-8 brightness-0 invert">
+            </a>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100">Selamat Datang Kembali</h1>
+            <p class="text-sm text-slate-400 dark:text-slate-500 mt-2">Masuk untuk mengelola atau cari kos Anda</p>
         </div>
-    @endif
 
-    <div class="mb-7">
-        <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Selamat datang kembali</h1>
-        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Masuk untuk mengelola kos Anda.</p>
-    </div>
-
-    <form method="POST" action="{{ route('login') }}" class="space-y-4">
-        @csrf
-
-        <div>
-            <label for="email" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Email</label>
-            <div class="relative">
-                <i class="ri-mail-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
-                       class="w-full pl-10 pr-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition bg-slate-50 dark:bg-slate-800/50"
-                       placeholder="anda@email.com">
+        {{-- Alert Error --}}
+        @if(session('error'))
+            <div class="w-full max-w-sm mb-4 flex items-start gap-2.5 rounded-2xl border border-red-200/60 bg-red-50/80 dark:border-red-500/15 dark:bg-red-500/5 px-4 py-3 text-sm text-red-600 dark:text-red-400 fade-up animate-delay-2">
+                <i class="ri-error-warning-line text-base mt-0.5 shrink-0"></i>
+                <span>{{ session('error') }}</span>
             </div>
-            <x-input-error :messages="$errors->get('email')" class="mt-1" />
-        </div>
+        @endif
 
-        <div x-data="{ show: false }">
-            <label for="password" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
-            <div class="relative">
-                <i class="ri-lock-password-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500"></i>
-                <input id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="current-password"
-                       class="w-full pl-10 pr-11 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition bg-slate-50 dark:bg-slate-800/50"
-                       placeholder="Masukkan password">
-                <button type="button" @click="show = !show" aria-label="Tampilkan/sembunyikan password"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition"
-                        tabindex="-1">
-                    <i class="ri-eye-off-line text-base" x-show="!show"></i>
-                    <i class="ri-eye-line text-base" x-show="show" x-cloak></i>
+        {{-- Alert Status --}}
+        @if(session('status'))
+            <div class="w-full max-w-sm mb-4 flex items-start gap-2.5 rounded-2xl border border-emerald-200/60 bg-emerald-50/80 dark:border-emerald-500/15 dark:bg-emerald-500/5 px-4 py-3 text-sm text-emerald-600 dark:text-emerald-400 fade-up animate-delay-2">
+                <i class="ri-checkbox-circle-line text-base mt-0.5 shrink-0"></i>
+                <span>{{ session('status') }}</span>
+            </div>
+        @endif
+
+        {{-- Login Form Card --}}
+        <div class="w-full max-w-sm bg-white dark:bg-surface-elevated rounded-3xl border border-slate-100 dark:border-white/[0.08] shadow-xl shadow-slate-200/60 dark:shadow-black/30 p-8 fade-up animate-delay-3">
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                @csrf
+
+                {{-- Email Field --}}
+                <div class="fade-up animate-delay-3">
+                    <label for="email" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Email</label>
+                    <div class="relative">
+                        <i class="ri-mail-line absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-500 text-base"></i>
+                        <input id="email" type="email" name="email" value="{{ old('email') }}" autocomplete="username"
+                               class="w-full pl-11 pr-4 py-3.5 bg-surface-card dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.14] rounded-2xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-primary-400 focus:ring-2 focus:ring-primary-500/15 focus:shadow-md transition-all duration-200 outline-none"
+                               placeholder="anda@email.com">
+                    </div>
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                </div>
+
+                {{-- Password Field --}}
+                <div x-data="{ show: false }" class="fade-up animate-delay-4">
+                    <label for="password" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Password</label>
+                    <div class="relative">
+                        <i class="ri-lock-password-line absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-500 text-base"></i>
+                        <input id="password" :type="show ? 'text' : 'password'" name="password" autocomplete="current-password"
+                               class="w-full pl-11 pr-12 py-3.5 bg-surface-card dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.14] rounded-2xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-primary-400 focus:ring-2 focus:ring-primary-500/15 focus:shadow-md transition-all duration-200 outline-none"
+                               placeholder="Masukkan password">
+                        <button type="button" @click="show = !show" aria-label="Tampilkan/sembunyikan password"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-1 min-w-[44px] min-h-[44px] grid place-items-center focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
+                            <i class="ri-eye-off-line text-base" x-show="!show"></i>
+                            <i class="ri-eye-line text-base" x-show="show" x-cloak></i>
+                        </button>
+                    </div>
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                </div>
+
+                {{-- Remember & Forgot --}}
+                <div class="flex items-center justify-between pt-1 fade-up animate-delay-4">
+                    <label for="remember_me" class="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded-lg border-slate-300 text-primary-500 focus:ring-primary-500/20 cursor-pointer accent-primary-500">
+                        <span class="text-xs text-slate-500 dark:text-slate-400">Ingat saya</span>
+                    </label>
+                    @if(Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition">Lupa password?</a>
+                    @endif
+                </div>
+
+                {{-- Submit Button --}}
+                <button type="submit"
+                        class="group w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3.5 rounded-2xl transition-all duration-200 text-sm shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-600/30 mt-2 fade-up animate-delay-4">
+                    Masuk
+                    <i class="ri-arrow-right-line text-base transition-transform duration-200 group-hover:translate-x-1"></i>
                 </button>
-            </div>
-            <x-input-error :messages="$errors->get('password')" class="mt-1" />
-        </div>
+            </form>
 
-        <div class="flex items-center justify-between pt-1">
-            <label for="remember_me" class="inline-flex items-center gap-2 cursor-pointer select-none">
-                <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:checked:bg-primary-500 text-primary-500 focus:ring-primary-500/10 cursor-pointer">
-                <span class="text-sm text-slate-500 dark:text-slate-400">Ingat saya</span>
-            </label>
-            @if(Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="text-xs text-slate-500 dark:text-slate-400 hover:text-primary-500 font-medium transition">Lupa password?</a>
+            {{-- Register Link --}}
+            @if(Route::has('register'))
+                <div class="mt-6 pt-6 border-t border-slate-100 dark:border-white/[0.08] text-center fade-up animate-delay-4">
+                    <p class="text-xs text-slate-400 dark:text-slate-500">
+                        Belum punya akun?
+                        <a href="{{ route('register') }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition">Daftar sekarang</a>
+                    </p>
+                </div>
             @endif
         </div>
-
-        <button type="submit"
-                class="group w-full inline-flex items-center justify-center gap-2 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold py-2.5 rounded-xl transition text-sm mt-2 shadow-sm shadow-primary-500/30">
-            Masuk
-            <i class="ri-arrow-right-line text-base transition-transform group-hover:translate-x-0.5"></i>
-        </button>
-    </form>
-
-    @if(Route::has('register'))
-        <p class="mt-7 text-center text-sm text-slate-400 dark:text-slate-500">
-            Belum punya akun?
-            <a href="{{ route('register') }}" class="text-primary-500 hover:text-primary-600 font-semibold transition">Daftar sekarang</a>
-        </p>
-    @endif
+    </div>
 </x-guest-layout>

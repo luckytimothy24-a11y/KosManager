@@ -1,0 +1,46 @@
+PHPUnit 10.5.64 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.2.12
+Configuration: C:\Users\ASUS\KosManager\phpunit.xml
+
+...............................................................  63 / 228 ( 27%)
+.............................................F................. 126 / 228 ( 55%)
+............................................................... 189 / 228 ( 82%)
+.......F......F........................                         228 / 228 (100%)
+
+Time: 01:19.280, Memory: 76.00 MB
+
+There were 3 failures:
+
+1) Tests\Feature\OwnerCapabilityCompletionTest::test_profile_mass_assignment_cannot_escalate_role
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'http://127.0.0.1:8000/profile'
++'http://127.0.0.1:8000'
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:312
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:179
+C:\Users\ASUS\KosManager\tests\Feature\OwnerCapabilityCompletionTest.php:261
+
+2) Tests\Feature\P8Batch2OverdueIdempotencyTest::test_due_date_passed_unpaid_is_marked_overdue
+The expected [App\Mail\KosManagerMail] mailable was queued 2 times instead of 1 times.
+Failed asserting that 2 is identical to 1.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Testing\Fakes\MailFake.php:190
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Testing\Fakes\MailFake.php:170
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:355
+C:\Users\ASUS\KosManager\tests\Feature\P8Batch2OverdueIdempotencyTest.php:30
+
+3) Tests\Feature\P8Batch2OverdueIdempotencyTest::test_command_executed_twice_is_idempotent
+The expected [App\Mail\KosManagerMail] mailable was queued 2 times instead of 1 times.
+Failed asserting that 2 is identical to 1.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Testing\Fakes\MailFake.php:190
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Testing\Fakes\MailFake.php:170
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:355
+C:\Users\ASUS\KosManager\tests\Feature\P8Batch2OverdueIdempotencyTest.php:136
+
+FAILURES!
+Tests: 228, Assertions: 750, Failures: 3.

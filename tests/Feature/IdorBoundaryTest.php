@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Booking;
+use App\Models\DamageReport;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
@@ -12,6 +13,7 @@ use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 use Tests\TestCase;
 
 class IdorBoundaryTest extends TestCase
@@ -19,10 +21,15 @@ class IdorBoundaryTest extends TestCase
     use RefreshDatabase;
 
     private User $superAdmin;
+
     private User $admin;
+
     private User $owner;
+
     private User $ownerB;
+
     private User $tenant;
+
     private User $tenantB;
 
     protected function setUp(): void
@@ -44,6 +51,7 @@ class IdorBoundaryTest extends TestCase
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active',
         ]);
+
         return [$tenant, $kos, $kamar, $penghuni];
     }
 
@@ -78,7 +86,7 @@ class IdorBoundaryTest extends TestCase
 
     // ========== KAMAR IDOR ==========
 
-public function test_owner_a_cannot_access_kamar_of_owner_b_kos(): void
+    public function test_owner_a_cannot_access_kamar_of_owner_b_kos(): void
     {
         [$_, $kosA] = $this->makeStay($this->owner);
         $kosB = Kos::factory()->create(['owner_id' => $this->ownerB->id]);
@@ -272,31 +280,31 @@ public function test_owner_a_cannot_access_kamar_of_owner_b_kos(): void
         $this->actingAs($this->admin)->post(route('admin.pembayaran.verify', $pembayaranB))->assertForbidden();
     }
 
-// ========== DAMAGE REPORT IDOR ==========
+    // ========== DAMAGE REPORT IDOR ==========
 
     public function test_tenant_cannot_access_damage_report_of_another_tenant(): void
     {
         [, $kos] = $this->makeStay($this->owner);
-        $reportA = \App\Models\DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenant->id]);
-        $reportB = \App\Models\DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
+        $reportA = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenant->id]);
+        $reportB = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
 
         // DamageReportPolicy::view denies access to other tenant's report
         // Verify policy denies via direct policy check
-        $this->assertFalse(\Illuminate\Support\Facades\Gate::forUser($this->tenant)->allows('view', $reportB));
-        $this->assertTrue(\Illuminate\Support\Facades\Gate::forUser($this->tenant)->allows('view', $reportA));
+        $this->assertFalse(Gate::forUser($this->tenant)->allows('view', $reportB));
+        $this->assertTrue(Gate::forUser($this->tenant)->allows('view', $reportA));
     }
 
     public function test_admin_cannot_access_damage_report_outside_assigned_kos(): void
     {
         [, $kosA] = $this->makeStay($this->owner);
         [, $kosB] = $this->makeStay($this->ownerB);
-        $reportA = \App\Models\DamageReport::factory()->create(['kos_id' => $kosA->id]);
-        $reportB = \App\Models\DamageReport::factory()->create(['kos_id' => $kosB->id]);
+        $reportA = DamageReport::factory()->create(['kos_id' => $kosA->id]);
+        $reportB = DamageReport::factory()->create(['kos_id' => $kosB->id]);
         $this->assignKosToAdmin($this->admin, $kosA);
 
         // Admin can access assigned kos report, cannot access unassigned
-        $this->assertTrue(\Illuminate\Support\Facades\Gate::forUser($this->admin)->allows('view', $reportA));
-        $this->assertFalse(\Illuminate\Support\Facades\Gate::forUser($this->admin)->allows('view', $reportB));
+        $this->assertTrue(Gate::forUser($this->admin)->allows('view', $reportA));
+        $this->assertFalse(Gate::forUser($this->admin)->allows('view', $reportB));
     }
 
     // ========== MESSAGE IDOR ==========
@@ -308,11 +316,11 @@ public function test_owner_a_cannot_access_kamar_of_owner_b_kos(): void
         $message = Message::factory()->create(['sender_id' => $sender->id, 'receiver_id' => $receiver->id]);
 
         // MessagePolicy::view allows sender and receiver
-        $this->assertTrue(\Illuminate\Support\Facades\Gate::forUser($sender)->allows('view', $message));
-        $this->assertTrue(\Illuminate\Support\Facades\Gate::forUser($receiver)->allows('view', $message));
+        $this->assertTrue(Gate::forUser($sender)->allows('view', $message));
+        $this->assertTrue(Gate::forUser($receiver)->allows('view', $message));
         // Third party cannot access
         $stranger = User::factory()->create();
-        $this->assertFalse(\Illuminate\Support\Facades\Gate::forUser($stranger)->allows('view', $message));
+        $this->assertFalse(Gate::forUser($stranger)->allows('view', $message));
     }
 
     // ========== BOOKING OCCUPANT IDOR ==========
@@ -338,5 +346,16 @@ public function test_owner_a_cannot_access_kamar_of_owner_b_kos(): void
         $this->get(route('owner.kos.show', $kos))->assertRedirect('/login');
         $this->get(route('tenant.booking.show', $booking))->assertRedirect('/login');
         $this->get(route('admin.kamar.index'))->assertRedirect('/login');
+}
+
+    public function test_owner_cannot_delete_another_owner_kos(): void
+    {
+        $ownerA = User::factory()->create(['role' => 'owner']);
+        $ownerB = User::factory()->create(['role' => 'owner']);
+        $kosB = Kos::factory()->create(['owner_id' => $ownerB->id]);
+
+        $this->actingAs($ownerA)->delete(route('owner.kos.destroy', $kosB))->assertForbidden();
+
+        $this->assertDatabaseHas('kos', ['id' => $kosB->id, 'name' => $kosB->name]);
     }
 }

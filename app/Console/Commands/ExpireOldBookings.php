@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Booking;
 use App\Models\Kamar;
+use App\Models\Penghuni;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,7 @@ class ExpireOldBookings extends Command
                             ->exists();
                         if (! $stillReserved) {
                             // Occupancy-aware: jangan bebaskan kamar jika masih ada penghuni aktif (shared)
-                            $occupancy = \App\Models\Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+                            $occupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
                             if ($occupancy > 0) {
                                 $kamar->update(['status' => 'occupied']);
                             } else {

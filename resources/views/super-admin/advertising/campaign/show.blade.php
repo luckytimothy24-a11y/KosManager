@@ -5,11 +5,11 @@
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-3">
-                <a href="{{ route('super-admin.advertising.campaigns.index') }}" class="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <a href="{{ route('super-admin.advertising.campaigns.index') }}" class="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                     <i class="ri-arrow-left-line"></i>
                 </a>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $campaign->campaign_number }}</h1>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-slate-50">{{ $campaign->campaign_number }}</h1>
                     <p class="text-sm text-slate-500 dark:text-slate-400">{{ $campaign->kos?->name ?? $campaign->advertiser_name }}</p>
                 </div>
             </div>
@@ -18,7 +18,7 @@
                     \App\Models\AdvertisingCampaign::STATUS_COMPLETED,
                     \App\Models\AdvertisingCampaign::STATUS_CANCELLED,
                 ]))
-                    <a href="{{ route('super-admin.advertising.campaigns.edit', $campaign) }}" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <a href="{{ route('super-admin.advertising.campaigns.edit', $campaign) }}" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                         <i class="ri-edit-line"></i> Edit
                     </a>
                 @endif
@@ -51,8 +51,8 @@
 
         {{-- Detail grid --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2"><i class="ri-information-line text-primary-500"></i> Detail Kampanye</h3>
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <h3 class="font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2"><i class="ri-information-line text-primary-500"></i> Detail Kampanye</h3>
                 <dl class="mt-4 space-y-3 text-sm">
                     <x-advertising-detail-row :label="'Owner'" :value="$campaign->owner->name" />
                     @if($campaign->kos_id === null)
@@ -83,34 +83,34 @@
                 </dl>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2"><i class="ri-megaphone-line text-indigo-500"></i> Performa Iklan</h3>
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <h3 class="font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2"><i class="ri-megaphone-line text-indigo-500"></i> Performa Iklan</h3>
                 <div class="mt-4 grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($impressions) }}</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-slate-900 dark:text-slate-50">{{ number_format($impressions) }}</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Impressions</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400">{{ $ctr }}%</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ $ctr }}%</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">CTR</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-green-600 dark:text-green-400">{{ number_format($conversions) }}</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ number_format($conversions) }}</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Booking</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-amber-600 dark:text-amber-400">{{ $conversionRate }}%</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ $conversionRate }}%</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Konversi</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2"><i class="ri-bank-card-line text-green-500"></i> Pembayaran</h3>
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <h3 class="font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2"><i class="ri-bank-card-line text-green-500"></i> Pembayaran</h3>
                 @if($campaign->orders->isNotEmpty())
                     <dl class="mt-4 space-y-3 text-sm">
                         @foreach($campaign->orders as $order)
-                            <div class="border border-slate-100 dark:border-slate-800 rounded-xl p-3">
+                            <div class="border border-slate-100 dark:border-white/10 rounded-xl p-3">
                                 <div class="flex justify-between">
                                     <dt class="text-slate-500 dark:text-slate-400">{{ $order->order_number }}</dt>
                                     <dd class="font-semibold text-slate-800 dark:text-slate-200">Rp {{ number_format($order->amount, 0, ',', '.') }}</dd>
@@ -124,7 +124,7 @@
                                     </dd>
                                 </div>
                                 @if($order->isRefunded())
-                                    <div class="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                                    <div class="mt-2 border-t border-slate-100 dark:border-white/10 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
                                         Pembayaran dibatalkan dan dicatat sebagai refunded {{ $order->refunded_at?->format('d/m/Y H:i') ?? '-' }}
                                         @if($order->refund_reason) · {{ $order->refund_reason }} @endif
                                     </div>
@@ -152,14 +152,14 @@
         {{-- Modals --}}
         <div id="reject-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('reject-modal').classList.add('hidden')"></div>
-            <form method="POST" action="{{ route('super-admin.advertising.campaigns.reject', $campaign) }}" class="relative bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <form method="POST" action="{{ route('super-admin.advertising.campaigns.reject', $campaign) }}" class="relative bg-white dark:bg-surface-elevated rounded-2xl p-6 w-full max-w-md shadow-xl">
                 @csrf
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tolak Kampanye</h3>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-50">Tolak Kampanye</h3>
                 <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Berikan alasan penolakan yang akan dilihat oleh owner.</p>
                 <textarea name="reason" rows="3" required placeholder="Alasan penolakan..."
-                          class="mt-4 w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
+                          class="mt-4 w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
                 <div class="mt-5 flex justify-end gap-3">
-                    <button type="button" onclick="document.getElementById('reject-modal').classList.add('hidden')" class="text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</button>
+                    <button type="button" onclick="document.getElementById('reject-modal').classList.add('hidden')" class="text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</button>
                     <button type="submit" class="text-sm font-bold text-white bg-red-500 hover:bg-red-600 px-5 py-2 rounded-xl transition">Tolak Kampanye</button>
                 </div>
             </form>
@@ -167,14 +167,14 @@
 
         <div id="suspend-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('suspend-modal').classList.add('hidden')"></div>
-            <form method="POST" action="{{ route('super-admin.advertising.campaigns.suspend', $campaign) }}" class="relative bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <form method="POST" action="{{ route('super-admin.advertising.campaigns.suspend', $campaign) }}" class="relative bg-white dark:bg-surface-elevated rounded-2xl p-6 w-full max-w-md shadow-xl">
                 @csrf
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">Tangguhkan Kampanye</h3>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-slate-50">Tangguhkan Kampanye</h3>
                 <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kampanye akan dihentikan sementara dari tayang.</p>
                 <textarea name="reason" rows="3" required placeholder="Alasan penangguhan..."
-                          class="mt-4 w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-amber-500 focus:border-transparent"></textarea>
+                          class="mt-4 w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-amber-500 focus:border-transparent"></textarea>
                 <div class="mt-5 flex justify-end gap-3">
-                    <button type="button" onclick="document.getElementById('suspend-modal').classList.add('hidden')" class="text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</button>
+                    <button type="button" onclick="document.getElementById('suspend-modal').classList.add('hidden')" class="text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-4 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</button>
                     <button type="submit" class="text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 px-5 py-2 rounded-xl transition">Tangguhkan</button>
                 </div>
             </form>

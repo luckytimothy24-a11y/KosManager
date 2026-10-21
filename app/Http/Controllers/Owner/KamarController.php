@@ -83,7 +83,9 @@ class KamarController extends Controller
         $data = $request->validated();
         $fasilitasIds = $data['fasilitas'] ?? [];
         unset($data['fasilitas']);
-        $data['capacity'] = isset($data['capacity']) ? (int) $data['capacity'] : 1;
+        // 1 kamar = 1 penghuni — patungan/multi dihapus
+        $data['capacity'] = 1;
+        $data['billing_mode'] = 'personal';
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('kamar', 'public');
@@ -92,7 +94,8 @@ class KamarController extends Controller
         $kamar = Kamar::create($data);
         $kamar->fasilitas()->sync($fasilitasIds);
 
-        $prefix = $request->user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin';
+        $prefix = $request->user()->isSuperAdmin() || $request->user()->isOwner() ? 'owner' : 'admin';
+
         return redirect()->route("$prefix.kamar.index")->with('success', 'Kamar berhasil ditambahkan.');
     }
 
@@ -102,7 +105,7 @@ class KamarController extends Controller
 
         $kamar->load(['kos', 'fasilitas', 'penghunis.user', 'penghunis.kontraks', 'bookings']);
 
-        $tenantCandidates = request()->user()->hasRole('owner', 'super_admin', 'admin')
+        $tenantCandidates = request()->user()->isSuperAdmin() || request()->user()->isOwner() || request()->user()->isAdmin()
             ? User::where('role', 'tenant')
                 ->whereDoesntHave('penghunis', fn ($q) => $q->where('kamar_id', $kamar->id)->where('status', 'active'))
                 ->orderBy('name')
@@ -120,8 +123,7 @@ class KamarController extends Controller
             'user_id' => ['required', 'exists:users,id'],
             'rental_type' => ['required', 'in:daily,weekly,monthly'],
             'rental_price' => ['required', 'numeric', 'min:0'],
-            'billing_mode' => ['sometimes', 'nullable', 'in:personal,shared'],
-            'custom_share_amount' => ['nullable', 'numeric', 'min:0'],
+            'billing_mode' => ['sometimes', 'nullable', 'string', 'in:personal'],
             'identity_number' => ['nullable', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:30'],
             'address' => ['nullable', 'string'],
@@ -136,21 +138,12 @@ class KamarController extends Controller
             'Pengguna tersebut sudah menjadi penghuni aktif kamar ini.'
         );
 
-        $requestedBillingMode = $validated['billing_mode'] ?? 'personal';
-        if (! in_array($requestedBillingMode, ['personal', 'shared'], true)) {
-            $requestedBillingMode = 'personal';
-        }
-
-        $result = \DB::transaction(function () use ($kamar, $user, $validated, $requestedBillingMode) {
+        $result = \DB::transaction(function () use ($kamar, $user, $validated) {
             $locked = Kamar::whereKey($kamar->id)->lockForUpdate()->first();
 
-            // Server-side policy: shared only if kamar supports shared
-            if ($requestedBillingMode === 'shared' && ($locked->billing_mode ?? 'personal') !== 'shared') {
-                abort(422, 'Kamar ini tidak mengizinkan shared billing.');
-            }
-
+            // 1 kamar = 1 penghuni — patungan dihapus
             $occupancy = $locked->occupancy();
-            abort_unless($occupancy < (int) $locked->capacity, 400, 'Kamar sudah penuh. Kapasitas tidak mencukupi.');
+            abort_unless($occupancy < 1, 400, 'Kamar sudah terisi. Satu kamar hanya untuk satu penghuni.');
 
             $penghuni = Penghuni::create([
                 'user_id' => $user->id,
@@ -163,42 +156,6 @@ class KamarController extends Controller
                 'status' => 'active',
             ]);
 
-            // Validasi custom share — integer rupiah, tanpa floating drift
-            if ($requestedBillingMode === 'shared' && array_key_exists('custom_share_amount', $validated) && $validated['custom_share_amount'] !== null && $validated['custom_share_amount'] !== '') {
-                $priceForRoom = match ($validated['rental_type']) {
-                    'daily' => (float) $locked->daily_price,
-                    'weekly' => (float) $locked->weekly_price,
-                    default => (float) $locked->monthly_price,
-                };
-                // Kumpulkan custom shares existing (hanya shared effective)
-                $existingActive = Kontrak::where('kamar_id', $locked->id)->where('status', 'active')->get()
-                    ->filter(fn ($k) => ($k->billing_mode ?? $k->kamar->billing_mode ?? 'personal') === 'shared');
-                if ($existingActive->isEmpty() && ($locked->billing_mode ?? 'personal') === 'shared') {
-                    $hasExplicit = Kontrak::where('kamar_id', $locked->id)->where('status', 'active')->whereNotNull('billing_mode')->exists();
-                    if (! $hasExplicit) {
-                        $existingActive = Kontrak::where('kamar_id', $locked->id)->where('status', 'active')->get();
-                    }
-                }
-                $existingCustomTotalCents = $existingActive->filter(fn ($k) => $k->custom_share_amount !== null)
-                    ->sum(fn ($k) => (int) round((float) $k->custom_share_amount * 100));
-                $newCustomCents = (int) round((float) $validated['custom_share_amount'] * 100);
-                $priceCents = (int) round($priceForRoom * 100);
-                $newTotalCents = $existingCustomTotalCents + $newCustomCents;
-
-                if ($newTotalCents > $priceCents) {
-                    abort(422, 'Jumlah custom share (Rp '.number_format($newTotalCents/100, 0, ',', '.').') melebihi harga kamar (Rp '.number_format($priceCents/100, 0, ',', '.').').');
-                }
-
-                // Jika setelah penambahan kamar akan penuh dan semua penghuni punya custom, wajib pas
-                $futureOccupancy = $existingActive->count() + 1;
-                $futureCustomCount = $existingActive->filter(fn ($k) => $k->custom_share_amount !== null)->count() + 1;
-                $willBeFull = $futureOccupancy === (int) $locked->capacity;
-                $allFutureCustom = $futureCustomCount === $futureOccupancy;
-                if ($willBeFull && $allFutureCustom && $newTotalCents !== $priceCents) {
-                    abort(422, 'Jumlah custom share (Rp '.number_format($newTotalCents/100, 0, ',', '.').') tidak balance dengan harga kamar (Rp '.number_format($priceCents/100, 0, ',', '.').'). Total pembagian harus tepat sama dengan harga kamar.');
-                }
-            }
-
             $kontrak = Kontrak::create([
                 'contract_number' => 'KT-'.strtoupper(Str::random(12)),
                 'penghuni_id' => $penghuni->id,
@@ -206,14 +163,13 @@ class KamarController extends Controller
                 'kamar_id' => $locked->id,
                 'rental_type' => $validated['rental_type'],
                 'rental_price' => $validated['rental_price'],
-                'billing_mode' => $requestedBillingMode,
-                'custom_share_amount' => $validated['custom_share_amount'] ?? null,
+                'billing_mode' => 'personal',
                 'start_date' => $validated['check_in_date'],
                 'end_date' => Carbon::parse($validated['check_in_date'])->addYear()->toDateString(),
                 'status' => 'active',
             ]);
 
-            $locked->update(['status' => 'occupied']);
+            $locked->update(['status' => 'occupied', 'capacity' => 1, 'billing_mode' => 'personal']);
 
             return [$penghuni, $kontrak];
         });
@@ -223,7 +179,7 @@ class KamarController extends Controller
             NotificationService::kontrakActive($user->id, $result[1]->contract_number);
             AuditLogService::create('Penghuni', "Penghuni baru {$user->name} ditambahkan ke kamar {$kamar->room_number}", ['penghuni_id' => $result[0]->id, 'kamar_id' => $kamar->id]);
         } catch (\Exception $e) {
-            \Log::warning('Add penaluni notification/audit failed: '.$e->getMessage());
+            \Log::warning('Add penghuni notification/audit failed: '.$e->getMessage());
         }
 
         return redirect()->route('owner.kamar.show', $kamar)->with('success', 'Penghuni berhasil ditambahkan ke kamar.');
@@ -247,7 +203,9 @@ class KamarController extends Controller
         $data = $request->validated();
         $fasilitasIds = $data['fasilitas'] ?? [];
         unset($data['fasilitas']);
-        $data['capacity'] = isset($data['capacity']) ? (int) $data['capacity'] : 1;
+        // 1 kamar = 1 penghuni — patungan/multi dihapus
+        $data['capacity'] = 1;
+        $data['billing_mode'] = 'personal';
 
         $newStatus = $data['status'] ?? null;
         $hasActivePenghuni = $kamar->penghunis()->where('status', 'active')->exists();
@@ -255,14 +213,13 @@ class KamarController extends Controller
 
         if ($newStatus !== null && $newStatus !== $kamar->status) {
             $occupancy = $kamar->occupancy();
-            $capacity = (int) $kamar->capacity;
+            $capacity = 1; // personal only
             if ($hasActivePenghuni && $occupancy >= $capacity && ! in_array($newStatus, ['occupied'])) {
                 return back()
                     ->withErrors(['status' => 'Kamar penuh dan hanya dapat dalam status terisi.'])
                     ->withInput();
             }
             if ($hasActivePenghuni && $occupancy > 0 && $occupancy < $capacity && ! in_array($newStatus, ['occupied', 'available'])) {
-                // Shared with slot still available: allow occupied or available
                 if (! in_array($newStatus, ['occupied', 'available'])) {
                     return back()
                         ->withErrors(['status' => 'Kamar masih memiliki penghuni aktif.'])
@@ -272,21 +229,6 @@ class KamarController extends Controller
             if (! $hasActivePenghuni && $hasActiveBooking && ! in_array($newStatus, ['booked'])) {
                 return back()
                     ->withErrors(['status' => 'Kamar masih memiliki booking aktif dan hanya dapat dalam status dipesan.'])
-                    ->withInput();
-            }
-        }
-
-        // Validasi capacity tidak boleh < occupancy aktif
-        if (isset($data['capacity'])) {
-            $occupancy = $kamar->occupancy();
-            if ((int) $data['capacity'] < $occupancy) {
-                return back()
-                    ->withErrors(['capacity' => 'Kapasitas tidak boleh kurang dari jumlah penghuni aktif ('.$occupancy.' orang).'])
-                    ->withInput();
-            }
-            if ((int) $data['capacity'] < 1) {
-                return back()
-                    ->withErrors(['capacity' => 'Kapasitas minimal 1 orang.'])
                     ->withInput();
             }
         }
@@ -304,7 +246,8 @@ class KamarController extends Controller
             $kamar->fasilitas()->sync($fasilitasIds);
         }
 
-        $prefix = request()->user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin';
+        $prefix = request()->user()->isSuperAdmin() || request()->user()->isOwner() ? 'owner' : 'admin';
+
         return redirect()->route("$prefix.kamar.index")->with('success', 'Kamar berhasil diperbarui.');
     }
 
@@ -333,7 +276,8 @@ class KamarController extends Controller
 
         $kamar->delete();
 
-        $prefix = request()->user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin';
+        $prefix = request()->user()->isSuperAdmin() || request()->user()->isOwner() ? 'owner' : 'admin';
+
         return redirect()->route("$prefix.kamar.index")->with('success', 'Kamar berhasil dihapus.');
     }
 }

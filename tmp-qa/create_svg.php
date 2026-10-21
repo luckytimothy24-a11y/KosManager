@@ -8,22 +8,22 @@ $campaigns = [
         'brand' => 'Shopee',
         'color' => '#FF6D00',
         'subtitle' => 'Beli kebutuhan kos lebih hemat di Shopee',
-        'text' => 'Hemat Sampai 50%'
+        'text' => 'Hemat Sampai 50%',
     ],
     [
         'file' => 'dana-promo.svg',
         'brand' => 'DANA',
         'color' => '#7B1FA2',
         'subtitle' => 'Bayar tagihan kos langsung dari dompet digital DANA',
-        'text' => 'Bayar Mudah & Aman'
+        'text' => 'Bayar Mudah & Aman',
     ],
     [
         'file' => 'gopay-promo.svg',
         'brand' => 'GoPay',
         'color' => '#00897B',
         'subtitle' => 'Isi saldo dan bayar semua kebutuhan di GoPay',
-        'text' => 'Semua di GoPay'
-    ]
+        'text' => 'Semua di GoPay',
+    ],
 ];
 
 foreach ($campaigns as $c) {
@@ -54,7 +54,7 @@ foreach ($campaigns as $c) {
 </svg>
 SVG;
     file_put_contents($path, $svg);
-    echo "Created: $path (" . strlen($svg) . " bytes)\n";
+    echo "Created: $path (".strlen($svg)." bytes)\n";
 }
 
 echo "\nAll advertising images created.\n";

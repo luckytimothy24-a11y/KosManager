@@ -41,7 +41,7 @@ class ApiV1BillingTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->tenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
@@ -262,7 +262,7 @@ class ApiV1BillingTest extends TestCase
         $this->assertDatabaseHas('tagihans', ['id' => $this->tagihan->id, 'status' => Tagihan::STATUS_PAYMENT_PENDING]);
 
         $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->first();
-        Storage::disk('local')->assertExists($payment->proof_file);
+        Storage::disk('private')->assertExists($payment->proof_file);
     }
 
     public function test_payment_store_accepts_cash_without_proof(): void

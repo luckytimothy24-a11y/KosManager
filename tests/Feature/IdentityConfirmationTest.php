@@ -172,11 +172,16 @@ class IdentityConfirmationTest extends TestCase
 
     public function test_identity_page_unavailable_for_pending_booking(): void
     {
-        $this->booking->update(['status' => 'pending']);
+        $pendingBooking = Booking::factory()->create([
+            'user_id' => $this->tenant->id,
+            'kos_id' => $this->kos->id,
+            'kamar_id' => $this->kamar->id,
+            'status' => 'pending',
+        ]);
 
-        $response = $this->actingAs($this->tenant)->get(route('tenant.checkin.identity', $this->booking));
+        $response = $this->actingAs($this->tenant)->get(route('tenant.checkin.identity', $pendingBooking));
 
-        $response->assertStatus(404);
+        $response->assertNotFound();
     }
 
     public function test_confirmation_notifies_kos_owner(): void

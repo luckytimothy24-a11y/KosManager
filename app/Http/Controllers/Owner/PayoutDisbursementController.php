@@ -40,17 +40,20 @@ class PayoutDisbursementController extends Controller
             if ($request->expectsJson()) {
                 return response()->json(['message' => $error, 'error' => $result['error'] ?? 'failed'], $status);
             }
+
             return back()->with('error', $error)->withInput();
         }
         if (! empty($result['duplicate'])) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Disbursement sudah tercatat (idempotent).', 'disbursement' => $result['disbursement']], 200);
             }
+
             return redirect()->route('owner.payouts.show', $payout)->with('success', 'Disbursement sudah tercatat sebelumnya (idempotent).');
         }
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Disbursement dicatat.', 'disbursement' => $result['disbursement']], 201);
         }
+
         return redirect()->route('owner.payouts.show', $payout)->with('success', 'Disbursement berhasil dicatat. Menunggu verifikasi Super Admin.');
     }
 
@@ -67,11 +70,13 @@ class PayoutDisbursementController extends Controller
             if (request()->expectsJson()) {
                 return response()->json(['message' => $error], 403);
             }
+
             return back()->with('error', $error);
         }
         if (request()->expectsJson()) {
             return response()->json(['message' => 'Disbursement diverifikasi.']);
         }
+
         return back()->with('success', 'Disbursement diverifikasi.');
     }
 
@@ -88,11 +93,13 @@ class PayoutDisbursementController extends Controller
             if (request()->expectsJson()) {
                 return response()->json(['message' => $error], 403);
             }
+
             return back()->with('error', $error);
         }
         if (request()->expectsJson()) {
             return response()->json(['message' => 'Disbursement ditolak.']);
         }
+
         return back()->with('success', 'Disbursement ditolak.');
     }
 }

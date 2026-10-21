@@ -21,10 +21,13 @@ class PembayaranResource extends JsonResource
             'id' => $this->id,
             'payment_number' => $this->payment_number,
             'tagihan_id' => $this->tagihan_id,
+            'booking_id' => $this->booking_id,
             'amount' => (float) $this->amount,
             'payment_date' => $this->payment_date?->toDateString(),
             'payment_method' => $this->payment_method,
+            // Source of truth status pembayaran.
             'verification_status' => $this->verification_status,
+            'status' => $this->verification_status,
             'paid_at' => $this->verified_at?->toDateTimeString(),
             'admin_notes' => $this->admin_notes,
             'gateway_provider' => $this->gateway_provider,

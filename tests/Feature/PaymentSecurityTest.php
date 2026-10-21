@@ -35,7 +35,7 @@ class PaymentSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->tenant = User::factory()->create(['role' => 'tenant']);
@@ -91,13 +91,13 @@ class PaymentSecurityTest extends TestCase
 
         $pembayaran = Pembayaran::firstOrFail();
         $this->assertNotNull($pembayaran->proof_file);
-        $this->assertTrue(Storage::disk('local')->exists($pembayaran->proof_file));
+        $this->assertTrue(Storage::disk('private')->exists($pembayaran->proof_file));
         $this->assertFalse(Storage::disk('public')->exists($pembayaran->proof_file));
     }
 
     public function test_owner_can_download_proof_with_authorization(): void
     {
-        Storage::put('bukti-pembayaran/test-proof.pdf', 'proof-content');
+        Storage::disk('private')->put('bukti-pembayaran/test-proof.pdf', 'proof-content');
 
         $pembayaran = Pembayaran::factory()->create([
             'tagihan_id' => $this->tagihan->id,
@@ -142,7 +142,7 @@ class PaymentSecurityTest extends TestCase
 
     public function test_owner_a_cannot_download_owner_b_payment_proof(): void
     {
-        Storage::put('bukti-pembayaran/owner-b-proof.pdf', 'proof-content');
+        Storage::disk('private')->put('bukti-pembayaran/owner-b-proof.pdf', 'proof-content');
 
         $pembayaran = Pembayaran::factory()->create([
             'tagihan_id' => $this->tagihan->id,
@@ -161,7 +161,7 @@ class PaymentSecurityTest extends TestCase
 
     public function test_tenant_can_download_own_payment_proof(): void
     {
-        Storage::put('bukti-pembayaran/own-proof.pdf', 'proof-content');
+        Storage::disk('private')->put('bukti-pembayaran/own-proof.pdf', 'proof-content');
 
         $pembayaran = Pembayaran::factory()->create([
             'tagihan_id' => $this->tagihan->id,

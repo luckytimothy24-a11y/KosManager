@@ -23,6 +23,7 @@ class BookingOccupantIdentityController extends Controller
                 'identity_number' => $occupant->maskedIdentityNumber(),
             ]]);
         }
+
         return view('tenant.invitations.identity', compact('occupant', 'token'));
     }
 
@@ -57,27 +58,26 @@ class BookingOccupantIdentityController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Identitas berhasil dikirim. Menunggu konfirmasi owner.']);
         }
+
         return redirect()->route('tenant.booking.show', $occupant->booking_id)->with('success', 'Identitas berhasil dikirim.');
     }
 
     private function normalizePhone(string $phone): string
     {
         $p = preg_replace('/[^0-9+]/', '', trim($phone));
-        if (str_starts_with($p, '+62')) $p = '0'.substr($p, 3);
-        elseif (str_starts_with($p, '62')) $p = '0'.substr($p, 2);
+        if (str_starts_with($p, '+62')) {
+            $p = '0'.substr($p, 3);
+        } elseif (str_starts_with($p, '62')) {
+            $p = '0'.substr($p, 2);
+        }
+
         return $p;
     }
 
     private function findByToken(string $token): ?BookingOccupant
     {
         $hash = hash('sha256', $token);
-        return BookingOccupant::where('invite_token_hash', $hash)->first()
-            ?? BookingOccupant::where('id', $token)->first(); // fallback for accepted (token nulled) via id in route? not used
-    }
 
-    private function findByTokenStrict(string $token): ?BookingOccupant
-    {
-        $hash = hash('sha256', $token);
         return BookingOccupant::where('invite_token_hash', $hash)->first();
     }
 }

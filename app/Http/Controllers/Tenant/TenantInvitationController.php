@@ -16,7 +16,7 @@ class TenantInvitationController extends Controller
         // Auto-expire stale invites for this user (minimal, no migration)
         BookingOccupant::where(function ($q) use ($user) {
             $q->whereRaw('LOWER(email) = ?', [strtolower($user->email)])
-              ->orWhere('user_id', $user->id);
+                ->orWhere('user_id', $user->id);
         })
             ->where('status', BookingOccupant::STATUS_INVITED)
             ->whereNotNull('invite_expires_at')
@@ -30,7 +30,7 @@ class TenantInvitationController extends Controller
         $all = BookingOccupant::with(['booking.kos', 'booking.kamar', 'booking.user'])
             ->where(function ($q) use ($user) {
                 $q->whereRaw('LOWER(email) = ?', [strtolower($user->email)])
-                  ->orWhere('user_id', $user->id);
+                    ->orWhere('user_id', $user->id);
             })
             ->orderByRaw("CASE status WHEN '".BookingOccupant::STATUS_INVITED."' THEN 0 WHEN '".BookingOccupant::STATUS_ACCEPTED."' THEN 1 WHEN '".BookingOccupant::STATUS_DECLINED."' THEN 2 WHEN '".BookingOccupant::STATUS_EXPIRED."' THEN 3 WHEN '".BookingOccupant::STATUS_CANCELLED."' THEN 4 ELSE 5 END")
             ->latest('updated_at')
@@ -68,6 +68,7 @@ class TenantInvitationController extends Controller
         }
         if ($occupant->isInviteExpired()) {
             $occupant->update(['status' => BookingOccupant::STATUS_EXPIRED, 'invite_token_hash' => null, 'invite_expires_at' => null]);
+
             return $request->expectsJson()
                 ? response()->json(['message' => 'Undangan sudah kedaluwarsa.'], 410)
                 : redirect()->route('tenant.invitations.index')->with('error', 'Undangan sudah kedaluwarsa.');
@@ -97,6 +98,7 @@ class TenantInvitationController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Undangan diterima.', 'data' => ['id' => $occupant->id, 'status' => $occupant->status]]);
         }
+
         return redirect()->route('tenant.invitations.index')->with('success', 'Undangan diterima. Silakan lengkapi identitas.');
     }
 
@@ -113,6 +115,7 @@ class TenantInvitationController extends Controller
         }
         if ($occupant->isInviteExpired()) {
             $occupant->update(['status' => BookingOccupant::STATUS_EXPIRED, 'invite_token_hash' => null, 'invite_expires_at' => null]);
+
             return $request->expectsJson()
                 ? response()->json(['message' => 'Undangan sudah kedaluwarsa.'], 410)
                 : redirect()->route('tenant.invitations.index')->with('error', 'Undangan sudah kedaluwarsa.');
@@ -131,6 +134,7 @@ class TenantInvitationController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Undangan ditolak.']);
         }
+
         return redirect()->route('tenant.invitations.index')->with('success', 'Undangan ditolak.');
     }
 
@@ -195,6 +199,7 @@ class TenantInvitationController extends Controller
         }
         if ($occupant->isInviteExpired()) {
             $occupant->update(['status' => BookingOccupant::STATUS_EXPIRED, 'invite_token_hash' => null, 'invite_expires_at' => null]);
+
             return response()->json(['message' => 'Undangan sudah kedaluwarsa.'], 410);
         }
         if (! $occupant->email || strtolower($occupant->email) !== strtolower($user->email)) {
@@ -219,6 +224,7 @@ class TenantInvitationController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Undangan diterima.', 'data' => ['id' => $occupant->id, 'status' => $occupant->status]]);
         }
+
         return redirect()->route('tenant.booking.show', $occupant->booking_id)->with('success', 'Undangan diterima. Silakan lengkapi identitas.');
     }
 
@@ -233,6 +239,7 @@ class TenantInvitationController extends Controller
         }
         if ($occupant->isInviteExpired()) {
             $occupant->update(['status' => BookingOccupant::STATUS_EXPIRED, 'invite_token_hash' => null, 'invite_expires_at' => null]);
+
             return response()->json(['message' => 'Undangan sudah kedaluwarsa.'], 410);
         }
         if (! $occupant->email || strtolower($occupant->email) !== strtolower($user->email)) {
@@ -247,12 +254,14 @@ class TenantInvitationController extends Controller
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Undangan ditolak.']);
         }
+
         return redirect()->route('tenant.booking.index')->with('success', 'Undangan ditolak.');
     }
 
     private function findByToken(string $token): ?BookingOccupant
     {
         $hash = hash('sha256', $token);
+
         return BookingOccupant::where('invite_token_hash', $hash)->first();
     }
 }

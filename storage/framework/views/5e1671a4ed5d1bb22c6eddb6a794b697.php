@@ -75,7 +75,7 @@
 <?php endif; ?>
 
         <?php if($bookings->isEmpty()): ?>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div class="card-surface">
                 <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['icon' => 'ri-calendar-check-line','title' => 'Belum ada booking','description' => 'Buat booking baru untuk mulai menyewa kamar.']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
@@ -119,18 +119,18 @@
         <?php else: ?>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <?php $__currentLoopData = $bookings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col <?php echo e(in_array($b->status, ['cancelled', 'rejected']) ? 'opacity-90' : ''); ?>">
+                    <div class="card-surface overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col <?php echo e(in_array($b->status, ['cancelled', 'rejected']) ? 'opacity-90' : ''); ?>">
                         <a href="<?php echo e(route('tenant.booking.show', $b)); ?>" class="block p-5 flex-1 space-y-4" aria-label="Lihat detail booking <?php echo e($b->booking_code); ?>">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <span class="font-mono font-semibold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition"><?php echo e($b->booking_code); ?></span>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <span class="font-mono font-semibold text-slate-900 dark:text-slate-50 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition"><?php echo e($b->booking_code); ?></span>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300">
                                             <?php echo e(\StatusLabels::rentalTypeLabel($b->rental_type)); ?>
 
                                         </span>
                                     </div>
-                                    <h3 class="mt-2 text-sm font-bold text-slate-900 dark:text-white leading-snug"><?php echo e($b->kos->name); ?></h3>
+                                    <h3 class="mt-2 text-sm font-bold text-slate-900 dark:text-slate-50 leading-snug"><?php echo e($b->kos->name); ?></h3>
                                     <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Kamar <?php echo e($b->kamar->room_number); ?> · <?php echo e($b->kamar->room_name); ?></p>
                                 </div>
                                 <?php if (isset($component)) { $__componentOriginal8c81617a70e11bcf247c4db924ab1b62 = $component; } ?>
@@ -155,20 +155,20 @@
 <?php endif; ?>
                             </div>
 
-                            <div class="pt-3.5 border-t border-slate-100 dark:border-slate-800">
+                            <div class="pt-3.5 border-t border-slate-100 dark:border-white/[0.08]">
                                 <div class="flex flex-wrap items-center justify-between gap-3">
                                     <div class="text-xs text-slate-500 dark:text-slate-400">
                                         <p class="flex items-center gap-1.5"><i class="ri-calendar-line text-primary-500"></i> <?php echo e($b->start_date->format('d M Y')); ?> — <?php echo e($b->end_date->format('d M Y')); ?></p>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Harga Sewa</p>
-                                        <p class="text-base font-black text-slate-900 dark:text-white">Rp <?php echo e(number_format($b->price, 0, ',', '.')); ?> <span class="text-xs font-medium text-slate-400 dark:text-slate-500"><?php echo e($b->priceUnitLabel()); ?></span></p>
+                                        <p class="text-label">Harga Sewa</p>
+                                        <p class="text-base font-semibold text-slate-900 dark:text-slate-50">Rp <?php echo e(number_format($b->price, 0, ',', '.')); ?> <span class="text-xs font-medium text-slate-400 dark:text-slate-500"><?php echo e($b->priceUnitLabel()); ?></span></p>
                                     </div>
                                 </div>
 
                                 <?php if($b->nextAction()): ?>
-                                    <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400">
-                                        <i class="ri-lightbulb-flash-line text-amber-500 mt-0.5 shrink-0"></i>
+                                    <div class="mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.08] flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                        <i class="ri-lightbulb-flash-line text-primary-500 mt-0.5 shrink-0"></i>
                                         <p><?php echo e($b->nextAction()); ?></p>
                                     </div>
                                 <?php endif; ?>
@@ -179,22 +179,23 @@
                             <?php if($b->isCancellable()): ?>
                                 <?php if (isset($component)) { $__componentOriginalbd602bb95417eb29101c8ba335f03bf0 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalbd602bb95417eb29101c8ba335f03bf0 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.confirm-dialog','data' => ['title' => 'Batalkan booking ini?','description' => 'Booking &ldquo;'.e($b->booking_code).'&rdquo; akan dibatalkan dan tidak dapat dikembalikan.','confirmText' => 'Ya, Batalkan','triggerClass' => 'inline-flex items-center justify-center gap-1.5 flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500','ariaLabel' => 'Batalkan booking '.e($b->booking_code).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.confirm-dialog','data' => ['title' => 'Ajukan pembatalan booking?','description' => 'Pengajuan booking &ldquo;'.e($b->booking_code).'&rdquo; akan dikirim ke pemilik kos. Booking tetap berstatus '.e(\StatusLabels::bookingLabel($b->status)).' sampai disetujui.','confirmText' => 'Kirim Pengajuan','triggerClass' => 'inline-flex items-center justify-center gap-1.5 flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500','ariaLabel' => 'Ajukan pembatalan booking '.e($b->booking_code).'']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('confirm-dialog'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
 <?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => 'Batalkan booking ini?','description' => 'Booking &ldquo;'.e($b->booking_code).'&rdquo; akan dibatalkan dan tidak dapat dikembalikan.','confirmText' => 'Ya, Batalkan','triggerClass' => 'inline-flex items-center justify-center gap-1.5 flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500','aria-label' => 'Batalkan booking '.e($b->booking_code).'']); ?>
-                                     <?php $__env->slot('slot', null, []); ?> <i class="ri-close-circle-line"></i> Batalkan Booking <?php $__env->endSlot(); ?>
+<?php $component->withAttributes(['title' => 'Ajukan pembatalan booking?','description' => 'Pengajuan booking &ldquo;'.e($b->booking_code).'&rdquo; akan dikirim ke pemilik kos. Booking tetap berstatus '.e(\StatusLabels::bookingLabel($b->status)).' sampai disetujui.','confirmText' => 'Kirim Pengajuan','triggerClass' => 'inline-flex items-center justify-center gap-1.5 flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500','aria-label' => 'Ajukan pembatalan booking '.e($b->booking_code).'']); ?>
+                                     <?php $__env->slot('slot', null, []); ?> <i class="ri-close-circle-line"></i> Ajukan Pembatalan <?php $__env->endSlot(); ?>
                                      <?php $__env->slot('actions', null, []); ?> 
                                         <form method="POST" action="<?php echo e(route('tenant.booking.cancel', $b)); ?>" x-data="{ submitting: false }" x-on:submit="submitting = true">
                                             <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="reason" value="Diajukan oleh tenant melalui daftar booking.">
                                             <button type="submit" :disabled="submitting"
-                                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
-                                                <span x-show="!submitting">Ya, Batalkan</span>
-                                                <span x-show="submitting" x-cloak>Membatalkan...</span>
+                                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <span x-show="!submitting">Ya, Ajukan</span>
+                                                <span x-show="submitting" x-cloak>Mengirim...</span>
                                             </button>
                                         </form>
                                      <?php $__env->endSlot(); ?>
@@ -210,7 +211,7 @@
 <?php endif; ?>
                             <?php elseif(in_array($b->status, ['rejected', 'cancelled', 'expired'])): ?>
                                 <a href="<?php echo e(route('tenant.kos.index')); ?>"
-                                   class="inline-flex items-center justify-center gap-1.5 flex-1 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-primary-500 hover:bg-primary-600 transition shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                                   class="btn-primary flex-1 px-4 py-2.5 text-xs">
                                     <i class="ri-search-line"></i> Cari Kos
                                 </a>
                             <?php else: ?>
@@ -218,7 +219,7 @@
                             <?php endif; ?>
 
                             <a href="<?php echo e(route('tenant.booking.show', $b)); ?>"
-                               class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                               class="btn-secondary px-4 py-2.5 text-xs"
                                aria-label="Lihat detail booking <?php echo e($b->booking_code); ?>">
                                 <i class="ri-eye-line"></i> Detail
                             </a>

@@ -10,6 +10,7 @@ use App\Http\Requests\TransferPayoutRequest;
 use App\Models\Kos;
 use App\Models\Payout;
 use App\Services\PropertyOwnerPayoutService;
+use App\Services\SettlementReportService;
 use Illuminate\Http\Request;
 
 /**
@@ -59,7 +60,7 @@ class PropertyOwnerPayoutController extends Controller
 
         $settlement = null;
         if ($user->isOwner()) {
-            $settlement = app(\App\Services\SettlementReportService::class)->forOwner($user);
+            $settlement = app(SettlementReportService::class)->forOwner($user);
         }
 
         return view('owner.payouts.index', compact('payouts', 'kosWithoutPropertyOwner', 'kosOptions', 'settlement'));

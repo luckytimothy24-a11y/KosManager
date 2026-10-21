@@ -18,6 +18,7 @@ class AuditLog extends Model
         'timestamp_data',
         'integrity_hash',
         'previous_hash',
+        'kos_id',
     ];
 
     protected $casts = [

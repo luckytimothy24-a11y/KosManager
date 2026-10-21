@@ -75,8 +75,8 @@
             <?php echo csrf_field(); ?>
 
             
-            <section class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6 sm:p-8 space-y-5">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-600">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6 sm:p-8 space-y-5">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/[0.08]">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-information-line text-primary-600 dark:text-primary-400"></i></span>
                     Informasi Dasar
                 </h3>
@@ -84,13 +84,13 @@
                 <div>
                     <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Nama Kos <span class="text-red-500">*</span></label>
                     <input id="name" type="text" name="name" value="<?php echo e(old('name')); ?>" required
-                           class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('name') ? 'border-red-400' : ''); ?>"
+                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('name') ? 'border-red-400' : ''); ?>"
                            placeholder="cth: Kost Melati Indah">
                     <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -99,13 +99,13 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label for="address" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Alamat <span class="text-red-500">*</span></label>
                     <textarea id="address" name="address" rows="2" required
-                              class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('address') ? 'border-red-400' : ''); ?>"
+                              class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('address') ? 'border-red-400' : ''); ?>"
                               placeholder="Alamat lengkap kos"><?php echo e(old('address')); ?></textarea>
                     <?php $__errorArgs = ['address'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -114,7 +114,7 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Deskripsi</label>
                     <textarea id="description" name="description" rows="3"
-                              class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500"
+                              class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                               placeholder="Ceritakan tentang kos Anda"><?php echo e(old('description')); ?></textarea>
                 </div>
 
@@ -122,13 +122,13 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="phone" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Telepon <span class="text-red-500">*</span></label>
                         <input id="phone" type="tel" name="phone" value="<?php echo e(old('phone')); ?>" required
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500"
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                                placeholder="08xxxxxxxxxx">
                         <?php $__errorArgs = ['phone'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -136,7 +136,7 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="status" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Status</label>
                         <select id="status" name="status"
-                                class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                                class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                             <option value="active">Aktif — tampil &amp; bisa dibooking</option>
                             <option value="inactive">Nonaktif</option>
                         </select>
@@ -147,7 +147,7 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="owner_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Pemilik Kos <span class="text-red-500">*</span></label>
                         <select id="owner_id" name="owner_id" required
-                                class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                                class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                             <option value="">-- Pilih pemilik kos --</option>
                             <?php $__currentLoopData = $owners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $owner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <option value="<?php echo e($owner->id); ?>" <?php echo e(old('owner_id') == $owner->id ? 'selected' : ''); ?>><?php echo e($owner->name); ?> (<?php echo e($owner->email); ?>)</option>
@@ -157,7 +157,7 @@ unset($__errorArgs, $__bag); ?>
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -166,15 +166,15 @@ unset($__errorArgs, $__bag); ?>
             </section>
 
             
-            <section class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6 sm:p-8" x-data="kosGalleryCreate()">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 mb-5 border-b border-slate-100 dark:border-slate-600">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6 sm:p-8" x-data="kosGalleryCreate()">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-5 border-b border-slate-100 dark:border-white/[0.08]">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-image-line text-primary-600 dark:text-primary-400"></i></span>
                     Foto Kos
                 </h3>
 
                 <label for="photos"
-                       class="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-500/40 px-6 py-8 cursor-pointer transition group text-center">
-                    <span class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-500/10 transition">
+                       class="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] hover:border-primary-300 dark:hover:border-primary-500/40 px-6 py-8 cursor-pointer transition group text-center">
+                    <span class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-surface-elevated flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-500/10 transition">
                         <i class="ri-upload-cloud-2-line text-xl text-slate-400 dark:text-slate-500"></i>
                     </span>
                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Klik untuk unggah foto</span>
@@ -187,7 +187,7 @@ unset($__errorArgs, $__bag); ?>
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-2"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-2"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -195,7 +195,7 @@ unset($__errorArgs, $__bag); ?>
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-2"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-2"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -203,7 +203,7 @@ unset($__errorArgs, $__bag); ?>
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-2"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-2"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -212,7 +212,7 @@ unset($__errorArgs, $__bag); ?>
 
                 <div x-show="previews.length > 0" x-cloak class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <template x-for="(p, idx) in previews" :key="idx">
-                        <div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800">
+                        <div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated">
                             <img :src="p.url" :alt="'Preview ' + (idx+1)" class="w-full h-28 object-cover">
                             <button type="button" @click="removePreview(idx)" class="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-black/60 hover:bg-red-600 text-white flex items-center justify-center transition" aria-label="Hapus preview">
                                 <i class="ri-close-line text-sm"></i>
@@ -264,8 +264,8 @@ unset($__errorArgs, $__bag); ?>
             </script>
 
             
-            <section class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6 sm:p-8 space-y-5">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-600">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6 sm:p-8 space-y-5">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/[0.08]">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-map-pin-line text-primary-600 dark:text-primary-400"></i></span>
                     Lokasi Kos
                 </h3>
@@ -280,13 +280,13 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="latitude" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Latitude</label>
                         <input id="latitude" type="number" step="any" name="latitude" value="<?php echo e(old('latitude')); ?>"
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('latitude') ? 'border-red-400' : ''); ?>"
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('latitude') ? 'border-red-400' : ''); ?>"
                                placeholder="cth: -7.7955798" min="-90" max="90">
                         <?php $__errorArgs = ['latitude'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -294,13 +294,13 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="longitude" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Longitude</label>
                         <input id="longitude" type="number" step="any" name="longitude" value="<?php echo e(old('longitude')); ?>"
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('longitude') ? 'border-red-400' : ''); ?>"
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('longitude') ? 'border-red-400' : ''); ?>"
                                placeholder="cth: 110.4052787" min="-180" max="180">
                         <?php $__errorArgs = ['longitude'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -309,8 +309,8 @@ unset($__errorArgs, $__bag); ?>
             </section>
 
             
-            <section class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6 sm:p-8 space-y-5">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-600">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6 sm:p-8 space-y-5">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/[0.08]">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-sofa-line text-primary-600 dark:text-primary-400"></i></span>
                     Fasilitas, Aturan &amp; Pembayaran
                 </h3>
@@ -319,13 +319,13 @@ unset($__errorArgs, $__bag); ?>
                     <span class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">Fasilitas Umum</span>
                     <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Pilih fasilitas yang tersedia untuk seluruh kos.</p>
                     <?php if($fasilitasList->isEmpty()): ?>
-                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-slate-600 p-4 text-sm text-slate-400 dark:text-slate-500">
+                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-400 dark:text-slate-500">
                             Belum ada fasilitas umum. Admin dapat menambahkannya pada master fasilitas.
                         </div>
                     <?php else: ?>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             <?php $__currentLoopData = $fasilitasList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $f): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <label class="relative flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-600 hover:border-primary-300 dark:hover:border-primary-500/40 cursor-pointer transition group">
+                                <label class="relative flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-white/[0.08] hover:border-primary-300 dark:hover:border-primary-500/40 cursor-pointer transition group">
                                     <input type="checkbox" name="fasilitas[]" value="<?php echo e($f->id); ?>" <?php echo e(in_array($f->id, old('fasilitas', [])) ? 'checked' : ''); ?>
 
                                            class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
@@ -343,7 +343,7 @@ unset($__errorArgs, $__bag); ?>
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -352,7 +352,7 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label for="rules" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Peraturan Kos</label>
                     <textarea id="rules" name="rules" rows="3"
-                              class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500"
+                              class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                               placeholder="Satu peraturan per baris"><?php echo e(old('rules')); ?></textarea>
                 </div>
 
@@ -360,7 +360,7 @@ unset($__errorArgs, $__bag); ?>
                     <label for="payment_info" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Informasi Pembayaran</label>
                     <textarea id="payment_info" name="payment_info" rows="3"
                               placeholder="Contoh:<?php echo e("\n"); ?>Pembayaran tunai langsung kepada pengelola di loket kos,<?php echo e("\n"); ?>hubungi 0812xxxxxxx untuk konfirmasi."
-                              class="w-full rounded-xl border-slate-200 dark:border-slate-600 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500"><?php echo e(old('payment_info')); ?></textarea>
+                              class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"><?php echo e(old('payment_info')); ?></textarea>
                     <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
                         <i class="ri-eye-line mt-0.5 shrink-0"></i> Ditampilkan ke penghuni saat mereka melakukan pembayaran tagihan.
                     </p>
@@ -368,7 +368,7 @@ unset($__errorArgs, $__bag); ?>
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p role="alert" class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -380,7 +380,7 @@ unset($__errorArgs, $__bag); ?>
                 <div class="flex items-start gap-3">
                     <span class="w-10 h-10 rounded-xl bg-primary-500 text-white flex items-center justify-center shrink-0"><i class="ri-team-line text-xl"></i></span>
                     <div class="min-w-0 flex-1">
-                        <h3 class="text-sm font-black text-slate-900 dark:text-white">Langkah selanjutnya: Tambah Anak Kos</h3>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Langkah selanjutnya: Tambah Anak Kos</h3>
                         <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Penghuni diatur <span class="font-semibold text-slate-700 dark:text-slate-200">per Kamar</span> (bukan per Kos). Setelah Kos disimpan, atur <span class="font-semibold">Kapasitas 1–4 orang</span> &amp; <span class="font-semibold">Patungan (tagihan pisah per anak)</span> di Kelola Kamar.</p>
                         <ol class="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300 list-decimal list-inside">
                             <li>Simpan Kos ini dulu</li>
@@ -388,7 +388,7 @@ unset($__errorArgs, $__bag); ?>
                             <li>Di <span class="font-semibold">Detail Kamar</span> klik <span class="font-semibold">+ Tambah Penghuni</span> (Lucky Rp600.000 + Budi Rp600.000 = Rp1.200.000)</li>
                         </ol>
                         <div class="mt-4 flex flex-wrap gap-2">
-                            <a href="<?php echo e(route('owner.kamar.index')); ?>" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition"><i class="ri-door-open-line"></i> Kelola Kamar</a>
+                            <a href="<?php echo e(route('owner.kamar.index')); ?>" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/[0.08] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition"><i class="ri-door-open-line"></i> Kelola Kamar</a>
                             <span class="inline-flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-information-line"></i> Tombol aktif setelah Kos disimpan</span>
                         </div>
                     </div>
@@ -398,7 +398,7 @@ unset($__errorArgs, $__bag); ?>
             
             <div class="flex items-center justify-end gap-3">
                 <a href="<?php echo e(route('owner.kos.index')); ?>"
-                   class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
+                   class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
                 <button type="submit" :disabled="submitting"
                         class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="ri-save-line"></i> <span x-show="!submitting">Simpan Kos</span><span x-show="submitting" x-cloak>Menyimpan...</span>

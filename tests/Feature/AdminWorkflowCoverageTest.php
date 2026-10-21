@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdvertisingCampaign;
+use App\Models\AdvertisingPackage;
 use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
@@ -19,11 +21,17 @@ class AdminWorkflowCoverageTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $admin;
+
     private User $tenant;
+
     private Kos $assignedKos;
+
     private Kos $foreignKos;
+
     private Kamar $assignedKamar;
+
     private Kamar $foreignKamar;
 
     protected function setUp(): void
@@ -479,8 +487,8 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_assigned_can_reject_campaign(): void
     {
-        $package = \App\Models\AdvertisingPackage::factory()->create(['price' => 100000, 'is_active' => true]);
-        $campaign = \App\Models\AdvertisingCampaign::factory()->create([
+        $package = AdvertisingPackage::factory()->create(['price' => 100000, 'is_active' => true]);
+        $campaign = AdvertisingCampaign::factory()->create([
             'owner_id' => $this->owner->id,
             'kos_id' => $this->assignedKos->id,
             'package_id' => $package->id,
@@ -497,8 +505,8 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_assigned_can_suspend_active_campaign(): void
     {
-        $package = \App\Models\AdvertisingPackage::factory()->create(['price' => 100000, 'is_active' => true]);
-        $campaign = \App\Models\AdvertisingCampaign::factory()->create([
+        $package = AdvertisingPackage::factory()->create(['price' => 100000, 'is_active' => true]);
+        $campaign = AdvertisingCampaign::factory()->create([
             'owner_id' => $this->owner->id,
             'kos_id' => $this->assignedKos->id,
             'package_id' => $package->id,
@@ -515,8 +523,8 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_unassigned_cannot_reject_foreign_campaign(): void
     {
-        $package = \App\Models\AdvertisingPackage::factory()->create(['price' => 100000, 'is_active' => true]);
-        $campaign = \App\Models\AdvertisingCampaign::factory()->create([
+        $package = AdvertisingPackage::factory()->create(['price' => 100000, 'is_active' => true]);
+        $campaign = AdvertisingCampaign::factory()->create([
             'owner_id' => $this->owner->id,
             'kos_id' => $this->foreignKos->id,
             'package_id' => $package->id,

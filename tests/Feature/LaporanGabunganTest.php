@@ -19,6 +19,7 @@ class LaporanGabunganTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'name' => $name]);
+
         return [$owner, $kos];
     }
 

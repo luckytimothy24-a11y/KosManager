@@ -9,7 +9,7 @@ $campaigns = [
 ];
 
 foreach ($campaigns as $item) {
-    list($filename, $brand, $primaryColor, $textColor, $subtitle) = $item;
+    [$filename, $brand, $primaryColor, $textColor, $subtitle] = $item;
     $path = "$dir/$filename";
     $img = imagecreatetruecolor(800, 450);
 
@@ -23,10 +23,10 @@ foreach ($campaigns as $item) {
 
     $gradient = imagecreatetruecolor(800, 450);
     imagefilter($gradient, IMG_FILTER_COLORIZE, [
-        'red' => (int)($primaryRGB[0] * 0.9),
-        'green' => (int)($primaryRGB[1] * 0.85),
-        'blue' => (int)($primaryRGB[2] * 0.8),
-        'opacity' => 70
+        'red' => (int) ($primaryRGB[0] * 0.9),
+        'green' => (int) ($primaryRGB[1] * 0.85),
+        'blue' => (int) ($primaryRGB[2] * 0.8),
+        'opacity' => 70,
     ]);
     imagecopymerge($img, $gradient, 0, 0, 0, 0, 800, 450, 40);
 
@@ -50,12 +50,14 @@ foreach ($campaigns as $item) {
     echo "Created: $path.png\n";
 }
 
-function hexToArray($hex) {
+function hexToArray($hex)
+{
     $hex = ltrim($hex, '#');
+
     return [
         hexdec(substr($hex, 0, 2)),
         hexdec(substr($hex, 2, 2)),
-        hexdec(substr($hex, 4, 2))
+        hexdec(substr($hex, 4, 2)),
     ];
 }
 

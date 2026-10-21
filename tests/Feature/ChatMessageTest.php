@@ -69,7 +69,7 @@ class ChatMessageTest extends TestCase
             'category' => 'fasilitas',
         ]);
 
-        $response->assertRedirect(route('tenant.messages.index'));
+        $response->assertRedirect(route('tenant.messages.index', ['kos' => $this->kos->id]));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kos->id,
             'sender_id' => $this->tenant->id,
@@ -125,7 +125,7 @@ class ChatMessageTest extends TestCase
             'message' => 'Nanti kami perbaiki.',
         ]);
 
-        $response->assertRedirect(route('owner.messages.show', $this->tenant));
+        $response->assertRedirect(route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kos->id,
             'sender_id' => $this->owner->id,
@@ -179,7 +179,94 @@ class ChatMessageTest extends TestCase
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kos->id,
             'receiver_id' => $this->owner->id,
-            'read_at' => now()->toDateTimeString(),
         ]);
+        $this->assertNotNull(\App\Models\Message::where('kos_id', $this->kos->id)->where('receiver_id', $this->owner->id)->first()->read_at);
+    }
+
+    public function test_messages_to_different_owners_stay_in_separate_threads(): void
+    {
+        $ownerB = User::factory()->create(['role' => 'owner']);
+        $kosB = Kos::factory()->create(['owner_id' => $ownerB->id, 'status' => 'active']);
+        $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id, 'status' => 'occupied']);
+        Penghuni::factory()->create([
+            'user_id' => $this->tenant->id,
+            'kos_id' => $kosB->id,
+            'kamar_id' => $kamarB->id,
+            'status' => 'active',
+        ]);
+
+        // Chat ke owner kos A
+        $this->actingAs($this->tenant)->post(route('tenant.messages.store'), [
+            'message' => 'Pesan untuk owner A',
+            'kos_id' => $this->kos->id,
+        ])->assertRedirect(route('tenant.messages.index', ['kos' => $this->kos->id]));
+
+        // Chat ke owner kos B
+        $this->actingAs($this->tenant)->post(route('tenant.messages.store'), [
+            'message' => 'Pesan untuk owner B',
+            'kos_id' => $kosB->id,
+        ])->assertRedirect(route('tenant.messages.index', ['kos' => $kosB->id]));
+
+        $this->assertDatabaseHas('messages', [
+            'kos_id' => $this->kos->id,
+            'receiver_id' => $this->owner->id,
+            'message' => 'Pesan untuk owner A',
+        ]);
+        $this->assertDatabaseHas('messages', [
+            'kos_id' => $kosB->id,
+            'receiver_id' => $ownerB->id,
+            'message' => 'Pesan untuk owner B',
+        ]);
+
+        // Thread A aktif: panel & form menunjuk kos A (bukan kos B)
+        $responseA = $this->actingAs($this->tenant)->get(route('tenant.messages.index', ['kos' => $this->kos->id]));
+        $responseA->assertOk();
+        $responseA->assertSee('Pesan untuk owner A');
+        $responseA->assertSee('name="kos_id" value="'.$this->kos->id.'"', false);
+        $responseA->assertSee($this->owner->name);
+
+        // Thread B aktif: panel & form menunjuk kos B
+        $responseB = $this->actingAs($this->tenant)->get(route('tenant.messages.index', ['kos' => $kosB->id]));
+        $responseB->assertOk();
+        $responseB->assertSee('Pesan untuk owner B');
+        $responseB->assertSee('name="kos_id" value="'.$kosB->id.'"', false);
+        $responseB->assertSee($ownerB->name);
+
+        // Owner A tidak melihat pesan ke owner B
+        $this->actingAs($this->owner)->get(route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]))
+            ->assertOk()
+            ->assertSee('Pesan untuk owner A')
+            ->assertDontSee('Pesan untuk owner B');
+
+        $this->actingAs($ownerB)->get(route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $kosB->id]))
+            ->assertOk()
+            ->assertSee('Pesan untuk owner B')
+            ->assertDontSee('Pesan untuk owner A');
+    }
+
+    public function test_tenant_can_send_to_active_kos_as_presales(): void
+    {
+        $strangerOwner = User::factory()->create(['role' => 'owner']);
+        $strangerKos = Kos::factory()->create(['owner_id' => $strangerOwner->id, 'status' => 'active']);
+
+        $this->actingAs($this->tenant)->post(route('tenant.messages.store'), [
+            'message' => 'Halo stranger',
+            'kos_id' => $strangerKos->id,
+        ])->assertRedirect(route('tenant.messages.index', ['kos' => $strangerKos->id]));
+
+        $this->assertDatabaseCount('messages', 1);
+    }
+
+    public function test_tenant_cannot_send_to_inactive_kos(): void
+    {
+        $strangerOwner = User::factory()->create(['role' => 'owner']);
+        $strangerKos = Kos::factory()->create(['owner_id' => $strangerOwner->id, 'status' => 'inactive']);
+
+        $this->actingAs($this->tenant)->post(route('tenant.messages.store'), [
+            'message' => 'Halo stranger',
+            'kos_id' => $strangerKos->id,
+        ])->assertForbidden();
+
+        $this->assertDatabaseCount('messages', 0);
     }
 }

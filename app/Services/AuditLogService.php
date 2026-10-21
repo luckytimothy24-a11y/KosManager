@@ -16,6 +16,7 @@ class AuditLogService
     ): AuditLog {
         $previousHash = static::latestHash();
         $resolvedUserId = $userId ?? auth()->id();
+        $kosId = $data['kos_id'] ?? null;
 
         $log = AuditLog::create([
             'user_id' => $resolvedUserId,
@@ -26,6 +27,7 @@ class AuditLogService
             'timestamp_data' => $data,
             'previous_hash' => $previousHash,
             'integrity_hash' => null,
+            'kos_id' => $kosId,
         ]);
 
         $log->update(['integrity_hash' => static::computeHash($log, $previousHash)]);

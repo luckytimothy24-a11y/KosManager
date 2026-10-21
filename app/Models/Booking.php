@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 
 class Booking extends Model
 {
@@ -13,7 +14,15 @@ class Booking extends Model
 
     public const STATUS_PENDING = 'pending';
 
+    /**
+     * Konfirmasi booking oleh owner/admin.
+     * Nilai di DB adalah `approved` (legacy enum) = confirmed pada business rules.
+     * Jangan gunakan STATUS_CONFIRMED ('confirmed') untuk persistensi — tidak ada di enum DB.
+     */
     public const STATUS_APPROVED = 'approved';
+
+    /** Alias domain: confirmed == approved di database. */
+    public const STATUS_CONFIRMED = self::STATUS_APPROVED;
 
     public const STATUS_REJECTED = 'rejected';
 
@@ -59,6 +68,36 @@ class Booking extends Model
         'billing_mode' => 'string',
         'requested_occupants' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        // HARD RULE: tidak boleh ada implicit status transition.
+        // Semua perubahan status harus valid menurut state machine di backend.
+        static::saving(function (self $booking) {
+            if (! $booking->exists || ! $booking->isDirty('status')) {
+                return;
+            }
+
+            $from = $booking->getOriginal('status');
+            $to = $booking->status;
+
+            if ($from === null || $to === null || $from === $to) {
+                return;
+            }
+
+            if (! $booking->canTransitionFrom($from, $to)) {
+                Log::warning('Booking invalid status transition blocked', [
+                    'booking_id' => $booking->id,
+                    'from' => $from,
+                    'to' => $to,
+                ]);
+
+                throw new \RuntimeException(
+                    "Transisi status booking tidak valid: {$from} -> {$to}."
+                );
+            }
+        });
+    }
 
     public function occupants()
     {
@@ -138,6 +177,73 @@ class Booking extends Model
         return $this->belongsTo(Kamar::class);
     }
 
+    public function cancellationRequests()
+    {
+        return $this->hasMany(BookingCancellationRequest::class);
+    }
+
+    public function pembayarans()
+    {
+        return $this->hasMany(Pembayaran::class);
+    }
+
+    /**
+     * Pembayaran aktif untuk booking ini (prerequisite konfirmasi).
+     * Source of truth: pembayarans.verification_status.
+     */
+    public function activeBookingPayment()
+    {
+        return $this->hasOne(Pembayaran::class)
+            ->whereIn('verification_status', Pembayaran::ACTIVE_VERIFICATIONS)
+            ->latestOfMany();
+    }
+
+    public function approvedBookingPayment()
+    {
+        return $this->hasOne(Pembayaran::class)
+            ->where('verification_status', Pembayaran::STATUS_APPROVED)
+            ->latestOfMany();
+    }
+
+    /**
+     * Prerequisite konfirmasi booking: minimal ada payment approved.
+     */
+    public function hasApprovedPayment(): bool
+    {
+        return Pembayaran::where('booking_id', $this->id)
+            ->where('verification_status', Pembayaran::STATUS_APPROVED)
+            ->exists();
+    }
+
+    /**
+     * Status payment untuk UI/API — dibaca dari source of truth pembayarans.
+     */
+    public function paymentStatus(): string
+    {
+        $payment = Pembayaran::where('booking_id', $this->id)
+            ->whereIn('verification_status', Pembayaran::ACTIVE_VERIFICATIONS)
+            ->orderByDesc('id')
+            ->first();
+
+        if (! $payment) {
+            return 'none';
+        }
+
+        return (string) $payment->verification_status;
+    }
+
+    public function latestCancellationRequest()
+    {
+        return $this->hasOne(BookingCancellationRequest::class)->latestOfMany();
+    }
+
+    public function pendingCancellationRequest()
+    {
+        return $this->hasOne(BookingCancellationRequest::class)
+            ->where('status', BookingCancellationRequest::STATUS_PENDING)
+            ->latestOfMany();
+    }
+
     public function scopeWithoutActivePenghuni(Builder $query): Builder
     {
         return $query->whereNotExists(function ($sub) {
@@ -150,11 +256,11 @@ class Booking extends Model
     }
 
     /**
-     * Booking aktif yang belum masuk (approved + belum punya penghuni aktif).
+     * Booking confirmed (approved) yang belum check-in.
      */
     public function scopeNeedsCheckin(Builder $query): Builder
     {
-        return $query->where('status', 'approved')->withoutActivePenghuni();
+        return $query->where('status', self::STATUS_APPROVED)->withoutActivePenghuni();
     }
 
     public static function cancellableStatuses(): array
@@ -164,6 +270,7 @@ class Booking extends Model
 
     /**
      * Status booking yang masih hidup (belum terminal).
+     * Menurut rules: pending dan confirmed/approved masih dapat dibatalkan.
      */
     public static function activeStatuses(): array
     {
@@ -172,12 +279,12 @@ class Booking extends Model
 
     public function isCancellable(): bool
     {
-        return in_array($this->status, static::cancellableStatuses());
+        return in_array($this->status, static::cancellableStatuses(), true);
     }
 
     public function isTerminal(): bool
     {
-        return in_array($this->status, static::terminalStatuses());
+        return in_array($this->status, static::terminalStatuses(), true);
     }
 
     /**
@@ -185,7 +292,89 @@ class Booking extends Model
      */
     public static function terminalStatuses(): array
     {
-        return [self::STATUS_CANCELLED, self::STATUS_REJECTED, self::STATUS_EXPIRED];
+        return [self::STATUS_REJECTED, self::STATUS_CANCELLED, self::STATUS_COMPLETED, self::STATUS_EXPIRED];
+    }
+
+    /**
+     * Status yang mengunci kamar sebagai reservasi (pending + approved).
+     * Pending tidak berarti tenant confirmed, tetapi kamar tetap dipesan.
+     */
+    public static function roomReservingStatuses(): array
+    {
+        return [self::STATUS_PENDING, self::STATUS_APPROVED];
+    }
+
+    /**
+     * Cek apakah transisi status valid dari status awal ke target.
+     * Dilakukan di backend, bukan boleh dari frontend.
+     */
+    public function canTransitionFrom(string $from, string $to): bool
+    {
+        if ($from === $to) {
+            return false;
+        }
+
+        // Terminal tidak boleh kembali kecuali cancelled (hanya dari expired legacy path).
+        if (in_array($from, static::terminalStatuses(), true) && $to !== self::STATUS_CANCELLED) {
+            // expired -> cancelled diizinkan untuk data legacy cleanup; selain itu tolak.
+            if (! ($from === self::STATUS_EXPIRED && $to === self::STATUS_CANCELLED)) {
+                return false;
+            }
+        }
+
+        $transitions = $this->getAllowedTransitions();
+
+        return in_array($to, $transitions[$from] ?? [], true);
+    }
+
+    /**
+     * Cek apakah booking saat ini boleh berpindah ke target.
+     */
+    public function canTransitionTo(string $targetStatus): bool
+    {
+        return $this->canTransitionFrom((string) $this->status, $targetStatus);
+    }
+
+    /**
+     * Daftar transisi yang diizinkan per status saat ini.
+     * Semua transisi harus melalui backend validation / BookingStatusService.
+     */
+    public function getAllowedTransitions(): array
+    {
+        return [
+            self::STATUS_PENDING => [
+                self::STATUS_APPROVED,
+                self::STATUS_REJECTED,
+                self::STATUS_CANCELLED,
+                self::STATUS_EXPIRED,
+            ],
+            self::STATUS_APPROVED => [
+                self::STATUS_COMPLETED,
+                self::STATUS_CANCELLED,
+                self::STATUS_EXPIRED,
+            ],
+            self::STATUS_REJECTED => [],
+            self::STATUS_CANCELLED => [],
+            self::STATUS_COMPLETED => [],
+            self::STATUS_EXPIRED => [self::STATUS_CANCELLED],
+        ];
+    }
+
+    /**
+     * Transisi terkontrol. Mengembalikan false bila tidak valid.
+     * Tidak mengubah status tenant/payment — hanya booking.
+     */
+    public function transitionTo(string $targetStatus, array $attributes = []): bool
+    {
+        if ($this->status === $targetStatus) {
+            return false;
+        }
+
+        if (! $this->canTransitionTo($targetStatus)) {
+            return false;
+        }
+
+        return $this->update(array_merge($attributes, ['status' => $targetStatus]));
     }
 
     public function hasIdentityData(): bool
@@ -209,12 +398,17 @@ class Booking extends Model
     public function nextAction(): ?string
     {
         return match ($this->status) {
-            'pending' => 'Booking Anda sedang menunggu konfirmasi dari pemilik kos.',
-            'approved' => 'Kamar telah dipesan untuk Anda. Datanglah ke kos pada tanggal mulai dan minta pengelola memproses check-in.',
-            'completed' => 'Anda sudah terdaftar sebagai penghuni. Tinjau kontrak dan tagihan sewa Anda.',
-            'rejected' => 'Booking ini ditolak oleh pengelola kos. Silakan cari kos lain atau buat booking baru.',
-            'cancelled' => 'Booking ini sudah dibatalkan. Buat booking baru jika Anda masih ingin menyewa.',
-            'expired' => 'Periode sewa booking ini telah berakhir tanpa check-in.',
+            self::STATUS_PENDING => match ($this->paymentStatus()) {
+                'none' => 'Booking dikirim. Silakan lakukan pembayaran untuk melanjutkan. Booking belum dikonfirmasi.',
+                'pending' => 'Pembayaran sudah dikirim. Menunggu verifikasi pemilik kos. Booking belum dikonfirmasi.',
+                'approved' => 'Pembayaran terverifikasi. Menunggu konfirmasi pemilik kos.',
+                default => 'Booking Anda sedang menunggu konfirmasi dari pemilik kos.',
+            },
+            self::STATUS_APPROVED => 'Kamar telah dipesan untuk Anda. Datanglah ke kos pada tanggal mulai dan minta pengelola memproses check-in.',
+            self::STATUS_COMPLETED => 'Anda sudah terdaftar sebagai penghuni. Tinjau kontrak dan tagihan sewa Anda.',
+            self::STATUS_REJECTED => 'Booking ini ditolak oleh pengelola kos. Silakan cari kos lain atau buat booking baru.',
+            self::STATUS_CANCELLED => 'Booking ini sudah dibatalkan. Buat booking baru jika Anda masih ingin menyewa.',
+            self::STATUS_EXPIRED => 'Periode sewa booking ini telah berakhir tanpa check-in.',
             default => null,
         };
     }

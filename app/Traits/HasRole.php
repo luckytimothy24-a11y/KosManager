@@ -2,26 +2,28 @@
 
 namespace App\Traits;
 
+use App\Enums\UserRole;
+
 trait HasRole
 {
     public function isSuperAdmin(): bool
     {
-        return $this->role === 'super_admin';
+        return $this->role === UserRole::SUPER_ADMIN->value;
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === UserRole::ADMIN->value;
     }
 
     public function isOwner(): bool
     {
-        return $this->role === 'owner';
+        return $this->role === UserRole::OWNER->value;
     }
 
     public function isTenant(): bool
     {
-        return $this->role === 'tenant';
+        return $this->role === UserRole::TENANT->value;
     }
 
     public function hasRole(string ...$roles): bool

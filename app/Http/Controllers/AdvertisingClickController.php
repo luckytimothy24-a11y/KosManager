@@ -25,10 +25,8 @@ class AdvertisingClickController extends Controller
     {
         $campaign = AdvertisingCampaign::find($campaignId);
 
-        $fallback = redirect()->route('welcome');
-
         if (! $campaign) {
-            return $fallback;
+            return $this->respond($request, redirect()->route('welcome'));
         }
 
         $user = $request->user();
@@ -52,9 +50,9 @@ class AdvertisingClickController extends Controller
             if ($campaign->isThirdParty()) {
                 $destination = $service->destinationFor($campaign);
 
-                return $destination
+                return $this->respond($request, $destination
                     ? redirect()->away($destination)
-                    : $fallback;
+                    : redirect()->route('welcome'));
             }
 
             // Atribusi klik kos agar conversion dapat diatribusikan bila tenant
@@ -69,21 +67,34 @@ class AdvertisingClickController extends Controller
         if ($campaign->isThirdParty()) {
             $destination = $service->destinationFor($campaign);
 
-            return $destination
+            return $this->respond($request, $destination
                 ? redirect()->away($destination)
-                : $fallback;
+                : redirect()->route('welcome'));
         }
 
         $kos = Kos::whereKey($campaign->kos_id)->where('status', 'active')->first();
 
         if (! $kos) {
-            return $fallback;
+            return $this->respond($request, redirect()->route('welcome'));
         }
 
         if (! $user) {
-            return redirect()->route('login');
+            return $this->respond($request, redirect()->route('login'));
         }
 
-        return redirect()->route('tenant.kos.show', $kos);
+        return $this->respond($request, redirect()->route('tenant.kos.show', $kos));
+    }
+
+    /**
+     * For AJAX requests (impression tracking via fetch), return JSON instead of
+     * following a redirect which would trigger CORS errors on external URLs.
+     */
+    private function respond(Request $request, $redirectResponse)
+    {
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['status' => 'ok']);
+        }
+
+        return $redirectResponse;
     }
 }

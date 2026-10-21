@@ -13,9 +13,9 @@
         'lg' => 'min-h-12 px-5 py-3 text-sm rounded-xl',
     ];
     $styles = [
-        'primary' => 'text-white bg-primary-500 hover:bg-primary-600 active:bg-primary-700 shadow-sm shadow-primary-500/30',
+        'primary' => 'text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 shadow-sm shadow-primary-500/30',
         'secondary' => 'text-primary-600 dark:text-primary-300 border border-primary-200 dark:border-primary-500/40 hover:bg-primary-50 dark:hover:bg-primary-500/10',
-        'ghost' => 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800',
+        'ghost' => 'text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-slate-800',
     ];
 @endphp
 

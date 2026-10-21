@@ -6,7 +6,7 @@
             </span>
         @else
             <a href="{{ $paginator->appends(request()->query())->previousPageUrl() }}" rel="prev"
-               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                 <i class="ri-arrow-left-line"></i> Sebelumnya
             </a>
         @endif
@@ -15,7 +15,7 @@
 
         @if ($paginator->hasMorePages())
             <a href="{{ $paginator->appends(request()->query())->nextPageUrl() }}" rel="next"
-               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                 Berikutnya <i class="ri-arrow-right-line"></i>
             </a>
         @else

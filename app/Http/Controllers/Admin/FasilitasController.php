@@ -33,13 +33,29 @@ class FasilitasController extends Controller
 
         $fasilitas = $query->latest()->paginate(10)->withQueryString();
 
-        return view('admin.fasilitas.index', compact('fasilitas', 'type'));
+        $scope = function ($q) use ($kosIds) {
+            $q->whereHas('kos', fn ($q) => $q->whereIn('kos.id', $kosIds))
+                ->orWhereHas('kamar', fn ($q) => $q->whereHas('kos', fn ($k) => $k->whereIn('id', $kosIds)));
+        };
+        $totalKamar = Fasilitas::where('type', 'kamar')->where($scope)->count();
+        $totalKos = Fasilitas::where('type', 'kos')->where($scope)->count();
+
+        return view('admin.fasilitas.index', compact('fasilitas', 'type', 'totalKamar', 'totalKos'));
     }
 
     public function create()
     {
         $this->authorize('create', Fasilitas::class);
+
         return view('admin.fasilitas.create');
+    }
+
+    public function show(Fasilitas $fasilitas)
+    {
+        $this->authorize('view', $fasilitas);
+        $fasilitas->loadCount('kamar', 'kos');
+
+        return view('admin.fasilitas.show', compact('fasilitas'));
     }
 
     public function store(StoreFasilitasRequest $request)
@@ -59,6 +75,7 @@ class FasilitasController extends Controller
     public function edit(Fasilitas $fasilitas)
     {
         $this->authorize('update', $fasilitas);
+
         return view('admin.fasilitas.edit', compact('fasilitas'));
     }
 

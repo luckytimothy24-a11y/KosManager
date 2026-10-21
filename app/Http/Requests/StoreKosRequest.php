@@ -10,7 +10,9 @@ class StoreKosRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin', 'owner', 'admin');
+        $user = $this->user();
+
+        return $user->isSuperAdmin() || $user->isOwner() || $user->isAdmin();
     }
 
     public function rules(): array

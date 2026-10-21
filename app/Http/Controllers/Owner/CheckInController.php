@@ -202,20 +202,18 @@ class CheckInController extends Controller
                 'notes' => $data['notes'] ?? null,
             ]);
 
-            $locked->update(['status' => 'completed']);
+            // Booking completed SETELAH check-in sukses.
+            // Tenant/status penghuni hanya aktif lewat jalur ini — bukan karena booking dibuat/dibayar.
+            $locked->update(['status' => Booking::STATUS_COMPLETED]);
             // Status kamar occupancy-aware: full -> occupied, masih ada slot -> available/booked
-            $newOccupancy = $kamar->occupancy() + 1; // +1 for the penghuni just created (not yet counted if using cached)
             // Re-query occupancy to be safe
-            $freshOccupancy = \App\Models\Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+            $freshOccupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
             if ($freshOccupancy >= (int) $kamar->capacity) {
                 $kamar->update(['status' => 'occupied']);
-            } elseif ($kamar->status === 'booked' && $freshOccupancy === 0) {
-                // Should not happen but keep booked if no occupant yet
-                $kamar->update(['status' => 'occupied']);
+            } elseif ($freshOccupancy === 0) {
+                $kamar->update(['status' => 'booked']);
             } else {
-                // Still has slot: if still bookings covering future, keep booked; else occupied but with slot
-                // Keep occupied to indicate has tenant, but booking availability uses occupancy check
-                $kamar->update(['status' => 'occupied']);
+                $kamar->update(['status' => 'available']);
             }
 
             return ['booking' => $locked, 'kontrak' => $kontrak, 'kamar' => $kamar];

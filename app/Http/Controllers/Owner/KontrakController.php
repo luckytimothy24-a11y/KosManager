@@ -10,6 +10,8 @@ class KontrakController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Kontrak::class);
+
         $user = $request->user();
 
         $query = Kontrak::with(['penghuni.user', 'kos', 'kamar']);
@@ -40,8 +42,8 @@ class KontrakController extends Controller
 
     public function show(Kontrak $kontrak)
     {
-        $kontrak->load(['penghuni.user', 'kos', 'kamar', 'tagihans']);
         $this->authorize('view', $kontrak);
+        $kontrak->load(['penghuni.user', 'kos', 'kamar', 'tagihans']);
 
         return view('owner.kontrak.show', compact('kontrak'));
     }

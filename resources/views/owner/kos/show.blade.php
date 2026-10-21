@@ -22,13 +22,16 @@
                     $cover = $kos->coverPath();
                     $galleryCount = count($galleryPaths);
                 @endphp
-                <div class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 overflow-hidden">
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] overflow-hidden">
                     @if($galleryCount > 0)
                         <div x-data="{ idx: 0, photos: {{ Illuminate\Support\Js::from(array_map(fn($p) => asset('storage/'.$p), $galleryPaths)) }}, cover: {{ Illuminate\Support\Js::from($cover ? asset('storage/'.$cover) : null) }} }">
-                            <div class="relative h-56 sm:h-64 overflow-hidden bg-slate-100 dark:bg-slate-800">
+                            <div class="relative h-56 sm:h-64 overflow-hidden bg-gradient-to-br from-primary-100/60 via-primary-50 to-amber-50/40 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700">
                                 <template x-for="(ph, i) in photos" :key="i">
-                                    <img x-show="idx === i" :src="ph" :alt="'Foto ' + (i+1)" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+                                    <img x-show="idx === i" :src="ph" :alt="'Foto ' + (i+1)" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 </template>
+                                <div class="absolute inset-0 flex items-center justify-center" style="display: none;">
+                                    <span class="text-5xl font-bold text-primary-300/70 dark:text-primary-400/30 select-none">{{ strtoupper(mb_substr($kos->name, 0, 2)) }}</span>
+                                </div>
                                 <button x-show="photos.length > 1" @click="idx = (idx - 1 + photos.length) % photos.length" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center" aria-label="Sebelumnya"><i class="ri-arrow-left-s-line"></i></button>
                                 <button x-show="photos.length > 1" @click="idx = (idx + 1) % photos.length" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center" aria-label="Selanjutnya"><i class="ri-arrow-right-s-line"></i></button>
                                 <span class="absolute bottom-2 right-2 bg-black/60 text-white text-[11px] font-bold px-2 py-1 rounded-lg"><span x-text="idx+1"></span>/<span x-text="photos.length"></span></span>
@@ -36,24 +39,24 @@
                             </div>
                             <div x-show="photos.length > 1" class="flex gap-2 p-2 overflow-x-auto">
                                 <template x-for="(ph, i) in photos" :key="i">
-                                    <button @click="idx = i" :class="idx === i ? 'ring-2 ring-primary-500' : 'opacity-70'" class="shrink-0 w-16 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-600">
+                                    <button @click="idx = i" :class="idx === i ? 'ring-2 ring-primary-500' : 'opacity-70'" class="shrink-0 w-16 h-12 rounded-lg overflow-hidden border border-slate-200 dark:border-white/[0.08]">
                                         <img :src="ph" class="w-full h-full object-cover">
                                     </button>
                                 </template>
                             </div>
                         </div>
                     @else
-                        <div class="h-36 sm:h-44 bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700 relative flex items-center justify-center">
-                            <span class="absolute inset-y-0 left-6 flex items-center text-[7rem] leading-none font-black uppercase text-primary-900/[0.06] dark:text-white/5 select-none" aria-hidden="true">{{ mb_substr($kos->name, 0, 1) }}</span>
-                            <span class="relative w-14 h-14 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-sm flex items-center justify-center">
-                                <i class="ri-home-heart-line text-2xl text-primary-500"></i>
-                            </span>
+                        <div class="h-36 sm:h-44 bg-gradient-to-br from-primary-100/60 via-primary-50 to-amber-50/40 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700 relative flex items-center justify-center">
+                            <div class="flex flex-col items-center gap-2">
+                                <span class="text-5xl font-bold text-primary-300/70 dark:text-primary-400/30 select-none">{{ strtoupper(mb_substr($kos->name, 0, 2)) }}</span>
+                                <span class="text-xs font-medium text-primary-300/50 dark:text-primary-400/30">Foto belum tersedia</span>
+                            </div>
                         </div>
                     @endif
 
                     <div class="p-6">
                         <div class="flex flex-wrap items-center justify-between gap-3">
-                            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ $kos->name }}</h2>
+                            <h2 class="text-lg font-bold text-slate-900 dark:text-slate-50">{{ $kos->name }}</h2>
                             <x-status-badge :status="$kos->status" context="kos" />
                         </div>
 
@@ -92,8 +95,8 @@
 
                 {{-- Deskripsi --}}
                 @if($kos->description)
-                    <div class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6">
-                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                    <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6">
+                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50">
                             <i class="ri-file-text-line text-primary-500"></i> Deskripsi
                         </h3>
                         <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ $kos->description }}</p>
@@ -107,14 +110,14 @@
                         : collect();
                 @endphp
                 @if($kosFacilities->isNotEmpty() || $kos->general_facilities)
-                    <div class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6">
-                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                    <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6">
+                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50">
                             <i class="ri-sofa-line text-primary-500"></i> Fasilitas Umum
                         </h3>
                         @if($kosFacilities->isNotEmpty())
                             <ul class="mt-3 flex flex-wrap gap-2">
                                 @foreach($kosFacilities as $f)
-                                    <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-600 px-3 py-1.5 rounded-lg">
+                                    <li class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-surface-elevated border border-slate-100 dark:border-white/[0.08] px-3 py-1.5 rounded-lg">
                                         @if($f->icon)
                                             <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-primary-500"></i>
                                         @else
@@ -132,8 +135,8 @@
 
                 {{-- Peraturan --}}
                 @if($kos->rules)
-                    <div class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6">
-                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                    <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6">
+                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50">
                             <i class="ri-shield-check-line text-primary-500"></i> Peraturan Kos
                         </h3>
                         <p class="mt-3 text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">{{ $kos->rules }}</p>
@@ -153,37 +156,37 @@
 
             {{-- Sidebar statistik --}}
             <div class="space-y-6">
-                <div class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6">
-                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white mb-4">
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-4">
                         <i class="ri-bar-chart-box-line text-primary-500"></i> Statistik
                     </h3>
                     <div class="space-y-4">
-                        <a href="{{ route('owner.kamar.index', ['kos_id' => $kos->id]) }}" class="group flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-600 px-4 py-3 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
+                        <a href="{{ route('owner.kamar.index', ['kos_id' => $kos->id]) }}" class="group flex items-center justify-between rounded-xl border border-slate-100 dark:border-white/[0.08] px-4 py-3 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
                             <span class="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-300"><i class="ri-door-open-line text-primary-500"></i> Total Kamar</span>
-                            <span class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition">{{ $kos->kamar_count }}</span>
+                            <span class="text-base font-bold text-slate-900 dark:text-slate-50 group-hover:text-primary-600 transition">{{ $kos->kamar_count }}</span>
                         </a>
-                        <a href="{{ route('owner.penghuni.index') }}" class="group flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-600 px-4 py-3 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
+                        <a href="{{ route('owner.penghuni.index') }}" class="group flex items-center justify-between rounded-xl border border-slate-100 dark:border-white/[0.08] px-4 py-3 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
                             <span class="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-300"><i class="ri-user-star-line text-green-500"></i> Total Penghuni</span>
-                            <span class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition">{{ $kos->penghunis_count }}</span>
+                            <span class="text-base font-bold text-slate-900 dark:text-slate-50 group-hover:text-primary-600 transition">{{ $kos->penghunis_count }}</span>
                         </a>
-                        <a href="{{ route('owner.booking.index') }}" class="group flex items-center justify-between rounded-xl border border-slate-100 dark:border-slate-600 px-4 py-3 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
+                        <a href="{{ route('owner.booking.index') }}" class="group flex items-center justify-between rounded-xl border border-slate-100 dark:border-white/[0.08] px-4 py-3 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
                             <span class="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-300"><i class="ri-calendar-check-line text-amber-500"></i> Total Booking</span>
-                            <span class="text-base font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition">{{ $kos->bookings_count }}</span>
+                            <span class="text-base font-bold text-slate-900 dark:text-slate-50 group-hover:text-primary-600 transition">{{ $kos->bookings_count }}</span>
                         </a>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-slate-700 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-600 p-6">
-                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white mb-4">
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/[0.08] p-6">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-4">
                         <i class="ri-flashlight-line text-primary-500"></i> Aksi Cepat
                     </h3>
                     <div class="space-y-2">
                         <a href="{{ route('owner.kamar.create', ['kos_id' => $kos->id]) }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-300 transition">
+                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-surface-elevated/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-300 transition">
                             <i class="ri-add-circle-line text-lg"></i> Tambah Kamar
                         </a>
                         <a href="{{ route('owner.tagihan.create') }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-300 transition">
+                           class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-surface-elevated/60 hover:bg-primary-50 dark:hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-300 transition">
                             <i class="ri-file-add-line text-lg"></i> Buat Tagihan
                         </a>
                     </div>

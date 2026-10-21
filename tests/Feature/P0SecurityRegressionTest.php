@@ -18,14 +18,23 @@ class P0SecurityRegressionTest extends TestCase
     use RefreshDatabase;
 
     private User $ownerA;
+
     private User $ownerB;
+
     private User $adminAssigned;
+
     private User $adminUnassigned;
+
     private User $superAdmin;
+
     private User $tenant;
+
     private Kos $kosA;
+
     private Kos $kosB;
+
     private Kamar $kamarA;
+
     private Kamar $kamarB;
 
     protected function setUp(): void

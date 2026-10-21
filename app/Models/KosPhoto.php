@@ -15,12 +15,20 @@ class KosPhoto extends Model
         'path',
         'position',
         'is_cover',
+        'status',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'position' => 'integer',
         'is_cover' => 'boolean',
     ];
+
+    public const STATUS_APPROVED = 'approved';
+
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_REJECTED = 'rejected';
 
     public function kos(): BelongsTo
     {

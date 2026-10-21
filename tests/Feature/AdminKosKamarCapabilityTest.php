@@ -13,12 +13,19 @@ class AdminKosKamarCapabilityTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $admin;
+
     private User $foreignAdmin;
+
     private User $tenant;
+
     private Kos $assignedKos;
+
     private Kos $foreignKos;
+
     private Kamar $assignedKamar;
+
     private Kamar $foreignKamar;
 
     protected function setUp(): void
@@ -187,16 +194,16 @@ class AdminKosKamarCapabilityTest extends TestCase
 
     // ─── KAMAR DELETE ──────────────────────────────────────
 
-public function test_admin_assigned_can_delete_eligible_kamar(): void
-{
-    $kamar = Kamar::factory()->create([
-        'kos_id' => $this->assignedKos->id,
-        'status' => 'available',
-    ]);
+    public function test_admin_assigned_can_delete_eligible_kamar(): void
+    {
+        $kamar = Kamar::factory()->create([
+            'kos_id' => $this->assignedKos->id,
+            'status' => 'available',
+        ]);
 
-    $response = $this->actingAs($this->admin)->delete(route('admin.kamar.destroy', $kamar));
-    $response->assertStatus(302);
-}
+        $response = $this->actingAs($this->admin)->delete(route('admin.kamar.destroy', $kamar));
+        $response->assertStatus(302);
+    }
 
     public function test_admin_foreign_kamar_denied_delete(): void
     {

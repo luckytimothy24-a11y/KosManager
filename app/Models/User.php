@@ -26,6 +26,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'address',
+        'identity_number',
         'avatar',
         'is_active',
     ];
@@ -53,6 +54,24 @@ class User extends Authenticatable
     public function ownedKos()
     {
         return $this->hasMany(Kos::class, 'owner_id');
+    }
+
+    public function bankAccount()
+    {
+        return $this->hasOne(OwnerBankAccount::class, 'owner_id');
+    }
+
+    public function paymentDistributions()
+    {
+        return $this->hasMany(PaymentDistribution::class, 'owner_id');
+    }
+
+    /**
+     * Payout ke Pemilik Kos Asli yang dibuat/dikelola oleh user ini (owner).
+     */
+    public function payouts()
+    {
+        return $this->hasMany(Payout::class, 'owner_id');
     }
 
     public function assignedKos()
@@ -115,6 +134,11 @@ class User extends Authenticatable
     public function advertisingEvents()
     {
         return $this->hasMany(AdvertisingEvent::class, 'user_id');
+    }
+
+    public function settings()
+    {
+        return $this->hasMany(Setting::class);
     }
 
     public function hasFavorited(int $kosId): bool

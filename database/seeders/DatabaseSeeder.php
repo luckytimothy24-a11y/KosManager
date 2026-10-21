@@ -7,18 +7,6 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
-     */
-    public function run(): void
-    {
-        if (app()->environment('production')) {
-            $this->command?->warn('AdvertisingSeeder dilewati: production tidak boleh membuat data demo finansial (order PAID AD-DEMO-*).');
-        }
-
-        $this->call($this->seeders());
-    }
-
-    /**
      * Daftar seeder yang dijalankan.
      *
      * AdvertisingSeeder (data demo finansial: order PAID AD-DEMO-*) dikecualikan
@@ -32,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $seeders = [
             UserSeeder::class,
             FasilitasSeeder::class,
+            TopikSeeder::class,
             KosSeeder::class,
             KamarSeeder::class,
             BookingSeeder::class,
@@ -43,8 +32,25 @@ class DatabaseSeeder extends Seeder
 
         if (! app()->environment('production')) {
             array_splice($seeders, 4, 0, [PartnerSeeder::class, AdvertisingSeeder::class]);
+            array_splice($seeders, -1, 0, [DemoDataSeeder::class, ShowcaseSeeder::class]);
         }
 
         return $seeders;
+    }
+
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+        if (app()->environment('production')) {
+            $this->command?->warn('AdvertisingSeeder dilewati: production tidak boleh membuat data demo finansial (order PAID AD-DEMO-*).');
+        }
+
+        $this->call($this->seeders());
+
+        if (! app()->environment('production')) {
+            $this->command?->call('penghuni:seed-demo');
+        }
     }
 }

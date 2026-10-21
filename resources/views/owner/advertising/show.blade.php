@@ -5,11 +5,11 @@
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center gap-3">
-                <a href="{{ route('owner.advertising.index') }}" class="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <a href="{{ route('owner.advertising.index') }}" class="w-9 h-9 inline-flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                     <i class="ri-arrow-left-line"></i>
                 </a>
                 <div>
-                    <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $campaign->campaign_number }}</h1>
+                    <h1 class="text-xl font-bold text-slate-900 dark:text-slate-50">{{ $campaign->campaign_number }}</h1>
                     <p class="text-sm text-slate-500 dark:text-slate-400">{{ $campaign->displayLabel() }}</p>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 @if($campaign->canBeCancelled())
                     <form method="POST" action="{{ route('owner.advertising.cancel', $campaign) }}" onsubmit="return confirm('Batalkan kampanye ini?')">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                             <i class="ri-close-circle-line"></i> Batalkan
                         </button>
                     </form>
@@ -38,8 +38,8 @@
 
         {{-- Detail + Paket --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <h3 class="font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
                     <i class="ri-information-line text-primary-500"></i> Detail Kampanye
                 </h3>
                 <dl class="mt-4 space-y-3 text-sm">
@@ -97,52 +97,52 @@
                 </dl>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <h3 class="font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
                     <i class="ri-megaphone-line text-indigo-500"></i> Performa Iklan
                 </h3>
                 <div class="mt-4 grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-slate-900 dark:text-white">{{ number_format($impressions) }}</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-slate-900 dark:text-slate-50">{{ number_format($impressions) }}</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Impressions</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-indigo-600 dark:text-indigo-400">{{ $ctr }}%</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ $ctr }}%</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">CTR</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-green-600 dark:text-green-400">{{ number_format($conversions) }}</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ number_format($conversions) }}</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Booking</p>
                     </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-                        <p class="text-2xl font-black text-amber-600 dark:text-amber-400">{{ $conversionRate }}%</p>
+                    <div class="bg-slate-50 dark:bg-surface-elevated/50 rounded-xl p-4">
+                        <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ $conversionRate }}%</p>
                         <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">Konversi</p>
                     </div>
                 </div>
                 @if($campaign->isThirdParty())
                     <div class="flex flex-col gap-2 mt-4">
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Iklan ditayangkan pada placement <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ \App\Support\AdvertisingLabels::placementLabel($campaign->placement) }}</span>. Klik mengarah ke situs advertiser — konversi tidak diatribusikan ke booking kos.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Iklan ditayangkan pada placement <span class="font-semibold text-primary-600 dark:text-primary-400">{{ \App\Support\AdvertisingLabels::placementLabel($campaign->placement) }}</span>. Klik mengarah ke situs advertiser — konversi tidak diatribusikan ke booking kos.</p>
                         @if($campaign->destination_url)
-                            <a href="{{ $campaign->destination_url }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-700 dark:text-slate-200 hover:text-indigo-600 px-4 py-2.5 rounded-xl transition">
+                            <a href="{{ $campaign->destination_url }}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-surface-elevated hover:bg-primary-50 text-slate-700 dark:text-slate-200 hover:text-primary-600 px-4 py-2.5 rounded-xl transition">
                                 Buka destination URL <i class="ri-external-link-line"></i>
                             </a>
                         @endif
                     </div>
                 @else
-                    <a href="{{ $campaign->kos ? route('tenant.kos.show', $campaign->kos) : '#' }}" target="_blank" class="mt-4 w-full inline-flex items-center justify-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-primary-50 text-slate-700 dark:text-slate-200 hover:text-primary-600 px-4 py-2.5 rounded-xl transition">
+                    <a href="{{ $campaign->kos ? route('tenant.kos.show', $campaign->kos) : '#' }}" target="_blank" class="mt-4 w-full inline-flex items-center justify-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-surface-elevated hover:bg-primary-50 text-slate-700 dark:text-slate-200 hover:text-primary-600 px-4 py-2.5 rounded-xl transition">
                         Lihat halaman kos <i class="ri-external-link-line"></i>
                     </a>
                 @endif
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-5">
-                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-5">
+                <h3 class="font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
                     <i class="ri-bank-card-line text-green-500"></i> Pembayaran
                 </h3>
                 @if($campaign->orders->isNotEmpty())
                     <dl class="mt-4 space-y-3 text-sm">
                         @foreach($campaign->orders as $order)
-                            <div class="border border-slate-100 dark:border-slate-800 rounded-xl p-3">
+                            <div class="border border-slate-100 dark:border-white/10 rounded-xl p-3">
                                 <div class="flex justify-between">
                                     <dt class="text-slate-500 dark:text-slate-400">{{ $order->order_number }}</dt>
                                     <dd class="font-semibold text-slate-800 dark:text-slate-200">Rp {{ number_format($order->amount, 0, ',', '.') }}</dd>
@@ -156,7 +156,7 @@
                                     </dd>
                                 </div>
                                 @if($order->isRefunded())
-                                    <div class="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                                    <div class="mt-2 border-t border-slate-100 dark:border-white/10 pt-2 text-[11px] text-slate-500 dark:text-slate-400">
                                         Pembayaran dibatalkan dan dicatat sebagai refunded {{ $order->refunded_at?->format('d/m/Y H:i') ?? '-' }}
                                         @if($order->refund_reason) · {{ $order->refund_reason }} @endif
                                     </div>

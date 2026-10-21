@@ -12,7 +12,7 @@ class PenghuniPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('super_admin', 'admin', 'owner');
+        return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();
     }
 
     public function view(User $user, Penghuni $penghuni): bool

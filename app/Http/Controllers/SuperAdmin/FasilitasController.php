@@ -12,6 +12,7 @@ class FasilitasController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Fasilitas::class);
         $query = Fasilitas::withCount('kamar', 'kos');
 
         if ($request->filled('search')) {
@@ -33,11 +34,22 @@ class FasilitasController extends Controller
 
     public function create()
     {
+        $this->authorize('viewAny', Fasilitas::class);
+
         return view('super-admin.fasilitas.create');
+    }
+
+    public function show(Fasilitas $fasilitas)
+    {
+        $this->authorize('view', $fasilitas);
+        $fasilitas->loadCount('kamar', 'kos');
+
+        return view('super-admin.fasilitas.show', compact('fasilitas'));
     }
 
     public function store(StoreFasilitasRequest $request)
     {
+        $this->authorize('create', Fasilitas::class);
         $data = $request->validated();
         $data['type'] = $request->input('type', 'kamar');
         $data['is_active'] = $request->has('is_active');
@@ -52,11 +64,14 @@ class FasilitasController extends Controller
 
     public function edit(Fasilitas $fasilitas)
     {
+        $this->authorize('view', $fasilitas);
+
         return view('super-admin.fasilitas.edit', compact('fasilitas'));
     }
 
     public function update(StoreFasilitasRequest $request, Fasilitas $fasilitas)
     {
+        $this->authorize('update', $fasilitas);
         $data = $request->validated();
         $newType = $request->input('type', $fasilitas->type);
         $data['type'] = $newType;
@@ -77,6 +92,7 @@ class FasilitasController extends Controller
 
     public function destroy(Fasilitas $fasilitas)
     {
+        $this->authorize('delete', $fasilitas);
         if ($fasilitas->kamar()->exists() || $fasilitas->kos()->exists()) {
             return redirect()->route('super-admin.fasilitas.index')
                 ->with('error', 'Fasilitas tidak dapat dihapus karena masih digunakan oleh kamar atau kos.');

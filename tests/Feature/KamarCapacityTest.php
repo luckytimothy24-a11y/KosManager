@@ -38,6 +38,7 @@ class KamarCapacityTest extends TestCase
             'room_number' => '101',
             'room_name' => 'Kamar Mawar',
             'room_type' => 'standard',
+            'capacity' => 1,
             'daily_price' => 50000,
             'weekly_price' => 300000,
             'monthly_price' => 1000000,
@@ -199,6 +200,9 @@ class KamarCapacityTest extends TestCase
 
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
             'notes' => 'Check-in lancar',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test',
         ]);
 
         $response->assertStatus(400);

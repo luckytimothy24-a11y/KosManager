@@ -24,8 +24,11 @@ class KamarFactory extends Factory
             'room_name' => 'Kamar '.fake()->randomLetter(),
             'floor' => fake()->numberBetween(1, 5),
             'room_type' => fake()->randomElement(['Standard', 'Deluxe', 'VIP']),
+            'capacity' => 1,
+            'billing_mode' => 'personal',
             'daily_price' => fake()->numberBetween(100000, 500000),
             'monthly_price' => fake()->numberBetween(1000000, 5000000),
+            'weekly_price' => fake()->numberBetween(100000, 600000),
             'area' => fake()->randomElement(['12m2', '16m2', '20m2', '24m2']),
             'status' => 'available',
         ];

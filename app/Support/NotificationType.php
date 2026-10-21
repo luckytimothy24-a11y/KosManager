@@ -22,6 +22,8 @@ class NotificationType
 
     public const IDENTITY = 'identity';
 
+    public const DAMAGE_REPORT = 'damage_report';
+
     public static function label(string $type): string
     {
         return match ($type) {
@@ -34,6 +36,7 @@ class NotificationType
             self::ADVERTISING => 'Advertising',
             self::MESSAGE => 'Pesan',
             self::IDENTITY => 'Identitas',
+            self::DAMAGE_REPORT => 'Lapor Kerusakan',
             default => 'Lainnya',
         };
     }
@@ -50,6 +53,7 @@ class NotificationType
             self::ADVERTISING => self::label(self::ADVERTISING),
             self::MESSAGE => self::label(self::MESSAGE),
             self::IDENTITY => self::label(self::IDENTITY),
+            self::DAMAGE_REPORT => self::label(self::DAMAGE_REPORT),
         ];
     }
 }

@@ -3,30 +3,32 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\BookingOccupant;
-use App\Services\AuditLogService;
-use App\Services\NotificationService;
-use App\Support\NotificationType;
-use Illuminate\Http\Request;
 use App\Models\CheckIn;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Penghuni;
+use App\Services\AuditLogService;
+use App\Services\NotificationService;
+use App\Support\NotificationType;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class OwnerBookingOccupantController extends Controller
 {
-    public function index(Request $request, \App\Models\Booking $booking)
+    public function index(Request $request, Booking $booking)
     {
         $this->authorize('view', $booking);
         $booking->load(['occupants.user', 'kos', 'kamar']);
+
         return view('owner.booking.occupants', compact('booking'));
     }
 
     public function confirmIdentity(Request $request, BookingOccupant $occupant)
     {
         $this->authorize('confirmIdentity', $occupant);
-        abort_unless($occupant->booking->status === \App\Models\Booking::STATUS_APPROVED, 400, 'Booking tidak dalam tahap check-in.');
+        abort_unless(in_array($occupant->booking->status, [Booking::STATUS_APPROVED], true), 400, 'Booking tidak dalam tahap check-in.');
         abort_unless($occupant->identityPending(), 400, 'Pengajuan tidak dalam status menunggu konfirmasi.');
         abort_unless($occupant->hasIdentityData(), 400, 'Data identitas belum lengkap.');
 
@@ -78,7 +80,7 @@ class OwnerBookingOccupantController extends Controller
     public function rejectIdentity(Request $request, BookingOccupant $occupant)
     {
         $this->authorize('confirmIdentity', $occupant);
-        abort_unless($occupant->booking->status === \App\Models\Booking::STATUS_APPROVED, 400, 'Booking tidak dalam tahap check-in.');
+        abort_unless(in_array($occupant->booking->status, [Booking::STATUS_APPROVED], true), 400, 'Booking tidak dalam tahap check-in.');
         abort_unless($occupant->identityPending(), 400, 'Hanya pengajuan pending yang dapat ditolak.');
 
         $data = $request->validate([
@@ -133,7 +135,7 @@ class OwnerBookingOccupantController extends Controller
     {
         $this->authorize('view', $occupant->booking);
         $booking = $occupant->booking;
-        abort_unless($booking->status === \App\Models\Booking::STATUS_APPROVED, 400, 'Booking belum disetujui.');
+        abort_unless(in_array($booking->status, [Booking::STATUS_APPROVED], true), 400, 'Booking belum disetujui.');
         abort_unless($occupant->status === BookingOccupant::STATUS_ACCEPTED, 400, 'Occupant belum accepted.');
         abort_unless($occupant->identityConfirmed(), 400, 'Identitas belum dikonfirmasi.');
         abort_unless($occupant->penghuni_id === null, 400, 'Occupant sudah check-in.');
@@ -167,7 +169,9 @@ class OwnerBookingOccupantController extends Controller
             ]);
 
             $billingMode = $booking->billing_mode ?? 'personal';
-            if (! in_array($billingMode, ['personal', 'shared'], true)) $billingMode = 'personal';
+            if (! in_array($billingMode, ['personal', 'shared'], true)) {
+                $billingMode = 'personal';
+            }
 
             $kontrak = Kontrak::create([
                 'contract_number' => 'KT-'.strtoupper(Str::random(12)),
@@ -213,6 +217,7 @@ class OwnerBookingOccupantController extends Controller
         }
 
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
+
         return redirect()->route("$prefix.booking.index")->with('success', 'Check-in occupant berhasil.');
     }
 }

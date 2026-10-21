@@ -340,15 +340,14 @@ class AdvertisingService
      * Marketplace: kampanye is_featured ATAU is_sponsored.
      * Homepage:    kampanye is_homepage.
      *
-     * Bila $kosIds diberikan, hanya kos yang ada dalam daftar tersebut yang
-     * boleh tampil — digunakan agar promosi kos SELALU menghormati pencarian /
-     * filter harga / fasilitas / ketersediaan yang sedang aktif di marketplace
-     * (kos di luar filter tidak pernah muncul di section promosi).
+     * $kosIds = null  → tanpa filter (semua promosi live placement tsb).
+     * $kosIds = []    → terkunci kosong: TIDAK ada promosi yang boleh tampil.
+     * $kosIds = [id]  → hanya kos dalam daftar (filter marketplace aktif).
      *
-     * @param  array<int, int>  $kosIds
+     * @param  array<int, int>|null  $kosIds
      * @return Collection<int, AdvertisingCampaign>
      */
-    public function kosPromoCampaigns(string $placement, array $kosIds = [], int $limit = 4)
+    public function kosPromoCampaigns(string $placement, ?array $kosIds = null, int $limit = 4)
     {
         $query = $this->activeCampaigns()
             ->whereNotNull('kos_id');
@@ -359,7 +358,7 @@ class AdvertisingService
             $query->where(fn ($q) => $q->where('is_featured', true)->orWhere('is_sponsored', true));
         }
 
-        if ($kosIds !== []) {
+        if ($kosIds !== null) {
             $query->whereIn('kos_id', $kosIds);
         }
 

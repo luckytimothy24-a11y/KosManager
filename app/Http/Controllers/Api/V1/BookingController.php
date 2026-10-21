@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\Api\V1\StoreBookingRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
+use App\Services\AuditLogService;
 use App\Services\BookingService;
+use App\Services\BookingStatusService;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -56,6 +59,7 @@ class BookingController extends Controller
             $message = match ($result['error']) {
                 'conflict' => 'Kamar sudah dibooking pada periode tersebut.',
                 'overlap' => 'Kamar sudah dibooking pada periode tersebut.',
+                'capacity_exceeded' => 'Jumlah penghuni melebihi kapasitas kamar.',
                 'kamar_penuh' => 'Kamar sudah penuh. Kapasitas tidak mencukupi.',
                 'already_occupant' => 'Anda sudah menjadi penghuni aktif di kamar ini.',
                 'no_price' => 'Harga kamar tidak tersedia.',
@@ -66,7 +70,7 @@ class BookingController extends Controller
 
             $field = match ($result['error']) {
                 'billing_mode_not_allowed' => 'billing_mode',
-                'personal_multi_rejected' => 'requested_occupants',
+                'capacity_exceeded', 'personal_multi_rejected' => 'requested_occupants',
                 default => 'kamar_id',
             };
 
@@ -82,23 +86,62 @@ class BookingController extends Controller
         ], 201);
     }
 
-    public function cancel(Booking $booking, BookingService $bookingService): JsonResponse
+    /**
+     * Tenant request cancellation via API.
+     * booking.status TIDAK berubah — hanya membuat cancellation request pending.
+     */
+    public function cancel(Booking $booking, Request $request, BookingStatusService $statusService): JsonResponse
     {
         $this->authorize('cancel', $booking);
 
-        $cancelled = $bookingService->cancel($booking->id);
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:500'],
+        ]);
 
-        if (! $cancelled) {
+        $result = $statusService->requestCancellation(
+            $booking,
+            $request->user(),
+            $data['reason'] ?? null
+        );
+
+        if (! ($result['ok'] ?? false)) {
             return response()->json([
-                'message' => 'Booking sudah diproses sebelumnya.',
+                'message' => match ($result['error'] ?? '') {
+                    'already_requested' => 'Pengajuan pembatalan sudah menunggu review pemilik kos.',
+                    'not_cancellable' => 'Booking ini tidak dapat dibatalkan.',
+                    'forbidden' => 'Anda tidak memiliki akses untuk membatalkan booking ini.',
+                    default => 'Gagal mengajukan pembatalan booking.',
+                },
             ], 422);
+        }
+
+        try {
+            AuditLogService::create(
+                'Booking',
+                "Tenant mengajukan pembatalan booking {$booking->booking_code} via API",
+                [
+                    'booking_id' => $booking->id,
+                    'cancellation_request_id' => $result['request']->id,
+                ]
+            );
+            NotificationService::bookingCancellationRequested(
+                $booking->kos->owner_id,
+                $booking->user->name,
+                $booking->booking_code
+            );
+        } catch (\Exception $e) {
+            \Log::warning('API booking cancellation request failed: '.$e->getMessage());
         }
 
         $booking->refresh()->load(['kos', 'kamar']);
 
         return response()->json([
             'data' => new BookingResource($booking),
-            'message' => 'Booking berhasil dibatalkan.',
+            'cancellation_request' => [
+                'id' => $result['request']->id,
+                'status' => $result['request']->status,
+            ],
+            'message' => 'Pengajuan pembatalan terkirim. Menunggu konfirmasi pemilik kos.',
         ]);
     }
 }

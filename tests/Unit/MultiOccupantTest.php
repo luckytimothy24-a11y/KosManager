@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Models\Booking;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\Penghuni;
@@ -70,7 +69,7 @@ class MultiOccupantTest extends TestCase
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 2, 'billing_mode' => 'shared', 'status' => 'available']);
         Penghuni::factory()->create(['kamar_id' => $kamar->id, 'status' => 'active']);
 
-        $bookingService = new BookingService();
+        $bookingService = new BookingService;
         $result = $bookingService->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(1),
@@ -92,15 +91,15 @@ class MultiOccupantTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'tenant']);
         $kos = Kos::factory()->create();
-        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 3, 'billing_mode' => 'shared', 'status' => 'available']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 1, 'billing_mode' => 'personal', 'status' => 'available']);
 
-        $bookingService = new BookingService();
+        $bookingService = new BookingService;
         $result = $bookingService->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(1),
             'end_date' => now()->addDays(30),
             'rental_type' => 'monthly',
-            'billing_mode' => 'shared',
+            'billing_mode' => 'personal',
             'requested_occupants' => 1,
             'notes' => '',
             'identity_number' => '12345678',
@@ -117,7 +116,7 @@ class MultiOccupantTest extends TestCase
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 1, 'billing_mode' => 'personal', 'status' => 'available']);
 
-        $bookingService = new BookingService();
+        $bookingService = new BookingService;
         $result = $bookingService->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(1),

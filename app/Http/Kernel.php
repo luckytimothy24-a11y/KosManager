@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\BillingGuard;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\IsActive;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -90,6 +91,7 @@ class Kernel extends HttpKernel
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
         'active' => IsActive::class,
+        'billing' => BillingGuard::class,
         'role' => RoleMiddleware::class,
     ];
 }

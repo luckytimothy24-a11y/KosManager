@@ -33,10 +33,10 @@
 @endphp
 
 {{-- Sidebar: light = putih premium, dark = slate-950 — berlaku untuk SEMUA role --}}
-<aside class="fixed top-0 left-0 z-40 w-64 h-screen flex flex-col border-r transition-transform lg:translate-x-0 bg-white dark:bg-slate-950 border-slate-200/70 dark:border-white/5 text-slate-700 dark:text-slate-300"
+<aside class="fixed top-0 left-0 z-40 w-64 h-dvh flex flex-col border-r transition-transform lg:translate-x-0 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100"
        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
-    <div class="flex items-center gap-3 px-5 h-16 border-b shrink-0 bg-white dark:bg-slate-950 border-slate-100 dark:border-white/5">
+<div class="flex items-center gap-3 px-5 h-16 border-b shrink-0 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br {{ $roleAccent }} flex items-center justify-center shadow-lg shadow-black/5 dark:shadow-black/20 shrink-0">
             <span class="text-white font-black text-xs">K</span>
         </div>
@@ -44,7 +44,13 @@
             <span class="text-[13px] font-black tracking-tight text-slate-900 dark:text-white leading-none">KosManager</span>
             <p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 leading-none mt-1">{{ $roleLabel }} · Panel</p>
         </div>
-        <span class="ml-auto hidden lg:grid h-7 w-7 place-items-center rounded-lg bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300">
+        <button type="button" @click="sidebarOpen = false"
+                class="lg:hidden absolute right-2 top-2 flex items-center justify-center rounded-full bg-slate-200 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm transition"
+                aria-label="Tutup menu" :aria-expanded="false" id="close-btn"
+                x-show="sidebarOpen">
+            <i class="ri-close-line text-xs"></i>
+        </button>
+        <span class="ml-auto hidden lg:grid h-7 w-7 place-items-center rounded-lg bg-slate-100 dark:bg-slate-800/10 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
             <i class="ri-layout-left-line text-sm"></i>
         </span>
     </div>
@@ -54,11 +60,11 @@
         @if(!$user->isTenant())
             <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                      {{ $isActive('dashboard') ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                      {{ $isActive('dashboard') ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                @if($isActive('dashboard')) aria-current="page" @endif>
                 <span class="relative flex items-center justify-center w-5 shrink-0">
                     @if($isActive('dashboard'))
-                        <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-white rounded-full"></span>
+                        <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-slate-100 rounded-full"></span>
                         <span class="dark:hidden absolute -left-3 w-[3px] h-5 bg-slate-900 rounded-full"></span>
                     @endif
                     <i class="ri-dashboard-3-line text-[18px]"></i>
@@ -151,7 +157,7 @@
                         $navItem('admin.advertising.index', 'Advertising', 'ri-megaphone-line'),
                     ];
                 }
-            @endphp
+@endphp
 
             @foreach($groups as $groupLabel => $items)
                 @if(!empty($items))
@@ -160,17 +166,17 @@
                     </div>
                 @endif
 
-                @foreach($items as $item)
+               @foreach($items as $item)
                     @php
                         $active = $isActive($item['route'].'*') || $isActive($item['route']);
                     @endphp
                     <a href="{{ route($item['route']) }}"
                        class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                              {{ $active ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                              {{ $active ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                        @if($active) aria-current="page" @endif>
                         <span class="relative flex items-center justify-center w-5 shrink-0">
                             @if($active)
-                                <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-white rounded-full"></span>
+                                <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-slate-100 rounded-full"></span>
                                 <span class="dark:hidden absolute -left-3 w-[3px] h-5 bg-slate-900 rounded-full"></span>
                             @endif
                             <i class="{{ $item['icon'] }} text-[18px]"></i>
@@ -218,11 +224,11 @@
                     @endphp
                     <a href="{{ route($routeName) }}"
                        class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                              {{ $active ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                              {{ $active ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                        @if($active) aria-current="page" @endif>
                         <span class="relative flex items-center justify-center w-5 shrink-0">
                             @if($active)
-                                <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-white rounded-full"></span>
+                                <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-slate-100 rounded-full"></span>
                                 <span class="dark:hidden absolute -left-3 w-[3px] h-5 bg-slate-900 rounded-full"></span>
                             @endif
                             <i class="{{ $item['icon'] }} text-[18px]"></i>
@@ -251,10 +257,26 @@
         @endif
     </nav>
 
-    <div class="px-3 py-4 border-t shrink-0 bg-white dark:bg-slate-950 border-slate-100 dark:border-white/5">
+    <div class="px-3 py-4 border-t shrink-0 bg-slate-100 dark:bg-slate-800 border-slate-100 dark:border-white/5">
+    @if($user->isTenant())
+        <button type="button" x-data
+                @click="
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                "
+                class="group flex w-full min-h-[44px] items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all"
+                aria-label="Ganti mode tampilan">
+            <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-100/10 text-slate-600 dark:text-slate-300 transition">
+                <i class="ri-moon-line text-[18px] dark:hidden"></i>
+                <i class="ri-sun-line text-[18px] hidden dark:block"></i>
+            </span>
+            <span class="dark:hidden">Mode Gelap</span>
+            <span class="hidden dark:inline">Mode Terang</span>
+        </button>
+    @endif
         <a href="{{ route('profile.edit') }}"
            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all">
-            <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 group-hover:bg-slate-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-900 transition">
+            <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-100/10 text-slate-600 dark:text-slate-300 group-hover:bg-slate-900 group-hover:text-white dark:group-hover:bg-slate-100 dark:group-hover:text-slate-900 transition">
                 <i class="ri-settings-3-line text-[18px]"></i>
             </span>
             Pengaturan
@@ -270,4 +292,4 @@
      x-transition:leave="transition ease-in duration-200"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0"
-     class="fixed inset-0 bg-black/50 dark:bg-black/60 backdrop-blur-sm z-30 lg:hidden"></div>
+     class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-30 lg:hidden"></div>

@@ -29,7 +29,7 @@ $maxWidth = [
         lastFocusable() { return this.focusables().slice(-1)[0] },
         nextFocusable() { return this.focusables()[this.nextFocusableIndex()] || this.firstFocusable() },
         prevFocusable() { return this.focusables()[this.prevFocusableIndex()] || this.lastFocusable() },
-        nextFocusableIndex() { return (this.focusables().indexOf(document.activeElement) + 1) % (this.focusables().length + 1) },
+        nextFocusableIndex() { return (this.focusables().indexOf(document.activeElement) + 1) % Math.max(1, this.focusables().length) },
         prevFocusableIndex() { return Math.max(0, this.focusables().indexOf(document.activeElement)) -1 },
     }"
     x-init="$watch('show', value => {
@@ -47,7 +47,7 @@ $maxWidth = [
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
+    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-[60]"
     style="display: {{ $show ? 'block' : 'none' }};"
 >
     <div
@@ -61,14 +61,16 @@ $maxWidth = [
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
     </div>
 
     <div
         x-show="show"
-        role="dialog" aria-modal="true"
+        role="dialog" aria-modal="true" id="{{ $name }}-panel"
+        aria-labelledby="{{ $name }}-title"
         @if($ariaLabel) aria-label="{{ $ariaLabel }}" @endif
-        class="mb-6 bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto border border-slate-100 dark:border-slate-800"
+        class="mb-6 bg-white dark:bg-surface-elevated rounded-2xl overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto border border-slate-100 dark:border-white/10"
+        tabindex="-1"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"

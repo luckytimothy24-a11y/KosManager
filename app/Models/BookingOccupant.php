@@ -11,14 +11,21 @@ class BookingOccupant extends Model
     use HasFactory, SoftDeletes;
 
     public const STATUS_INVITED = 'invited';
+
     public const STATUS_ACCEPTED = 'accepted';
+
     public const STATUS_DECLINED = 'declined';
+
     public const STATUS_EXPIRED = 'expired';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     public const IDENTITY_NOT_SUBMITTED = 'not_submitted';
+
     public const IDENTITY_PENDING = 'pending';
+
     public const IDENTITY_CONFIRMED = 'confirmed';
+
     public const IDENTITY_REJECTED = 'rejected';
 
     protected $fillable = [
@@ -107,9 +114,14 @@ class BookingOccupant extends Model
     public function maskedIdentityNumber(): string
     {
         $num = (string) ($this->identity_number ?? '');
-        if ($num === '') return '-';
+        if ($num === '') {
+            return '-';
+        }
         $len = mb_strlen($num);
-        if ($len <= 4) return str_repeat('*', $len);
+        if ($len <= 4) {
+            return str_repeat('*', $len);
+        }
+
         return str_repeat('*', $len - 4).mb_substr($num, -4);
     }
 }

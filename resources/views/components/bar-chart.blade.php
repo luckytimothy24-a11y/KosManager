@@ -7,20 +7,20 @@
 @endphp
 
 <div class="card-surface p-6 relative overflow-hidden">
-    <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br from-orange-500/10 to-amber-500/10 blur-2xl pointer-events-none"></div>
+    <div class="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-gradient-to-br from-primary-500/10 to-primary-500/10 blur-2xl pointer-events-none"></div>
     @if($title)
     <div class="relative flex items-center gap-3 mb-6">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-sm shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-sm shrink-0">
             <i class="ri-bar-chart-grouped-line text-white"></i>
         </div>
-        <h3 class="font-black text-slate-900 dark:text-white text-sm tracking-tight">{{ $title }}</h3>
-        <span class="ml-auto hidden sm:inline-flex items-center gap-1 text-[11px] font-bold tracking-widest uppercase text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">{{ $dataCount }} data</span>
+        <h3 class="font-bold text-slate-900 dark:text-slate-50 text-sm tracking-tight">{{ $title }}</h3>
+        <span class="ml-auto hidden sm:inline-flex items-center gap-1 text-[11px] font-bold tracking-widest uppercase text-slate-400 bg-slate-100 dark:bg-surface-elevated px-2.5 py-1 rounded-full">{{ $dataCount }} data</span>
     </div>
     @endif
 
     @if(!$hasData)
         <div class="relative py-10 text-center">
-            <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-orange-50 dark:bg-orange-500/10 text-orange-500"><i class="ri-line-chart-line text-2xl"></i></span>
+            <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-500"><i class="ri-line-chart-line text-2xl"></i></span>
             <p class="mt-3 text-sm font-bold text-slate-700 dark:text-slate-200">Belum ada data</p>
             <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Grafik akan muncul setelah ada transaksi.</p>
         </div>
@@ -36,7 +36,7 @@
                 aria-label="{{ $title }}"
             ></canvas>
         </div>
-        <div class="mt-4 h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-800 to-transparent"></div>
+        <div class="mt-4 h-px bg-gradient-to-r from-transparent via-slate-100 dark:via-slate-700 to-transparent"></div>
     @endif
 </div>
 
@@ -51,6 +51,7 @@
     window.__kosManagerChartInitializerRegistered = true;
 
     var chartInstances = new WeakMap();
+    var registry = new Set();
 
     function parseJsonAttribute(canvas, attributeName, fallback) {
         var raw = canvas.getAttribute(attributeName);
@@ -118,13 +119,13 @@
 
                         if (value === maxValue && value > 0) {
                             var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                            grad.addColorStop(0, isDark ? '#fb923c' : '#fb923c');
-                            grad.addColorStop(1, isDark ? '#ea580c' : '#f97316');
+                            grad.addColorStop(0, isDark ? '#b89c84' : '#cdbba8');
+                            grad.addColorStop(1, isDark ? '#8d6d55' : '#a88468');
                             return grad;
                         }
                         var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                        grad.addColorStop(0, isDark ? '#fb923c' : '#fb923c');
-                        grad.addColorStop(1, isDark ? '#c2410c' : '#f97316');
+                        grad.addColorStop(0, isDark ? '#cdbba8' : '#e0d5c9');
+                        grad.addColorStop(1, isDark ? '#6e5443' : '#8d6d55');
                         return grad;
                     },
                     borderRadius: 4,
@@ -183,6 +184,23 @@
         });
 
         chartInstances.set(canvas, chart);
+        registry.add(chart);
+    }
+
+    function applyTheme(chart) {
+        var isDark = document.documentElement.classList.contains('dark');
+        var textColor = isDark ? '#cbd5e1' : '#475569';
+        var gridColor = isDark ? '#334155' : '#e2e8f0';
+        var tooltipBg = isDark ? '#1e293b' : '#0f172a';
+        chart.options.scales.x.ticks.color = textColor;
+        chart.options.scales.y.ticks.color = textColor;
+        chart.options.scales.y.grid.color = gridColor;
+        chart.options.plugins.tooltip.backgroundColor = tooltipBg;
+        chart.update();
+    }
+
+    function syncAllChartsTheme() {
+        registry.forEach(function (chart) { applyTheme(chart); });
     }
 
     function initAllCharts() {
@@ -191,6 +209,14 @@
 
     function boot() {
         initAllCharts();
+        try {
+            var observer = new MutationObserver(function (mutations) {
+                var relevant = mutations.some(function (m) { return m.attributeName === 'class'; });
+                if (relevant) syncAllChartsTheme();
+            });
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        } catch (e) {}
+        window.addEventListener('theme-changed', syncAllChartsTheme);
     }
 
     if (document.readyState === 'loading') {

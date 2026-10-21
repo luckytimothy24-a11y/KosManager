@@ -76,8 +76,8 @@
             <?php echo csrf_field(); ?>
 
             
-            <section class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8 space-y-5">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 space-y-5">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/10">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-file-text-line text-primary-600 dark:text-primary-400"></i></span>
                     Kontrak &amp; Periode
                 </h3>
@@ -85,7 +85,7 @@
                 <div>
                     <label for="kontrak_id" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Kontrak Aktif <span class="text-red-500">*</span></label>
                     <select name="kontrak_id" required id="kontrak-select"
-                            class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('kontrak_id') ? 'border-red-400' : ''); ?>">
+                            class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500 <?php echo e($errors->has('kontrak_id') ? 'border-red-400' : ''); ?>">
                         <option value="">Pilih Kontrak</option>
                         <?php $__currentLoopData = $kontraks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <option value="<?php echo e($k->id); ?>"
@@ -100,7 +100,7 @@
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -109,13 +109,13 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label for="bill_type" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Jenis Tagihan <span class="text-red-500">*</span></label>
                     <input id="bill_type" type="text" name="bill_type" value="<?php echo e(old('bill_type', 'Sewa Bulanan')); ?>" required maxlength="100"
-                           class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500"
+                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
                            placeholder="cth: Sewa Bulanan, Listrik, Kebersihan">
                     <?php $__errorArgs = ['bill_type'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -125,12 +125,12 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="period_start" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Periode Mulai <span class="text-red-500">*</span></label>
                         <input id="period_start" type="date" name="period_start" value="<?php echo e(old('period_start')); ?>" required
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                         <?php $__errorArgs = ['period_start'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -138,12 +138,12 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="period_end" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Periode Akhir <span class="text-red-500">*</span></label>
                         <input id="period_end" type="date" name="period_end" value="<?php echo e(old('period_end')); ?>" required
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                         <?php $__errorArgs = ['period_end'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -153,12 +153,12 @@ unset($__errorArgs, $__bag); ?>
                 <div>
                     <label for="due_date" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Jatuh Tempo <span class="text-red-500">*</span></label>
                     <input id="due_date" type="date" name="due_date" value="<?php echo e(old('due_date')); ?>" required
-                           class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                     <?php $__errorArgs = ['due_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -166,8 +166,8 @@ unset($__errorArgs, $__bag); ?>
             </section>
 
             
-            <section class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 sm:p-8 mt-6 space-y-5">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 border-b border-slate-100 dark:border-slate-800">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 mt-6 space-y-5">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/10">
                     <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-money-dollar-circle-line text-primary-600 dark:text-primary-400"></i></span>
                     Rincian Biaya
                 </h3>
@@ -176,7 +176,7 @@ unset($__errorArgs, $__bag); ?>
                     <label for="subtotal-field" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Subtotal</label>
                     <input type="number" name="subtotal" id="subtotal-field" value="<?php echo e(old('subtotal')); ?>" readonly min="0"
                            placeholder="Otomatis dari kontrak &times; periode"
-                           class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 dark:text-slate-300 text-sm cursor-not-allowed font-semibold">
+                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/60 dark:text-slate-300 text-sm cursor-not-allowed font-semibold">
                     <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
                         <i class="ri-information-line mt-0.5 shrink-0"></i> Dihitung otomatis dari harga kontrak &times; periode dan diverifikasi ulang oleh sistem.
                     </p>
@@ -186,12 +186,12 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="discount" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Diskon (Rp)</label>
                         <input id="discount" type="number" name="discount" value="<?php echo e(old('discount', 0)); ?>" min="0"
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                         <?php $__errorArgs = ['discount'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -199,12 +199,12 @@ unset($__errorArgs, $__bag); ?>
                     <div>
                         <label for="penalty" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Denda (Rp)</label>
                         <input id="penalty" type="number" name="penalty" value="<?php echo e(old('penalty', 0)); ?>" min="0"
-                               class="w-full rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
                         <?php $__errorArgs = ['penalty'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <p class="text-red-500 text-xs mt-1" role="alert"><?php echo e($message); ?></p> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
@@ -214,8 +214,25 @@ unset($__errorArgs, $__bag); ?>
 
             
             <div class="flex items-center justify-end gap-3 mt-6">
-                <a href="<?php echo e($backUrl); ?>"
-                   class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
+                <?php if (isset($component)) { $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.button','data' => ['href' => ''.e($backUrl).'','type' => 'secondary']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('button'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['href' => ''.e($backUrl).'','type' => 'secondary']); ?>Batal <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $attributes = $__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__attributesOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561)): ?>
+<?php $component = $__componentOriginald0f1fd2689e4bb7060122a5b91fe8561; ?>
+<?php unset($__componentOriginald0f1fd2689e4bb7060122a5b91fe8561); ?>
+<?php endif; ?>
                 <button type="submit" :disabled="submitting"
                         class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="ri-save-line"></i> <span x-show="!submitting">Terbitkan Tagihan</span><span x-show="submitting" x-cloak>Menerbitkan...</span>

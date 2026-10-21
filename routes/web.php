@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
+use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
 use App\Http\Controllers\AdvertisingClickController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Owner\AdminOwnerMessageController;
 use App\Http\Controllers\Owner\AdvertisingController;
 use App\Http\Controllers\Owner\BookingController;
 use App\Http\Controllers\Owner\CheckInController;
@@ -13,29 +15,41 @@ use App\Http\Controllers\Owner\FavoriteController;
 use App\Http\Controllers\Owner\KamarController;
 use App\Http\Controllers\Owner\KontrakController;
 use App\Http\Controllers\Owner\KosController;
+use App\Http\Controllers\Owner\ManagementAgreementController;
 use App\Http\Controllers\Owner\MessageController;
+use App\Http\Controllers\Owner\OwnerBankAccountController;
+use App\Http\Controllers\Owner\OwnerBookingOccupantController;
+use App\Http\Controllers\Owner\OwnerPaymentDistributionController;
+use App\Http\Controllers\Owner\PayoutAdjustmentController;
+use App\Http\Controllers\Owner\PayoutDisbursementController;
 use App\Http\Controllers\Owner\PembayaranController;
 use App\Http\Controllers\Owner\PenghuniController;
+use App\Http\Controllers\Owner\PropertyOwnerPayoutController;
 use App\Http\Controllers\Owner\TagihanController;
 use App\Http\Controllers\Owner\TenantBookingController;
+use App\Http\Controllers\Owner\TenantBookingPaymentController;
 use App\Http\Controllers\Owner\TenantKontrakController;
 use App\Http\Controllers\Owner\TenantKosController;
+use App\Http\Controllers\Owner\TenantLaporanController;
 use App\Http\Controllers\Owner\TenantMessageController;
 use App\Http\Controllers\Owner\TenantPembayaranController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\AdvertisingCampaignController;
 use App\Http\Controllers\SuperAdmin\AdvertisingDashboardController;
 use App\Http\Controllers\SuperAdmin\AdvertisingPackageController;
 use App\Http\Controllers\SuperAdmin\AuditLogController;
 use App\Http\Controllers\SuperAdmin\FasilitasController;
-use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\SuperAdmin\LaporanController;
+use App\Http\Controllers\SuperAdmin\ModerationController;
+use App\Http\Controllers\SuperAdmin\OwnerController;
 use App\Http\Controllers\SuperAdmin\PartnerController;
+use App\Http\Controllers\SuperAdmin\SettingsController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\Tenant\BookingOccupantIdentityController;
 use App\Http\Controllers\Tenant\TenantBookingOccupantController;
 use App\Http\Controllers\Tenant\TenantCheckInController;
 use App\Http\Controllers\Tenant\TenantInvitationController;
-use App\Http\Controllers\Owner\OwnerBookingOccupantController;
 use App\Http\Controllers\Webhook\PaymentGatewayWebhookController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -73,18 +87,56 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::get('/pembayaran/{pembayaran}/proof', [PembayaranController::class, 'downloadProof'])
         ->name('pembayaran.proof');
+
+    Route::get('/pembayaran/{pembayaran}/kuitansi', [PembayaranController::class, 'receipt'])
+        ->name('pembayaran.receipt');
 });
 
 // Super Admin Routes
 Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
+    Route::get('users/export', [UserController::class, 'exportCsv'])->name('users.export');
     Route::resource('users', UserController::class);
+    Route::post('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
+    Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
     Route::resource('fasilitas', FasilitasController::class)->parameter('fasilitas', 'fasilitas');
 
-    Route::get('laporan', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'index'])->name('laporan.index');
-    Route::get('laporan/export-pdf', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
-    Route::get('laporan/export-excel', [\App\Http\Controllers\SuperAdmin\LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
+    Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
+    Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
 
     Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+
+    // Owner Management
+    Route::get('owners', [OwnerController::class, 'index'])->name('owners.index');
+    Route::get('owners/{owner}', [OwnerController::class, 'show'])->name('owners.show');
+    Route::post('owners/{owner}/activate', [OwnerController::class, 'activate'])->name('owners.activate');
+    Route::post('owners/{owner}/deactivate', [OwnerController::class, 'deactivate'])->name('owners.deactivate');
+
+    // Admin Management
+    Route::get('admins', [AdminController::class, 'index'])->name('admins.index');
+    Route::get('admins/create', [AdminController::class, 'create'])->name('admins.create');
+    Route::post('admins', [AdminController::class, 'store'])->name('admins.store');
+    Route::get('admins/{admin}', [AdminController::class, 'show'])->name('admins.show');
+    Route::post('admins/{admin}/activate', [AdminController::class, 'activate'])->name('admins.activate');
+    Route::post('admins/{admin}/deactivate', [AdminController::class, 'deactivate'])->name('admins.deactivate');
+    Route::post('admins/{admin}/assign', [AdminController::class, 'assign'])->name('admins.assign');
+    Route::post('admins/{admin}/unassign/{kos}', [AdminController::class, 'unassign'])->name('admins.unassign');
+
+    // Moderation
+    Route::get('moderation', [ModerationController::class, 'index'])->name('moderation.index');
+    Route::get('moderation/kos', [ModerationController::class, 'kos'])->name('moderation.kos');
+    Route::post('moderation/kos/{kos}/approve', [ModerationController::class, 'approveKos'])->name('moderation.kos.approve');
+    Route::post('moderation/kos/{kos}/reject', [ModerationController::class, 'rejectKos'])->name('moderation.kos.reject');
+    Route::get('moderation/photos', [ModerationController::class, 'photos'])->name('moderation.photos');
+    Route::post('moderation/photos/{photo}/approve', [ModerationController::class, 'approvePhoto'])->name('moderation.photos.approve');
+    Route::post('moderation/photos/{photo}/reject', [ModerationController::class, 'rejectPhoto'])->name('moderation.photos.reject');
+    Route::get('moderation/advertising', [ModerationController::class, 'advertising'])->name('moderation.advertising');
+    Route::get('moderation/damage-reports', [ModerationController::class, 'damageReports'])->name('moderation.damage-reports');
+
+    // System Settings
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::get('system-health', [App\Http\Controllers\SuperAdmin\HealthController::class, 'index'])->name('system-health.index');
 
     // Advertising (Super Admin)
     Route::get('advertising', [AdvertisingDashboardController::class, 'index'])->name('advertising.dashboard');
@@ -135,6 +187,39 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
 
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
+    // Transisi status booking — hanya owner/admin. Tenant tidak boleh mengubah status.
+    Route::post('booking/{booking}/approve', [BookingController::class, 'approve'])->name('booking.approve');
+    Route::post('booking/{booking}/reject', [BookingController::class, 'reject'])->name('booking.reject');
+    // Cancellation request review — owner approve → booking cancelled; reject → booking unchanged.
+    Route::post('booking-cancellation/{cancellationRequest}/approve', [BookingController::class, 'approveCancellation'])->name('booking.cancellation.approve');
+    Route::post('booking-cancellation/{cancellationRequest}/reject', [BookingController::class, 'rejectCancellation'])->name('booking.cancellation.reject');
+
+    // Rekening bank Owner (penerima pembayaran booking)
+    Route::get('bank-account', [OwnerBankAccountController::class, 'edit'])->name('bank-account.edit');
+    Route::put('bank-account', [OwnerBankAccountController::class, 'update'])->name('bank-account.update');
+
+    // Distribusi pembayaran booking → hak Owner
+    Route::get('distribution', [OwnerPaymentDistributionController::class, 'index'])->name('distribution.index');
+    Route::post('distribution/{distribution}/mark-processed', [OwnerPaymentDistributionController::class, 'markProcessed'])->name('distribution.mark-processed');
+
+    // Payout/Settlement ke Pemilik Kos Asli (property owner).
+    // Transfer manual di luar aplikasi; KosManager hanya mencatat.
+    // TERPISAH dari distribution (booking → hak role Owner).
+    Route::get('payouts', [PropertyOwnerPayoutController::class, 'index'])->name('payouts.index');
+    Route::post('payouts', [PropertyOwnerPayoutController::class, 'store'])->name('payouts.store');
+    Route::get('payouts/{payout}', [PropertyOwnerPayoutController::class, 'show'])->name('payouts.show');
+    Route::post('payouts/{payout}/transfer', [PropertyOwnerPayoutController::class, 'markTransferred'])->name('payouts.transfer');
+    Route::post('payouts/{payout}/verify', [PropertyOwnerPayoutController::class, 'verify'])->name('payouts.verify');
+    Route::post('payouts/{payout}/reject', [PropertyOwnerPayoutController::class, 'reject'])->name('payouts.reject');
+    Route::get('payouts/{payout}/proof', [PropertyOwnerPayoutController::class, 'downloadProof'])->name('payouts.proof');
+    Route::post('kos/{kos}/property-owner', [PropertyOwnerPayoutController::class, 'setPropertyOwner'])->name('payouts.set-property-owner');
+    Route::post('payouts/{payout}/disbursements', [PayoutDisbursementController::class, 'store'])->name('payouts.disbursements.store');
+    Route::post('disbursements/{disbursement}/verify', [PayoutDisbursementController::class, 'verify'])->name('disbursements.verify');
+    Route::post('disbursements/{disbursement}/reject', [PayoutDisbursementController::class, 'reject'])->name('disbursements.reject');
+    Route::post('adjustments', [PayoutAdjustmentController::class, 'store'])->name('adjustments.store');
+
+    Route::get('agreements', [ManagementAgreementController::class, 'index'])->name('agreements.index');
+    Route::post('agreements', [ManagementAgreementController::class, 'store'])->name('agreements.store');
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
@@ -148,11 +233,14 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::get('tagihan/{tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
 
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::post('pembayaran/bulk-verify', [PembayaranController::class, 'bulkVerify'])->name('pembayaran.bulk-verify');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify');
     Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject');
 
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('messages/inquiries', [MessageController::class, 'inquiries'])->name('messages.inquiries');
+    Route::get('messages/{tenant}/latest', [MessageController::class, 'latest'])->name('messages.latest');
     Route::get('messages/{tenant}', [MessageController::class, 'show'])->name('messages.show');
     Route::post('messages/{tenant}', [MessageController::class, 'reply'])->name('messages.reply');
 
@@ -169,9 +257,11 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('booking-occupants/{occupant}/checkin', [OwnerBookingOccupantController::class, 'checkIn'])->name('booking-occupants.checkin');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
+    Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
     Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve');
     Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
+    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
@@ -194,12 +284,18 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 
     Route::get('booking', [BookingController::class, 'index'])->name('booking.index');
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('booking.show');
+    Route::post('booking/{booking}/approve', [BookingController::class, 'approve'])->name('booking.approve');
+    Route::post('booking/{booking}/reject', [BookingController::class, 'reject'])->name('booking.reject');
+    Route::post('booking-cancellation/{cancellationRequest}/approve', [BookingController::class, 'approveCancellation'])->name('booking.cancellation.approve');
+    Route::post('booking-cancellation/{cancellationRequest}/reject', [BookingController::class, 'rejectCancellation'])->name('booking.cancellation.reject');
+    Route::get('distribution', [OwnerPaymentDistributionController::class, 'index'])->name('distribution.index');
+    Route::post('distribution/{distribution}/mark-processed', [OwnerPaymentDistributionController::class, 'markProcessed'])->name('distribution.mark-processed');
 
     Route::resource('kos', KosController::class)->parameter('kos', 'kos');
     Route::resource('kamar', KamarController::class);
     Route::post('kamar/{kamar}/penghuni', [KamarController::class, 'addPenghuni'])->name('kamar.add-penghuni');
 
-    Route::resource('fasilitas', \App\Http\Controllers\Admin\FasilitasController::class);
+    Route::resource('fasilitas', App\Http\Controllers\Admin\FasilitasController::class);
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
@@ -213,9 +309,19 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('tagihan/{tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
 
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::post('pembayaran/bulk-verify', [PembayaranController::class, 'bulkVerify'])->name('pembayaran.bulk-verify');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify');
     Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject');
+
+    // Pesan read-only untuk admin (audit sengketa) — tanpa rute reply.
+    Route::get('messages', [MessageController::class, 'adminIndex'])->name('messages.index');
+    Route::get('messages/{tenant}', [MessageController::class, 'adminShow'])->name('messages.show');
+
+    // Komunikasi operasional Admin ↔ Owner (kos assigned saja). Bukan Owner Management.
+    Route::get('owner-contacts', [AdminOwnerMessageController::class, 'index'])->name('owner-messages.index');
+    Route::get('owner-messages/{kos}/{owner}', [AdminOwnerMessageController::class, 'show'])->name('owner-messages.show');
+    Route::post('owner-messages/{kos}/{owner}', [AdminOwnerMessageController::class, 'store'])->middleware('throttle:5,60')->name('owner-messages.store');
 
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
@@ -223,17 +329,34 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
+    Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
     Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve');
     Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
+    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
     Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
+
+    Route::get('moderation', [ModerationController::class, 'index'])->name('moderation.index');
+    Route::get('moderation/kos', [ModerationController::class, 'kos'])->name('moderation.kos');
+    Route::post('moderation/kos/{kos}/approve', [ModerationController::class, 'approveKos'])->name('moderation.kos.approve');
+    Route::post('moderation/kos/{kos}/reject', [ModerationController::class, 'rejectKos'])->name('moderation.kos.reject');
+    Route::get('moderation/photos', [ModerationController::class, 'photos'])->name('moderation.photos');
+    Route::post('moderation/photos/{photo}/approve', [ModerationController::class, 'approvePhoto'])->name('moderation.photos.approve');
+    Route::post('moderation/photos/{photo}/reject', [ModerationController::class, 'rejectPhoto'])->name('moderation.photos.reject');
+    Route::get('moderation/advertising', [ModerationController::class, 'advertising'])->name('moderation.advertising');
+    Route::get('moderation/damage-reports', [ModerationController::class, 'damageReports'])->name('moderation.damage-reports');
+
+    Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+
+    Route::get('owners', [AdminOwnerController::class, 'index'])->name('owners.index');
+    Route::get('owners/{owner}', [AdminOwnerController::class, 'show'])->name('owners.show');
 });
 
 // Tenant Routes
-Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
+Route::middleware(['auth', 'role:tenant', 'billing'])->prefix('tenant')->name('tenant.')->group(function () {
     Route::get('kos', [TenantKosController::class, 'index'])->name('kos.index');
     Route::get('kos/{kos}', [TenantKosController::class, 'show'])->name('kos.show');
 
@@ -243,17 +366,18 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('booking/success/{booking}', [TenantBookingController::class, 'success'])->name('booking.success');
     Route::get('booking/{booking}', [TenantBookingController::class, 'show'])->name('booking.show');
     Route::post('booking/{booking}/cancel', [TenantBookingController::class, 'cancel'])->name('booking.cancel');
+    // Pembayaran booking — prerequisite konfirmasi. Nominal dari server (booking.price).
+    Route::post('booking/{booking}/payment', [TenantBookingPaymentController::class, 'store'])->name('booking.payment.store');
 
     Route::post('favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
     Route::get('checkin/{booking}/identity', [TenantCheckInController::class, 'show'])->name('checkin.identity');
-    // Tenant submits identity -> pending owner review (NOT self-confirmed)
-    Route::post('checkin/{booking}/identity', [TenantCheckInController::class, 'submit'])->name('checkin.identity.confirm');
-    // Keep PUT for resubmit after reject (same validation, clears rejected state)
-    Route::put('checkin/{booking}/identity', [TenantCheckInController::class, 'submit'])->name('checkin.identity.update');
+    Route::post('checkin/{booking}/identity', [TenantCheckInController::class, 'submit'])->middleware('throttle:10,60')->name('checkin.identity.confirm');
+    Route::get('checkin', [TenantCheckInController::class, 'index'])->name('checkin.index');
 
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
+    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel');
 
     Route::get('kontrak', [TenantKontrakController::class, 'index'])->name('kontrak.index');
     Route::get('kontrak/{kontrak}', [TenantKontrakController::class, 'show'])->name('kontrak.show');
@@ -263,7 +387,8 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('tagihan/{tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
 
     Route::get('messages', [TenantMessageController::class, 'index'])->name('messages.index');
-    Route::post('messages', [TenantMessageController::class, 'store'])->name('messages.store');
+    Route::post('messages', [TenantMessageController::class, 'store'])->middleware('throttle:5,60')->name('messages.store');
+    Route::get('messages/latest', [TenantMessageController::class, 'latest'])->name('messages.latest');
 
     // Undangan tinggal bersama — orange modern
     Route::get('invitations', [TenantInvitationController::class, 'index'])->name('invitations.index');
@@ -284,7 +409,17 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
 
-    Route::resource('damage-reports', \App\Http\Controllers\Owner\DamageReportController::class)->only(['create', 'store', 'show']);
+    Route::get('laporan', [TenantLaporanController::class, 'index'])->name('laporan.index');
+});
+
+// Tanya Owner — pencari kos (tenant login, tanpa perlu menghuni).
+// Sengaja di luar grup 'billing' agar tenant overdue tetap dapat bertanya (pre-sales).
+Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
+    Route::get('kos/{kos}/tanya', [TenantMessageController::class, 'ask'])->name('kos.ask');
+    Route::post('kos/{kos}/tanya', [TenantMessageController::class, 'askStore'])->middleware('throttle:5,60')->name('kos.ask.store');
+    Route::get('inquiries', [TenantMessageController::class, 'inquiries'])->name('inquiries.index');
+    Route::get('inquiries/{kos}', [TenantMessageController::class, 'inquiryShow'])->name('inquiries.show');
+    Route::put('inquiries/{message}', [TenantMessageController::class, 'inquiryUpdate'])->name('inquiries.update');
 });
 
 require __DIR__.'/auth.php';

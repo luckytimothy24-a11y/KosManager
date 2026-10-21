@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $backUrl = route($prefix.'.booking.index'); @endphp
     <x-slot name="header">
         <x-page-header title="Booking {{ $booking->booking_code }}" description="Detail booking dan proses check-in.">
@@ -11,19 +11,19 @@
 
         <div class="max-w-3xl space-y-6">
             {{-- Ringkasan status --}}
-            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 p-6 sm:p-8">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kode Booking</p>
-                        <p class="mt-1 text-xl font-bold font-mono text-slate-900 dark:text-white">{{ $booking->booking_code }}</p>
+                        <p class="mt-1 text-xl font-bold font-mono text-slate-900 dark:text-slate-50">{{ $booking->booking_code }}</p>
                     </div>
                     <x-status-badge :status="$booking->status" context="booking" />
                 </div>
             </div>
 
             {{-- Detail penyewa & kamar --}}
-            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 overflow-hidden">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-zinc-700">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 overflow-hidden">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 px-6 py-4 border-b border-slate-100 dark:border-white/10">
                     <i class="ri-user-heart-line text-primary-500"></i> Informasi Penyewa
                 </h3>
                 <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
@@ -31,7 +31,7 @@
                         <span class="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 flex items-center justify-center text-sm font-bold shrink-0">{{ strtoupper(substr($booking->user->name, 0, 1)) }}</span>
                         <div class="min-w-0">
                             <dt class="sr-only">Nama penyewa</dt>
-                            <dd class="font-semibold text-slate-900 dark:text-white truncate">{{ $booking->user->name }}</dd>
+                            <dd class="font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $booking->user->name }}</dd>
                             <dd class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $booking->user->email }}</dd>
                         </div>
                     </div>
@@ -45,8 +45,8 @@
                 </dl>
             </div>
 
-            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 overflow-hidden">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white px-6 py-4 border-b border-slate-100 dark:border-zinc-700">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 overflow-hidden">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 px-6 py-4 border-b border-slate-100 dark:border-white/10">
                     <i class="ri-door-open-line text-primary-500"></i> Kamar &amp; Periode Sewa
                 </h3>
                 <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
@@ -61,7 +61,7 @@
                         <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
-                            <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} Â· {{ $booking->kamar->room_type }}</dd>
+                            <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
@@ -89,8 +89,8 @@
             </div>
 
             {{-- Rincian biaya + catatan --}}
-            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 p-6 sm:p-8">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 mb-4 border-b border-slate-100 dark:border-zinc-700">
+            <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
+                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
                     <i class="ri-money-dollar-circle-line text-primary-500"></i> Rincian Biaya
                 </h3>
                 <div class="flex items-center justify-between">
@@ -109,8 +109,8 @@
             @endif
 
             @if($booking->status === 'approved')
-                <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 p-6 sm:p-8">
-                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white pb-4 mb-4 border-b border-slate-100 dark:border-zinc-700">
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
                         <i class="ri-user-shield-line text-primary-500"></i> Status Pengajuan Check-In
                     </h3>
                     @php $identityStatus = $booking->identityStatus(); @endphp
@@ -153,8 +153,8 @@
                             </div>
                         </div>
                     @else
-                        <div class="flex items-start gap-3 rounded-2xl border border-slate-100 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/40 px-4 py-4">
-                            <span class="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-700 flex items-center justify-center shrink-0">
+                        <div class="flex items-start gap-3 rounded-2xl border border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-surface-elevated/40 px-4 py-4">
+                            <span class="w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-elevated flex items-center justify-center shrink-0">
                                 <i class="ri-information-line text-slate-500"></i>
                             </span>
                             <div>
@@ -166,13 +166,167 @@
                 </div>
             @endif
 
-            {{-- Aksi --}}
+            {{-- Status pembayaran booking (prerequisite konfirmasi) --}}
+            @if($booking->status === 'pending')
+                @php
+                    $bookingPayment = \App\Models\Pembayaran::where('booking_id', $booking->id)
+                        ->whereIn('verification_status', ['pending', 'approved', 'rejected'])
+                        ->orderByDesc('id')
+                        ->first();
+                    $bookingDistribution = \App\Models\PaymentDistribution::where('booking_id', $booking->id)->first();
+                    $ownerBank = \App\Models\OwnerBankAccount::where('owner_id', auth()->id())->first();
+                @endphp
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
+                        <i class="ri-wallet-3-line text-primary-500"></i> Status Pembayaran Booking
+                    </h3>
+                    @if(! $bookingPayment)
+                        <div class="rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/[0.06] px-4 py-3">
+                            <p class="text-sm font-bold text-amber-800 dark:text-amber-300">Belum ada pembayaran</p>
+                            <p class="text-sm text-amber-800 dark:text-amber-300/90">Booking belum dapat dikonfirmasi. Tenant harus membayar terlebih dahulu.</p>
+                        </div>
+                    @else
+                        <div class="rounded-xl border border-slate-100 dark:border-white/10 p-4">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</p>
+                                    <p class="mt-1 text-sm font-bold {{ $bookingPayment->verification_status === 'approved' ? 'text-green-600' : ($bookingPayment->verification_status === 'pending' ? 'text-amber-600' : 'text-red-600') }}">
+                                        {{ \PaymentLabels::verificationLabel($bookingPayment->verification_status) }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nominal</p>
+                                    <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">Rp {{ number_format((float) $bookingPayment->amount, 0, ',', '.') }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Metode</p>
+                                    <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">{{ \PaymentLabels::paymentMethod($bookingPayment->payment_method) }}</p>
+                                </div>
+                            </div>
+                            @if($bookingPayment->verification_status === 'pending')
+                                <div class="mt-4 flex justify-end">
+                                    <a href="{{ route(($prefix ?? 'owner').'.pembayaran.show', $bookingPayment) }}"
+                                       class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-500/30 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-500/10 transition">
+                                        <i class="ri-eye-line"></i> Review Pembayaran
+                                    </a>
+                                </div>
+                            @elseif($bookingPayment->verification_status === 'approved')
+                                <div class="mt-3 rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/70 dark:bg-blue-500/[0.06] px-4 py-3">
+                                    <p class="text-sm font-bold text-blue-800 dark:text-blue-300">Pembayaran terverifikasi</p>
+                                    <p class="text-sm text-blue-800 dark:text-blue-300/90">Booking dapat dikonfirmasi. Klik Approve Booking di bawah.</p>
+                                    @if($bookingDistribution)
+                                        <p class="mt-2 text-xs text-blue-700/80 dark:text-blue-300/80">
+                                            Distribusi: <strong>{{ $bookingDistribution->status === 'pending' ? 'Menunggu konfirmasi booking' : 'Siap pencairan' }}</strong>
+                                            · Owner: Rp {{ number_format((float) $bookingDistribution->owner_amount, 0, ',', '.') }}
+                                            @if($ownerBank)
+                                                · {{ $ownerBank->bank_name }} {{ $ownerBank->maskedAccountNumber() }}
+                                            @else
+                                                · <a href="{{ route(($prefix ?? 'owner').'.bank-account.edit') }}" class="underline">Atur rekening</a>
+                                            @endif
+                                        </p>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            {{-- Cancellation request dari tenant --}}
+            @if(!empty($cancellationRequest))
+                <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
+                    <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
+                        <i class="ri-forbid-line text-amber-500"></i> Pengajuan Pembatalan Tenant
+                    </h3>
+                    <div class="rounded-xl border border-slate-100 dark:border-white/10 p-4 mb-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status Pengajuan</p>
+                                <p class="mt-1 text-sm font-bold {{ $cancellationRequest->status === 'pending' ? 'text-amber-600' : ($cancellationRequest->status === 'approved' ? 'text-green-600' : 'text-red-600') }}">
+                                    {{ $cancellationRequest->status === 'pending' ? 'Menunggu Review' : ($cancellationRequest->status === 'approved' ? 'Disetujui' : 'Ditolak') }}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status Booking</p>
+                                <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">{{ \StatusLabels::bookingLabel($booking->status) }}</p>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-sm text-slate-600 dark:text-slate-400">
+                            Alasan: {{ $cancellationRequest->reason ?? '-' }}
+                        </p>
+                        @if($cancellationRequest->rejection_reason)
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">Alasan penolakan: {{ $cancellationRequest->rejection_reason }}</p>
+                        @endif
+                    </div>
+                    @can('approve', $cancellationRequest)
+                        @if($cancellationRequest->isPending())
+                            <div class="flex flex-wrap items-center justify-end gap-3">
+                                <form method="POST" action="{{ route($prefix.'.booking.cancellation.reject', $cancellationRequest) }}" class="contents">
+                                    @csrf
+                                    <input type="hidden" name="reason" value="Pengajuan pembatalan ditolak oleh pengelola kos.">
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition">
+                                        <i class="ri-close-circle-line"></i> Tolak Pembatalan
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route($prefix.'.booking.cancellation.approve', $cancellationRequest) }}" class="contents">
+                                    @csrf
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-xl transition shadow-sm">
+                                        <i class="ri-check-line"></i> Setujui Pembatalan
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
+                    @endcan
+                    <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                        Saat pengajuan pending, booking &amp; reservasi kamar <strong>tidak berubah</strong>. Booking hanya dibatalkan setelah Anda menyetujui.
+                    </p>
+                </div>
+            @endif
+
+            {{-- Aksi booking status --}}
+            @can('approve', $booking)
+                @if($booking->status === 'pending')
+                    <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8" x-data="{ rejecting: false }">
+                        <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
+                            <i class="ri-task-line text-primary-500"></i> Keputusan Booking
+                        </h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                            Booking ini masih <strong>pending</strong>. Konfirmasi hanya akan mengubah status booking menjadi approved — <strong>tenant belum dianggap aktif</strong> sampai proses check-in selesai.
+                        </p>
+                        <div class="flex flex-wrap items-center justify-end gap-3">
+                            <form method="POST" action="{{ route("$prefix.booking.reject", $booking) }}" class="contents" x-show="rejecting" x-cloak>
+                                @csrf
+                                <input type="hidden" name="reason" value="Booking ditolak oleh pengelola kos.">
+                                <button type="submit"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-xl transition shadow-sm">
+                                    <i class="ri-close-circle-line"></i> Konfirmasi Tolak
+                                </button>
+                            </form>
+                            <button type="button" x-show="!rejecting" x-on:click="rejecting = true"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition">
+                                <i class="ri-close-circle-line"></i> Tolak Booking
+                            </button>
+                            <form method="POST" action="{{ route("$prefix.booking.approve", $booking) }}" class="contents">
+                                @csrf
+                                <button type="submit"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
+                                    <i class="ri-check-line"></i> Approve Booking
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endif
+            @endcan
+
+            {{-- Aksi check-in --}}
             @can('update', $booking)
                 @if($booking->status === 'approved')
-                    <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 p-6 sm:p-8" x-data="{ submitting: false }">
+                    <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8" x-data="{ submitting: false }">
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <a href="{{ route("$prefix.checkin.index") }}"
-                               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 hover:bg-primary-600 active:bg-primary-700 rounded-xl transition shadow-sm shadow-primary-500/30">
+                               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
                                 <i class="ri-login-box-line"></i> Proses Check-In
                             </a>
                         </div>

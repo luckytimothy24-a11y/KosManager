@@ -6,13 +6,13 @@
 
         <div class="grid gap-6">
             {{-- Informasi Profile --}}
-            <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8">
-                <header class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100 dark:border-slate-800">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-6 sm:p-8">
+                <header class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100 dark:border-white/10">
                     <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-user-settings-line text-lg text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Informasi Profile</h2>
+                        <h2 class="text-base font-bold text-slate-900 dark:text-slate-50">Informasi Profile</h2>
                         <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Perbarui nama dan alamat email akun Anda.</p>
                     </div>
                 </header>
@@ -21,13 +21,13 @@
             </section>
 
             {{-- Password --}}
-            <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-6 sm:p-8">
-                <header class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100 dark:border-slate-800">
+            <section class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-6 sm:p-8">
+                <header class="flex items-center gap-3 pb-5 mb-6 border-b border-slate-100 dark:border-white/10">
                     <div class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-shield-keyhole-line text-lg text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
-                        <h2 class="text-base font-bold text-slate-900 dark:text-white">Keamanan &amp; Password</h2>
+                        <h2 class="text-base font-bold text-slate-900 dark:text-slate-50">Keamanan &amp; Password</h2>
                         <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Gunakan password yang panjang dan unik agar akun tetap aman.</p>
                     </div>
                 </header>

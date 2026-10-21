@@ -17,6 +17,17 @@ use Illuminate\Http\Request;
  */
 class TenantCheckInController extends Controller
 {
+    public function index(Request $request)
+    {
+        $bookings = Booking::where('user_id', $request->user()->id)
+            ->where('status', 'approved')
+            ->with(['kos', 'kamar'])
+            ->latest()
+            ->get();
+
+        return view('tenant.checkin.index', compact('bookings'));
+    }
+
     public function show(Booking $booking)
     {
         $this->authorize('view', $booking);

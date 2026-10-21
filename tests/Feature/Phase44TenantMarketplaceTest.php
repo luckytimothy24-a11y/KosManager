@@ -39,7 +39,7 @@ class Phase44TenantMarketplaceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->tenant = User::factory()->create(['role' => 'tenant']);
@@ -529,9 +529,9 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.booking.create', ['kos_id' => $this->kos->id]));
 
         $response->assertOk();
-        $response->assertSee('Booking langsung terkonfirmasi');
-        $response->assertSee('Kamar langsung diamankan');
-        $response->assertSee('Pembayaran dilakukan sesuai tagihan');
+        $response->assertSee('Booking menunggu pembayaran dan konfirmasi pengelola');
+        $response->assertSee('Kamar langsung diamankan (reservasi)');
+        $response->assertSee('Pembayaran dilakukan setelah booking dibuat');
         $response->assertSee('Check-in diproses pengelola saat kedatangan');
     }
 

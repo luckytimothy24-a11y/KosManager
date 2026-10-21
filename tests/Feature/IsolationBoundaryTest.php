@@ -22,7 +22,7 @@ class IsolationBoundaryTest extends TestCase
     {
         parent::setUp();
 
-        Storage::fake('local');
+        Storage::fake('private');
     }
 
     private function makeStay(User $owner, ?User $tenant = null): array
@@ -122,7 +122,7 @@ class IsolationBoundaryTest extends TestCase
         [$tenantA, $kosA, $kamarA, $penghuniA] = $this->makeStay($owner);
         $tagihanA = $this->makeTagihan($penghuniA, $kosA, $kamarA);
 
-        Storage::disk('local')->put('bukti-pembayaran/secret-proof.pdf', 'proof-content');
+        Storage::disk('private')->put('bukti-pembayaran/secret-proof.pdf', 'proof-content');
 
         $pembayaranA = Pembayaran::factory()->create([
             'tagihan_id' => $tagihanA->id,

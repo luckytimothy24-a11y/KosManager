@@ -77,8 +77,17 @@ class KosController extends Controller
         if ($request->user()->isOwner()) {
             $data['owner_id'] = $request->user()->id;
         } else {
-            $request->validate(['owner_id' => ['required', Rule::exists('users', 'id')->where('role', 'owner')]]);
-            $data['owner_id'] = $request->input('owner_id');
+            $request->validate([
+                'owner_id' => ['required', Rule::exists('users', 'id')->where('role', 'owner')],
+            ]);
+            $ownerId = $request->input('owner_id');
+            $adminKosIds = $request->user()->assignedKos()->pluck('kos.id');
+            $ownerHasAssignedKos = User::where('id', $ownerId)
+                ->where('role', 'owner')
+                ->whereHas('ownedKos', fn ($q) => $q->whereIn('id', $adminKosIds))
+                ->exists();
+            abort_unless($ownerHasAssignedKos, 403, 'Owner tidak berada dalam scope operasional Admin.');
+            $data['owner_id'] = $ownerId;
         }
 
         // Legacy single photo backward compat
@@ -172,8 +181,14 @@ class KosController extends Controller
         $fasilitasList = Fasilitas::ofType('kos')->active()->get();
         $selectedFasilitas = $kos->fasilitas->pluck('id')->toArray();
 
-        $admins = User::where('role', 'admin')->orderBy('name')->get();
-        $selectedAdmins = $kos->admins->pluck('id')->toArray();
+        // Admin viewers never manage assignment: neither load the full admin
+        // roster for them nor expose current selection (the edit form hides
+        // the assignment section for admins and update() ignores the input).
+        $isAdminViewer = auth()->user()->isAdmin();
+        $admins = $isAdminViewer
+            ? collect()
+            : User::where('role', 'admin')->orderBy('name')->get();
+        $selectedAdmins = $isAdminViewer ? [] : $kos->admins->pluck('id')->toArray();
 
         return view('owner.kos.edit', compact('kos', 'fasilitasList', 'selectedFasilitas', 'admins', 'selectedAdmins'));
     }

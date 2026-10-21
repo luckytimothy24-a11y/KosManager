@@ -60,6 +60,7 @@ class Handler extends ExceptionHandler
             }
 
             return redirect($request->fullUrl())
+                ->withInput($request->only('email'))
                 ->with('error', 'Sesi Anda telah berakhir. Sila cuba semula.');
         });
 

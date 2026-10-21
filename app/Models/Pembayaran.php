@@ -10,6 +10,11 @@ class Pembayaran extends Model
 {
     use HasFactory, SoftDeletes;
 
+    /**
+     * Source of truth status pembayaran (verification_status di DB).
+     * Satu state machine: pending → approved | rejected.
+     * TIDAK ada field payment_status terpisah.
+     */
     public const STATUS_PENDING = 'pending';
 
     public const STATUS_APPROVED = 'approved';
@@ -25,14 +30,18 @@ class Pembayaran extends Model
     protected $fillable = [
         'payment_number',
         'tagihan_id',
+        'booking_id',
         'penghuni_id',
         'amount',
+        'rent_amount',
+        'penalty_amount',
         'payment_date',
         'payment_method',
         'proof_file',
         'verification_status',
         'admin_notes',
         'verified_by',
+        'notes',
         'verified_at',
         'gateway_provider',
         'gateway_reference',
@@ -44,6 +53,8 @@ class Pembayaran extends Model
     protected $casts = [
         'payment_date' => 'date',
         'amount' => 'decimal:2',
+        'rent_amount' => 'decimal:2',
+        'penalty_amount' => 'decimal:2',
         'verified_at' => 'datetime',
         'gateway_expires_at' => 'datetime',
     ];
@@ -51,6 +62,11 @@ class Pembayaran extends Model
     public function tagihan()
     {
         return $this->belongsTo(Tagihan::class);
+    }
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
     }
 
     public function penghuni()
@@ -61,6 +77,41 @@ class Pembayaran extends Model
     public function verifier()
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
+     * Pembayaran terkait booking (deposit/sewa booking sebelum check-in).
+     */
+    public function isBookingPayment(): bool
+    {
+        return $this->booking_id !== null;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->verification_status === self::STATUS_PENDING;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->verification_status === self::STATUS_APPROVED;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->verification_status === self::STATUS_REJECTED;
+    }
+
+    /**
+     * Nominal yang diharapkan server (bukan request client).
+     */
+    public function expectedAmount(): float
+    {
+        if ($this->isBookingPayment() && $this->booking) {
+            return (float) $this->booking->price;
+        }
+
+        return (float) ($this->tagihan?->total ?? 0);
     }
 
     /**

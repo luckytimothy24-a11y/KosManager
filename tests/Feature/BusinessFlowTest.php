@@ -12,9 +12,11 @@ use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
+use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class BusinessFlowTest extends TestCase
@@ -24,6 +26,8 @@ class BusinessFlowTest extends TestCase
     public function test_full_lifecycle_booking_to_checkout(): void
     {
         Mail::fake();
+        Storage::fake('private');
+        Storage::fake('public');
 
         $owner = User::factory()->create(['role' => 'owner']);
         $tenant = User::factory()->create(['role' => 'tenant']);
@@ -36,18 +40,36 @@ class BusinessFlowTest extends TestCase
             'daily_price' => 100000,
         ]);
 
-        // 1. Tenant booking (instant approval)
+        // 1. Tenant booking -> SELALU pending (bukan auto-confirm)
         $this->actingAs($tenant)->post(route('tenant.booking.store'), [
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
             'start_date' => now()->toDateString(),
             'end_date' => now()->addMonth()->toDateString(),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '081234567890',
+            'address' => 'Jl. Test No. 1',
         ])->assertRedirect();
-        $this->assertDatabaseHas('bookings', ['user_id' => $tenant->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('bookings', ['user_id' => $tenant->id, 'status' => 'pending']);
         $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'booked']);
+        // Tenant tidak otomatis aktif karena booking dibuat
+        $this->assertDatabaseMissing('penghunis', ['user_id' => $tenant->id, 'status' => 'active']);
 
         $booking = Booking::where('user_id', $tenant->id)->firstOrFail();
+
+        // 1a. Owner approve booking — payment prerequisite wajib
+        $service = app(PaymentService::class);
+        $payResult = $service->createForBooking($booking, $tenant, 'cash');
+        $this->assertTrue($payResult['ok'], $payResult['message'] ?? 'payment failed');
+        $this->actingAs($owner)->post(route('owner.pembayaran.verify', $payResult['pembayaran']));
+        $this->assertSame('approved', $payResult['pembayaran']->fresh()->verification_status);
+        $this->assertEquals('pending', $booking->fresh()->status);
+
+        $this->actingAs($owner)->post(route('owner.booking.approve', $booking))->assertRedirect();
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        // Payment/approve booking TIDAK mengaktifkan tenant
+        $this->assertDatabaseMissing('penghunis', ['user_id' => $tenant->id, 'status' => 'active']);
 
         // 1b. Tenant submit identity -> pending, then owner confirms (new flow: tenant cannot self-confirm)
         $this->actingAs($tenant)->post(route('tenant.checkin.identity.confirm', $booking), [
@@ -63,6 +85,7 @@ class BusinessFlowTest extends TestCase
         $this->assertTrue($booking->fresh()->identityConfirmed());
 
         // 2. Check-in -> penghuni aktif + kontrak aktif + kamar occupied + booking completed
+        // Tenant baru menjadi active SETELAH check-in, bukan karena booking/payment.
         $this->actingAs($owner)->post(route('owner.checkin.process', $booking), [
             'notes' => 'Check-in lancar',
         ])->assertRedirect();

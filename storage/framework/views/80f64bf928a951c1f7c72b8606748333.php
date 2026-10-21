@@ -19,7 +19,7 @@
 <?php unset($__defined_vars); ?>
 
 <?php if(!empty($items)): ?>
-    <nav class="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 mb-4" aria-label="Breadcrumb">
+    <nav class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-4" aria-label="Breadcrumb">
         <ol class="flex items-center gap-1.5">
             <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php if($index > 0): ?>

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Kos;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -42,7 +43,7 @@ class AdminSmokeTest extends TestCase
 
     public function test_admin_kos_show_renders(): void
     {
-        $kos = \App\Models\Kos::factory()->create(['owner_id' => User::factory()->create(['role' => 'owner'])->id]);
+        $kos = Kos::factory()->create(['owner_id' => User::factory()->create(['role' => 'owner'])->id]);
         $this->admin->assignedKos()->attach($kos->id);
 
         $response = $this->actingAs($this->admin)->get(route('admin.kos.show', $kos));

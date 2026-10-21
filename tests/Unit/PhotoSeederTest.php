@@ -6,8 +6,8 @@ use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\KosPhoto;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class PhotoSeederTest extends TestCase
@@ -20,7 +20,7 @@ class PhotoSeederTest extends TestCase
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
 
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Relations\HasMany::class, $kos->photos());
+        $this->assertInstanceOf(HasMany::class, $kos->photos());
     }
 
     public function test_kamar_photo_field_is_string(): void

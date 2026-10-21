@@ -203,7 +203,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
 
     // ── Phase 7 · Booking success page ──
 
-    public function test_booking_success_page_shows_confirmation_and_ctas(): void
+    public function test_booking_success_page_shows_payment_guidance_and_ctas(): void
     {
         $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
@@ -211,7 +211,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
             'user_id' => $this->tenant->id,
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
-            'status' => 'approved',
+            'status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->tenant)->get(route('tenant.booking.success', $booking));
@@ -219,11 +219,47 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
         $response->assertOk();
         $response->assertSee('Booking Berhasil!');
         $response->assertSee('🎉');
-        $response->assertSee('Terkonfirmasi');
         $response->assertSee($booking->booking_code);
-        $response->assertSee('Lihat Booking');
+        // Pending booking harus mengarahkan ke pembayaran, bukan hardcode konfirmasi
+        $response->assertSee('lanjutkan pembayaran');
+        $response->assertDontSee('Tidak perlu menunggu persetujuan');
+        $response->assertSee('Bayar Sekarang');
+        $response->assertSee(route('tenant.booking.show', $booking), false);
         $response->assertSee('Lihat Detail Kos');
         $response->assertSee('Kembali Cari Kos');
+    }
+
+    public function test_booking_store_redirects_to_payment_form(): void
+    {
+        $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
+        $kamar = Kamar::factory()->create([
+            'kos_id' => $kos->id,
+            'status' => 'available',
+            'monthly_price' => 1000000,
+        ]);
+
+        $response = $this->actingAs($this->tenant)->post(route('tenant.booking.store'), [
+            'kos_id' => $kos->id,
+            'kamar_id' => $kamar->id,
+            'start_date' => today()->addDays(5)->toDateString(),
+            'end_date' => today()->addMonths(2)->toDateString(),
+            'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '081234567890',
+            'address' => 'Jl. Pembayaran No. 1',
+            'notes' => null,
+        ]);
+
+        $booking = Booking::where('user_id', $this->tenant->id)->where('kamar_id', $kamar->id)->firstOrFail();
+        $this->assertSame('pending', $booking->status);
+        $response->assertRedirect(route('tenant.booking.show', $booking).'#pembayaran');
+        $response->assertSessionHas('success');
+
+        // Halaman show harus menampilkan form pembayaran
+        $show = $this->actingAs($this->tenant)->get(route('tenant.booking.show', $booking));
+        $show->assertOk();
+        $show->assertSee('Pembayaran Booking');
+        $show->assertSee(route('tenant.booking.payment.store', $booking), false);
     }
 
     public function test_booking_success_isolated_per_tenant(): void

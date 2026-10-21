@@ -48,10 +48,11 @@ foreach ($campaigns as $c) {
     $path = "$dir/{$c['file']}";
     $svg = createBanner($c);
     file_put_contents($path, $svg);
-    echo "Created: {$c['file']} (" . strlen($svg) . " bytes)\n";
+    echo "Created: {$c['file']} (".strlen($svg)." bytes)\n";
 }
 
-function createBanner($c) {
+function createBanner($c)
+{
     $brand = $c['brand'];
     $primary = $c['primary'];
     $accent = $c['accent'];

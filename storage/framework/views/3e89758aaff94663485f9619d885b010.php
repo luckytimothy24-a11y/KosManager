@@ -12,14 +12,14 @@
      <?php $__env->slot('header', null, []); ?> 
         <?php if (isset($component)) { $__componentOriginalf8d4ea307ab1e58d4e472a43c8548d8e = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginalf8d4ea307ab1e58d4e472a43c8548d8e = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.page-header','data' => ['title' => 'Manajemen Kontrak','description' => 'Kelola kontrak sewa aktif dan riwayatnya.']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.page-header','data' => ['title' => 'Manajemen Kontrak','description' => 'Kelola kontrak sewa aktif dan riwayatnya.','icon' => 'ri-file-text-line']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('page-header'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
 <?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => 'Manajemen Kontrak','description' => 'Kelola kontrak sewa aktif dan riwayatnya.']); ?>
+<?php $component->withAttributes(['title' => 'Manajemen Kontrak','description' => 'Kelola kontrak sewa aktif dan riwayatnya.','icon' => 'ri-file-text-line']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalf8d4ea307ab1e58d4e472a43c8548d8e)): ?>
@@ -54,65 +54,63 @@
 <?php unset($__componentOriginal5194778a3a7b899dcee5619d0610f5cf); ?>
 <?php endif; ?>
 
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-            
-            <div class="p-4 border-b border-slate-100 dark:border-slate-800">
-                <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
-                    <div class="relative flex-1 min-w-0">
-                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
-                        <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari nomor kontrak atau nama penghuni..." aria-label="Cari kontrak"
-                               class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
-                    </div>
-                    <select name="status" aria-label="Filter status kontrak"
-                            class="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
-                        <option value="">Semua Status</option>
-                        <?php $__currentLoopData = ['active','expired','terminated']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($s); ?>" <?php echo e(request('status') === $s ? 'selected' : ''); ?>><?php echo e(\StatusLabels::kontrakLabel($s)); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                    <button type="submit"
-                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap">
-                        <i class="ri-filter-3-line"></i> Terapkan
-                    </button>
-                </form>
-            </div>
+        
+        <div class="filter-card">
+            <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
+                <div class="relative flex-1 min-w-0">
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari nomor kontrak atau nama penghuni..." aria-label="Cari kontrak"
+                           class="field-input pl-10 pr-3.5">
+                </div>
+                <select name="status" aria-label="Filter status kontrak" class="field-input sm:w-48">
+                    <option value="">Semua Status</option>
+                    <?php $__currentLoopData = ['active','expired','terminated']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($s); ?>" <?php echo e(request('status') === $s ? 'selected' : ''); ?>><?php echo e(\StatusLabels::kontrakLabel($s)); ?></option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+                <button type="submit" class="btn-secondary whitespace-nowrap">
+                    <i class="ri-filter-3-line"></i> Terapkan
+                </button>
+            </form>
+        </div>
 
-            
-            <div class="overflow-x-auto scrollbar-thin">
+        
+        <div class="table-card">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <thead>
                         <tr>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold">No. Kontrak</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden md:table-cell">Penghuni</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold">Kamar</th>
-                            <th scope="col" class="px-4 py-3.5 text-left font-semibold hidden sm:table-cell">Periode</th>
-                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Harga</th>
-                            <th scope="col" class="px-4 py-3.5 text-center font-semibold">Status</th>
-                            <th scope="col" class="px-4 py-3.5 text-right font-semibold">Aksi</th>
+                            <th>No. Kontrak</th>
+                            <th class="hidden md:table-cell">Penghuni</th>
+                            <th>Kamar</th>
+                            <th class="hidden sm:table-cell">Periode</th>
+                            <th class="text-right">Harga</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tbody>
                         <?php $__empty_1 = true; $__currentLoopData = $kontraks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                                <td class="px-4 py-3.5">
-                                    <p class="font-mono font-semibold text-slate-900 dark:text-white"><?php echo e($k->contract_number); ?></p>
+                            <tr>
+                                <td>
+                                    <p class="font-mono font-semibold text-slate-900 dark:text-slate-50"><?php echo e($k->contract_number); ?></p>
                                     <p class="text-xs text-slate-400 dark:text-slate-500"><?php echo e(\StatusLabels::rentalTypeLabel($k->rental_type)); ?></p>
                                 </td>
-                                <td class="px-4 py-3.5 hidden md:table-cell">
+                                <td class="hidden md:table-cell">
                                     <div class="flex items-center gap-2.5">
                                         <span class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 flex items-center justify-center text-xs font-bold shrink-0"><?php echo e(strtoupper(substr($k->penghuni->user->name, 0, 1))); ?></span>
                                         <span class="text-slate-700 dark:text-slate-200 truncate max-w-[10rem]"><?php echo e($k->penghuni->user->name); ?></span>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3.5">
-                                    <p class="font-medium text-slate-900 dark:text-white"><?php echo e($k->kamar->room_number); ?></p>
+                                <td>
+                                    <p class="font-medium text-slate-900 dark:text-slate-50"><?php echo e($k->kamar->room_number); ?></p>
                                     <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[10rem]"><?php echo e($k->kos->name); ?></p>
                                 </td>
-                                <td class="px-4 py-3.5 hidden sm:table-cell">
+                                <td class="hidden sm:table-cell">
                                     <p class="text-slate-600 dark:text-slate-300 whitespace-nowrap"><?php echo e(\Illuminate\Support\Carbon::parse($k->start_date)->format('d M Y')); ?> — <?php echo e(\Illuminate\Support\Carbon::parse($k->end_date)->format('d M Y')); ?></p>
                                 </td>
-                                <td class="px-4 py-3.5 text-right font-medium text-slate-900 dark:text-white whitespace-nowrap">Rp <?php echo e(number_format($k->rental_price, 0, ',', '.')); ?></td>
-                                <td class="px-4 py-3.5 text-center"><?php if (isset($component)) { $__componentOriginal8c81617a70e11bcf247c4db924ab1b62 = $component; } ?>
+                                <td class="text-right font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp <?php echo e(number_format($k->rental_price, 0, ',', '.')); ?></td>
+                                <td class="text-center"><?php if (isset($component)) { $__componentOriginal8c81617a70e11bcf247c4db924ab1b62 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal8c81617a70e11bcf247c4db924ab1b62 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.status-badge','data' => ['status' => $k->status,'context' => 'kontrak']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
 <?php $component->withName('status-badge'); ?>
@@ -132,10 +130,10 @@
 <?php $component = $__componentOriginal8c81617a70e11bcf247c4db924ab1b62; ?>
 <?php unset($__componentOriginal8c81617a70e11bcf247c4db924ab1b62); ?>
 <?php endif; ?></td>
-                                <td class="px-4 py-3.5">
+                                <td>
                                     <div class="flex items-center justify-end">
                                         <a href="<?php echo e(route("$prefix.kontrak.show", $k)); ?>"
-                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
                                            title="Detail" aria-label="Detail kontrak <?php echo e($k->contract_number); ?>">
                                             <i class="ri-eye-line"></i>
                                         </a>
@@ -171,13 +169,7 @@
                     </tbody>
                 </table>
             </div>
-
-            <?php if($kontraks->hasPages()): ?>
-                <div class="p-4 border-t border-slate-100 dark:border-slate-800">
-                    <?php echo e($kontraks->links()); ?>
-
-                </div>
-            <?php endif; ?>
+            <div class="px-4 py-3 border-t border-slate-100 dark:border-white/[0.06]"><?php echo e($kontraks->links()); ?></div>
         </div>
     </div>
  <?php echo $__env->renderComponent(); ?>

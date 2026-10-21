@@ -12,7 +12,7 @@
         </a>
 
         @if($tagihans->isEmpty())
-            <div class="rounded-2xl border border-slate-100 bg-white p-6 text-center dark:border-slate-800 dark:bg-slate-900">
+            <div class="card-surface">
                 <x-empty-state icon="ri-check-double-line" title="Belum ada tagihan yang perlu dibayar"
                                description="Semua tagihan Anda sudah lunas atau sedang diverifikasi." />
             </div>
@@ -26,6 +26,11 @@
                     'due' => $t->due_date->translatedFormat('d M Y'),
                     'overdue' => $t->status === 'overdue',
                     'transfer_info' => $t->kamar->kos->payment_info ?? '',
+                    'bank' => $t->kamar->kos->owner?->bankAccount ? [
+                        'bank_name' => $t->kamar->kos->owner->bankAccount->bank_name,
+                        'account_number' => $t->kamar->kos->owner->bankAccount->account_number,
+                        'account_holder_name' => $t->kamar->kos->owner->bankAccount->account_holder_name,
+                    ] : null,
                 ])->values();
                 $autoId = $bills->count() === 1 ? $bills->first()['id'] : null;
             @endphp
@@ -38,9 +43,9 @@
                 <input type="hidden" name="amount" :value="amount">
 
                 {{-- Pilih Tagihan --}}
-                <section aria-label="Pilih tagihan" class="space-y-2.5">
-                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">Pilih Tagihan</h2>
-                    <p class="text-[13px] font-medium text-slate-500 dark:text-slate-400">
+                <section aria-label="Pilih tagihan" class="form-section space-y-2.5">
+                    <h2 class="text-sm font-bold text-slate-900 dark:text-slate-50">Pilih Tagihan</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
                         Ada {{ $bills->count() }} tagihan yang bisa dibayar.
                         @if($autoId)
                             <span class="font-semibold text-primary-600 dark:text-primary-300">Otomatis memilih satu-satunya tagihan yang tersedia.</span>
@@ -53,7 +58,7 @@
                                    class="relative block w-full cursor-pointer select-none rounded-xl border-[1.5px] p-3.5 transition-all"
                                    :class="selectedId === '{{ $t->id }}'
                                        ? 'border-primary-500 bg-primary-50/70 shadow-sm shadow-primary-500/10 dark:border-primary-400 dark:bg-primary-500/10'
-                                       : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600'">
+                                       : 'border-slate-200 bg-white hover:border-slate-300 dark:border-white/[0.08] dark:bg-surface-elevated dark:hover:border-slate-600'">
                                 <input type="radio" name="bill" id="pay-bill-{{ $t->id }}" value="{{ $t->id }}"
                                        x-model="selectedId" @change="onPick({{ $t->id }})" class="sr-only">
 
@@ -64,13 +69,13 @@
                                                   class="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-[2px] transition-all"
                                                   :class="selectedId === '{{ $t->id }}'
                                                       ? 'border-primary-500'
-                                                      : 'border-slate-300 dark:border-slate-600'">
+                                                      : 'border-slate-300 dark:border-white/[0.08]'">
                                                 <span x-show="selectedId === '{{ $t->id }}'"
                                                       class="h-2 w-2 rounded-full bg-primary-500"></span>
                                             </span>
                                             <span class="min-w-0">
-                                                <span class="block truncate text-[15px] font-bold text-slate-900 dark:text-white">{{ $t->period_start->translatedFormat('F Y') }}</span>
-                                                <span class="block text-[11px] text-slate-400 dark:text-slate-500">{{ $t->bill_number }}</span>
+                                                <span class="block truncate text-sm font-semibold text-slate-900 dark:text-slate-50">{{ $t->period_start->translatedFormat('F Y') }}</span>
+                                                <span class="block text-meta">{{ $t->bill_number }}</span>
                                             </span>
                                         </div>
                                         <span class="ml-[26px] mt-0.5 block text-xs {{ $t->status === 'overdue' ? 'font-semibold text-red-500 dark:text-red-400' : 'text-slate-400 dark:text-slate-500' }}">
@@ -81,8 +86,8 @@
                                             @endif
                                         </span>
                                     </div>
-                                    <span class="shrink-0 text-[15px] font-black tabular-nums whitespace-nowrap"
-                                          :class="selectedId === '{{ $t->id }}' ? 'text-primary-600 dark:text-primary-300' : 'text-slate-900 dark:text-white'">
+                                    <span class="shrink-0 text-sm font-semibold tabular-nums whitespace-nowrap"
+                                          :class="selectedId === '{{ $t->id }}' ? 'text-primary-600 dark:text-primary-300' : 'text-slate-900 dark:text-slate-50'">
                                         Rp{{ number_format((float) $t->total, 0, ',', '.') }}
                                     </span>
                                 </div>
@@ -93,25 +98,25 @@
 
                 {{-- Ringkasan Pembayaran --}}
                 <section x-show="selectedId !== ''" x-cloak aria-label="Ringkasan pembayaran"
-                         class="space-y-4">
-                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">Ringkasan Pembayaran</h2>
+                         class="form-section space-y-4">
+                    <h2 class="text-sm font-bold text-slate-900 dark:text-slate-50">Ringkasan Pembayaran</h2>
 
                     {{-- Tagihan terpilih --}}
-                    <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-slate-800">
+                    <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.08]">
                         <span class="text-sm font-semibold text-slate-700 dark:text-slate-200" x-text="selected ? selected.period : ''"></span>
-                        <span class="text-base font-black text-primary-600 tabular-nums dark:text-primary-300"
+                        <span class="text-base font-semibold text-primary-600 tabular-nums dark:text-primary-300"
                               x-text="selected ? 'Rp' + selected.total.toLocaleString('id-ID') : ''"></span>
                     </div>
 
                     {{-- Metode Pembayaran --}}
                     <div>
-                        <p class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">Metode Pembayaran</p>
+                        <p class="field-label mb-2">Metode Pembayaran</p>
                         <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Metode pembayaran">
                             <label for="pay-method-transfer_bank"
                                    class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
                                    :class="method === 'transfer_bank'
                                        ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                       : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-700 dark:text-slate-400'">
+                                       : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
                                 <input type="radio" id="pay-method-transfer_bank" name="payment_method" value="transfer_bank" x-model="method" class="sr-only">
                                 <i class="ri-bank-line text-base"></i> Transfer Bank
                             </label>
@@ -119,7 +124,7 @@
                                    class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
                                    :class="method === 'cash'
                                        ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                       : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-slate-700 dark:text-slate-400'">
+                                       : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
                                 <input type="radio" id="pay-method-cash" name="payment_method" value="cash" x-model="method" class="sr-only">
                                 <i class="ri-hand-coin-line text-base"></i> Cash
                             </label>
@@ -129,18 +134,38 @@
                     {{-- Info transfer --}}
                     <template x-if="method === 'transfer_bank'">
                         <div class="rounded-lg bg-blue-50/70 px-3 py-2 text-xs leading-relaxed text-slate-600 dark:bg-blue-500/10 dark:text-slate-300">
-                            <template x-if="selected && selected.transfer_info">
-                                <p class="whitespace-pre-line" x-text="selected.transfer_info"></p>
+                            <template x-if="selected && selected.bank">
+                                <div>
+                                    <p class="font-semibold text-blue-800 dark:text-blue-200 mb-1">Bayar ke Pemilik Kos</p>
+                                    <p>Bank: <span class="font-semibold" x-text="selected.bank.bank_name"></span></p>
+                                    <p>Nomor Rekening: <span class="font-mono font-semibold" x-text="selected.bank.account_number"></span></p>
+                                    <p>a.n. <span class="font-semibold" x-text="selected.bank.account_holder_name"></span></p>
+                                    <button type="button"
+                                            x-data="{ copied: false }"
+                                            @click="if (selected && selected.bank) { navigator.clipboard.writeText(selected.bank.account_number).then(function () { copied = true; setTimeout(function () { copied = false; }, 2000); }); }"
+                                            class="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-blue-200 dark:border-blue-500/30 bg-white/70 dark:bg-surface-elevated/70 px-3 py-1.5 text-xs font-semibold text-blue-700 dark:text-blue-300 transition hover:bg-blue-100 dark:hover:bg-blue-500/15">
+                                        <i class="ri-file-copy-line"></i>
+                                        <template x-if="!copied"><span>Salin Nomor Rekening</span></template>
+                                        <template x-if="copied"><span>Tersalin ✓</span></template>
+                                    </button>
+                                    <p class="mt-2 text-[11px] text-blue-700/90 dark:text-blue-300/90">Transfer langsung ke rekening pemilik kos. KosManager tidak menerima atau menyimpan dana pembayaran.</p>
+                                </div>
                             </template>
-                            <template x-if="selected && !selected.transfer_info">
-                                <p>Transfer sebesar nominal di atas ke rekening pengelola kos, lalu unggah bukti transfer di bawah.</p>
+                            <template x-if="selected && !selected.bank && selected.transfer_info">
+                                <div>
+                                    <p class="whitespace-pre-line" x-text="selected.transfer_info"></p>
+                                    <p class="mt-2 text-[11px]">Transfer langsung ke rekening pemilik kos. KosManager tidak menerima atau menyimpan dana pembayaran.</p>
+                                </div>
+                            </template>
+                            <template x-if="selected && !selected.bank && !selected.transfer_info">
+                                <p>Transfer sebesar nominal di atas ke rekening pengelola kos, lalu unggah bukti transfer di bawah. Hubungi pemilik kos untuk informasi rekening tujuan.</p>
                             </template>
                         </div>
                     </template>
 
                     {{-- Bukti Pembayaran --}}
                     <div>
-                        <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400">
+                        <label for="proof_file" class="field-label">
                             Bukti Pembayaran
                             <span class="font-normal">
                                 <template x-if="method === 'cash'">(opsional)</template>
@@ -152,18 +177,18 @@
                                x-bind:required="method === 'transfer_bank'"
                                @change="handleProofChange($event)"
                                aria-describedby="proof-feedback"
-                               class="mt-1.5 block w-full rounded-xl border border-slate-200 bg-white text-xs text-slate-500 transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400 file:mr-3 file:cursor-pointer file:border-0 file:bg-primary-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-primary-600 hover:file:bg-primary-100 dark:file:bg-primary-500/10 dark:file:text-primary-300">
+                               class="field-input mt-1.5 file:mr-3 file:cursor-pointer file:border-0 file:bg-primary-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-primary-600 hover:file:bg-primary-100 dark:file:bg-primary-500/10 dark:file:text-primary-300">
 
                         <div x-show="proof.name" x-cloak id="proof-feedback"
-                             class="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 dark:border-slate-700 dark:bg-slate-800/50">
+                             class="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 dark:border-white/[0.08] dark:bg-surface-elevated/50">
                             <template x-if="proof.isImage">
-                                <img :src="proof.preview" :alt="'Pratinjau ' + proof.name" class="h-10 w-10 shrink-0 rounded-lg border border-slate-200 object-cover dark:border-slate-700">
+                                <img :src="proof.preview" :alt="'Pratinjau ' + proof.name" class="h-10 w-10 shrink-0 rounded-lg border border-slate-200 object-cover dark:border-white/[0.08]">
                             </template>
                             <template x-if="!proof.isImage">
                                 <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-red-50 text-red-500 dark:bg-red-500/10"><i class="ri-file-pdf-line text-lg"></i></span>
                             </template>
                             <span class="min-w-0 flex-1">
-                                <span class="block truncate text-xs font-semibold text-slate-800 dark:text-slate-100" x-text="proof.name"></span>
+                                <span class="block truncate text-xs font-semibold text-slate-800 dark:text-slate-200" x-text="proof.name"></span>
                                 <span class="block text-[11px] text-slate-500 dark:text-slate-400">
                                     <span x-text="proof.sizeLabel"></span>
                                     <template x-if="proof.oversize"><span class="font-semibold text-red-600 dark:text-red-400"> · Melebihi 5MB</span></template>
@@ -177,10 +202,10 @@
 
                     {{-- Pesan (opsional) --}}
                     <div>
-                        <label for="notes" class="block cursor-pointer text-xs font-medium text-slate-500 dark:text-slate-400">Pesan (opsional)</label>
+                        <label for="notes" class="field-label cursor-pointer">Pesan (opsional)</label>
                         <textarea id="notes" name="notes" x-model="notes" rows="2"
                                   placeholder="Contoh: Saya sudah melakukan transfer, mohon dicek..."
-                                  class="mt-1.5 block w-full resize-none rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 transition focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/30 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100"></textarea>
+                                  class="field-input resize-none"></textarea>
                     </div>
 
                     @error('payment_method') <p class="text-xs text-red-500" aria-live="polite">{{ $message }}</p> @enderror
@@ -188,7 +213,7 @@
                     @error('notes') <p class="text-xs text-red-500" aria-live="polite">{{ $message }}</p> @enderror
 
                     <button type="submit" x-bind:disabled="submitting"
-                            class="w-full rounded-xl bg-primary-500 px-5 py-3 text-sm font-bold text-white shadow-sm shadow-primary-500/25 transition hover:bg-primary-600 active:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60">
+                            class="btn-primary w-full py-3">
                         <template x-if="!submitting">
                             <span class="flex items-center justify-center gap-2">
                                 <i class="ri-wallet-3-line text-base"></i> Bayar Sekarang
@@ -198,7 +223,7 @@
                             <span class="flex items-center justify-center gap-2"><i class="ri-loader-4-line animate-spin"></i> Mengirim...</span>
                         </template>
                     </button>
-                    <p class="text-center text-[11px] text-slate-400 dark:text-slate-500">
+                    <p class="text-center text-meta">
                         Setelah dikirim, status menjadi <strong>Menunggu Verifikasi</strong> oleh pengelola.
                     </p>
                 </section>

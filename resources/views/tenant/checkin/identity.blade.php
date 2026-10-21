@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <x-slot name="header">
         <x-page-header title="Pengajuan Check-In" description="Lengkapi data diri untuk mengajukan check-in. Setelah dikirim, data akan diperiksa dan dikonfirmasi oleh owner.">
             <x-button href="{{ route('tenant.booking.show', $booking) }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
@@ -15,13 +15,13 @@
 
         <div class="max-w-2xl space-y-6">
             {{-- Ringkasan booking --}}
-            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-sm border border-slate-100 dark:border-zinc-700 p-6 sm:p-8">
-                <div class="flex items-center gap-3 pb-5 mb-5 border-b border-slate-100 dark:border-zinc-700">
+            <div class="card-surface p-6 sm:p-8">
+                <div class="flex items-center gap-3 pb-5 mb-5 border-b border-slate-100 dark:border-white/[0.08]">
                     <span class="w-11 h-11 rounded-2xl bg-primary-100 dark:bg-primary-500/15 flex items-center justify-center shrink-0">
                         <i class="ri-user-shield-line text-xl text-primary-600 dark:text-primary-400"></i>
                     </span>
                     <div>
-                        <h1 class="text-base font-bold text-slate-900 dark:text-white">Lengkapi Data Diri</h1>
+                        <h1 class="text-base font-bold text-slate-900 dark:text-slate-50">Lengkapi Data Diri</h1>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Isi Nomor KTP dan Nomor WhatsApp milik Anda. Data akan diperiksa owner sebelum check-in diproses.</p>
                     </div>
                 </div>
@@ -30,35 +30,35 @@
                     <div class="flex items-start gap-2.5">
                         <i class="ri-user-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nama</dt>
-                            <dd class="mt-0.5 font-semibold text-slate-900 dark:text-white">{{ $booking->user->name }}</dd>
+                            <dt class="text-label">Nama</dt>
+                            <dd class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50">{{ $booking->user->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-mail-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Email</dt>
+                            <dt class="text-label">Email</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->user->email }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-building-2-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kos</dt>
+                            <dt class="text-label">Kos</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kos->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                            <dt class="text-label">Kamar</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} · {{ \StatusLabels::kamarLabel($booking->kamar->status) }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
                         <i class="ri-file-text-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Periode</dt>
+                            <dt class="text-label">Periode</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->start_date->translatedFormat('d M Y') }} — {{ $booking->end_date->translatedFormat('d M Y') }}</dd>
                         </div>
                     </div>
@@ -80,15 +80,15 @@
                                 <p class="mt-1 text-sm text-green-700/90 dark:text-green-300/90">Pengajuan Anda telah dikonfirmasi owner. Silakan datang ke kos pada tanggal mulai sewa untuk proses check-in final.</p>
                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                     <div>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-green-600/80 dark:text-green-400/80">No. KTP</span>
+                                        <span class="text-label text-green-600/80 dark:text-green-400/80">No. KTP</span>
                                         <p class="mt-0.5 font-mono font-medium text-green-800 dark:text-green-200">{{ $booking->identity_number ?: '-' }}</p>
                                     </div>
                                     <div>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-green-600/80 dark:text-green-400/80">No. WhatsApp</span>
+                                        <span class="text-label text-green-600/80 dark:text-green-400/80">No. WhatsApp</span>
                                         <p class="mt-0.5 font-mono font-medium text-green-800 dark:text-green-200">{{ $booking->phone ?: '-' }}</p>
                                     </div>
                                     <div class="sm:col-span-2">
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-green-600/80 dark:text-green-400/80">Alamat</span>
+                                        <span class="text-label text-green-600/80 dark:text-green-400/80">Alamat</span>
                                         <p class="mt-0.5 font-medium text-green-800 dark:text-green-200">{{ $booking->address ?: '-' }}</p>
                                     </div>
                                 </div>
@@ -110,15 +110,15 @@
                                 <p class="mt-1 text-sm text-amber-700/90 dark:text-amber-300/90">Pengajuan Check-In Berhasil — Data Anda telah dikirim kepada owner untuk dikonfirmasi. Mohon tunggu hingga owner melakukan review.</p>
                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                     <div>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">No. KTP</span>
+                                        <span class="text-label text-amber-600/80 dark:text-amber-400/80">No. KTP</span>
                                         <p class="mt-0.5 font-mono font-medium text-amber-800 dark:text-amber-200">{{ $booking->identity_number ?: '-' }}</p>
                                     </div>
                                     <div>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">No. WhatsApp</span>
+                                        <span class="text-label text-amber-600/80 dark:text-amber-400/80">No. WhatsApp</span>
                                         <p class="mt-0.5 font-mono font-medium text-amber-800 dark:text-amber-200">{{ $booking->phone ?: '-' }}</p>
                                     </div>
                                     <div class="sm:col-span-2">
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Alamat</span>
+                                        <span class="text-label text-amber-600/80 dark:text-amber-400/80">Alamat</span>
                                         <p class="mt-0.5 font-medium text-amber-800 dark:text-amber-200">{{ $booking->address ?: '-' }}</p>
                                     </div>
                                 </div>
@@ -137,7 +137,7 @@
                             <i class="ri-edit-line"></i> <span x-text="editing ? 'Batal' : 'Perbaiki Data'"></span>
                         </button>
                         <form x-show="editing" x-cloak method="POST" action="{{ route('tenant.checkin.identity.confirm', $booking) }}"
-                              class="mt-4 rounded-2xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 p-4 space-y-4" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                              class="mt-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/50 p-4 space-y-4" x-data="{ submitting: false }" x-on:submit="submitting = true">
                             @csrf
                             @include('tenant.checkin._form-fields', ['booking' => $booking, 'submitLabel' => 'Perbarui Pengajuan', 'submitIcon' => 'ri-refresh-line', 'showCancel' => false])
                         </form>
@@ -153,8 +153,8 @@
                                 <p class="text-sm font-bold text-red-800 dark:text-red-300">Check-In Ditolak</p>
                                 <p class="mt-1 text-sm text-red-700/90 dark:text-red-300/90">Pengajuan Anda ditolak owner. Silakan perbaiki data sesuai alasan di bawah lalu kirim ulang.</p>
                                 @if($booking->identity_rejection_reason)
-                                    <div class="mt-3 rounded-xl bg-white dark:bg-zinc-800 border border-red-200 dark:border-red-500/20 px-4 py-3">
-                                        <p class="text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">Alasan Penolakan</p>
+                                    <div class="mt-3 rounded-xl bg-white dark:bg-surface-elevated border border-red-200 dark:border-red-500/20 px-4 py-3">
+                                        <p class="text-label text-red-600 dark:text-red-400">Alasan Penolakan</p>
                                         <p class="mt-1 text-sm text-slate-700 dark:text-slate-200">{{ $booking->identity_rejection_reason }}</p>
                                     </div>
                                 @endif
@@ -165,11 +165,11 @@
                                 @endif
                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm opacity-80">
                                     <div>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-red-600/80 dark:text-red-400/80">No. KTP Terakhir</span>
+                                        <span class="text-label text-red-600/80 dark:text-red-400/80">No. KTP Terakhir</span>
                                         <p class="mt-0.5 font-mono font-medium text-red-800 dark:text-red-200">{{ $booking->identity_number ?: '-' }}</p>
                                     </div>
                                     <div>
-                                        <span class="text-xs font-semibold uppercase tracking-wider text-red-600/80 dark:text-red-400/80">No. WA Terakhir</span>
+                                        <span class="text-label text-red-600/80 dark:text-red-400/80">No. WA Terakhir</span>
                                         <p class="mt-0.5 font-mono font-medium text-red-800 dark:text-red-200">{{ $booking->phone ?: '-' }}</p>
                                     </div>
                                 </div>
@@ -177,11 +177,11 @@
                         </div>
                     </div>
                     <form method="POST" action="{{ route('tenant.checkin.identity.confirm', $booking) }}"
-                          class="mt-6 rounded-2xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 p-4 space-y-4" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                          class="mt-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/50 p-4 space-y-4" x-data="{ submitting: false }" x-on:submit="submitting = true">
                         @csrf
                         <div class="flex items-center gap-2 mb-1">
                             <i class="ri-file-shield-line text-primary-500"></i>
-                            <span class="text-sm font-bold text-slate-900 dark:text-white">Perbaiki Data Identitas</span>
+                            <span class="text-sm font-bold text-slate-900 dark:text-slate-50">Perbaiki Data Identitas</span>
                         </div>
                         <p class="text-xs text-slate-500 dark:text-slate-400 -mt-2">Perbaiki data lalu kirim ulang untuk ditinjau kembali oleh owner.</p>
                         @include('tenant.checkin._form-fields', ['booking' => $booking, 'submitLabel' => 'Perbaiki & Ajukan Ulang', 'submitIcon' => 'ri-send-plane-line'])
@@ -196,43 +196,43 @@
                     <form method="POST" action="{{ route('tenant.checkin.identity.confirm', $booking) }}"
                           class="mt-6 space-y-4" x-data="{ submitting: false }" x-on:submit="submitting = true">
                         @csrf
-                        <div class="rounded-2xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/50 p-4 space-y-4">
+                        <div class="rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/50 p-4 space-y-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <i class="ri-file-shield-line text-primary-500"></i>
-                                <span class="text-sm font-bold text-slate-900 dark:text-white">Data Identitas</span>
+                                <span class="text-sm font-bold text-slate-900 dark:text-slate-50">Data Identitas</span>
                             </div>
                             <p class="text-xs text-slate-500 dark:text-slate-400 -mt-2">Data ini akan digunakan owner untuk verifikasi check-in.</p>
 
                             <div>
-                                <label for="identity_number" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Nomor KTP <span class="text-red-500">*</span></label>
+                                <label for="identity_number" class="field-label">Nomor KTP <span class="text-red-500">*</span></label>
                                 <input type="text" id="identity_number" name="identity_number" required maxlength="50" value="{{ old('identity_number', $booking->identity_number) }}"
-                                       class="w-full rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm placeholder-slate-400 focus:border-primary-500 focus:ring-primary-500 dark:placeholder-slate-500"
+                                       class="field-input"
                                        placeholder="16 digit, contoh: 3374012345670001">
-                                @error('identity_number') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('identity_number') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="phone" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                                <label for="phone" class="field-label">Nomor WhatsApp <span class="text-red-500">*</span></label>
                                 <input type="tel" id="phone" name="phone" required maxlength="20" value="{{ old('phone', $booking->phone ?? $booking->user->phone) }}"
-                                       class="w-full rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm placeholder-slate-400 focus:border-primary-500 focus:ring-primary-500 dark:placeholder-slate-500"
+                                       class="field-input"
                                        placeholder="08xxxxxxxxxx">
-                                @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('phone') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="address" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Alamat Sesuai KTP <span class="text-red-500">*</span></label>
+                                <label for="address" class="field-label">Alamat Sesuai KTP <span class="text-red-500">*</span></label>
                                 <textarea id="address" name="address" required rows="2" maxlength="500"
-                                          class="w-full rounded-xl border-slate-200 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-slate-100 text-sm placeholder-slate-400 focus:border-primary-500 focus:ring-primary-500 dark:placeholder-slate-500"
+                                          class="field-input resize-none"
                                           placeholder="Alamat sesuai KTP / domisili">{{ old('address', $booking->address) }}</textarea>
-                                @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('address') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
                         <div class="flex items-center justify-end gap-3">
                             <a href="{{ route('tenant.booking.show', $booking) }}"
-                               class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                               class="btn-secondary">
                                 Batal
                             </a>
                             <button type="submit" :disabled="submitting"
-                                    class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
+                                    class="btn-primary">
                                 <template x-if="!submitting">
                                     <span class="inline-flex items-center gap-2">
                                         <i class="ri-send-plane-line"></i> Ajukan Check-In
@@ -253,7 +253,7 @@
                 @endif
             </div>
 
-            <div class="flex items-start gap-2.5 rounded-2xl border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-800/40 px-5 py-4 text-xs text-slate-500 dark:text-slate-400">
+            <div class="flex items-start gap-2.5 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/40 px-5 py-4 text-xs text-slate-500 dark:text-slate-400">
                 <i class="ri-information-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
                 <p>Setelah pengajuan dikirim, owner akan memeriksa Nomor KTP (ditampilkan masking) dan Nomor WhatsApp Anda. Jika disetujui, status berubah menjadi Dikonfirmasi dan owner akan memproses check-in Anda.</p>
             </div>

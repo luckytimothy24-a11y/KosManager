@@ -30,7 +30,20 @@ class BookingFactory extends Factory
             'end_date' => fake()->dateTimeBetween('+1 month', '+3 months'),
             'rental_type' => fake()->randomElement(['daily', 'monthly']),
             'price' => fake()->numberBetween(500000, 5000000),
-            'status' => 'approved',
+            'status' => Booking::STATUS_PENDING,
+            // 1 kamar = 1 penghuni — patungan dihapus
+            'billing_mode' => 'personal',
+            'requested_occupants' => 1,
         ];
+    }
+
+    public function approved(): static
+    {
+        return $this->state(fn () => ['status' => Booking::STATUS_APPROVED]);
+    }
+
+    public function pending(): static
+    {
+        return $this->state(fn () => ['status' => Booking::STATUS_PENDING]);
     }
 }

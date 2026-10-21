@@ -12,6 +12,7 @@ use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
+use App\Support\NotificationType;
 use Illuminate\Http\Request;
 
 class CheckOutController extends Controller
@@ -42,7 +43,12 @@ class CheckOutController extends Controller
         if ($user->isTenant()) {
             abort_unless($penghuni->user_id === $user->id, 403);
         } else {
-            abort_unless($user->hasRole('super_admin', 'admin', 'owner') && $user->canAccessKos((int) $penghuni->kos_id), 403);
+            abort_unless(
+                $user->isSuperAdmin()
+                    || ($user->isAdmin() && $user->canAccessKos((int) $penghuni->kos_id))
+                    || ($user->isOwner() && $user->canAccessKos((int) $penghuni->kos_id)),
+                403
+            );
         }
 
         abort_unless($penghuni->status === 'active', 400, 'Penghuni tidak aktif.');
@@ -76,11 +82,15 @@ class CheckOutController extends Controller
         return back()->with('success', 'Pengajuan check-out berhasil.');
     }
 
-    public function approve(CheckOut $checkOut)
+    /**
+     * Inti approve satu pengajuan ( dipakai approve() satuan & bulkApprove() ).
+     * Guard identik: pending-only + tagihan outstanding harus nol.
+     *
+     * @return array{type: string, count?: int, checkOut?: CheckOut, penghuni?: Penghuni}
+     */
+    private function approveLocked(CheckOut $checkOut): array
     {
-        $this->authorize('approve', $checkOut);
-
-        $outcome = \DB::transaction(function () use ($checkOut) {
+        return \DB::transaction(function () use ($checkOut) {
             $locked = CheckOut::whereKey($checkOut->id)->lockForUpdate()->first();
 
             if (! $locked || $locked->status !== 'pending') {
@@ -132,6 +142,68 @@ class CheckOutController extends Controller
 
             return ['type' => 'approved', 'checkOut' => $locked, 'penghuni' => $penghuni];
         });
+    }
+
+    /**
+     * Setujui massal: setiap item melewati policy approve + guard identik
+     * approve() satuan. Item gagal (scope/status/tagihan) dilaporkan per
+     * item tanpa menggagalkan yang valid.
+     */
+    public function bulkApprove(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1', 'max:50'],
+        ]);
+
+        $ok = 0;
+        $failed = [];
+
+        foreach ($validated['ids'] as $id) {
+            $checkOut = CheckOut::with('penghuni.user', 'kamar')->find($id);
+
+            if (! $checkOut || ! $request->user()->can('approve', $checkOut)) {
+                $failed[] = "#{$id}: tidak memiliki akses.";
+
+                continue;
+            }
+
+            $outcome = $this->approveLocked($checkOut);
+
+            if ($outcome['type'] === 'approved') {
+                $ok++;
+
+                try {
+                    NotificationService::checkoutApproved($outcome['penghuni']->user_id, $outcome['checkOut']->kamar->room_number);
+                    AuditLogService::approve('Check-Out', "Check-out disetujui untuk {$outcome['penghuni']->user->name} (bulk)", ['check_out_id' => $outcome['checkOut']->id]);
+                } catch (\Exception $e) {
+                    \Log::warning('Bulk check-out approval notification/audit failed: '.$e->getMessage());
+                }
+            } elseif ($outcome['type'] === 'unpaid') {
+                $failed[] = "Pengajuan #{$id}: masih memiliki {$outcome['count']} tagihan belum selesai.";
+            } else {
+                $failed[] = "Pengajuan #{$id}: sudah diproses sebelumnya.";
+            }
+        }
+
+        $prefix = $request->user()->isAdmin() ? 'admin' : 'owner';
+        $message = "{$ok} check-out berhasil disetujui.";
+        if (! empty($failed)) {
+            $message .= ' Gagal: '.implode(' ', array_slice($failed, 0, 3));
+            if (count($failed) > 3) {
+                $message .= ' (+'.(count($failed) - 3).' lainnya)';
+            }
+
+            return redirect()->route("$prefix.checkout.index")->with('warning', $message);
+        }
+
+        return redirect()->route("$prefix.checkout.index")->with('success', $message);
+    }
+
+    public function approve(CheckOut $checkOut)
+    {
+        $this->authorize('approve', $checkOut);
+
+        $outcome = $this->approveLocked($checkOut);
 
         if ($outcome['type'] === 'processed') {
             abort(400, 'Pengajuan check-out sudah diproses sebelumnya.');
@@ -152,6 +224,45 @@ class CheckOutController extends Controller
         }
 
         return redirect()->route("$prefix.checkout.index")->with('success', 'Check-out berhasil disetujui.');
+    }
+
+    public function cancel(CheckOut $checkOut)
+    {
+        $this->authorize('cancel', $checkOut);
+
+        \DB::transaction(function () use ($checkOut) {
+            $locked = CheckOut::whereKey($checkOut->id)->lockForUpdate()->first();
+            // Hanya pending yang dapat dibatalkan. Status final
+            // (approved/rejected/completed/cancelled) ditolak dengan 400.
+            abort_unless($locked && $locked->status === CheckOut::STATUS_PENDING, 400, 'Check-out hanya dapat dibatalkan selama masih menunggu persetujuan.');
+
+            // Cancel tidak menghapus record dan tidak menyentuh
+            // penghuni/kontrak/kamar/billing — hanya transisi status.
+            $locked->update([
+                'status' => CheckOut::STATUS_CANCELLED,
+                'verified_by' => auth()->id(),
+            ]);
+        });
+
+        try {
+            AuditLogService::create('Check-Out', 'Pengajuan check-out dibatalkan oleh '.auth()->user()->name, ['check_out_id' => $checkOut->id]);
+            NotificationService::create(
+                $checkOut->penghuni->user_id,
+                NotificationType::CHECKOUT,
+                'Check-Out Dibatalkan',
+                "Pengajuan check-out dari kamar {$checkOut->kamar->room_number} telah dibatalkan."
+            );
+        } catch (\Exception $e) {
+            \Log::warning('Check-out cancel notification/audit failed: '.$e->getMessage());
+        }
+
+        if (auth()->user()->isTenant()) {
+            return redirect()->route('tenant.kontrak.index')->with('success', 'Pengajuan check-out berhasil dibatalkan.');
+        }
+
+        $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
+
+        return redirect()->route("$prefix.checkout.index")->with('success', 'Pengajuan check-out berhasil dibatalkan.');
     }
 
     public function reject(CheckOut $checkOut)

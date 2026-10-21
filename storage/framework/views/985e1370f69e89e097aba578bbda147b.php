@@ -54,22 +54,21 @@
 <?php endif; ?>
 
         
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-4">
+        <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
                     <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="<?php echo e(request('search')); ?>" placeholder="Cari nomor tagihan..." aria-label="Cari tagihan"
-                           class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm focus:border-primary-500 focus:ring-primary-500">
+                           class="field-input pl-10">
                 </div>
                 <select name="status" aria-label="Filter status tagihan"
-                        class="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-100 text-sm py-2.5 focus:border-primary-500 focus:ring-primary-500">
+                        class="field-input sm:w-auto">
                     <option value="">Semua Status</option>
                     <?php $__currentLoopData = ['unpaid','pending_verification','paid','overdue']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <option value="<?php echo e($s); ?>" <?php echo e(request('status') === $s ? 'selected' : ''); ?>><?php echo e(\PaymentLabels::tagihanLabel($s)); ?></option>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
-                <button type="submit"
-                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition whitespace-nowrap">
+                <button type="submit" class="btn-secondary">
                     <i class="ri-filter-3-line"></i> Terapkan
                 </button>
             </form>
@@ -81,50 +80,66 @@
                 <?php
                     $canPay = in_array($t->status, ['unpaid', 'overdue']);
                 ?>
-                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border <?php echo e($canPay ? 'border-primary-100 dark:border-primary-500/20' : 'border-slate-100 dark:border-slate-800'); ?> p-5 flex flex-col lg:flex-row lg:items-center gap-4 transition-colors">
+                <div class="card-surface p-5 flex flex-col lg:flex-row lg:items-center gap-4 transition-colors <?php echo e($canPay ? 'border-primary-100 dark:border-primary-500/20' : ''); ?>">
                     <div class="flex-1 min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
-                            <p class="text-sm font-bold text-slate-900 dark:text-white"><?php echo e($t->period_start->translatedFormat('F Y')); ?></p>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e(\PaymentLabels::tagihanBadge($t->status)); ?>">
-                                <?php echo e(\PaymentLabels::tagihanLabel($t->status)); ?>
-
-                            </span>
+                            <p class="text-sm font-bold text-slate-900 dark:text-slate-50"><?php echo e($t->period_start->translatedFormat('F Y')); ?></p>
+                            <?php if (isset($component)) { $__componentOriginal8c81617a70e11bcf247c4db924ab1b62 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8c81617a70e11bcf247c4db924ab1b62 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.status-badge','data' => ['status' => $t->status,'context' => 'tagihan']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
+<?php $component->withName('status-badge'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag && $constructor = (new ReflectionClass(Illuminate\View\AnonymousComponent::class))->getConstructor()): ?>
+<?php $attributes = $attributes->except(collect($constructor->getParameters())->map->getName()->all()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['status' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($t->status),'context' => 'tagihan']); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal8c81617a70e11bcf247c4db924ab1b62)): ?>
+<?php $attributes = $__attributesOriginal8c81617a70e11bcf247c4db924ab1b62; ?>
+<?php unset($__attributesOriginal8c81617a70e11bcf247c4db924ab1b62); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal8c81617a70e11bcf247c4db924ab1b62)): ?>
+<?php $component = $__componentOriginal8c81617a70e11bcf247c4db924ab1b62; ?>
+<?php unset($__componentOriginal8c81617a70e11bcf247c4db924ab1b62); ?>
+<?php endif; ?>
                             <?php if($canPay && $t->due_date->isPast()): ?>
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-300">
                                     <i class="ri-alarm-warning-line"></i> Terlambat
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500 font-mono"><?php echo e($t->bill_number); ?> · <?php echo e(\PaymentLabels::billType($t->bill_type)); ?></p>
+                        <p class="mt-1 text-meta font-mono"><?php echo e($t->bill_number); ?> · <?php echo e(\PaymentLabels::billType($t->bill_type)); ?></p>
                         <div class="mt-2 grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-1.5 text-xs">
                             <div>
-                                <span class="block text-slate-400 dark:text-slate-500">Kamar</span>
+                                <span class="block text-label">Kamar</span>
                                 <span class="font-semibold text-slate-700 dark:text-slate-200"><?php echo e($t->kamar->room_number); ?> · <?php echo e($t->kamar->kos->name); ?></span>
                             </div>
                             <div>
-                                <span class="block text-slate-400 dark:text-slate-500">Periode</span>
+                                <span class="block text-label">Periode</span>
                                 <span class="font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap"><?php echo e($t->period_start->translatedFormat('d M Y')); ?> – <?php echo e($t->period_end->translatedFormat('d M Y')); ?></span>
                             </div>
                             <div>
-                                <span class="block text-slate-400 dark:text-slate-500">Dibuat</span>
+                                <span class="block text-label">Dibuat</span>
                                 <span class="font-semibold text-slate-700 dark:text-slate-200"><?php echo e($t->created_at->translatedFormat('d M Y')); ?></span>
                             </div>
                             <div>
-                                <span class="block text-slate-400 dark:text-slate-500">Jatuh Tempo</span>
+                                <span class="block text-label">Jatuh Tempo</span>
                                 <span class="font-semibold whitespace-nowrap <?php echo e($canPay ? ($t->due_date->isPast() ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400') : 'text-slate-700 dark:text-slate-200'); ?>"><?php echo e($t->due_date->translatedFormat('d M Y')); ?></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="shrink-0 lg:text-right lg:pl-6 lg:border-l border-slate-100 dark:border-slate-800">
-                        <p class="text-xl font-black text-slate-900 dark:text-white whitespace-nowrap">Rp <?php echo e(number_format($t->total, 0, ',', '.')); ?></p>
+                    <div class="shrink-0 lg:text-right lg:pl-6 lg:border-l border-slate-100 dark:border-white/[0.08]">
+                        <p class="text-xl font-semibold text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp <?php echo e(number_format($t->total, 0, ',', '.')); ?></p>
                         <div class="mt-2 flex lg:justify-end">
                             <?php if($canPay): ?>
-                                <a href="<?php echo e(route('tenant.tagihan.show', $t)); ?>" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white text-xs font-bold transition shadow-sm shadow-primary-500/30">
+                                <a href="<?php echo e(route('tenant.tagihan.show', $t)); ?>" class="btn-primary px-4 py-2 text-xs">
                                     <i class="ri-wallet-3-line"></i> Bayar Sekarang
                                 </a>
                             <?php else: ?>
-                                <a href="<?php echo e(route('tenant.tagihan.show', $t)); ?>" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                                <a href="<?php echo e(route('tenant.tagihan.show', $t)); ?>" class="btn-secondary px-4 py-2 text-xs">
                                     Lihat Detail
                                 </a>
                             <?php endif; ?>
@@ -132,7 +147,7 @@
                     </div>
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+                <div class="card-surface overflow-hidden">
                     <?php if (isset($component)) { $__componentOriginal074a021b9d42f490272b5eefda63257c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal074a021b9d42f490272b5eefda63257c = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.empty-state','data' => ['icon' => 'ri-file-list-3-line','title' => 'Belum ada tagihan','description' => 'Tagihan sewa dari pengelola akan tampil di sini.']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? (array) $attributes->getIterator() : [])); ?>
@@ -155,14 +170,11 @@
 <?php endif; ?>
                 </div>
             <?php endif; ?>
+
+            <?php if($tagihans->hasPages()): ?>
+                <div class="flex justify-center"><?php echo e($tagihans->links()); ?></div>
+            <?php endif; ?>
         </div>
-
-        <?php if($tagihans->hasPages()): ?>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-4">
-                <?php echo e($tagihans->links()); ?>
-
-            </div>
-        <?php endif; ?>
     </div>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

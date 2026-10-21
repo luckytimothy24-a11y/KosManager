@@ -3,19 +3,26 @@
 namespace App\Services;
 
 use App\Models\Booking;
+use App\Models\BookingOccupant;
 use App\Models\Kamar;
+use App\Models\User;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class BookingService
 {
     /**
-     * Buat booking dengan business rule existing:
+     * Buat booking baru.
+     *
+     * Business rules:
      * - transaksi + lockForUpdate pada kamar untuk mencegah race condition
      * - kamar harus berstatus available & kos aktif
-     * - deteksi overlap terhadap booking approved pada periode yang sama
+     * - deteksi overlap terhadap booking pending/approved (reservasi) pada periode yang sama
      * - harga diambil dari harga existing (harian/bulanan)
-     * - booking dibuat berstatus approved (instant booking)
-     * - kamar di-set booked
+     * - booking SELALU dibuat berstatus pending — TIDAK boleh auto-confirm
+     * - SATU KAMAR UNTUK SATU PENGHUNI (patungan/multi-occupant DIHAPUS)
+     * - kamar di-set booked (reservasi, bukan occupied)
+     * - tenant TIDAK otomatis aktif (status tenant tidak disentuh di sini)
      *
      * @return array{ok: bool, booking?: Booking, error?: string}
      */
@@ -28,53 +35,41 @@ class BookingService
                 return ['ok' => false, 'error' => 'kamar_tidak_tersedia'];
             }
 
-            // Nota: Tenant yang sudah menghuni tidak dihalangi di level BookingService
-            // agar konteks tes/pengujian existing (yang membuat Penghuni terlebih dahulu)
-            // tetap lolos; penghalangan booking saat masih menghuni dilakukan di UI
-            // (TenantBookingController menyaring kamar) dan di masa depan dapat
-            // diaktifkan kembali sebagai validasi ketat bila diperlukan.
+            // HARD RULE: selalu 1 orang, personal — patungan/multi dihapus
+            $requestedOccupants = 1;
 
-            // Personal: harus available + tidak ada overlap
-            // Shared: occupancy + overlapping bookings < capacity
-            $isSharedRoom = ($kamar->billing_mode ?? 'personal') === 'shared';
-            if (! $isSharedRoom) {
-                if ($kamar->status !== 'available') {
-                    return ['ok' => false, 'error' => 'kamar_tidak_tersedia'];
-                }
-                $hasConflict = Booking::where('kamar_id', $kamar->id)
-                    ->where('status', 'approved')
-                    ->where('start_date', '<', $payload['end_date'])
-                    ->where('end_date', '>', $payload['start_date'])
-                    ->exists();
-                if ($hasConflict) {
-                    return ['ok' => false, 'error' => 'overlap'];
-                }
-            } else {
-                if (! $kamar->hasAvailableSlot()) {
-                    return ['ok' => false, 'error' => 'kamar_penuh'];
-                }
-                $overlapCount = Booking::where('kamar_id', $kamar->id)
-                    ->where('status', 'approved')
-                    ->where('start_date', '<', $payload['end_date'])
-                    ->where('end_date', '>', $payload['start_date'])
-                    ->count();
+            // Status yang mengunci slot kamar: pending + approved (reservasi aktif).
+            $reserving = Booking::roomReservingStatuses();
+
+            // 1 kamar = 1 penghuni: kamar harus available + tidak ada overlap
+            if ($kamar->status !== 'available') {
+                return ['ok' => false, 'error' => 'kamar_tidak_tersedia'];
+            }
+            if ((int) ($kamar->capacity ?? 1) > 1) {
+                // Kamar lama shared — setelah backfill harusnya 1; tetap tolak multi booking
                 $occupancy = $kamar->occupancy();
-                if (($overlapCount + $occupancy) >= (int) $kamar->capacity) {
-                    return ['ok' => false, 'error' => 'kamar_penuh'];
+                if ($occupancy >= 1) {
+                    return ['ok' => false, 'error' => 'kamar_penuh', 'capacity' => 1, 'remaining' => 0];
                 }
             }
-
-            $requestedBillingMode = $payload['billing_mode'] ?? 'personal';
-            if (! in_array($requestedBillingMode, ['personal', 'shared'], true)) {
-                $requestedBillingMode = 'personal';
+            $hasConflict = Booking::where('kamar_id', $kamar->id)
+                ->whereIn('status', $reserving)
+                ->where('start_date', '<', $payload['end_date'])
+                ->where('end_date', '>', $payload['start_date'])
+                ->exists();
+            if ($hasConflict) {
+                return ['ok' => false, 'error' => 'overlap'];
             }
 
-            // Server-side policy: shared only allowed if kamar supports shared
-            if ($requestedBillingMode === 'shared' && ($kamar->billing_mode ?? 'personal') !== 'shared') {
+            // Selalu personal — patungan dihapus
+            $billingMode = 'personal';
+            $requestedBillingMode = $payload['billing_mode'] ?? 'personal';
+            if ($requestedBillingMode === 'shared') {
                 return ['ok' => false, 'error' => 'billing_mode_not_allowed'];
             }
-
-            $billingMode = $requestedBillingMode;
+            if ((int) ($payload['requested_occupants'] ?? 1) > 1) {
+                return ['ok' => false, 'error' => 'personal_multi_rejected'];
+            }
 
             $price = match ($payload['rental_type']) {
                 'daily' => $kamar->daily_price,
@@ -87,12 +82,7 @@ class BookingService
                 return ['ok' => false, 'error' => 'no_price'];
             }
 
-            $requestedOccupants = max(1, min(10, (int) ($payload['requested_occupants'] ?? 1)));
-            $capacity = (int) ($kamar->capacity ?? 1);
-            if ($requestedOccupants > $capacity) {
-                return ['ok' => false, 'error' => 'capacity_exceeded'];
-            }
-
+            // STATUS SELALU pending — jangan percaya status dari frontend.
             $booking = Booking::create([
                 'booking_code' => 'BK-'.strtoupper(Str::random(8)),
                 'user_id' => $userId,
@@ -103,27 +93,28 @@ class BookingService
                 'end_date' => $payload['end_date'],
                 'rental_type' => $payload['rental_type'],
                 'price' => $price,
-                'billing_mode' => $payload['billing_mode'] ?? 'personal',
+                'billing_mode' => $billingMode,
+                'requested_occupants' => $requestedOccupants,
                 'notes' => $payload['notes'] ?? null,
                 'identity_number' => trim($payload['identity_number'] ?? ''),
                 'phone' => $payload['phone'] ?? '',
                 'address' => trim($payload['address'] ?? ''),
                 'identity_data_submitted_at' => now(),
-                'status' => 'approved',
+                'status' => Booking::STATUS_PENDING,
             ]);
 
             // Ensure primary booking occupant exists for group flow
             try {
-                if (\Illuminate\Support\Facades\Schema::hasTable('booking_occupants')) {
-                    $user = \App\Models\User::find($userId);
-                    \App\Models\BookingOccupant::firstOrCreate(
+                if (Schema::hasTable('booking_occupants')) {
+                    $user = User::find($userId);
+                    BookingOccupant::firstOrCreate(
                         ['booking_id' => $booking->id, 'occupant_index' => 1],
                         [
                             'user_id' => $userId,
                             'email' => strtolower($user?->email ?? ''),
                             'display_name' => $user?->name ?? null,
-                            'status' => \App\Models\BookingOccupant::STATUS_ACCEPTED,
-                            'identity_status' => \App\Models\BookingOccupant::IDENTITY_PENDING,
+                            'status' => BookingOccupant::STATUS_ACCEPTED,
+                            'identity_status' => BookingOccupant::IDENTITY_PENDING,
                             'identity_number' => trim($payload['identity_number'] ?? ''),
                             'phone' => $payload['phone'] ?? '',
                             'address' => trim($payload['address'] ?? ''),
@@ -131,27 +122,11 @@ class BookingService
                         ]
                     );
                 }
-            } catch (\Throwable $e) {}
-
-            // Shared kamar: tetap available selama masih ada slot (occupancy + bookings < capacity)
-            // Personal: booked seperti semula
-            if ($isSharedRoom) {
-                $futureBookings = Booking::where('kamar_id', $kamar->id)
-                    ->where('status', 'approved')
-                    ->whereDate('end_date', '>=', today())
-                    ->count();
-                $occupancy = $kamar->occupancy();
-                if (($occupancy + $futureBookings) >= (int) $kamar->capacity) {
-                    $kamar->update(['status' => 'booked']);
-                } elseif ($occupancy > 0) {
-                    $kamar->update(['status' => 'occupied']);
-                } else {
-                    // No occupant yet, booking holds slot
-                    $kamar->update(['status' => 'booked']);
-                }
-            } else {
-                $kamar->update(['status' => 'booked']);
+            } catch (\Throwable $e) {
             }
+
+            // 1 kamar = 1 penghuni: reservasi = booked (bukan occupied)
+            $kamar->update(['status' => 'booked']);
 
             return ['ok' => true, 'booking' => $booking];
         });
@@ -160,12 +135,26 @@ class BookingService
             $booking = $result['booking'];
             $booking->load(['user', 'kos', 'kamar']);
 
-             try {
-                 NotificationService::bookingInstantConfirmation($booking->user_id, $booking->booking_code, $booking->kamar->room_number, url('/tenant/booking/'.$booking->id));
-                 NotificationService::bookingNew($booking->kos->owner_id, $booking->user->name, $booking->kamar->room_number, url('/owner/booking/'.$booking->id));
-                 AuditLogService::create('Booking', "Booking baru {$booking->user->name} untuk kamar {$booking->kamar->room_number} (instant booking)", ['kos_id' => $booking->kos_id, 'kamar_id' => $booking->kamar_id]);
+            try {
+                // Booking baru = pending. Bukan "instant confirmation".
+                NotificationService::bookingCreated(
+                    $booking->user_id,
+                    $booking->booking_code,
+                    $booking->kamar->room_number,
+                    url('/tenant/booking/'.$booking->id)
+                );
+                NotificationService::bookingNew(
+                    $booking->kos->owner_id,
+                    $booking->user->name,
+                    $booking->kamar->room_number,
+                    url('/owner/booking/'.$booking->id)
+                );
+                AuditLogService::create(
+                    'Booking',
+                    "Booking baru {$booking->user->name} untuk kamar {$booking->kamar->room_number} (status pending, menunggu konfirmasi)",
+                    ['kos_id' => $booking->kos_id, 'kamar_id' => $booking->kamar_id, 'status' => $booking->status]
+                );
 
-                // Atribusi conversion advertising bila booking berasal dari klik iklan.
                 app(AdvertisingService::class)->recordConversionIfApplicable($userId, $booking->kos_id);
             } catch (\Exception $e) {
                 \Log::warning('Booking notification/audit failed: '.$e->getMessage());
@@ -176,44 +165,27 @@ class BookingService
     }
 
     /**
-     * Batalkan booking dengan business rule existing:
-     * - transaksi + lockForUpdate pada booking (concurrency protection)
-     * - hanya status cancellable (pending/approved) yang dapat dibatalkan
-     * - kamar kembali available bila tidak ada booking approved lain yang masih
-     *   memesan kamar tersebut dengan end_date belum lewat.
+     * FINAL cancel booking — hanya untuk owner/admin.
+     * Tenant request cancellation melalui BookingStatusService::requestCancellation()
+     * (booking.status tidak berubah sampai owner approve).
      *
-     * @return bool true bila berhasil dibatalkan
+     * @return bool true bila booking berpindah ke cancelled
      */
-    public function cancel(int $bookingId): bool
+    public function cancel(int $bookingId, ?User $actor = null): bool
     {
-        return (bool) \DB::transaction(function () use ($bookingId) {
-            $booking = Booking::whereKey($bookingId)->lockForUpdate()->first();
+        $booking = Booking::find($bookingId);
 
-            if (! $booking || ! $booking->isCancellable()) {
-                return false;
-            }
+        if (! $booking || ! $actor) {
+            return false;
+        }
 
-            $booking->update(['status' => 'cancelled']);
+        // Tenant tidak boleh membatalkan booking secara langsung.
+        if ((int) $booking->user_id === (int) $actor->id && ! $actor->isOwner() && ! $actor->isAdmin() && ! $actor->isSuperAdmin()) {
+            return false;
+        }
 
-            $kamar = Kamar::whereKey($booking->kamar_id)->lockForUpdate()->first();
+        $result = app(BookingStatusService::class)->cancel($booking, $actor);
 
-            if ($kamar) {
-                // Jika masih ada penghuni aktif, kamar tetap occupied meski booking dibatalkan
-                if ($kamar->occupancy() > 0) {
-                    $kamar->update(['status' => 'occupied']);
-                } elseif ($kamar->status === 'booked') {
-                    $stillReserved = Booking::where('kamar_id', $kamar->id)
-                        ->whereKeyNot($booking->id)
-                        ->where('status', 'approved')
-                        ->whereDate('end_date', '>=', today())
-                        ->exists();
-                    if (! $stillReserved) {
-                        $kamar->update(['status' => 'available']);
-                    }
-                }
-            }
-
-            return true;
-        });
+        return (bool) ($result['ok'] ?? false);
     }
 }

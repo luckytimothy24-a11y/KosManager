@@ -1,0 +1,935 @@
+PHPUnit 10.5.64 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.2.12
+Configuration: C:\Users\ASUS\KosManager\phpunit.xml
+
+................E.FE..F...                                        26 / 26 (100%)
+
+Time: 00:10.013, Memory: 60.00 MB
+
+There were 2 errors:
+
+1) Tests\Feature\WebhookTest::payment_gateway_webhook_valid_signature_is_verified
+Error: Call to undefined method App\Services\PaymentGateway\SandboxGateway::generateSignature()
+
+C:\Users\ASUS\KosManager\tests\Feature\WebhookTest.php:43
+
+2) Tests\Feature\WebhookTest::payment_gateway_webhook_unknown_status_is_ignored
+Error: Call to undefined method App\Services\PaymentGateway\SandboxGateway::generateSignature()
+
+C:\Users\ASUS\KosManager\tests\Feature\WebhookTest.php:114
+
+--
+
+There were 2 failures:
+
+1) Tests\Feature\WebhookTest::payment_gateway_webhook_unknown_reference_is_rejected
+Unable to find JSON: 
+
+[{
+    "message": "Pembayaran tidak ditemukan."
+}]
+
+within response JSON:
+
+[{
+    "message": "Signature tidak valid."
+}].
+
+
+Failed asserting that an array has the subset Array &0 [
+    'message' => 'Pembayaran tidak ditemukan.',
+].
+--- Expected
++++ Actual
+@@ @@
+ array (
+-  'message' => 'Pembayaran tidak ditemukan.',
++  'message' => 'Signature tidak valid.',
+ )
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Constraints\ArraySubset.php:83
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Assert.php:36
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\AssertableJsonString.php:308
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:674
+C:\Users\ASUS\KosManager\tests\Feature\WebhookTest.php:95
+
+2) Tests\Feature\WelcomePromoCtaRefreshTest::test_welcome_renders_universal_badges_and_brand_partner_cards
+Failed asserting that '<!DOCTYPE html>\n
+<html lang="id">\n
+<head>\n
+    <meta charset="utf-8">\n
+    <meta name="viewport" content="width=device-width, initial-scale=1">\n
+    <meta name="csrf-token" content="dNMdPf6OlWdRBzKT8QfrA4NULCG0eHnpVYiY8C1d">\n
+    <meta name="theme-color" content="#a88468">\n
+    <meta name="description" content="KosManager — platform modern untuk menemukan kos nyaman tanpa ribet dan mengelola kamar, penghuni, booking, serta pembayaran dalam satu tempat.">\n
+    <title>KosManager — Temukan Kos Nyaman, Tanpa Ribet</title>\n
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">\n
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">\n
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">\n
+    <link rel="preconnect" href="https://fonts.bunny.net">\n
+    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet">\n
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">\n
+    <link rel="preload" as="style" href="/build/assets/app-2947c09d.css" /><link rel="modulepreload" href="/build/assets/app-b2e8b917.js" /><link rel="modulepreload" href="/build/assets/vendor-9fa05e75.js" /><link rel="stylesheet" href="/build/assets/app-2947c09d.css" /><script type="module" src="/build/assets/app-b2e8b917.js"></script>    <style>\n
+        html { scroll-behavior: smooth; }\n
+        .fade-in { animation: fadeIn 0.5s ease forwards; }\n
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }\n
+        .fade-up { animation: fadeUp 0.6s ease forwards; }\n
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }\n
+    </style>\n
+    <script>\n
+        (function () {\n
+            const stored = localStorage.getItem('theme');\n
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;\n
+            if (stored === 'dark' || (!stored && prefersDark)) {\n
+                document.documentElement.classList.add('dark');\n
+            } else {\n
+                document.documentElement.classList.remove('dark');\n
+            }\n
+        })();\n
+    </script>\n
+</head>\n
+<body class="font-sans antialiased bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-300 pb-20 sm:pb-0">\n
+\n
+    \n
+    \n
+    <header class="bg-white/95 dark:bg-surface-elevated/95 backdrop-blur border-b border-gray-200 dark:border-white/10 sticky top-0 z-50">\n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">\n
+            <a href="/" class="flex items-center gap-2 shrink-0" aria-label="KosManager — beranda">\n
+                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-sm shadow-primary-500/30">\n
+                    <span class="text-white font-bold text-xs">K</span>\n
+                </div>\n
+                <span class="text-lg font-bold text-gray-800 dark:text-slate-50 tracking-tight">KosManager</span>\n
+            </a>\n
+\n
+            <nav class="hidden md:flex items-center gap-8" aria-label="Navigasi utama">\n
+                <a href="#properti" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Cari Kos</a>\n
+                <a href="#kategori" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Kategori</a>\n
+                <a href="#keunggulan" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Keunggulan</a>\n
+                <a href="#faq" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">FAQ</a>\n
+            </nav>\n
+\n
+            <div class="flex items-center gap-2 sm:gap-3">\n
+                <a href="http://127.0.0.1:8000/tenant/kos"\n
+                   class="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition"\n
+                   title="Cari Kos" aria-label="Cari Kos">\n
+                    <i class="ri-search-line text-lg"></i>\n
+                </a>\n
+                <button type="button"\n
+                        onclick="document.documentElement.classList.toggle('dark'); localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';"\n
+                        class="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition"\n
+                        title="Ganti tema" aria-label="Ganti tema gelap/terang">\n
+                    <i class="ri-moon-line text-lg dark:hidden"></i>\n
+                    <i class="ri-sun-line text-lg hidden dark:block"></i>\n
+                </button>\n
+\n
+                                    <a href="http://127.0.0.1:8000/login" class="hidden sm:inline-flex text-sm font-medium text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition">Masuk</a>\n
+                                            <a href="http://127.0.0.1:8000/register" class="hidden sm:inline-flex items-center text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 px-4 py-2 rounded-lg transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">Daftar</a>\n
+                                    \n
+                <button type="button" id="mobile-menu-button"\n
+                        class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition"\n
+                        aria-expanded="false" aria-controls="mobile-menu" aria-label="Buka menu navigasi">\n
+                    <i class="ri-menu-line text-xl"></i>\n
+                </button>\n
+            </div>\n
+        </div>\n
+\n
+        \n
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 dark:border-white/10 bg-white dark:bg-surface-elevated">\n
+            <nav class="max-w-[1170px] mx-auto px-4 py-3 space-y-1" aria-label="Navigasi mobile">\n
+                <a href="#properti" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-search-eye-line mr-2 text-primary-500"></i>Cari Kos</a>\n
+                <a href="#kategori" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-grid-line mr-2 text-primary-500"></i>Kategori</a>\n
+                <a href="#keunggulan" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-award-line mr-2 text-primary-500"></i>Keunggulan</a>\n
+                <a href="#faq" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-question-line mr-2 text-primary-500"></i>FAQ</a>\n
+                <div class="pt-2 mt-2 border-t border-gray-100 dark:border-white/10 grid grid-cols-2 gap-2">\n
+                                            <a href="http://127.0.0.1:8000/login" class="inline-flex justify-center items-center text-sm font-medium text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-white/[0.08] px-4 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition">Masuk</a>\n
+                                                    <a href="http://127.0.0.1:8000/register" class="inline-flex justify-center items-center text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">Daftar</a>\n
+                                                            </div>\n
+            </nav>\n
+        </div>\n
+    </header>\n
+\n
+    <section aria-label="Promo Partner" class="relative bg-gradient-to-b from-gray-50/80 to-white dark:from-slate-700/40 dark:to-surface-dark py-8 md:py-10">\r\n
+    <div class="relative max-w-[1170px] mx-auto px-4 sm:px-6" x-data="{\r\n
+        slide: 0,\r\n
+        timer: null,\r\n
+        totalSlides: 3,\r\n
+        paused: false,\r\n
+        windowWidth: window.innerWidth,\r\n
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,\r\n
+        init() {\r\n
+            if (!this.reducedMotion) { this.startTimer(); }\r\n
+            this.$watch('paused', (val) => {\r\n
+                if (val) { clearInterval(this.timer); this.timer = null; }\r\n
+                else if (!this.reducedMotion) { this.startTimer(); }\r\n
+            });\r\n
+            window.addEventListener('resize', () => { this.windowWidth = window.innerWidth; });\r\n
+        },\r\n
+        destroy() { clearInterval(this.timer); },\r\n
+        startTimer() { this.timer = setInterval(() => { this.slide = (this.slide + 1) % this.totalSlides; }, 5000); },\r\n
+        prev() { this.slide = (this.slide - 1 + this.totalSlides) % this.totalSlides; this.resetTimer(); },\r\n
+        next() { this.slide = (this.slide + 1) % this.totalSlides; this.resetTimer(); },\r\n
+        resetTimer() { clearInterval(this.timer); this.timer = null; if (!this.reducedMotion) { this.startTimer(); } },\r\n
+        goTo(i) { this.slide = i; this.resetTimer(); },\r\n
+        getSlidePercent() {\r\n
+            const visible = this.windowWidth < 640 ? 1 : this.windowWidth < 768 ? 2 : 3;\r\n
+            const effectiveSlides = Math.min(visible, this.totalSlides);\r\n
+            return this.totalSlides > 0 ? 100 / effectiveSlides : 100;\r\n
+        },\r\n
+        getCardStyle() {\r\n
+            const visible = this.windowWidth < 640 ? 1 : this.windowWidth < 768 ? 2 : 3;\r\n
+            const effectiveSlides = Math.min(visible, this.totalSlides);\r\n
+            const gap = 16;\r\n
+            const totalGap = (effectiveSlides - 1) * gap;\r\n
+            return `width: calc((100% - ${totalGap}px) / ${effectiveSlides})`;\r\n
+        },\r\n
+    }">\r\n
+        <div class="mb-6 md:mb-8">\r\n
+            <div class="flex items-center gap-3 mb-3">\r\n
+                <span class="inline-flex items-center gap-1.5 bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-[11px] font-semibold px-3 py-1 rounded-full border border-primary-100 dark:border-primary-500/20">\r\n
+                    <i class="ri-megaphone-2-fill text-[10px]"></i> Promo Spesial\r\n
+                </span>\r\n
+                <span class="h-px flex-1 bg-gradient-to-r from-gray-200 dark:from-slate-700 to-transparent"></span>\r\n
+            </div>\r\n
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-50 tracking-tight">Penawaran Terbaik untuk Pencari Kos</h2>\r\n
+            <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Temukan promo menarik dari partner kami</p>\r\n
+        </div>\r\n
+\r\n
+        <div class="relative">\r\n
+            <div class="overflow-hidden" @mouseenter="paused = true" @mouseleave="paused = false" @focusin="paused = true" @focusout="paused = false">\r\n
+                <div class="flex gap-4 transition-transform duration-500 ease-out" :style="'transform: translateX(-' + slide * getSlidePercent() + '%)'">\r\n
+                                                                    <div class="shrink-0" :style="getCardStyle()">\r\n
+                            <a href="http://127.0.0.1:8000/ad/click/3?placement=homepage" data-ad-id="3" class="group relative flex flex-col h-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#eefbf1] via-white to-[#d5f4de] dark:from-[#0a2417] dark:via-[#0d3120] dark:to-[#0a2417] border border-[#00aa13]/25 hover:border-[#00aa13]/45 dark:border-[#3fce55]/25 dark:hover:border-[#3fce55]/45 shadow-sm hover:shadow-md transition-all duration-300">\r\n
+                                <div class="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">\r\n
+                                                                            <div class="absolute inset-0 bg-[#00aa13]/10 text-[#008f0f] dark:bg-[#45d060]/10 dark:text-[#5fd96f] flex items-center justify-center p-6">\r\n
+                                                                                            <img src="/images/partners/gopay.svg" alt="GoPay" class="max-h-10 max-w-[120px] object-contain bg-white rounded-xl p-3 shadow-sm" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone='1';this.style.display='none';var f=this.nextElementSibling;if(f) f.style.display='flex';}"><span style="display:none" class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#008316] to-[#00760b] text-white shadow-lg flex items-center justify-center text-sm font-bold uppercase">G</span>\r\n
+                                                                                    </div>\r\n
+                                                                        <div class="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none"></div>\r\n
+                                    <div class="absolute top-3 left-3 flex items-center gap-1.5">\r\n
+                                        <span class="inline-flex items-center gap-1.5 bg-white/95 dark:bg-surface-elevated/95 text-slate-800 dark:text-slate-100 text-[10px] font-semibold px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm border border-white/50">\r\n
+                                                                                            <img src="/images/partners/gopay.svg" alt="" class="h-4 max-w-[64px] object-contain" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone='1';this.style.display='none'}">\r\n
+                                                                                        GoPay\r\n
+                                        </span>\r\n
+                                        <span class="inline-flex items-center gap-1 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">\r\n
+                                            <i class="ri-fire-fill text-[9px]"></i> Promo\r\n
+                                        </span>\r\n
+                                    </div>\r\n
+                                    <span class="absolute bottom-3 right-3 inline-flex items-center gap-0.5 bg-white/95 dark:bg-surface-elevated/95 text-slate-800 dark:text-slate-100 text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm border border-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">\r\n
+                                        Lihat <i class="ri-arrow-right-line text-[9px]"></i>\r\n
+                                    </span>\r\n
+                                </div>\r\n
+                                <div class="p-4 flex flex-col flex-1">\r\n
+                                    <div class="flex items-center gap-1.5 mb-1.5">\r\n
+                                        <span class="inline-flex items-center bg-amber-400 text-slate-900 text-[9px] font-black px-2 py-0.5 rounded-md -rotate-1 shadow-sm">PROMO NGEBUT</span>\r\n
+                                        <span class="text-[11px] font-black text-amber-600 dark:text-amber-400">Promo khusus</span>\r\n
+                                    </div>\r\n
+                                    <h3 class="text-[13px] font-bold text-gray-900 dark:text-slate-50 leading-snug line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">PINDAH KE KOS BARU\r\n
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-slate-400 line-clamp-1">Amankan kos incaranmu pakai promo &mdash; Promo khusus dari GoPay</p>\r\n
+                                    <div class="mt-auto pt-3 border-t border-gray-100 dark:border-white/[0.08]/50 flex items-center justify-between">\r\n
+                                        <span class="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-[0.12em] font-medium">Sponsored</span>\r\n
+                                        <span class="text-[9px] text-slate-400 dark:text-slate-500">*Syarat &amp; Ketentuan berlaku</span>\r\n
+                                    </div>\r\n
+                                </div>\r\n
+                            </a>\r\n
+                        </div>\r\n
+                                                                    <div class="shrink-0" :style="getCardStyle()">\r\n
+                            <a href="http://127.0.0.1:8000/ad/click/2?placement=homepage" data-ad-id="2" class="group relative flex flex-col h-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#eaf4ff] via-white to-[#d3e9ff] dark:from-[#081d36] dark:via-[#0b2a4d] dark:to-[#081d36] border border-[#0a6fff]/25 hover:border-[#0a6fff]/45 dark:border-[#3d9bff]/25 dark:hover:border-[#3d9bff]/45 shadow-sm hover:shadow-md transition-all duration-300">\r\n
+                                <div class="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">\r\n
+                                                                            <div class="absolute inset-0 bg-[#0a6fff]/10 text-[#0a5fd0] dark:bg-[#5aa6ff]/10 dark:text-[#7ab8ff] flex items-center justify-center p-6">\r\n
+                                                                                            <img src="/images/partners/dana.svg" alt="DANA" class="max-h-10 max-w-[120px] object-contain bg-white rounded-xl p-3 shadow-sm" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone='1';this.style.display='none';var f=this.nextElementSibling;if(f) f.style.display='flex';}"><span style="display:none" class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#0a5fd0] to-[#135fd3] text-white shadow-lg flex items-center justify-center text-sm font-bold uppercase">D</span>\r\n
+                                                                                    </div>\r\n
+                                                                        <div class="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none"></div>\r\n
+                                    <div class="absolute top-3 left-3 flex items-center gap-1.5">\r\n
+                                        <span class="inline-flex items-center gap-1.5 bg-white/95 dark:bg-surface-elevated/95 text-slate-800 dark:text-slate-100 text-[10px] font-semibold px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm border border-white/50">\r\n
+                                                                                            <img src="/images/partners/dana.svg" alt="" class="h-4 max-w-[64px] object-contain" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone='1';this.style.display='none'}">\r\n
+                                                                                        DANA\r\n
+                                        </span>\r\n
+                                        <span class="inline-flex items-center gap-1 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">\r\n
+                                            <i class="ri-fire-fill text-[9px]"></i> Promo\r\n
+                                        </span>\r\n
+                                    </div>\r\n
+                                    <span class="absolute bottom-3 right-3 inline-flex items-center gap-0.5 bg-white/95 dark:bg-surface-elevated/95 text-slate-800 dark:text-slate-100 text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm border border-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">\r\n
+                                        Lihat <i class="ri-arrow-right-line text-[9px]"></i>\r\n
+                                    </span>\r\n
+                                </div>\r\n
+                                <div class="p-4 flex flex-col flex-1">\r\n
+                                    <div class="flex items-center gap-1.5 mb-1.5">\r\n
+                                        <span class="inline-flex items-center bg-amber-400 text-slate-900 text-[9px] font-black px-2 py-0.5 rounded-md -rotate-1 shadow-sm">PROMO NGEBUT</span>\r\n
+                                        <span class="text-[11px] font-black text-amber-600 dark:text-amber-400">Promo khusus</span>\r\n
+                                    </div>\r\n
+                                    <h3 class="text-[13px] font-bold text-gray-900 dark:text-slate-50 leading-snug line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">PINDAH KE KOS BARU\r\n
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-slate-400 line-clamp-1">Amankan kos incaranmu pakai promo &mdash; Promo khusus dari DANA</p>\r\n
+                                    <div class="mt-auto pt-3 border-t border-gray-100 dark:border-white/[0.08]/50 flex items-center justify-between">\r\n
+                                        <span class="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-[0.12em] font-medium">Sponsored</span>\r\n
+                                        <span class="text-[9px] text-slate-400 dark:text-slate-500">*Syarat &amp; Ketentuan berlaku</span>\r\n
+                                    </div>\r\n
+                                </div>\r\n
+                            </a>\r\n
+                        </div>\r\n
+                                                                    <div class="shrink-0" :style="getCardStyle()">\r\n
+                            <a href="http://127.0.0.1:8000/ad/click/1?placement=homepage" data-ad-id="1" class="group relative flex flex-col h-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#fff3ee] via-white to-[#ffe2d5] dark:from-[#27120e] dark:via-[#3a1c13] dark:to-[#27120e] border border-[#ee4d2d]/25 hover:border-[#ee4d2d]/45 dark:border-[#ff7a5c]/25 dark:hover:border-[#ff7a5c]/45 shadow-sm hover:shadow-md transition-all duration-300">\r\n
+                                <div class="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">\r\n
+                                                                            <div class="absolute inset-0 bg-[#ee4d2d]/10 text-[#ee4d2d] dark:bg-[#ff7a5c]/10 dark:text-[#ff9a7c] flex items-center justify-center p-6">\r\n
+                                                                                            <img src="/images/partners/shopee.svg" alt="Shopee" class="max-h-10 max-w-[120px] object-contain bg-white rounded-xl p-3 shadow-sm" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone='1';this.style.display='none';var f=this.nextElementSibling;if(f) f.style.display='flex';}"><span style="display:none" class="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#cc2e14] to-[#d33a1d] text-white shadow-lg flex items-center justify-center text-sm font-bold uppercase">S</span>\r\n
+                                                                                    </div>\r\n
+                                                                        <div class="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent pointer-events-none"></div>\r\n
+                                    <div class="absolute top-3 left-3 flex items-center gap-1.5">\r\n
+                                        <span class="inline-flex items-center gap-1.5 bg-white/95 dark:bg-surface-elevated/95 text-slate-800 dark:text-slate-100 text-[10px] font-semibold px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm border border-white/50">\r\n
+                                                                                            <img src="/images/partners/shopee.svg" alt="" class="h-4 max-w-[64px] object-contain" onerror="if(!this.dataset.fallbackDone){this.dataset.fallbackDone='1';this.style.display='none'}">\r\n
+                                                                                        Shopee\r\n
+                                        </span>\r\n
+                                        <span class="inline-flex items-center gap-1 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">\r\n
+                                            <i class="ri-fire-fill text-[9px]"></i> Promo\r\n
+                                        </span>\r\n
+                                    </div>\r\n
+                                    <span class="absolute bottom-3 right-3 inline-flex items-center gap-0.5 bg-white/95 dark:bg-surface-elevated/95 text-slate-800 dark:text-slate-100 text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-sm backdrop-blur-sm border border-white/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200">\r\n
+                                        Lihat <i class="ri-arrow-right-line text-[9px]"></i>\r\n
+                                    </span>\r\n
+                                </div>\r\n
+                                <div class="p-4 flex flex-col flex-1">\r\n
+                                    <div class="flex items-center gap-1.5 mb-1.5">\r\n
+                                        <span class="inline-flex items-center bg-amber-400 text-slate-900 text-[9px] font-black px-2 py-0.5 rounded-md -rotate-1 shadow-sm">PROMO NGEBUT</span>\r\n
+                                        <span class="text-[11px] font-black text-amber-600 dark:text-amber-400">Promo khusus</span>\r\n
+                                    </div>\r\n
+                                    <h3 class="text-[13px] font-bold text-gray-900 dark:text-slate-50 leading-snug line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">PINDAH KE KOS BARU\r\n
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-slate-400 line-clamp-1">Amankan kos incaranmu pakai promo &mdash; Promo khusus dari Shopee</p>\r\n
+                                    <div class="mt-auto pt-3 border-t border-gray-100 dark:border-white/[0.08]/50 flex items-center justify-between">\r\n
+                                        <span class="inline-flex items-center gap-1 text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-[0.12em] font-medium">Sponsored</span>\r\n
+                                        <span class="text-[9px] text-slate-400 dark:text-slate-500">*Syarat &amp; Ketentuan berlaku</span>\r\n
+                                    </div>\r\n
+                                </div>\r\n
+                            </a>\r\n
+                        </div>\r\n
+                                    </div>\r\n
+            </div>\r\n
+\r\n
+                        <div class="flex items-center justify-center gap-2 mt-5">\r\n
+                <button @click="prev()" aria-label="Sebelumnya" class="carousel-nav-btn w-8 h-8 rounded-full border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300 flex items-center justify-center transition-all duration-200 shadow-sm">\r\n
+                    <i class="ri-arrow-left-s-line text-sm"></i>\r\n
+                </button>\r\n
+                <div class="flex items-center gap-1">\r\n
+                                            <button @click="goTo(0)" :class="slide === 0 ? 'bg-primary-500 w-4' : 'bg-gray-200 dark:bg-slate-600 w-2'" class="h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none" aria-label="Slide 1"></button>\r\n
+                                            <button @click="goTo(1)" :class="slide === 1 ? 'bg-primary-500 w-4' : 'bg-gray-200 dark:bg-slate-600 w-2'" class="h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none" aria-label="Slide 2"></button>\r\n
+                                            <button @click="goTo(2)" :class="slide === 2 ? 'bg-primary-500 w-4' : 'bg-gray-200 dark:bg-slate-600 w-2'" class="h-2 rounded-full transition-all duration-300 cursor-pointer focus:outline-none" aria-label="Slide 3"></button>\r\n
+                                    </div>\r\n
+                <button @click="next()" aria-label="Berikutnya" class="carousel-nav-btn w-8 h-8 rounded-full border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-300 flex items-center justify-center transition-all duration-200 shadow-sm">\r\n
+                    <i class="ri-arrow-right-s-line text-sm"></i>\r\n
+                </button>\r\n
+            </div>\r\n
+                    </div>\r\n
+    </div>\r\n
+</section>\r\n
+\n
+\n
+    \n
+      \n
+     <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-warn-50/40 dark:from-surface-elevated dark:via-surface-elevated dark:to-primary-900/10">\n
+         <div class="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-gradient-to-br from-primary-500/12 to-warn-400/10 blur-3xl"></div>\n
+         <div class="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-gradient-to-br from-primary-400/10 to-primary-600/8 blur-3xl"></div>\n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6 pt-14 pb-12 md:pt-20 md:pb-16 grid lg:grid-cols-2 gap-12 items-center fade-in">\n
+            <div class="text-center lg:text-left">\n
+                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-300 bg-primary-50 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20 px-3 py-1.5 rounded-full">\n
+                    <i class="ri-sparkling-2-line"></i> Marketplace &amp; Manajemen Kos Terpadu\n
+                </span>\n
+                <h1 class="mt-5 text-3xl sm:text-4xl xl:text-[2.75rem] leading-[1.15] font-bold text-gray-900 dark:text-slate-50 tracking-tight text-balance">\n
+                    Temukan Kos Nyaman,<br class="hidden sm:block">\n
+                    <span class="text-primary-500">Tanpa Ribet.</span>\n
+                </h1>\n
+                <p class="mt-5 text-gray-500 dark:text-slate-400 text-base md:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0">\n
+                    Cari kos sesuai lokasi, budget, dan kebutuhanmu dalam satu platform.\n
+                </p>\n
+\n
+                <form method="GET" action="/" class="mt-8 max-w-xl mx-auto lg:mx-0 bg-gray-50 dark:bg-surface-elevated rounded-2xl p-2 border border-gray-200 dark:border-white/10 focus-within:border-primary-300 dark:focus-within:border-primary-500/50 focus-within:ring-2 focus-within:ring-primary-500/10 transition shadow-sm">\n
+                    <div class="flex items-center">\n
+                        <label for="hero-search" class="sr-only">Cari kos</label>\n
+                        <div class="flex-1 flex items-center gap-2 px-3 min-w-0">\n
+                            <i class="ri-search-line text-gray-400 dark:text-slate-500 text-lg shrink-0"></i>\n
+                            <input id="hero-search" type="text" name="q" value="" placeholder="Cari nama kos atau lokasi..." class="w-full py-2.5 bg-transparent text-sm text-gray-800 dark:text-slate-50 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none">\n
+                        </div>\n
+                                                <button type="submit" class="shrink-0 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition">Cari Kos</button>\n
+                    </div>\n
+\n
+                    \n
+                    <div class="flex flex-wrap items-center gap-2 px-3 pt-2.5 pb-1 border-t border-gray-100 dark:border-white/10 mt-2">\n
+                        <span class="text-[11px] font-medium text-gray-400 dark:text-slate-500">Cepat cari:</span>\n
+                        <a href="/?tersedia=1" class="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-gray-200 dark:border-white/[0.08] hover:border-primary-300 px-2.5 py-1 rounded-full transition"><i class="ri-door-open-line text-primary-500"></i> Tersedia</a>\n
+                        <a href="/?harga=murah" class="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-gray-200 dark:border-white/[0.08] hover:border-primary-300 px-2.5 py-1 rounded-full transition"><i class="ri-money-dollar-circle-line text-primary-500"></i> Harga Murah</a>\n
+                        <a href="/?tipe=putri" class="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-gray-200 dark:border-white/[0.08] hover:border-primary-300 px-2.5 py-1 rounded-full transition"><i class="ri-user-heart-line text-primary-500"></i> Kos Putri</a>\n
+                    </div>\n
+                </form>\n
+\n
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">\n
+                    <a href="#properti" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">\n
+                        <i class="ri-search-line"></i> Lihat Kos\n
+                    </a>\n
+                                            <a href="http://127.0.0.1:8000/register" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 text-sm font-semibold text-gray-700 dark:text-slate-200 bg-white dark:bg-surface-elevated border border-gray-200 dark:border-white/[0.08] hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-300 px-7 py-3 rounded-xl transition">\n
+                            Mulai Sekarang <i class="ri-arrow-right-line"></i>\n
+                        </a>\n
+                                    </div>\n
+            </div>\n
+\n
+            \n
+            <div class="relative lg:block" aria-label="Preview Aplikasi KosManager">\n
+                <div class="relative bg-white dark:bg-surface-elevated rounded-2xl border border-slate-200 dark:border-white/10 shadow-xl shadow-slate-200/60 dark:shadow-black/30 overflow-hidden">\n
+                    \n
+                    <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100 dark:border-white/10 bg-gray-50/70 dark:bg-surface-elevated/70">\n
+                        <div class="flex items-center gap-1.5">\n
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>\n
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>\n
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>\n
+                        </div>\n
+                        <div class="flex-1 flex items-center justify-center">\n
+                            <div class="flex items-center gap-1.5 bg-white dark:bg-surface-elevated rounded-md px-3 py-1 border border-gray-200 dark:border-white/[0.08]">\n
+                                <svg class="w-3 h-3 text-primary-500" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="16" fill="currentColor"/><path d="M32 12L14 28V50C14 51.1 14.9 52 16 52H28V38C28 36.9 28.9 36 30 36H34C35.1 36 36 36.9 36 38V52H48C49.1 52 50 51.1 50 50V28L32 12Z" fill="white" opacity="0.9"/></svg>\n
+                                <span class="text-[11px] font-semibold text-gray-500 dark:text-slate-400">kosmanager.id</span>\n
+                            </div>\n
+                        </div>\n
+                    </div>\n
+\n
+                    \n
+                    <div class="p-4 space-y-3">\n
+                        \n
+                        <div class="flex items-center justify-between">\n
+                            <div>\n
+                                <p class="text-[11px] text-slate-400 dark:text-slate-500">Selamat pagi,</p>\n
+                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50">Rina Wulandari</p>\n
+                            </div>\n
+                            <div class="flex gap-2">\n
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">\n
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>\n
+                                </div>\n
+                                <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center">\n
+                                    <span class="text-xs font-bold text-primary-600 dark:text-primary-300">R</span>\n
+                                </div>\n
+                            </div>\n
+                        </div>\n
+\n
+                        \n
+                        <div class="rounded-xl border border-slate-100 dark:border-white/10 overflow-hidden">\n
+                            <div class="relative h-24 bg-gradient-to-br from-primary-100 via-primary-50 to-emerald-50 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700">\n
+                                <div class="absolute inset-0 flex items-center justify-center">\n
+                                    <div class="grid grid-cols-3 gap-1 opacity-30">\n
+                                        <div class="w-16 h-12 rounded bg-white/60"></div>\n
+                                        <div class="w-16 h-12 rounded bg-white/40"></div>\n
+                                        <div class="w-16 h-12 rounded bg-white/50"></div>\n
+                                    </div>\n
+                                </div>\n
+                                <span class="absolute top-2 left-2 text-[9px] font-bold bg-white/90 dark:bg-surface-elevated/90 text-green-700 dark:text-green-300 px-2 py-0.5 rounded-md backdrop-blur">Sewa Aktif</span>\n
+                            </div>\n
+                            <div class="p-3">\n
+                                <div class="flex items-center justify-between">\n
+                                    <div>\n
+                                        <p class="text-xs font-bold text-slate-900 dark:text-slate-50">Kos Melati Indah</p>\n
+                                        <p class="text-[10px] text-slate-400">Kamar A03</p>\n
+                                    </div>\n
+                                    <span class="text-[10px] font-bold bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300 px-2 py-0.5 rounded-md">Kontrak Aktif</span>\n
+                                </div>\n
+                            </div>\n
+                        </div>\n
+\n
+                        \n
+                        <div class="grid grid-cols-2 gap-2">\n
+                            <div class="rounded-lg bg-slate-50 dark:bg-surface-elevated/60 p-2.5">\n
+                                <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Tagihan</p>\n
+                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-0.5">Rp 850.000</p>\n
+                                <p class="text-[9px] text-amber-500 font-medium mt-0.5">Belum dibayar</p>\n
+                            </div>\n
+                            <div class="rounded-lg bg-slate-50 dark:bg-surface-elevated/60 p-2.5">\n
+                                <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Favorit</p>\n
+                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-0.5">3 Kos</p>\n
+                                <p class="text-[9px] text-slate-400 mt-0.5">Tersimpan</p>\n
+                            </div>\n
+                        </div>\n
+\n
+                        \n
+                        <div class="flex gap-2">\n
+                            <div class="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-primary-50 dark:bg-primary-500/10 py-2">\n
+                                <svg class="w-3.5 h-3.5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>\n
+                                <span class="text-[10px] font-semibold text-primary-600 dark:text-primary-300">Cari Kos</span>\n
+                            </div>\n
+                            <div class="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-slate-100 dark:bg-surface-elevated py-2">\n
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>\n
+                                <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Kontrak</span>\n
+                            </div>\n
+                            <div class="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-slate-100 dark:bg-surface-elevated py-2">\n
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>\n
+                                <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Chat</span>\n
+                            </div>\n
+                        </div>\n
+                    </div>\n
+                </div>\n
+\n
+                \n
+                <div class="absolute -bottom-4 -left-4 bg-white dark:bg-surface-elevated rounded-xl border border-slate-200 dark:border-white/10 shadow-lg px-4 py-3 flex items-center gap-2.5">\n
+                    <span class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 flex items-center justify-center shrink-0">\n
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>\n
+                    </span>\n
+                    <div>\n
+                        <p class="text-xs font-bold text-slate-800 dark:text-slate-50">Pembayaran diverifikasi</p>\n
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500">Kamar A03 · 2 menit lalu</p>\n
+                    </div>\n
+                </div>\n
+\n
+                <!-- Floating element — search result card -->\n
+                <div class="absolute -top-3 -right-3 bg-white dark:bg-surface-elevated rounded-xl border border-slate-200 dark:border-white/10 shadow-lg p-3 flex items-center gap-3 max-w-[200px]">\n
+                    <div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">\n
+                        <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>\n
+                    </div>\n
+                    <div class="min-w-0">\n
+                        <p class="text-[10px] font-bold text-slate-900 dark:text-slate-50 truncate">Kos Melati</p>\n
+                        <p class="text-[9px] text-slate-400">Rp 850.000/bln</p>\n
+                        <div class="flex items-center gap-1 mt-0.5">\n
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>\n
+                            <span class="text-[8px] font-semibold text-green-600">2 tersedia</span>\n
+                        </div>\n
+                    </div>\n
+                </div>\n
+            </div>\n
+        </div>\n
+\n
+        \n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6 pb-12">\n
+            <div class="border-y border-slate-100 dark:border-white/10 py-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-14">\n
+                <div class="text-center min-w-20">\n
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-slate-50">1+</p>\n
+                    <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1 font-semibold uppercase tracking-wider">Kos Terdaftar</p>\n
+                </div>\n
+                <div class="w-px h-10 bg-gray-200 dark:bg-surface-elevated hidden sm:block"></div>\n
+                <div class="text-center min-w-20">\n
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-slate-50">0+</p>\n
+                    <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1 font-semibold uppercase tracking-wider">Kamar</p>\n
+                </div>\n
+                <div class="w-px h-10 bg-gray-200 dark:bg-surface-elevated hidden sm:block"></div>\n
+                <div class="text-center min-w-20">\n
+                    <p class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-slate-50">4+</p>\n
+                    <p class="text-[11px] text-gray-400 dark:text-slate-500 mt-1 font-semibold uppercase tracking-wider">Pemilik Kos</p>\n
+                </div>\n
+            </div>\n
+        </div>\n
+    </section>\n
+\n
+    \n
+    <section id="properti" class="scroll-mt-20 bg-gray-50 dark:bg-surface-elevated/60 py-16">\n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6">\n
+            <div class="mb-10 flex flex-wrap items-end justify-between gap-4">\n
+                <div>\n
+                    <div class="mb-2">\n
+                        <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-red-500/25">\n
+                            <i class="ri-star-fill text-[9px]"></i> Kos Populer\n
+                        </span>\n
+                    </div>\n
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-slate-50 tracking-tight">Kos Populer</h2>\n
+                    <p class="text-sm text-gray-400 dark:text-slate-500 mt-1.5">\n
+                                                    Pilihan kos aktif yang terdaftar di KosManager\n
+                                            </p>\n
+                </div>\n
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-400 dark:text-slate-500"><i class="ri-refresh-line"></i> Diperbarui otomatis dari data terkini</span>\n
+                            </div>\n
+\n
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">\n
+                                                                    <a  href="http://127.0.0.1:8000/login"                            class="group block relative bg-white dark:bg-surface-elevated rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 cursor-pointer hover:shadow-xl hover:-translate-y-1 hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-200">\n
+\n
+                            <div class="relative aspect-[16/10] overflow-hidden">\n
+                                                                    <div class="absolute inset-0 bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700">\n
+                                        <span class="absolute inset-0 flex items-center justify-center text-[7rem] leading-none font-bold uppercase text-primary-900/[0.06] dark:text-slate-50/5 select-none" aria-hidden="true">P</span>\n
+                                        <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-primary-100/70 dark:bg-surface-elevated/60"></div>\n
+                                        <div class="absolute -left-10 bottom-[-2.5rem] w-36 h-36 rounded-full bg-blue-100/60 dark:bg-surface-elevated/40"></div>\n
+                                    </div>\n
+                                    <div class="absolute inset-0 flex items-center justify-center">\n
+                                        <div class="w-14 h-14 rounded-2xl bg-white/90 dark:bg-surface-elevated/90 shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform duration-300">\n
+                                            <i class="ri-home-heart-line text-2xl text-primary-500 dark:text-primary-300"></i>\n
+                                        </div>\n
+                                    </div>\n
+                                \n
+                                                                    <span class="absolute top-3 left-3 inline-flex items-center gap-1 bg-slate-800/90 dark:bg-surface-elevated/90 backdrop-blur text-[11px] font-bold text-slate-200 px-2.5 py-1.5 rounded-lg shadow-sm">\n
+                                        <i class="ri-door-closed-line text-xs"></i> PENUH\n
+                                    </span>\n
+                                                            </div>\n
+\n
+                            <div class="p-5">\n
+                                <h3 class="font-semibold not-italic text-[15px] sm:text-base text-gray-900 dark:text-slate-50 leading-snug line-clamp-2 break-words group-hover:text-primary-500 dark:group-hover:text-primary-300 transition">PJ Suryatmi</h3>\n
+                                <p class="mt-1.5 text-[13px] text-slate-500 dark:text-slate-500 flex items-start gap-1 line-clamp-1">\n
+                                    <i class="ri-map-pin-2-fill text-primary-500 text-xs mt-0.5 shrink-0"></i>\n
+                                    <span>Psr. Elang No. 573, Prabumulih 52202, DKI</span>\n
+                                </p>\n
+                                <p class="mt-2.5 text-xs text-gray-500 dark:text-slate-400 leading-relaxed line-clamp-2 min-h-[2rem]">\n
+                                    Odit voluptatem natus dolor cumque occaecati repudiandae impedit laboriosam. Eligendi quia...\n
+                                </p>\n
+\n
+                                <div class="mt-4 pt-3.5 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-3">\n
+                                                                            <p class="text-xs text-gray-400 dark:text-slate-500">Harga hubungi pemilik</p>\n
+                                                                                                                <span class="shrink-0 inline-flex items-center gap-1 text-xs font-bold text-primary-500 group-hover:gap-2 transition-all">Lihat Detail <i class="ri-arrow-right-line"></i></span>\n
+                                                                    </div>\n
+                            </div>\n
+                        </a>\n
+                                    </div>\n
+            \n
+            \n
+            <div class="mt-12 bg-white dark:bg-surface-elevated rounded-2xl border border-gray-200 dark:border-white/10 px-6 py-8 sm:px-10 text-center">\n
+                <div class="mb-3">\n
+                    <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-red-500/25">\n
+                        <i class="ri-user-star-line text-[9px]"></i> Untuk Anda\n
+                    </span>\n
+                </div>\n
+                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-50 tracking-tight">Temukan Kos yang Cocok untuk Anda</h3>\n
+                <p class="mt-2 text-sm text-gray-500 dark:text-slate-400 max-w-md mx-auto">Jelajahi kos yang tersedia dan pilih kamar sesuai kebutuhan Anda.</p>\n
+                <div class="mt-6">\n
+                                            <a href="http://127.0.0.1:8000/register" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">\n
+                            <i class="ri-user-add-line"></i> Daftar sebagai Penghuni\n
+                        </a>\n
+                                    </div>\n
+            </div>\n
+        </div>\n
+    </section>\n
+\n
+    \n
+    <section id="kategori" class="scroll-mt-20 bg-white dark:bg-surface-elevated py-16 md:py-20">\n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6">\n
+            <div class="mb-10 max-w-xl">\n
+                <span class="text-xs font-bold uppercase tracking-wider text-primary-500">Kategori</span>\n
+                <h2 class="mt-2 text-2xl md:text-3xl font-bold text-gray-900 dark:text-slate-50 tracking-tight">Cari Kos Sesuai Kebutuhanmu</h2>\n
+                <p class="mt-3 text-sm md:text-base text-gray-500 dark:text-slate-400 leading-relaxed">Jelajahi berdasarkan kategori, fasilitas, dan preferensi hunianmu.</p>\n
+            </div>\n
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">\n
+                                                    <a href="http://127.0.0.1:8000/tenant/kos?q=Kos%20Putra"\n
+                       class="group rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                        <div class="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-200">\n
+                            <i class="ri-user-line text-xl"></i>\n
+                        </div>\n
+                        <h3 class="mt-3 text-sm font-bold text-gray-900 dark:text-slate-50">Kos Putra</h3>\n
+                        <p class="mt-0.5 text-[11px] text-gray-400 dark:text-slate-500">Cocok untuk pria</p>\n
+                    </a>\n
+                                    <a href="http://127.0.0.1:8000/tenant/kos?q=Kos%20Putri"\n
+                       class="group rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                        <div class="w-11 h-11 rounded-xl bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform duration-200">\n
+                            <i class="ri-user-heart-line text-xl"></i>\n
+                        </div>\n
+                        <h3 class="mt-3 text-sm font-bold text-gray-900 dark:text-slate-50">Kos Putri</h3>\n
+                        <p class="mt-0.5 text-[11px] text-gray-400 dark:text-slate-500">Nyaman untuk wanita</p>\n
+                    </a>\n
+                                    <a href="http://127.0.0.1:8000/tenant/kos?q=Kos%20Campur"\n
+                       class="group rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                        <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform duration-200">\n
+                            <i class="ri-group-line text-xl"></i>\n
+                        </div>\n
+                        <h3 class="mt-3 text-sm font-bold text-gray-900 dark:text-slate-50">Kos Campur</h3>\n
+                        <p class="mt-0.5 text-[11px] text-gray-400 dark:text-slate-500">Beragam penghuni</p>\n
+                    </a>\n
+                                    <a href="http://127.0.0.1:8000/tenant/kos?q=Kos%20Eksklusif"\n
+                       class="group rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                        <div class="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-200">\n
+                            <i class="ri-vip-crown-line text-xl"></i>\n
+                        </div>\n
+                        <h3 class="mt-3 text-sm font-bold text-gray-900 dark:text-slate-50">Kos Eksklusif</h3>\n
+                        <p class="mt-0.5 text-[11px] text-gray-400 dark:text-slate-500">Fasilitas premium</p>\n
+                    </a>\n
+                                    <a href="http://127.0.0.1:8000/tenant/kos?q=Dekat%20Kampus"\n
+                       class="group rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                        <div class="w-11 h-11 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform duration-200">\n
+                            <i class="ri-graduation-cap-line text-xl"></i>\n
+                        </div>\n
+                        <h3 class="mt-3 text-sm font-bold text-gray-900 dark:text-slate-50">Dekat Kampus</h3>\n
+                        <p class="mt-0.5 text-[11px] text-gray-400 dark:text-slate-500">Strategis untuk mahasiswa</p>\n
+                    </a>\n
+                                    <a href="http://127.0.0.1:8000/tenant/kos?q=Kos%20Murah"\n
+                       class="group rounded-2xl border border-gray-200 dark:border-white/10 p-5 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                        <div class="w-11 h-11 rounded-xl bg-sky-50 dark:bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400 group-hover:scale-110 transition-transform duration-200">\n
+                            <i class="ri-wallet-3-line text-xl"></i>\n
+                        </div>\n
+                        <h3 class="mt-3 text-sm font-bold text-gray-900 dark:text-slate-50">Kos Murah</h3>\n
+                        <p class="mt-0.5 text-[11px] text-gray-400 dark:text-slate-500">Harga bersahabat</p>\n
+                    </a>\n
+                            </div>\n
+        </div>\n
+    </section>\n
+\n
+    \n
+    <section id="keunggulan" class="scroll-mt-20 bg-gray-50 dark:bg-surface-elevated/60 py-16 md:py-20">\n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6">\n
+            <div class="mb-12 max-w-xl mx-auto text-center">\n
+                <span class="text-xs font-bold uppercase tracking-wider text-primary-500">Mengapa KosManager</span>\n
+                <h2 class="mt-2 text-2xl md:text-3xl font-bold text-gray-900 dark:text-slate-50 tracking-tight">Kenapa Memilih KosManager?</h2>\n
+                <p class="mt-3 text-sm md:text-base text-gray-500 dark:text-slate-400 leading-relaxed">Satu platform untuk pencari kos dan pemilik kos — proses sewa jelas, operasional terkelola rapi.</p>\n
+            </div>\n
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">\n
+                <div class="rounded-2xl border border-gray-200 dark:border-white/10 p-6 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-md transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                    <div class="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center">\n
+                        <i class="ri-search-line text-primary-500 text-xl"></i>\n
+                    </div>\n
+                    <h3 class="mt-4 font-bold text-gray-900 dark:text-slate-50">Pencarian Mudah</h3>\n
+                    <p class="mt-1.5 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">Saring kos berdasarkan lokasi, budget, dan fasilitas yang kamu butuhkan.</p>\n
+                </div>\n
+                <div class="rounded-2xl border border-gray-200 dark:border-white/10 p-6 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-md transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                    <div class="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center">\n
+                        <i class="ri-flashlight-line text-emerald-500 text-xl"></i>\n
+                    </div>\n
+                    <h3 class="mt-4 font-bold text-gray-900 dark:text-slate-50">Booking Cepat</h3>\n
+                    <p class="mt-1.5 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">Booking menunggu konfirmasi pemilik kos. Proses check-in jadi lebih mudah.</p>\n
+                </div>\n
+                <div class="rounded-2xl border border-gray-200 dark:border-white/10 p-6 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-md transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                    <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">\n
+                        <i class="ri-wallet-3-line text-amber-500 text-xl"></i>\n
+                    </div>\n
+                    <h3 class="mt-4 font-bold text-gray-900 dark:text-slate-50">Pembayaran Praktis</h3>\n
+                    <p class="mt-1.5 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">Tagihan jelas, unggah bukti bayar, dan verifikasi transparan.</p>\n
+                </div>\n
+                <div class="rounded-2xl border border-gray-200 dark:border-white/10 p-6 hover:border-primary-200 dark:hover:border-primary-500/30 hover:shadow-md transition-all duration-200 bg-white dark:bg-surface-elevated">\n
+                    <div class="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center">\n
+                        <i class="ri-layout-masonry-line text-indigo-500 text-xl"></i>\n
+                    </div>\n
+                    <h3 class="mt-4 font-bold text-gray-900 dark:text-slate-50">Manajemen Terintegrasi</h3>\n
+                    <p class="mt-1.5 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">Kos, kamar, penghuni, dan laporan keuangan dalam satu dashboard.</p>\n
+                </div>\n
+            </div>\n
+        </div>\n
+    </section>\n
+\n
+    \n
+    <section id="faq" class="scroll-mt-20 bg-white dark:bg-surface-elevated py-16 md:py-20">\n
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">\n
+            <div class="mb-10 text-center">\n
+                <span class="text-xs font-bold uppercase tracking-wider text-primary-500">Bantuan</span>\n
+                <h2 class="mt-2 text-2xl md:text-3xl font-bold text-gray-900 dark:text-slate-50 tracking-tight">Pertanyaan yang Sering Diajukan</h2>\n
+            </div>\n
+            <div class="space-y-3" x-data="{ open: null }">\n
+                                                    <div class="bg-gray-50 dark:bg-surface-elevated rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">\n
+                        <button type="button"\n
+                                class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"\n
+                                @click="open = open === 0 ? null : 0"\n
+                                :aria-expanded="(open === 0).toString()">\n
+                            <span class="text-sm font-semibold text-gray-800 dark:text-slate-200">Bagaimana cara mencari kos?</span>\n
+                            <i class="ri-arrow-down-s-line text-gray-400 transition-transform" :class="open === 0 ? 'rotate-180' : ''"></i>\n
+                        </button>\n
+                        <div x-show="open === 0" x-cloak x-transition class="px-5 pb-4 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">\n
+                            Gunakan kolom pencarian atau filter kategori untuk menemukan kos sesuai lokasi, budget, dan fasilitas yang kamu butuhkan.\n
+                        </div>\n
+                    </div>\n
+                                    <div class="bg-gray-50 dark:bg-surface-elevated rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">\n
+                        <button type="button"\n
+                                class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"\n
+                                @click="open = open === 1 ? null : 1"\n
+                                :aria-expanded="(open === 1).toString()">\n
+                            <span class="text-sm font-semibold text-gray-800 dark:text-slate-200">Bagaimana cara booking kamar?</span>\n
+                            <i class="ri-arrow-down-s-line text-gray-400 transition-transform" :class="open === 1 ? 'rotate-180' : ''"></i>\n
+                        </button>\n
+                        <div x-show="open === 1" x-cloak x-transition class="px-5 pb-4 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">\n
+                            Buka detail kos, pilih kamar yang tersedia, lalu klik &quot;Booking&quot;. Booking diajukan sebagai pending lalu dikonfirmasi pemilik kos sebelum check-in.\n
+                        </div>\n
+                    </div>\n
+                                    <div class="bg-gray-50 dark:bg-surface-elevated rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">\n
+                        <button type="button"\n
+                                class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"\n
+                                @click="open = open === 2 ? null : 2"\n
+                                :aria-expanded="(open === 2).toString()">\n
+                            <span class="text-sm font-semibold text-gray-800 dark:text-slate-200">Bagaimana cara membayar tagihan?</span>\n
+                            <i class="ri-arrow-down-s-line text-gray-400 transition-transform" :class="open === 2 ? 'rotate-180' : ''"></i>\n
+                        </button>\n
+                        <div x-show="open === 2" x-cloak x-transition class="px-5 pb-4 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">\n
+                            Masuk ke menu Tagihan, pilih metode pembayaran (transfer bank atau tunai), lalu unggah bukti pembayaran untuk diverifikasi pengelola.\n
+                        </div>\n
+                    </div>\n
+                                    <div class="bg-gray-50 dark:bg-surface-elevated rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden">\n
+                        <button type="button"\n
+                                class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"\n
+                                @click="open = open === 3 ? null : 3"\n
+                                :aria-expanded="(open === 3).toString()">\n
+                            <span class="text-sm font-semibold text-gray-800 dark:text-slate-200">Apakah pemilik kos bisa ikut mendaftar?</span>\n
+                            <i class="ri-arrow-down-s-line text-gray-400 transition-transform" :class="open === 3 ? 'rotate-180' : ''"></i>\n
+                        </button>\n
+                        <div x-show="open === 3" x-cloak x-transition class="px-5 pb-4 text-sm text-gray-500 dark:text-slate-400 leading-relaxed">\n
+                            Tentu. Daftar sebagai pengelola untuk menambahkan kos, kamar, penghuni, dan memantau laporan keuangan secara terpusat.\n
+                        </div>\n
+                    </div>\n
+                            </div>\n
+        </div>\n
+    </section>\n
+\n
+    \n
+    <section class="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 editorial-section">\n
+        <div class="pointer-events-none absolute inset-0 hero-pattern"></div>\n
+        <div class="pointer-events-none absolute -top-32 -right-32 h-80 w-80 rounded-full bg-white/5 blur-3xl"></div>\n
+        <div class="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-black/10 blur-3xl"></div>\n
+        <div class="relative max-w-[1170px] mx-auto px-4 sm:px-6 text-center">\n
+            <div class="mb-4">\n
+                <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-black/20">\n
+                    <i class="ri-home-smile-line text-[9px]"></i> Untuk Pemilik Kos\n
+                </span>\n
+            </div>\n
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold text-white/60 uppercase tracking-widest">\n
+                <svg class="w-4 h-4" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="16" fill="currentColor" opacity="0.3"/><path d="M32 12L14 28V50C14 51.1 14.9 52 16 52H28V38C28 36.9 28.9 36 30 36H34C35.1 36 36 36.9 36 38V52H48C49.1 52 50 51.1 50 50V28L32 12Z" fill="white" opacity="0.5"/></svg>\n
+                KosManager\n
+            </span>\n
+            <h2 class="mt-4 text-3xl md:text-4xl font-extrabold text-white tracking-tight text-balance">Punya Kos? Kelola Lebih<br class="hidden sm:block"> Rapi Hari Ini.</h2>\n
+            <p class="mt-4 text-white/75 max-w-lg mx-auto text-sm md:text-base leading-relaxed">Gabung bersama pemilik lain yang sudah memindahkan pengelolaan kosnya ke KosManager. Gratis untuk memulai.</p>\n
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">\n
+                                    <a href="http://127.0.0.1:8000/register" class="w-full sm:w-auto bg-white text-primary-700 font-bold text-sm px-8 py-3.5 rounded-xl hover:bg-white/90 transition-all duration-300 shadow-lg shadow-black/10 btn-icon-hover">\n
+                        Daftar Gratis <i class="ri-arrow-right-line"></i>\n
+                    </a>\n
+                    <a href="http://127.0.0.1:8000/login" class="w-full sm:w-auto text-sm text-white/70 hover:text-white transition px-8 py-3.5 font-semibold">Masuk ke Akun</a>\n
+                            </div>\n
+        </div>\n
+    </section>\n
+\n
+    \n
+    <footer class="bg-gray-900 dark:bg-black editorial-section">\n
+        <div class="max-w-[1170px] mx-auto px-4 sm:px-6">\n
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 lg:gap-12">\n
+                \n
+                <div class="col-span-2 sm:col-span-4 lg:col-span-1">\n
+                    <div class="flex items-center gap-2.5">\n
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-soft">\n
+                            <svg class="w-5 h-5 text-white" viewBox="0 0 64 64" fill="none"><path d="M32 12L14 28V50C14 51.1 14.9 52 16 52H28V38C28 36.9 28.9 36 30 36H34C35.1 36 36 36.9 36 38V52H48C49.1 52 50 51.1 50 50V28L32 12Z" fill="currentColor"/></svg>\n
+                        </div>\n
+                        <span class="text-lg font-extrabold text-white tracking-tight">KosManager</span>\n
+                    </div>\n
+                    <p class="mt-3 text-xs text-gray-500 leading-relaxed max-w-[240px]">Platform modern untuk pencari kos & pengelola kos di Indonesia. Lebih rapi, lebih mudah.</p>\n
+                </div>\n
+\n
+                \n
+                <div>\n
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Produk</p>\n
+                    <ul class="mt-3.5 space-y-2.5">\n
+                        <li><a href="#properti" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Cari Kos</a></li>\n
+                        <li><a href="#keunggulan" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Untuk Pemilik Kos</a></li>\n
+                        <li><a href="#faq" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">FAQ</a></li>\n
+                        <li><a href="http://127.0.0.1:8000/login" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Masuk</a></li>\n
+                    </ul>\n
+                </div>\n
+\n
+                \n
+                <div>\n
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Perusahaan</p>\n
+                    <ul class="mt-3.5 space-y-2.5">\n
+                        <li><span class="text-sm text-gray-400">Tentang KosManager</span></li>\n
+                        <li><span class="text-sm text-gray-500">support@kosmanager.id</span></li>\n
+                    </ul>\n
+                </div>\n
+\n
+                \n
+                <div>\n
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Legal</p>\n
+                    <ul class="mt-3.5 space-y-2.5">\n
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Kebijakan Privasi</a></li>\n
+                        <li><a href="#" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Syarat & Ketentuan</a></li>\n
+                    </ul>\n
+                </div>\n
+            </div>\n
+\n
+            <div class="mt-12 pt-6 border-t border-gray-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">\n
+                <p class="text-xs text-gray-600">&copy; 2026 KosManager. All rights reserved.</p>\n
+                <div class="flex items-center gap-4">\n
+                                            <a href="http://127.0.0.1:8000/login" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Masuk</a>\n
+                                                    <a href="http://127.0.0.1:8000/register" class="text-xs text-gray-500 hover:text-gray-300 transition-colors">Daftar</a>\n
+                                                            </div>\n
+            </div>\n
+        </div>\n
+    </footer>\n
+\n
+    <script>\n
+        (function () {\n
+            var btn = document.getElementById('mobile-menu-button');\n
+            var menu = document.getElementById('mobile-menu');\n
+\n
+            if (btn && menu) {\n
+                btn.addEventListener('click', function () {\n
+                    var isOpen = !menu.classList.toggle('hidden');\n
+                    btn.setAttribute('aria-expanded', String(isOpen));\n
+                    var icon = btn.querySelector('i');\n
+                    if (icon) {\n
+                        icon.className = isOpen ? 'ri-close-line text-xl' : 'ri-menu-line text-xl';\n
+                    }\n
+                });\n
+\n
+                menu.querySelectorAll('a').forEach(function (a) {\n
+                    a.addEventListener('click', function () {\n
+                        menu.classList.add('hidden');\n
+                        btn.setAttribute('aria-expanded', 'false');\n
+                        var icon = btn.querySelector('i');\n
+                        if (icon) { icon.className = 'ri-menu-line text-xl'; }\n
+                    });\n
+                });\n
+            }\n
+\n
+            document.addEventListener('click', function (e) {\n
+                document.querySelectorAll('details[data-dd]').forEach(function (d) {\n
+                    if (! d.contains(e.target)) { d.removeAttribute('open'); }\n
+                });\n
+            });\n
+\n
+            document.addEventListener('keydown', function (e) {\n
+                if (e.key === 'Escape') {\n
+                    document.querySelectorAll('details[data-dd]').forEach(function (d) {\n
+                        d.removeAttribute('open');\n
+                    });\n
+                    var menu = document.getElementById('mobile-menu');\n
+                    if (menu && !menu.classList.contains('hidden')) {\n
+                        menu.classList.add('hidden');\n
+                        var b = document.getElementById('mobile-menu-button');\n
+                        if (b) { b.setAttribute('aria-expanded', 'false'); }\n
+                    }\n
+                }\n
+            });\n
+        })();\n
+    </script>\n
+\n
+    \n
+    <script>\n
+        document.addEventListener('DOMContentLoaded', function () {\n
+            var ads = document.querySelectorAll('[data-ad-id]');\n
+            if (!window.IntersectionObserver || ads.length === 0) return;\n
+            var observer = new IntersectionObserver(function (entries) {\n
+                entries.forEach(function (entry) {\n
+                    if (entry.isIntersecting) {\n
+                        var el = entry.target;\n
+                        var campaignId = el.getAttribute('data-ad-id');\n
+                        if (campaignId) {\n
+                            fetch('/ad/click/' + campaignId + '?placement=homepage', { method: 'GET', credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } }).catch(function () {});\n
+                        }\n
+                        observer.unobserve(el);\n
+                    }\n
+                });\n
+            }, { threshold: 0.5 });\n
+            ads.forEach(function (ad) { observer.observe(ad); });\n
+        });\n
+    </script>\n
+\n
+\n
+<nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-surface-elevated/90 backdrop-blur-xl border-t border-slate-200/60 dark:border-white/[0.08]/50 safe-area-bottom" aria-label="Navigasi utama">\n
+    <div class="flex items-center justify-around h-16 px-1">\n
+        <a href="/" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/15" aria-label="Beranda">\n
+            <i class="ri-home-fill text-lg"></i>\n
+            <span class="text-[10px] font-semibold leading-none">Beranda</span>\n
+        </a>\n
+        <a href="http://127.0.0.1:8000/tenant/favorites" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Favorit">\n
+            <i class="ri-heart-line text-lg"></i>\n
+            <span class="text-[10px] font-semibold leading-none">Favorit</span>\n
+        </a>\n
+        <a href="http://127.0.0.1:8000/tenant/booking" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Booking">\n
+            <i class="ri-calendar-check-line text-lg"></i>\n
+            <span class="text-[10px] font-semibold leading-none">Booking</span>\n
+        </a>\n
+        <a href="http://127.0.0.1:8000/tenant/tagihan" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Tagihan">\n
+            <i class="ri-bill-line text-lg"></i>\n
+            <span class="text-[10px] font-semibold leading-none">Tagihan</span>\n
+        </a>\n
+        <a href="http://127.0.0.1:8000/login" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Profil">\n
+            <i class="ri-user-line text-lg"></i>\n
+            <span class="text-[10px] font-semibold leading-none">Profil</span>\n
+        </a>\n
+    </div>\n
+</nav>\n
+\n
+<style>\n
+    @media (max-width: 63.9375rem) {\n
+        main { padding-bottom: 5rem !important; }\n
+    }\n
+</style>\n
+\n
+</body>\n
+</html>\n
+' [UTF-8](length: 80127) contains "Promo Terbatas" [ASCII](length: 14).
+
+C:\Users\ASUS\KosManager\tests\Feature\WelcomePromoCtaRefreshTest.php:50
+
+ERRORS!
+Tests: 26, Assertions: 72, Errors: 2, Failures: 2.

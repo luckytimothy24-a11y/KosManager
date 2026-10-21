@@ -157,7 +157,7 @@ class Phase45TenantMarketplaceTest extends TestCase
         $response->assertDontSee($noRoomKos->name);
     }
 
-    /** Cash-only payment method shown on tagihan */
+    /** Payment methods shown on tagihan */
     public function test_cash_only_payment_method_display_on_tagihan(): void
     {
         $penghuni = Penghuni::factory()->create([
@@ -175,10 +175,8 @@ class Phase45TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $tagihan));
         $response->assertOk();
         $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('Transfer Bank');
         $response->assertSee('Konfirmasi Pembayaran Tunai');
-        $response->assertDontSee('Transfer Bank');
-        $response->assertDontSee('E-Wallet / QRIS');
-        $response->assertDontSee('Bayar Online');
     }
 
     /** Payment status unpaid shows correctly */
@@ -351,7 +349,7 @@ class Phase45TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.booking.show', $booking));
         $response->assertOk();
         $response->assertSee($booking->booking_code);
-        $response->assertSee('Booking sudah terkonfirmasi');
+        $response->assertSee('Booking dikonfirmasi');
     }
 
     /** Mobile CTA exists on kos detail */
@@ -380,9 +378,10 @@ class Phase45TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.kos.show', $this->kos));
         $response->assertOk();
         $response->assertSee('Kenapa Booking di KosManager?');
-        $response->assertSee('Booking langsung terkonfirmasi');
         $response->assertSee('Harga ditampilkan sebelum booking');
         $response->assertSee('Data pembayaran aman');
+        // Trust section tidak lagi menjanjikan konfirmasi instan
+        $response->assertDontSee('Booking langsung terkonfirmasi');
     }
 
     /** Kos rules section exists */

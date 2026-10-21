@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Kos;
-use App\Models\PropertyOwner;
 use App\Models\Payout;
+use App\Models\PropertyOwner;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

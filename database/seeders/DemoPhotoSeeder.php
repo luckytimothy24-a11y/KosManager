@@ -19,17 +19,21 @@ class DemoPhotoSeeder extends Seeder
         'Kos Pondok Pogung',
         'Kost Cendana Jakal',
         'Kos Adikara Residence',
+        'Kos Putri Melati',
+        'Kos Exclusive Borobudur',
     ];
 
     private const KOS_COVER_MAP = [
         'Kost Nawasena Seturan' => 'kos-melati.jpg',
         'Kos Arunika Babarsari' => 'kos-mawar.jpg',
         'Kos Maleo Residence' => 'kos-kenanga.jpg',
-        'Kost Taman Gejayan' => 'kos-mawar.jpg',
-        'Rumah Kos Srikandi' => 'kos-melati.jpg',
-        'Kos Pondok Pogung' => 'kos-kenanga.jpg',
-        'Kost Cendana Jakal' => 'kos-mawar.jpg',
-        'Kos Adikara Residence' => 'kos-melati.jpg',
+        'Kost Taman Gejayan' => 'kos-fasad-1.jpg',
+        'Rumah Kos Srikandi' => 'kos-tradisional-1.jpg',
+        'Kos Pondok Pogung' => 'kos-exterior-1.jpg',
+        'Kost Cendana Jakal' => 'kos-taman-1.jpg',
+        'Kos Adikara Residence' => 'kos-mewah-1.jpg',
+        'Kos Putri Melati' => 'kos-melati.jpg',
+        'Kos Exclusive Borobudur' => 'kos-mawar.jpg',
     ];
 
     private const KOS_GALLERY_MAP = [
@@ -41,6 +45,8 @@ class DemoPhotoSeeder extends Seeder
         'Kos Pondok Pogung' => ['kamar-vip-1.jpg', 'kamar-deluxe-2.jpg', 'kamar-standard-1.jpg', 'kamar-wardrobe.jpg', 'kamar-desk.jpg'],
         'Kost Cendana Jakal' => ['kamar-standard-2.jpg', 'kamar-vip-2.jpg', 'kamar-single.jpg', 'kamar-wardrobe.jpg'],
         'Kos Adikara Residence' => ['kamar-deluxe-1.jpg', 'kamar-vip-2.jpg', 'kamar-standard-1.jpg', 'kamar-desk.jpg', 'kamar-wardrobe.jpg'],
+        'Kos Putri Melati' => ['kamar-standard-1.jpg', 'kamar-deluxe-1.jpg', 'kamar-vip-1.jpg', 'kamar-desk.jpg'],
+        'Kos Exclusive Borobudur' => ['kamar-vip-1.jpg', 'kamar-deluxe-2.jpg', 'kamar-standard-2.jpg', 'kamar-wardrobe.jpg'],
     ];
 
     private const KAMAR_ROOM_PHOTOS = [
@@ -52,6 +58,8 @@ class DemoPhotoSeeder extends Seeder
         'Kos Pondok Pogung' => ['P-01' => 'kamar-standard-1.jpg', 'P-02' => 'kamar-standard-2.jpg', 'P-03' => 'kamar-standard-2.jpg', 'P-04' => 'kamar-deluxe-1.jpg', 'P-05' => 'kamar-desk.jpg', 'P-06' => 'kamar-vip-1.jpg', 'P-07' => 'kamar-standard-1.jpg', 'P-08' => 'kamar-vip-2.jpg'],
         'Kost Cendana Jakal' => ['CJ-01' => 'kamar-single.jpg', 'CJ-02' => 'kamar-standard-1.jpg', 'CJ-03' => 'kamar-standard-2.jpg', 'CJ-04' => 'kamar-deluxe-2.jpg', 'CJ-05' => 'kamar-wardrobe.jpg'],
         'Kos Adikara Residence' => ['AD-01' => 'kamar-single.jpg', 'AD-02' => 'kamar-standard-1.jpg', 'AD-03' => 'kamar-deluxe-1.jpg', 'AD-04' => 'kamar-standard-2.jpg', 'AD-05' => 'kamar-vip-1.jpg', 'AD-06' => 'kamar-vip-2.jpg', 'AD-07' => 'kamar-standard-2.jpg', 'AD-08' => 'kamar-standard-1.jpg'],
+        'Kos Putri Melati' => [],
+        'Kos Exclusive Borobudur' => [],
     ];
 
     public function run(): void
@@ -61,6 +69,7 @@ class DemoPhotoSeeder extends Seeder
         $this->seedKosCoverPhotos();
         $this->seedKamarPhotos();
         $this->seedKosGalleryPhotos();
+        $this->seedKosSVGGalleryPhotos();
         $this->seedKosPhotosForKosWithoutGallery();
     }
 
@@ -82,18 +91,9 @@ class DemoPhotoSeeder extends Seeder
         'Kos Pondok Pogung' => ['04.svg', '00.svg'],
         'Kost Cendana Jakal' => ['00.svg', '01.svg'],
         'Kos Adikara Residence' => ['01.svg', '02.svg', '03.svg', '04.svg'],
+        'Kos Putri Melati' => [],
+        'Kos Exclusive Borobudur' => [],
     ];
-
-    public function run(): void
-    {
-        $this->ensureStorageDirectories();
-
-        $this->seedKosCoverPhotos();
-        $this->seedKamarPhotos();
-        $this->seedKosGalleryPhotos();
-        $this->seedKosSVGGalleryPhotos();
-        $this->seedKosPhotosForKosWithoutGallery();
-    }
 
     private function seedKosSVGGalleryPhotos(): void
     {
@@ -109,8 +109,8 @@ class DemoPhotoSeeder extends Seeder
             }
 
             foreach ($svgFiles as $position => $file) {
-                $sourcePath = $sourceDir . '/' . $file;
-                $targetPath = 'kos/4/' . $file;
+                $sourcePath = $sourceDir.'/'.$file;
+                $targetPath = 'kos/4/'.$file;
 
                 if (! Storage::disk('public')->exists($targetPath) && is_file($sourcePath)) {
                     Storage::disk('public')->copy($sourcePath, $targetPath);
@@ -140,7 +140,7 @@ class DemoPhotoSeeder extends Seeder
         ];
 
         foreach ($availablePhotos as $file) {
-            $target = $sourceDir . '/' . $file;
+            $target = $sourceDir.'/'.$file;
             if (! is_file($target) || filesize($target) < 100) {
                 $this->generatePlaceholderImage($target, $file);
             }
@@ -196,10 +196,10 @@ class DemoPhotoSeeder extends Seeder
             }
 
             $file = self::KOS_COVER_MAP[$kosName] ?? 'kos-melati.jpg';
-            $sourcePath = public_path('images/demo/kos/' . $file);
+            $sourcePath = public_path('images/demo/kos/'.$file);
 
-            if (Storage::disk('public')->exists('kos/' . $file)) {
-                $existingPath = 'kos/' . $file;
+            if (Storage::disk('public')->exists('kos/'.$file)) {
+                $existingPath = 'kos/'.$file;
                 if (! $kos->photo || $kos->photo !== $existingPath) {
                     $kos->update(['photo' => $existingPath]);
                 }
@@ -211,11 +211,12 @@ class DemoPhotoSeeder extends Seeder
                         ['path' => $existingPath, 'position' => 0, 'is_cover' => true]
                     );
                 }
+
                 continue;
             }
 
             if (is_file($sourcePath)) {
-                $targetPath = 'kos/' . $file;
+                $targetPath = 'kos/'.$file;
                 if (! Storage::disk('public')->exists($targetPath)) {
                     Storage::disk('public')->put($targetPath, file_get_contents($sourcePath));
                 }
@@ -243,18 +244,19 @@ class DemoPhotoSeeder extends Seeder
                     continue;
                 }
 
-                $sourcePath = public_path('images/demo/kamar/' . $file);
+                $sourcePath = public_path('images/demo/kamar/'.$file);
 
-                if (Storage::disk('public')->exists('kamar/' . $file)) {
-                    $existingPath = 'kamar/' . $file;
+                if (Storage::disk('public')->exists('kamar/'.$file)) {
+                    $existingPath = 'kamar/'.$file;
                     if (! $kamar->photo || $kamar->photo !== $existingPath) {
                         $kamar->update(['photo' => $existingPath]);
                     }
+
                     continue;
                 }
 
                 if (is_file($sourcePath)) {
-                    $targetPath = 'kamar/' . $file;
+                    $targetPath = 'kamar/'.$file;
                     if (! Storage::disk('public')->exists($targetPath)) {
                         Storage::disk('public')->put($targetPath, file_get_contents($sourcePath));
                     }
@@ -275,8 +277,8 @@ class DemoPhotoSeeder extends Seeder
             }
 
             foreach ($files as $position => $file) {
-                $sourcePath = public_path('images/demo/kamar/' . $file);
-                $targetPath = 'kos/gallery/' . $kos->id . '/' . $file;
+                $sourcePath = public_path('images/demo/kamar/'.$file);
+                $targetPath = 'kos/gallery/'.$kos->id.'/'.$file;
 
                 if (! Storage::disk('public')->exists($targetPath) && is_file($sourcePath)) {
                     Storage::disk('public')->put($targetPath, file_get_contents($sourcePath));
@@ -307,12 +309,12 @@ class DemoPhotoSeeder extends Seeder
 
             $galleryFiles = self::KOS_GALLERY_MAP[$kosName] ?? [];
             foreach ($galleryFiles as $position => $file) {
-                $targetPath = 'kos/gallery/' . $kos->id . '/' . $file;
+                $targetPath = 'kos/gallery/'.$kos->id.'/'.$file;
                 if (Storage::disk('public')->exists($targetPath)) {
                     continue;
                 }
 
-                $sourcePath = public_path('images/demo/kamar/' . $file);
+                $sourcePath = public_path('images/demo/kamar/'.$file);
                 if (is_file($sourcePath)) {
                     Storage::disk('public')->put($targetPath, file_get_contents($sourcePath));
                 }

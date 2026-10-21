@@ -48,7 +48,15 @@ class Kamar extends Model
 
     public function occupancy(): int
     {
-        return Penghuni::where('kamar_id', $this->id)->where('status', 'active')->count();
+        return $this->attributes['active_occupants_count']
+            ?? Penghuni::where('kamar_id', $this->id)->where('status', 'active')->count();
+    }
+
+    public function scopeWithActiveOccupants($query)
+    {
+        return $query->withCount([
+            'penghunis as active_occupants_count' => fn ($q) => $q->where('status', 'active'),
+        ]);
     }
 
     public function isFull(): bool
@@ -107,10 +115,10 @@ class Kamar extends Model
         return $query->where('status', '!=', 'maintenance')
             ->where(function ($q) {
                 $q->where('status', 'available')
-                  ->orWhere(function ($q2) {
-                      $q2->where('billing_mode', 'shared')
-                         ->whereRaw('(SELECT COUNT(*) FROM penghunis WHERE penghunis.kamar_id = kamar.id AND penghunis.status = "active" AND penghunis.deleted_at IS NULL) < kamar.capacity');
-                  });
+                    ->orWhere(function ($q2) {
+                        $q2->where('billing_mode', 'shared')
+                            ->whereRaw('(SELECT COUNT(*) FROM penghunis WHERE penghunis.kamar_id = kamar.id AND penghunis.status = "active" AND penghunis.deleted_at IS NULL) < kamar.capacity');
+                    });
             });
     }
 

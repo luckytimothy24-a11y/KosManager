@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\CheckOut;
 use App\Models\Kontrak;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class TenantKontrakController extends Controller
     {
         $tenantId = $request->user()->id;
 
-        $kontraks = Kontrak::with(['kos', 'kamar'])
+        $kontraks = Kontrak::with(['kos', 'kamar', 'penghuni.checkOuts' => fn ($q) => $q->where('status', CheckOut::STATUS_PENDING)->latest()])
             ->whereHas('penghuni', fn ($q) => $q->where('user_id', $tenantId))
             ->latest()
             ->paginate(10);

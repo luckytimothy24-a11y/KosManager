@@ -8,11 +8,15 @@ use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kos;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Services\AuditLogService;
 use App\Services\BookingService;
+use App\Services\BookingStatusService;
 use App\Services\NotificationService;
+use App\Support\StatusLabels;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TenantBookingController extends Controller
 {
@@ -47,11 +51,42 @@ class TenantBookingController extends Controller
                 if (($k->billing_mode ?? 'personal') === 'shared' && $k->hasAvailableSlot()) {
                     return true;
                 }
+
                 return false;
             })->values();
         }
 
-        return view('tenant.booking.create', compact('kos', 'kamar', 'selectedKos'));
+        // Default tanggal mulai hanya nilai awal form — tenant dapat mengubah.
+        // monthly → bulan depan; weekly → +7 hari; daily → hari ini.
+        $rentalType = $request->input('rental_type', old('rental_type', 'monthly'));
+        if (! in_array($rentalType, ['daily', 'weekly', 'monthly'], true)) {
+            $rentalType = 'monthly';
+        }
+
+        $defaultStartDate = old(
+            'start_date',
+            $request->input('start_date', StatusLabels::defaultBookingStartDate($rentalType))
+        );
+        // Validasi sederhana format tanggal dari request (opsional)
+        if (! Carbon::hasFormat($defaultStartDate, 'Y-m-d')) {
+            $defaultStartDate = StatusLabels::defaultBookingStartDate($rentalType);
+        }
+        $defaultEndDate = old(
+            'end_date',
+            StatusLabels::defaultBookingEndDate($defaultStartDate, $rentalType)
+        );
+        if (! Carbon::hasFormat($defaultEndDate, 'Y-m-d')) {
+            $defaultEndDate = StatusLabels::defaultBookingEndDate($defaultStartDate, $rentalType);
+        }
+
+        return view('tenant.booking.create', compact(
+            'kos',
+            'kamar',
+            'selectedKos',
+            'rentalType',
+            'defaultStartDate',
+            'defaultEndDate'
+        ));
     }
 
     public function store(StoreBookingRequest $request, BookingService $bookingService)
@@ -61,8 +96,8 @@ class TenantBookingController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'rental_type' => $request->rental_type,
-            'billing_mode' => $request->input('billing_mode', 'personal'),
-            'requested_occupants' => $request->input('requested_occupants', 1),
+            'billing_mode' => 'personal',
+            'requested_occupants' => 1,
             'notes' => $request->notes,
             'identity_number' => $request->identity_number,
             'phone' => $request->phone,
@@ -73,21 +108,27 @@ class TenantBookingController extends Controller
             $message = match ($result['error']) {
                 'conflict' => 'Kamar sudah dibooking pada periode tersebut.',
                 'overlap' => 'Kamar sudah dibooking pada periode tersebut.',
+                'capacity_exceeded' => 'Jumlah penghuni melebihi kapasitas kamar.',
                 'kamar_penuh' => 'Kamar sudah penuh. Kapasitas tidak mencukupi.',
                 'already_occupant' => 'Anda sudah menjadi penghuni aktif di kamar ini.',
                 'no_price' => 'Harga kamar tidak tersedia.',
                 'billing_mode_not_allowed' => 'Kamar ini tidak mengizinkan shared billing.',
+                'personal_multi_rejected' => 'Booking personal hanya dapat untuk 1 orang.',
                 default => 'Kamar tidak tersedia untuk dibooking.',
             };
 
-            $field = $result['error'] === 'billing_mode_not_allowed' ? 'billing_mode' : 'kamar_id';
+            $field = match ($result['error']) {
+                'billing_mode_not_allowed' => 'billing_mode',
+                'capacity_exceeded', 'personal_multi_rejected' => 'requested_occupants',
+                default => 'kamar_id',
+            };
 
             return redirect()->route('tenant.booking.create', ['kos_id' => $request->kos_id])
                 ->withErrors([$field => $message])->withInput();
         }
 
-        return redirect()->route('tenant.booking.success', $result['booking'])
-            ->with('success', 'Booking berhasil! Kamar telah dipesan untuk Anda.');
+        return redirect(route('tenant.booking.show', $result['booking']).'#pembayaran')
+            ->with('success', 'Booking dibuat. Silakan lakukan pembayaran untuk melanjutkan.');
     }
 
     public function success(Booking $booking)
@@ -102,6 +143,12 @@ class TenantBookingController extends Controller
     {
         $this->authorize('view', $booking);
         $booking->load(['user', 'kos', 'kamar']);
+
+        // Source of truth payment: pembayarans.verification_status
+        $bookingPayment = Pembayaran::where('booking_id', $booking->id)
+            ->whereIn('verification_status', ['pending', 'approved', 'rejected'])
+            ->orderByDesc('id')
+            ->first();
 
         $hasCheckOut = false;
         $kontrak = null;
@@ -127,27 +174,60 @@ class TenantBookingController extends Controller
             }
         }
 
-        return view('tenant.booking.show', compact('booking', 'hasCheckOut', 'kontrak', 'tagihan'));
+        return view('tenant.booking.show', compact('booking', 'hasCheckOut', 'kontrak', 'tagihan', 'bookingPayment'));
     }
 
-    public function cancel(Booking $booking, BookingService $bookingService)
+    /**
+     * Tenant request cancellation.
+     * booking.status TIDAK berubah — hanya membuat cancellation request pending.
+     */
+    public function cancel(Booking $booking, Request $request, BookingStatusService $statusService)
     {
         $this->authorize('cancel', $booking);
 
-        $cancelled = $bookingService->cancel($booking->id);
+        // Hanya field yang diizinkan dari tenant.
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:500'],
+        ]);
 
-        if (! $cancelled) {
-            return back()->with('error', 'Booking sudah diproses sebelumnya.');
+        $result = $statusService->requestCancellation(
+            $booking,
+            $request->user(),
+            $data['reason'] ?? null
+        );
+
+        if (! ($result['ok'] ?? false)) {
+            $error = match ($result['error'] ?? '') {
+                'already_requested' => 'Pengajuan pembatalan sudah menunggu review pemilik kos.',
+                'not_cancellable' => 'Booking ini tidak dapat dibatalkan.',
+                'forbidden' => 'Anda tidak memiliki akses untuk membatalkan booking ini.',
+                default => 'Gagal mengajukan pembatalan booking.',
+            };
+
+            return back()->with('error', $error);
         }
 
         try {
-            AuditLogService::reject('Booking', "Booking {$booking->booking_code} dibatalkan oleh pengguna", ['booking_id' => $booking->id]);
+            AuditLogService::create(
+                'Booking',
+                "Tenant mengajukan pembatalan booking {$booking->booking_code} (menunggu review owner)",
+                [
+                    'booking_id' => $booking->id,
+                    'cancellation_request_id' => $result['request']->id,
+                    'booking_status' => $booking->fresh()->status,
+                ]
+            );
 
-            NotificationService::bookingCancelledByTenant($booking->kos->owner_id, $booking->user->name, $booking->booking_code);
+            NotificationService::bookingCancellationRequested(
+                $booking->kos->owner_id,
+                $booking->user->name,
+                $booking->booking_code
+            );
         } catch (\Exception $e) {
-            \Log::warning('Booking cancel notification/audit failed: '.$e->getMessage());
+            \Log::warning('Booking cancellation request notification/audit failed: '.$e->getMessage());
         }
 
-        return redirect()->route('tenant.booking.index')->with('success', 'Booking berhasil dibatalkan.');
+        return redirect()->route('tenant.booking.index')
+            ->with('success', 'Pengajuan pembatalan terkirim. Menunggu konfirmasi pemilik kos.');
     }
 }

@@ -38,6 +38,17 @@ class LoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
+    protected function prepareForValidation(): void
+    {
+        // Cerminkan aturan register ('lowercase'): abaikan kapitalisasi
+        // dan spasi tepi agar "Test@Mail.com" tetap bisa masuk.
+        if ($this->filled('email')) {
+            $this->merge([
+                'email' => strtolower(trim((string) $this->input('email'))),
+            ]);
+        }
+    }
+
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();

@@ -522,9 +522,13 @@ terdeteksi di repo. `[PARTIALLY IMPLEMENTED]` terkait cakupan API (belum semua f
 2. Marketplace: cari kos/kamar → favorit/klik iklan (tracking) → `booking.create`.
 3. Booking → **langsung approved** → kamar `booked` → notifikasi ke owner & tenant.
 4. Datang ke kos → pengelola **check-in** (data identitas) → Penghuni active + Kontrak (`KT-…`) → kamar `occupied`.
-5. Tagihan dibuat (otomatis/manual) → tenant lihat tagihan → bayar (gesek/cash/e-wallet, opsional bukti) → status `pending_verification`.
+5. Tagihan dibuat (otomatis/manual) → tenant lihat tagihan → bayar (**transfer ke rekening Owner** / cash / e-wallet, opsional bukti) → status `pending_verification`.
 6. Owner/Admin **verifikasi** → `paid`, kamar/statistik ter-update (termasuk pemulihan overdue bila perlu).
 7. Sewa berakhir → tenant/pengelola **request check-out** → approve → kamar `available`, kontrak berakhir.
+
+> **Rekening Pembayaran Owner**: setiap Owner mengatur satu rekening bank tujuan (`owner_bank_accounts`, 1:1 per owner) melalui menu sidebar **Keuangan → Rekening Pembayaran**. Saat tenant membayar (tagihan/booking), rekening Owner ditampilkan server-side melalui relasi `Kos → owner → bankAccount` (fallback: `kos.payment_info` free-text). Nomor rekening lengkap tampil di halaman pembayaran tenant; di dashboard Owner hanya versi masked. KosManager tidak memegang dana tenant — transfer langsung Tenant → rekening Owner; KosManager hanya mencatat instruksi, menerima bukti, dan mencatat status pembayaran.
+
+> **Payout ke Pemilik Kos Asli** (`Keuangan → Payout Pemilik`): model bisnis membedakan **Owner (pengelola/partner/perantara)** dari **Pemilik Kos Asli (property owner)** — pihak yang benar-benar memiliki properti dan berhak menerima hasil pendapatan. Alur: pendapatan kos (pembayaran approved) → payout `pending` → Owner **transfer manual di luar aplikasi** ke rekening pemilik asli (`property_owner_bank_accounts`) → upload bukti → `transferred` → **Super Admin verifikasi** → `verified` (atau `rejected` → Owner resubmit record yang sama). Nominal dihitung **server-side** dari `pembayarans` approved (tagihan chain + booking chain) yang `payment_date` masuk periode payout; `platform_fee` MVP = 0 dan tidak editable Owner (Hak Pemilik = seluruh pendapatan eligible). Anti duplicate: `UNIQUE(kos_id, period_start, period_end)`. `property_owner_id` di-resolve dari `kos.property_owner_id` — bukan dari request. KosManager **tidak memegang dana** dan **tidak melakukan transfer otomatis** — hanya mencatat kewajiban, bukti, dan status. Fitur ini **terpisah** dari `payment_distributions` (distribusi booking → hak role Owner) dan dari `owner_bank_accounts` (rekening tujuan pembayaran tenant).
 
 ### B. Mitra pengiklan (super admin / partner / owner)
 1. Super Admin kelola **Partner** (DANA/Shopee/GoPay/metric) + **Paket** (harga, durasi, penempatan).

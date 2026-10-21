@@ -17,8 +17,18 @@ class AdvertisingCampaignPolicy
 
     public function view(User $user, AdvertisingCampaign $campaign): bool
     {
-        if ($user->isSuperAdmin() || $user->isAdmin()) {
+        if ($user->isSuperAdmin()) {
             return true;
+        }
+
+        if ($user->isAdmin()) {
+            // Third-party campaigns (no kos) are global by design; kos-linked
+            // campaigns follow the same assignment scope as review().
+            if ($campaign->kos_id === null) {
+                return true;
+            }
+
+            return $user->canAccessKos((int) $campaign->kos_id);
         }
 
         return $this->isOwner($user, $campaign);

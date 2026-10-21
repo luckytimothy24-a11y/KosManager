@@ -10,6 +10,19 @@ class KosPolicy
 {
     use HandlesAuthorization;
 
+    public function moderate(User $user, Kos $kos): bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isAdmin()) {
+            return $user->canAccessKos((int) $kos->id);
+        }
+
+        return false;
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->isSuperAdmin() || $user->isAdmin() || $user->isOwner();

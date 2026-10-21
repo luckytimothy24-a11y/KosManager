@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\LaporanController as BaseController;
-use Illuminate\Http\Request;
 
 class LaporanController extends BaseController
 {

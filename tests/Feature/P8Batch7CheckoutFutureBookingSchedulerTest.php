@@ -232,12 +232,16 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => today()->addDays(10)->format('Y-m-d'),
             'end_date' => today()->addDays(40)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ])->assertRedirect();
 
+        // Booking baru SELALU pending — owner harus approve
         $this->assertDatabaseHas('bookings', [
             'user_id' => $tenant->id,
             'kamar_id' => $kamar->id,
-            'status' => 'approved',
+            'status' => 'pending',
         ]);
         $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'booked']);
     }
@@ -252,6 +256,9 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => today()->subDay()->format('Y-m-d'),
             'end_date' => today()->addDays(10)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors(['start_date']);
@@ -268,6 +275,9 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => today()->addDays(10)->format('Y-m-d'),
             'end_date' => today()->addDays(10)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors(['end_date']);
@@ -296,6 +306,9 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => '2026-10-15',
             'end_date' => '2026-10-25',
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors('kamar_id');
@@ -324,6 +337,9 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => '2026-11-01',
             'end_date' => '2026-11-20',
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890002',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 2',
         ]);
 
         $response->assertSessionHasErrors('kamar_id');
@@ -340,6 +356,9 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => today()->addDays(5)->format('Y-m-d'),
             'end_date' => today()->addDays(20)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors('kamar_id');
@@ -356,6 +375,9 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'start_date' => today()->addDays(5)->format('Y-m-d'),
             'end_date' => today()->addDays(20)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors('kamar_id');

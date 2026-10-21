@@ -7,6 +7,7 @@ use App\Models\Pembayaran;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
+use App\Services\PaymentDistributionService;
 use App\Services\PaymentGateway\PaymentGatewayManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,17 +72,32 @@ class PaymentGatewayWebhookController extends Controller
             $locked->update([
                 'verification_status' => Pembayaran::STATUS_APPROVED,
                 'verified_at' => now(),
+                'verified_by' => null, // System auto-verifikasi via webhook (nullable FK)
             ]);
 
             $tagihan = $locked->tagihan;
             if ($tagihan && $tagihan->status !== Tagihan::STATUS_PAID) {
                 $tagihan->update(['status' => Tagihan::STATUS_PAID]);
             }
+
+            // Booking payment → catat distribution (pending; ready setelah booking confirm).
+            if ($locked->booking_id) {
+                app(PaymentDistributionService::class)->recordFromApprovedPayment($locked);
+            }
         });
 
         try {
-            NotificationService::paymentVerified($payment->penghuni->user_id, $payment->tagihan->bill_number);
-            AuditLogService::approve('Pembayaran', "Pembayaran {$payment->payment_number} terverifikasi otomatis (gateway {$payment->gateway_provider})", ['pembayaran_id' => $payment->id]);
+            if ($payment->booking_id) {
+                NotificationService::bookingPaymentVerified($payment->booking->user_id, $payment->booking->booking_code);
+                AuditLogService::approve(
+                    'Pembayaran',
+                    "Pembayaran booking {$payment->booking->booking_code} terverifikasi otomatis (gateway {$payment->gateway_provider})",
+                    ['pembayaran_id' => $payment->id]
+                );
+            } elseif ($payment->penghuni && $payment->tagihan) {
+                NotificationService::paymentVerified($payment->penghuni->user_id, $payment->tagihan->bill_number);
+                AuditLogService::approve('Pembayaran', "Pembayaran {$payment->payment_number} terverifikasi otomatis (gateway {$payment->gateway_provider})", ['pembayaran_id' => $payment->id]);
+            }
         } catch (\Exception $e) {
             \Log::warning('Payment webhook verification notification/audit failed: '.$e->getMessage());
         }

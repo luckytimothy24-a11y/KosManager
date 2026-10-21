@@ -29,12 +29,12 @@ class PaymentLabels
     public static function tagihanBadge(string $status): string
     {
         return match ($status) {
-            'unpaid' => 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-300',
+            'unpaid' => 'bg-warn-100 text-warn-800 dark:bg-warn-500/15 dark:text-warn-300 ring-1 ring-warn-200 dark:ring-warn-500/25',
             'pending_verification' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-300',
             'paid' => 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300',
             'overdue' => 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-200 ring-1 ring-red-200 dark:ring-red-500/30',
-            'cancelled' => 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-100',
-            default => 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-100',
+            'cancelled' => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+            default => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
         };
     }
 
@@ -60,7 +60,7 @@ class PaymentLabels
             'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/10 dark:text-yellow-300',
             'approved' => 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300',
             'rejected' => 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-300',
-            default => 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-100',
+            default => 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
         };
     }
 

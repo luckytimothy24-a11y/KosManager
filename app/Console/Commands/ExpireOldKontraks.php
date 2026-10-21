@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
+use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
@@ -122,7 +123,7 @@ class ExpireOldKontraks extends Command
         $penghuni->update(['status' => 'inactive']);
 
         if ($kamar) {
-            $remainingOccupancy = \App\Models\Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
+            $remainingOccupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
             if ($remainingOccupancy > 0) {
                 $kamar->update(['status' => 'occupied']);
             } elseif ($kamar->status === 'occupied') {

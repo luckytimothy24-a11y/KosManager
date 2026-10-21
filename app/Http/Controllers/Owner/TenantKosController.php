@@ -28,13 +28,25 @@ class TenantKosController extends Controller
 
     public function index(Request $request)
     {
+        // ID fasilitas yang sedang difilter — dipakai eager load & display card.
+        $activeFacilityIds = $request->filled('facilities')
+            ? array_values(array_filter(array_map('intval', (array) $request->facilities)))
+            : [];
+
         $query = Kos::where('status', 'active')
+            ->with(['coverPhoto', 'photos'])
             ->withCount(['kamar as kamar_tersedia' => fn ($q) => $q->where('status', 'available')])
             ->withMin(['kamar as harga_mulai' => fn ($q) => $q->where('status', 'available')], 'monthly_price')
             ->withMin(['kamar as harga_harian_mulai' => fn ($q) => $q->where('status', 'available')->whereNotNull('daily_price')], 'daily_price')
             ->withCount('favorites')
-            ->with(['kamar' => function ($q) {
-                $q->where('status', 'available')->with('fasilitas')->limit(1);
+            ->with(['kamar' => function ($q) use ($activeFacilityIds) {
+                $q->where('status', 'available')->with('fasilitas');
+                // Tanpa filter fasilitas: cukup 1 kamar untuk preview card.
+                // Dengan filter: load SEMUA kamar available agar card bisa
+                // menampilkan fasilitas yang diklik (bukan hanya kamar pertama).
+                if ($activeFacilityIds === []) {
+                    $q->limit(1);
+                }
             }, 'fasilitas' => function ($q) {
                 $q->active();
             }]);
@@ -45,13 +57,20 @@ class TenantKosController extends Controller
                 ->where('name', 'like', "%{$search}%")
                 ->orWhere('address', 'like', "%{$search}%")
                 ->orWhere('description', 'like', "%{$search}%")
-                ->orWhereHas('kamar.fasilitas', fn ($fq) => $fq->where('fasilitas.name', 'like', "%{$search}%")));
+                ->orWhereHas('fasilitas', fn ($fq) => $fq->where('fasilitas.name', 'like', "%{$search}%"))
+                ->orWhereHas('kamar.fasilitas', fn ($fq) => $fq->where('fasilitas.name', 'like', "%{$search}%"))
+                ->orWhereRaw('LOWER(general_facilities) LIKE ?', ['%'.mb_strtolower($search).'%']));
         }
 
         $selectedLocation = null;
         if ($request->filled('loc')) {
             $loc = trim($request->loc);
-            $query->where('address', $loc);
+            $locLike = addcslashes($loc, '%_');
+            // Exact match dulu; fallback fuzzy agar ketik sebagian alamat tetap menemukan kos.
+            $query->where(function ($w) use ($loc, $locLike) {
+                $w->where('address', $loc)
+                    ->orWhere('address', 'like', '%'.$locLike.'%');
+            });
             $selectedLocation = $loc;
         }
 
@@ -69,12 +88,13 @@ class TenantKosController extends Controller
             $this->applyPriceMax($query, max(0, (int) $request->price_max));
         }
 
-        if ($request->filled('facilities')) {
-            $facilityIds = array_map('intval', $request->facilities);
+        if ($activeFacilityIds !== []) {
+            $facilityIds = $activeFacilityIds;
+            $facilityNames = Fasilitas::whereIn('id', $facilityIds)->pluck('name', 'id');
 
-            $query->where(function ($q) use ($facilityIds) {
+            $query->where(function ($q) use ($facilityIds, $facilityNames) {
                 foreach ($facilityIds as $fid) {
-                    $q->where(function ($w) use ($fid) {
+                    $q->where(function ($w) use ($fid, $facilityNames) {
                         // Kos menyediakan fasilitas level Kos (kos_fasilitas) ...
                         $w->whereHas('fasilitas', function ($fq) use ($fid) {
                             $fq->where('fasilitas.id', $fid);
@@ -86,6 +106,11 @@ class TenantKosController extends Controller
                                     $fq->where('fasilitas.id', $fid);
                                 });
                         });
+                        // ... ATAU teks legacy general_facilities pada level kos.
+                        $name = $facilityNames[$fid] ?? null;
+                        if ($name) {
+                            $w->orWhereRaw('LOWER(general_facilities) LIKE ?', ['%'.mb_strtolower($name).'%']);
+                        }
                     });
                 }
             });
@@ -99,6 +124,10 @@ class TenantKosController extends Controller
             'paling_banyak_favorit' => $query->orderByRaw('(SELECT COUNT(*) FROM favorites WHERE favorites.kos_id = kos.id) DESC'),
             default => $query->latest(),
         };
+
+        // Clone SEBELUM paginate — ID kandidat promosi harus dari query filter
+        // yang sama dengan hasil organik, tanpa limit/offset halaman.
+        $queryForPromo = clone $query;
 
         $kosList = $query->paginate(9)->withQueryString();
 
@@ -118,17 +147,23 @@ class TenantKosController extends Controller
             );
         }
 
-        // Promosi kos owner (featured/sponsored). Hanya kos yang LOLOS filter
-        // pencarian/harga/fasilitas/ketersediaan di atas yang boleh tampil —
-        // promosi TIDAK pernah membongkar hasil organik (lihat audit test
-        // test_marketplace_sponsored_kos_respects_price_filter).
-        $promotedKosIds = (clone $query)->pluck('id');
+        // Promosi kos owner (featured/sponsored) — SELALU menghormati filter
+        // pencarian/fasilitas/harga/ketersediaan yang sedang aktif.
+        // Tanpa filter → semua promosi live boleh tampil.
+        // Filter aktif → hanya kos yang LOLOS filter; jika tidak ada yang lolos,
+        // section promosi disembunyikan (jangan pernah bocorkan kos di luar filter).
+        $hasActiveFilters = $request->hasAny(['q', 'loc', 'price_min', 'price_max', 'facilities', 'tersedia_only']);
+        $promotedKosIds = $queryForPromo->pluck('id');
 
-        $promotedKos = $this->advertisingService->kosPromoCampaigns(
-            AdvertisingCampaign::PLACEMENT_MARKETPLACE,
-            $promotedKosIds->all(),
-            4
-        );
+        if ($hasActiveFilters && $promotedKosIds->isEmpty()) {
+            $promotedKos = collect();
+        } else {
+            $promotedKos = $this->advertisingService->kosPromoCampaigns(
+                AdvertisingCampaign::PLACEMENT_MARKETPLACE,
+                $hasActiveFilters ? $promotedKosIds->all() : null,
+                4
+            );
+        }
 
         foreach ($promotedKos as $ad) {
             $this->advertisingService->trackEvent(
@@ -141,7 +176,33 @@ class TenantKosController extends Controller
             );
         }
 
-        $fasilitasList = Fasilitas::active()->orderBy('name')->get();
+        // Chip "Cari cepat": urutkan berdasarkan jumlah kos yang match (populer dulu),
+        // bukan alfabet — agar WiFi/CCTV/Parkir tampil di baris chip.
+        $allFacilities = Fasilitas::active()->orderBy('name')->get();
+        $facilityMatchCounts = [];
+        foreach ($allFacilities as $facility) {
+            $facilityMatchCounts[$facility->id] = Kos::where('status', 'active')
+                ->where(function ($q) use ($facility) {
+                    $q->whereHas('fasilitas', fn ($fq) => $fq->whereKey($facility->id))
+                        ->orWhereHas('kamar', function ($kq) use ($facility) {
+                            $kq->where('status', 'available')
+                                ->whereHas('fasilitas', fn ($fq) => $fq->whereKey($facility->id));
+                        })
+                        ->orWhereRaw('LOWER(COALESCE(general_facilities, ?)) LIKE ?', ['%', '%'.mb_strtolower($facility->name).'%']);
+                })
+                ->count();
+        }
+
+        $fasilitasList = $allFacilities
+            ->sortBy([
+                fn ($a, $b) => ($facilityMatchCounts[$b->id] ?? 0) <=> ($facilityMatchCounts[$a->id] ?? 0),
+                fn ($a, $b) => $a->name <=> $b->name,
+            ])
+            ->values();
+
+        foreach ($fasilitasList as $facility) {
+            $facility->kos_match_count = $facilityMatchCounts[$facility->id] ?? 0;
+        }
 
         $favoritedIds = auth()->check() && auth()->user()->isTenant()
             ? Favorite::where('user_id', auth()->id())->pluck('kos_id')->all()
@@ -184,8 +245,13 @@ class TenantKosController extends Controller
         // Kompatibilitas test + shared: personal hanya hitung status available,
         // shared hitung juga occupied/booked yang masih punya slot (capacity-aware).
         $kamarTersedia = $allKamar->filter(function (Kamar $k) {
-            if ($k->status === 'available') return true;
-            if (($k->billing_mode ?? 'personal') === 'shared' && $k->status !== 'maintenance' && $k->hasAvailableSlot()) return true;
+            if ($k->status === 'available') {
+                return true;
+            }
+            if (($k->billing_mode ?? 'personal') === 'shared' && $k->status !== 'maintenance' && $k->hasAvailableSlot()) {
+                return true;
+            }
+
             return false;
         });
 

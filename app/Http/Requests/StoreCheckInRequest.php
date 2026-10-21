@@ -8,15 +8,19 @@ class StoreCheckInRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->hasRole('super_admin', 'admin', 'owner');
+        $user = $this->user();
+
+        return $user->isSuperAdmin() || $user->isOwner() || $user->isAdmin();
     }
 
     public function rules(): array
     {
+        // Identitas sudah tersimpan di booking setelah tenant submit + owner confirm.
+        // Check-in process hanya membutuhkan notes tambahan (opsional).
         return [
-            'identity_number' => ['required', 'string', 'max:50'],
-            'phone' => ['required', 'string', 'max:20'],
-            'address' => ['required', 'string', 'max:500'],
+            'identity_number' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

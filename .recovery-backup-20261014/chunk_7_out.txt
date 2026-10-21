@@ -1,0 +1,960 @@
+PHPUnit 10.5.64 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.2.12
+Configuration: C:\Users\ASUS\KosManager\phpunit.xml
+
+.........F.....................F...............................  63 / 298 ( 21%)
+.............................F.E.....FF.........EE........FEE.. 126 / 298 ( 42%)
+E.........................................FFFF.....F..F........ 189 / 298 ( 63%)
+............................................................F.. 252 / 298 ( 84%)
+..............................................                  298 / 298 (100%)
+
+Time: 01:42.586, Memory: 72.00 MB
+
+There were 6 errors:
+
+1) Tests\Feature\PolicyTestSuite::test_owner_can_only_see_own_profile
+ErrorException: Undefined variable $owner
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:255
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:81
+
+2) Tests\Feature\PolicyTestSuite::test_tenant_can_view_available_kamar
+Symfony\Component\Routing\Exception\RouteNotFoundException: Route [tenant.kamar.show] not defined.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php:477
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:811
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:232
+
+3) Tests\Feature\PolicyTestSuite::test_tenant_cannot_view_maintenance_kamar
+Symfony\Component\Routing\Exception\RouteNotFoundException: Route [tenant.kamar.show] not defined.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php:477
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:811
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:239
+
+4) Tests\Feature\PolicyTestSuite::test_tenant_can_only_see_own_damage_report
+Illuminate\Database\QueryException: SQLSTATE[23000]: Integrity constraint violation: 19 FOREIGN KEY constraint failed (Connection: sqlite, SQL: insert into "damage_reports" ("user_id", "kos_id", "kamar_id", "category", "description", "photos", "status", "owner_reply", "rejection_reason", "owner_id", "resolved_at", "updated_at", "created_at") values (5, 1, 1, general, Damage report description, ?, pending, ?, ?, ?, ?, 2026-10-14 16:04:25, 2026-10-14 16:04:25))
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:829
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:783
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:576
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:540
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\Processor.php:32
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3549
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1982
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1334
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1299
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1138
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:338
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:240
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:333
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:287
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:281
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:371
+
+Caused by
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 FOREIGN KEY constraint failed
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:587
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:816
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:783
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:576
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Connection.php:540
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\Processor.php:32
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3549
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1982
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1334
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1299
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1138
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:338
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:240
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:333
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:287
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:281
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:371
+
+5) Tests\Feature\PolicyTestSuite::test_user_can_only_see_own_messages
+Symfony\Component\Routing\Exception\RouteNotFoundException: Route [messages.show] not defined.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Routing\UrlGenerator.php:477
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:811
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:386
+
+6) Tests\Feature\ProductionSeedingTest::test_production_seeding_never_creates_paid_advertising_demo_data
+ErrorException: Attempt to read property "id" on null
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:255
+C:\Users\ASUS\KosManager\database\seeders\KosSeeder.php:85
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\Util.php:41
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:93
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\Container.php:662
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Seeder.php:184
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Seeder.php:193
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Seeder.php:61
+C:\Users\ASUS\KosManager\database\seeders\DatabaseSeeder.php:51
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\Util.php:41
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:93
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\Container.php:662
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Seeder.php:184
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Seeder.php:193
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Console\Seeds\SeedCommand.php:70
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:155
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Database\Console\Seeds\SeedCommand.php:69
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\Util.php:41
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:93
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Container\Container.php:662
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Console\Command.php:211
+C:\Users\ASUS\KosManager\vendor\symfony\console\Command\Command.php:326
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Console\Command.php:180
+C:\Users\ASUS\KosManager\vendor\symfony\console\Application.php:1098
+C:\Users\ASUS\KosManager\vendor\symfony\console\Application.php:324
+C:\Users\ASUS\KosManager\vendor\symfony\console\Application.php:175
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Console\Application.php:162
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:400
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:297
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:484
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:80
+C:\Users\ASUS\KosManager\tests\Feature\ProductionSeedingTest.php:42
+
+--
+
+There were 13 failures:
+
+1) Tests\Feature\PhaseDLocationDiscoveryTest::test_location_filter_is_exact_match
+Failed asserting that '<!DOCTYPE html>\n
+<html lang="id">\n
+<head>\n
+    <meta charset="utf-8">\n
+    <meta name="viewport" content="width=device-width, initial-scale=1">\n
+    <meta name="csrf-token" content="uqTRtbNNQZCBBtj1mJ61KhmuGpNeU1mriHsVoUG0">\n
+    <meta name="theme-color" content="#a88468">\n
+    <title>Cari Kos · KosManager</title>\n
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">\n
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">\n
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">\n
+    <link rel="preconnect" href="https://fonts.bunny.net">\n
+    <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet">\n
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">\n
+    <link rel="preload" as="style" href="/build/assets/app-2947c09d.css" /><link rel="modulepreload" href="/build/assets/app-b2e8b917.js" /><link rel="modulepreload" href="/build/assets/vendor-9fa05e75.js" /><link rel="stylesheet" href="/build/assets/app-2947c09d.css" /><script type="module" src="/build/assets/app-b2e8b917.js"></script>    <script>\n
+        (function () {\n
+            const stored = localStorage.getItem('theme');\n
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;\n
+            if (stored === 'dark' || (!stored && prefersDark)) {\n
+                document.documentElement.classList.add('dark');\n
+            } else {\n
+                document.documentElement.classList.remove('dark');\n
+            }\n
+        })();\n
+    </script>\n
+    <style>\n
+        [x-cloak] { display: none !important; }\n
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 0); }\n
+    </style>\n
+</head>\n
+<body class="font-sans antialiased bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300">\n
+    <a href="#main-content"\n
+       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-500 focus:text-white focus:text-sm focus:font-semibold"\n
+       aria-label="Lewati ke konten utama">Lewati ke konten utama</a>\n
+    <div class="min-h-screen flex" x-data="{ sidebarOpen: false, sidebarCollapsed: false }" x-init="sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true'">\n
+        <aside class="fixed top-0 left-0 z-40 h-screen flex flex-col border-r transition-all duration-300 bg-white dark:bg-slate-950 border-slate-200/70 dark:border-white/5 text-slate-700 dark:text-slate-300"\n
+       :class="(sidebarCollapsed ? 'lg:w-[72px] w-64 ' : 'w-64 ') + (sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0')">\n
+\n
+    <div class="flex items-center gap-3 h-16 border-b shrink-0 bg-white dark:bg-slate-950 border-slate-100 dark:border-white/5" :class="sidebarCollapsed ? 'lg:px-2 lg:justify-center px-5' : 'px-5'">\n
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center shadow-lg shadow-black/5 dark:shadow-black/20 shrink-0" x-show="!sidebarCollapsed" x-cloak>\n
+            <span class="text-white font-black text-xs">K</span>\n
+        </div>\n
+        <div class="min-w-0" x-show="!sidebarCollapsed" x-cloak>\n
+            <span class="text-[13px] font-black tracking-tight text-slate-900 dark:text-white leading-none">KosManager</span>\n
+            <p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 leading-none mt-1">Tenant · Panel</p>\n
+        </div>\n
+        <button type="button" @click="sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('sidebar-collapsed', sidebarCollapsed)" :aria-label="sidebarCollapsed ? 'Luaskan sidebar' : 'Ciutkan sidebar'" :aria-expanded="(!sidebarCollapsed).toString()" title="Ciutkan / luaskan sidebar"\n
+                class="hidden lg:grid place-items-center min-w-[44px] min-h-[44px] rounded-lg bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 shrink-0 relative z-10"\n
+                :class="sidebarCollapsed ? 'lg:mx-auto' : 'ml-auto'">\n
+            <i :class="sidebarCollapsed ? 'ri-layout-right-line' : 'ri-layout-left-line'" class="text-sm"></i>\n
+        </button>\n
+    </div>\n
+\n
+    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-0.5 scrollbar-thin" aria-label="Navigasi sidebar">\n
+\n
+        \n
+        \n
+                    \n
+                            <div class="pt-6 pb-2 px-3" x-show="!sidebarCollapsed" x-cloak :class="sidebarCollapsed ? 'lg:hidden' : ''">\n
+                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">Utama</p>\n
+                </div>\n
+                <div x-show="sidebarCollapsed" x-cloak class="hidden lg:block pt-3 pb-1" aria-hidden="true"><div class="mx-auto h-px w-8 bg-slate-200 dark:bg-white/10"></div></div>\n
+                                                        <a href="http://127.0.0.1:8000/dashboard" title="Dashboard"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-dashboard-3-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Dashboard</span>\n
+                                            </a>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/kos" title="Cari Kos"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                        aria-current="page" >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                            <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-white rounded-full"></span>\n
+                                <span class="dark:hidden absolute -left-3 w-[3px] h-5 bg-slate-900 rounded-full"></span>\n
+                                                        <i class="ri-search-eye-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Cari Kos</span>\n
+                                            </a>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/favorites" title="Favorit"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-heart-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Favorit</span>\n
+                                            </a>\n
+                                            <div class="pt-6 pb-2 px-3" x-show="!sidebarCollapsed" x-cloak :class="sidebarCollapsed ? 'lg:hidden' : ''">\n
+                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">Aktivitas</p>\n
+                </div>\n
+                <div x-show="sidebarCollapsed" x-cloak class="hidden lg:block pt-3 pb-1" aria-hidden="true"><div class="mx-auto h-px w-8 bg-slate-200 dark:bg-white/10"></div></div>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/booking" title="Booking Saya"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-calendar-check-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Booking Saya</span>\n
+                                            </a>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/kontrak" title="Kontrak"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-file-text-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Kontrak</span>\n
+                                            </a>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/tagihan" title="Tagihan"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-file-list-3-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Tagihan</span>\n
+                                            </a>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/pembayaran" title="Pembayaran"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-money-dollar-circle-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Pembayaran</span>\n
+                                            </a>\n
+                                            <div class="pt-6 pb-2 px-3" x-show="!sidebarCollapsed" x-cloak :class="sidebarCollapsed ? 'lg:hidden' : ''">\n
+                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">Bantuan</p>\n
+                </div>\n
+                <div x-show="sidebarCollapsed" x-cloak class="hidden lg:block pt-3 pb-1" aria-hidden="true"><div class="mx-auto h-px w-8 bg-slate-200 dark:bg-white/10"></div></div>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/messages" title="Hubungi Owner"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-customer-service-2-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Hubungi Owner</span>\n
+                                            </a>\n
+                                                        <a href="http://127.0.0.1:8000/tenant/invitations" title="Undangan Kos"\n
+                       class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all\n
+                              text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"\n
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''"\n
+                       >\n
+                        <span class="relative flex items-center justify-center w-5 shrink-0">\n
+                                                        <i class="ri-mail-send-line text-[18px]"></i>\n
+                        </span>\n
+                        <span x-show="!sidebarCollapsed" x-cloak>Undangan Kos</span>\n
+                                            </a>\n
+                            \n
+                        </nav>\n
+\n
+    <div class="px-3 py-4 border-t shrink-0 bg-white dark:bg-slate-950 border-slate-100 dark:border-white/5">\n
+        <div x-data="{ dark: document.documentElement.classList.contains('dark') }" class="mb-1">\n
+            <button type="button" role="switch" :aria-checked="dark.toString()" aria-label="Ganti tema terang/gelap" title="Mode Tampilan"\n
+                    @click="dark = !dark; document.documentElement.classList.toggle('dark', dark); localStorage.setItem('theme', dark ? 'dark' : 'light'); window.dispatchEvent(new CustomEvent('theme-changed', { detail: { dark } }))"\n
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"\n
+                    :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''">\n
+                <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 shrink-0">\n
+                    <i :class="dark ? 'ri-sun-line' : 'ri-moon-line'" class="text-[18px]"></i>\n
+                </span>\n
+                <span x-show="!sidebarCollapsed" x-cloak class="text-sm font-semibold text-slate-700 dark:text-slate-300">Mode Tampilan</span>\n
+                <span x-show="!sidebarCollapsed" x-cloak class="ml-auto relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors duration-200" :class="dark ? 'bg-primary-600' : 'bg-slate-200 dark:bg-slate-700'">\n
+                    <span class="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all duration-200" :class="dark ? 'left-[22px]' : 'left-0.5'"></span>\n
+                </span>\n
+            </button>\n
+        </div>\n
+\n
+        <a href="http://127.0.0.1:8000/profile" title="Pengaturan"\n
+           class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all"\n
+           :class="sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''">\n
+            <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 group-hover:bg-slate-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-900 transition shrink-0">\n
+                <i class="ri-settings-3-line text-[18px]"></i>\n
+            </span>\n
+            <span x-show="!sidebarCollapsed" x-cloak>Pengaturan</span>\n
+        </a>\n
+        <p x-show="!sidebarCollapsed" x-cloak class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500">© 2026 KosManager</p>\n
+    </div>\n
+</aside>\n
+\n
+<div x-show="sidebarOpen" @click="sidebarOpen = false" x-cloak\n
+     x-transition:enter="transition ease-out duration-300"\n
+     x-transition:enter-start="opacity-0"\n
+     x-transition:enter-end="opacity-100"\n
+     x-transition:leave="transition ease-in duration-200"\n
+     x-transition:leave-start="opacity-100"\n
+     x-transition:leave-end="opacity-0"\n
+     class="fixed inset-0 bg-black/50 dark:bg-black/60 backdrop-blur-sm z-30 lg:hidden"></div>\n
+\n
+        <div class="flex-1 min-w-0 flex flex-col min-h-screen transition-all duration-300"\n
+             :class="sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-64'">\n
+\n
+            \n
+            <header class="bg-surface-card/80 dark:bg-surface-dark/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-white/[0.08] sticky top-0 z-50">\n
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">\n
+                    <div class="flex items-center gap-3">\n
+                        <button @click="sidebarOpen = !sidebarOpen"\n
+                                 class="lg:hidden p-2 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[44px] min-h-[44px] grid place-items-center"\n
+                                 aria-label="Buka menu navigasi" :aria-expanded="sidebarOpen.toString()" aria-controls="sidebar-nav">\n
+                            <i class="ri-menu-line text-xl"></i>\n
+                        </button>\n
+                        <div class="min-w-0">\n
+                                                    </div>\n
+                    </div>\n
+\n
+                    <div class="flex items-center gap-2">\n
+                        \n
+                                                                                <a href="http://127.0.0.1:8000/tenant/kos"\n
+                               class="p-2.5 rounded-xl transition text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/10"\n
+                               title="Cari Kos" aria-label="Cari Kos"  aria-current="page" >\n
+                                <span class="inline-flex w-5 h-5 items-center justify-center">\n
+                                    <i class="ri-search-line text-xl"></i>\n
+                                </span>\n
+                            </a>\n
+                        \n
+                        <div class="relative" x-data="{ open: false }">\n
+                            <a href="http://127.0.0.1:8000/notifications"\n
+                               class="lg:hidden relative p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[44px] min-h-[44px] grid place-items-center"\n
+                               aria-label="Notifikasi" >\n
+                                <span class="inline-flex w-5 h-5 items-center justify-center">\n
+                                    <i class="ri-bell-line text-xl"></i>\n
+                                </span>\n
+                                                            </a>\n
+\n
+                            <div class="relative hidden lg:block">\n
+                                <button @click="open = !open"\n
+                                         class="relative p-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition min-w-[44px] min-h-[44px] grid place-items-center"\n
+                                         aria-label="Notifikasi" :aria-expanded="open.toString()" aria-controls="notification-dropdown">\n
+                                    <span class="inline-flex w-5 h-5 items-center justify-center">\n
+                                        <i class="ri-bell-line text-xl"></i>\n
+                                    </span>\n
+                                                                    </button>\n
+                                <div id="notification-dropdown" x-show="open" @click.away="open = false" x-cloak\n
+                                     x-transition:enter="transition ease-out duration-200"\n
+                                     x-transition:enter-start="opacity-0 scale-95"\n
+                                     x-transition:enter-end="opacity-100 scale-100"\n
+                                     x-transition:leave="transition ease-in duration-150"\n
+                                     x-transition:leave-start="opacity-100 scale-100"\n
+                                     x-transition:leave-end="opacity-0 scale-95"\n
+                                     class="absolute right-0 mt-2 w-96 max-h-[calc(100vh-6rem)] flex flex-col bg-white dark:bg-surface-elevated rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-200/60 dark:border-white/[0.08] z-50 overflow-hidden" role="region" aria-label="Daftar notifikasi">\n
+                                     <div class="px-4 py-3.5 sm:px-5 bg-white dark:bg-surface-elevated border-b border-slate-100 dark:border-white/[0.08] flex items-center gap-3">\n
+                                         <span class="w-9 h-9 shrink-0 rounded-xl bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 flex items-center justify-center">\n
+                                             <i class="ri-notification-3-line text-lg"></i>\n
+                                         </span>\n
+                                         <div class="min-w-0 flex-1">\n
+                                             <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50 tracking-tight leading-tight">Notifikasi</h3>\n
+                                             <p class="text-[11px] text-slate-400 dark:text-slate-500 leading-tight mt-0.5">Pemberitahuan aktivitas kos Anda.</p>\n
+                                         </div>\n
+                                                                              </div>\n
+                                      <div class="flex-1 min-h-0 overflow-y-auto space-y-1.5 p-2 scrollbar-thin">\n
+                                                                                     <div class="px-4 py-10 text-center">\n
+                                                <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 dark:bg-white/[0.06] text-slate-300 dark:text-slate-500">\n
+                                                    <i class="ri-notification-off-line text-2xl"></i>\n
+                                                </span>\n
+                                                <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-3">Belum ada notifikasi</p>\n
+                                                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Aktivitas kos Anda akan muncul di sini.</p>\n
+                                            </div>\n
+                                                                            </div>\n
+                                    <div class="border-t border-slate-100 dark:border-white/[0.08] p-2.5 space-y-2">\n
+                                                                                <a href="http://127.0.0.1:8000/notifications"\n
+                                           class="flex items-center justify-center gap-1.5 w-full rounded-xl px-4 py-2.5 text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 transition">\n
+                                            <i class="ri-inbox-2-line"></i> Lihat Semua Notifikasi\n
+                                        </a>\n
+                                    </div>\n
+                                </div>\n
+                            </div>\n
+                        </div>\n
+\n
+                        <div class="w-px h-5 bg-slate-200 dark:bg-surface-elevated mx-1"></div>\n
+\n
+                        <div class="relative" x-data="{ open: false }">\n
+                            <button @click="open = !open"\n
+                                     class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition"\n
+                                     aria-label="Menu akun" :aria-expanded="open.toString()" aria-controls="account-dropdown">\n
+                                <div class="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-xs">\n
+                                    D\n
+                                </div>\n
+                                <div class="hidden sm:block text-left">\n
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 leading-tight">Dacin Rahman Santoso S.Ked</p>\n
+                                    <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">Tenant</p>\n
+                                </div>\n
+                                <i class="ri-arrow-down-s-line text-slate-400 dark:text-slate-500 hidden sm:block text-sm"></i>\n
+                            </button>\n
+                            <div id="account-dropdown" x-show="open" @click.away="open = false" x-cloak\n
+                                 x-transition:enter="transition ease-out duration-200"\n
+                                 x-transition:enter-start="opacity-0 scale-95"\n
+                                 x-transition:enter-end="opacity-100 scale-100"\n
+                                 x-transition:leave="transition ease-in duration-150"\n
+                                 x-transition:leave-start="opacity-100 scale-100"\n
+                                 x-transition:leave-end="opacity-0 scale-95"\n
+                                 class="absolute right-0 mt-2 w-52 bg-surface-card dark:bg-surface-elevated rounded-2xl shadow-xl shadow-slate-200/80 border border-slate-200/60 dark:border-white/[0.08] z-50 overflow-hidden" role="menu" aria-label="Menu akun">\n
+                                 <div class="px-4 py-3 border-b border-slate-200/60 dark:border-white/[0.08]">\n
+                                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">Dacin Rahman Santoso S.Ked</p>\n
+                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">hafshah.anggriawan@example.org</p>\n
+                                </div>\n
+                                <div class="py-1">\n
+                                    <a href="http://127.0.0.1:8000/profile"\n
+                                       class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-200/40 dark:hover:bg-white/[0.06] transition">\n
+                                        <i class="ri-user-settings-line text-slate-400 dark:text-slate-500"></i> Profil\n
+                                    </a>\n
+                                    <form method="POST" action="http://127.0.0.1:8000/logout">\n
+                                        <input type="hidden" name="_token" value="uqTRtbNNQZCBBtj1mJ61KhmuGpNeU1mriHsVoUG0" autocomplete="off">                                        <button type="submit"\n
+                                                class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50/50 transition">\n
+                                            <i class="ri-logout-box-r-line"></i> Keluar\n
+                                        </button>\n
+                                    </form>\n
+                                </div>\n
+                            </div>\n
+                        </div>\n
+                    </div>\n
+                </div>\n
+            </header>\n
+\n
+            <main id="main-content" tabindex="-1" class="focus:outline-none flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">\n
+                <div x-data="{\n
+            filterOpen: false,\n
+            init() {\n
+                                    this.$nextTick(() => {\n
+                        const el = document.getElementById('hasil');\n
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });\n
+                    });\n
+                            }\n
+        }" class="space-y-6">\n
+\n
+        \n
+        <div class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden">\n
+            <div class="absolute inset-0 opacity-10">\n
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2"></div>\n
+                <div class="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/4"></div>\n
+            </div>\n
+            <div class="relative">\n
+                <h1 class="text-xl sm:text-2xl font-bold">Cari Kos Impianmu</h1>\n
+                <p class="mt-1.5 text-primary-100/80 text-sm">Temukan kos yang cocok untuk kebutuhanmu.</p>\n
+                <form method="GET" action="http://127.0.0.1:8000/tenant/kos" class="mt-4 flex flex-col sm:flex-row gap-3">\n
+                    <div class="relative flex-1 max-w-lg">\n
+                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>\n
+                        <label for="search-kos" class="sr-only">Cari kos atau fasilitas</label>\n
+                        <input type="text" name="q" id="search-kos" value="" placeholder="Cari kos atau fasilitas..." autocomplete="off"\n
+                               class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/95 dark:bg-surface-elevated/95 text-slate-900 dark:text-slate-50 text-sm placeholder-slate-500 focus:ring-2 focus:ring-white/30 transition border-0 shadow-lg">\n
+                    </div>\n
+                    <div class="relative sm:w-64">\n
+                        <i class="ri-map-pin-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>\n
+                        <label for="search-loc" class="sr-only">Lokasi</label>\n
+                        <input type="text" name="loc" id="search-loc" value="Jl. Sudirman No. 10"\n
+                               placeholder="Pilih lokasi..." list="loc-suggestions" autocomplete="off"\n
+                               class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/95 dark:bg-surface-elevated/95 text-slate-900 dark:text-slate-50 text-sm placeholder-slate-400 focus:ring-2 focus:ring-white/30 transition border-0 shadow-lg">\n
+                        <datalist id="loc-suggestions">\n
+                                                            <option value="Jl. Sudirman No. 10">1 kos</option>\n
+                                                            <option value="Jl. Sudirman No. 100">1 kos</option>\n
+                                                    </datalist>\n
+                    </div>\n
+                    <button type="button" x-on:click="filterOpen = !filterOpen"\n
+                            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur text-sm font-semibold transition border border-white/20">\n
+                        <i class="ri-filter-3-line"></i> Filter\n
+                                                    <span class="w-2 h-2 rounded-full bg-white"></span>\n
+                                            </button>\n
+                    <button type="submit" class="px-5 py-3 bg-white text-primary-700 text-sm font-bold rounded-xl hover:bg-primary-50 transition shadow-lg shadow-black/10 shrink-0">Cari</button>\n
+                                                                                                                    </form>\n
+            </div>\n
+        </div>\n
+\n
+        \n
+        \n
+        \n
+                    <div class="flex items-start gap-2 flex-wrap" aria-label="Jelajahi berdasarkan lokasi">\n
+                        <span class="text-xs font-medium tracking-wide text-slate-500 dark:text-slate-400 mt-2 shrink-0">Lokasi:</span>\n
+                <div class="flex flex-wrap gap-2">\n
+                                                                    <a href="http://127.0.0.1:8000/tenant/kos?"\n
+                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30"\n
+                           title="Jl. Sudirman No. 10">\n
+                            <i class="ri-map-pin-2-line text-[11px]"></i>\n
+                            <span class="max-w-[12rem] truncate">Jl. Sudirman No. 10</span>\n
+                            <span class="opacity-70">1</span>\n
+                                                            <i class="ri-close-line text-[11px]"></i>\n
+                                                    </a>\n
+                                                                    <a href="http://127.0.0.1:8000/tenant/kos?loc=Jl.%20Sudirman%20No.%20100"\n
+                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-full border transition bg-white dark:bg-surface-elevated text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/[0.08] hover:border-primary-300 dark:hover:border-primary-500/50"\n
+                           title="Jl. Sudirman No. 100">\n
+                            <i class="ri-map-pin-2-line text-[11px]"></i>\n
+                            <span class="max-w-[12rem] truncate">Jl. Sudirman No. 100</span>\n
+                            <span class="opacity-70">1</span>\n
+                                                    </a>\n
+                                                        </div>\n
+            </div>\n
+        \n
+        \n
+        <div x-show="filterOpen" x-cloak\n
+             x-transition:enter="transition ease-out duration-300"\n
+             x-transition:enter-start="opacity-0"\n
+             x-transition:enter-end="opacity-100"\n
+             x-transition:leave="transition ease-in duration-200"\n
+             x-transition:leave-start="opacity-100"\n
+             x-transition:leave-end="opacity-0"\n
+             class="fixed inset-0 z-50">\n
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm lg:bg-black/30" x-on:click="filterOpen = false"></div>\n
+            <div class="absolute inset-y-0 right-0 w-full max-w-sm bg-white dark:bg-surface-elevated shadow-2xl overflow-y-auto"\n
+                 x-transition:enter="transition ease-out duration-300"\n
+                 x-transition:enter-start="translate-x-full"\n
+                 x-transition:enter-end="translate-x-0"\n
+                 x-transition:leave="transition ease-in duration-200"\n
+                 x-transition:leave-start="translate-x-0"\n
+                 x-transition:leave-end="translate-x-full">\n
+                <form method="GET" action="http://127.0.0.1:8000/tenant/kos" class="flex flex-col h-full">\n
+                    <div class="sticky top-0 bg-white dark:bg-surface-elevated border-b border-slate-100 dark:border-white/[0.08] px-6 py-4 flex items-center justify-between z-10">\n
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Filter & Urutkan</h3>\n
+                        <button type="button" x-on:click="filterOpen = false"\n
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"\n
+                                aria-label="Tutup filter">\n
+                            <i class="ri-close-line text-lg"></i>\n
+                        </button>\n
+                    </div>\n
+\n
+                    <div class="flex-1 overflow-y-auto p-6 space-y-6">\n
+                        \n
+                        \n
+                        <div>\n
+                            <label class="field-label">Urutkan</label>\n
+                            <div class="mt-2 space-y-2">\n
+                                                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border bg-primary-50 dark:bg-primary-500/10 border-primary-300 dark:border-primary-500/40">\n
+                                        <input type="radio" name="sort" value="terbaru" checked\n
+                                               class="w-4 h-4 border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500/20">\n
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Terbaru</span>\n
+                                    </label>\n
+                                                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border bg-white dark:bg-surface-elevated border-slate-100 dark:border-white/[0.08] hover:border-primary-200 dark:hover:border-primary-500/30">\n
+                                        <input type="radio" name="sort" value="harga_terendah" \n
+                                               class="w-4 h-4 border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500/20">\n
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Harga Terendah</span>\n
+                                    </label>\n
+                                                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border bg-white dark:bg-surface-elevated border-slate-100 dark:border-white/[0.08] hover:border-primary-200 dark:hover:border-primary-500/30">\n
+                                        <input type="radio" name="sort" value="harga_tertinggi" \n
+                                               class="w-4 h-4 border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500/20">\n
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Harga Tertinggi</span>\n
+                                    </label>\n
+                                                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border bg-white dark:bg-surface-elevated border-slate-100 dark:border-white/[0.08] hover:border-primary-200 dark:hover:border-primary-500/30">\n
+                                        <input type="radio" name="sort" value="terbanyak_disewa" \n
+                                               class="w-4 h-4 border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500/20">\n
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Terbanyak Disewa</span>\n
+                                    </label>\n
+                                                                    <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border bg-white dark:bg-surface-elevated border-slate-100 dark:border-white/[0.08] hover:border-primary-200 dark:hover:border-primary-500/30">\n
+                                        <input type="radio" name="sort" value="paling_banyak_favorit" \n
+                                               class="w-4 h-4 border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500/20">\n
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Paling Banyak Favorit</span>\n
+                                    </label>\n
+                                                            </div>\n
+                        </div>\n
+\n
+                        \n
+                        <div>\n
+                            <label class="field-label">Harga per Bulan</label>\n
+                            <div class="mt-2 flex items-center gap-3">\n
+                                <div class="relative flex-1">\n
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Rp</span>\n
+                                    <input type="number" name="price_min" value="" placeholder="Minimal" min="0"\n
+                                           class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-sm text-slate-900 dark:text-slate-50 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">\n
+                                </div>\n
+                                <span class="text-slate-400">—</span>\n
+                                <div class="relative flex-1">\n
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Rp</span>\n
+                                    <input type="number" name="price_max" value="" placeholder="Maksimal" min="0"\n
+                                           class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-sm text-slate-900 dark:text-slate-50 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">\n
+                                </div>\n
+                            </div>\n
+                        </div>\n
+\n
+                        \n
+                        <div>\n
+                            <label class="field-label">Ketersediaan</label>\n
+                            <div class="mt-2">\n
+                                <label class="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition border bg-white dark:bg-surface-elevated border-slate-100 dark:border-white/[0.08] hover:border-primary-200 dark:hover:border-primary-500/30">\n
+                                    <input type="checkbox" name="tersedia_only" value="1" \n
+                                           class="w-4 h-4 rounded border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500/20">\n
+                                    <div class="flex items-center gap-2">\n
+                                        <i class="ri-door-open-line text-green-500"></i>\n
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Hanya yang tersedia</span>\n
+                                    </div>\n
+                                </label>\n
+                            </div>\n
+                        </div>\n
+\n
+                        \n
+                                                    <div>\n
+                                <label class="field-label" for="filter-loc">Lokasi</label>\n
+                                <select name="loc" id="filter-loc" class="field-input mt-2">\n
+                                    <option value="">Semua lokasi</option>\n
+                                                                            <option value="Jl. Sudirman No. 10" selected>\n
+                                            Jl. Sudirman No. 10 (1 kos)\n
+                                        </option>\n
+                                                                            <option value="Jl. Sudirman No. 100" >\n
+                                            Jl. Sudirman No. 100 (1 kos)\n
+                                        </option>\n
+                                                                                                        </select>\n
+                                <p class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Kosongkan untuk melihat semua lokasi.</p>\n
+                            </div>\n
+                        \n
+                        \n
+                                            </div>\n
+\n
+                    <div class="sticky bottom-0 bg-white dark:bg-surface-elevated border-t border-slate-100 dark:border-white/[0.08] px-6 py-4 flex items-center gap-3">\n
+                        <a href="http://127.0.0.1:8000/tenant/kos" class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">\n
+                            Atur Ulang\n
+                        </a>\n
+                        <button type="submit" x-on:click="filterOpen = false"\n
+                                class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white transition shadow-sm shadow-primary-500/30">\n
+                            Terapkan Filter\n
+                        </button>\n
+                    </div>\n
+                </form>\n
+            </div>\n
+        </div>\n
+\n
+        \n
+                    <div class="flex flex-wrap items-center gap-2">\n
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium bg-slate-100 dark:bg-surface-elevated text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-2.5 py-1 rounded-full">\n
+                        <i class="ri-map-pin-2-line text-[10px]"></i>\n
+                        <span class="max-w-[14rem] truncate">Jl. Sudirman No. 10</span>\n
+                        <a href="http://127.0.0.1:8000/tenant/kos?" class="ml-0.5 hover:text-slate-900 dark:hover:text-white" aria-label="Hapus lokasi">&times;</a>\n
+                    </span>\n
+                                                                                                                <a href="http://127.0.0.1:8000/tenant/kos" class="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-primary-500 transition">\n
+                    <i class="ri-close-circle-line"></i> Reset\n
+                </a>\n
+            </div>\n
+        \n
+        \n
+        \n
+        \n
+        \n
+        \n
+                    <div class="flex flex-wrap items-center justify-between gap-3">\n
+                <p role="status" class="text-sm font-medium text-slate-600 dark:text-slate-300">\n
+                    2 kos ditemukan\n
+                                                        </p>\n
+\n
+                \n
+                <form method="GET" action="http://127.0.0.1:8000/tenant/kos" class="hidden sm:flex items-center gap-2">\n
+                                                                                                                    <input type="hidden" name="loc" value="Jl. Sudirman No. 10">\n
+                                                                                                                                                                                                                        <label for="sort-top" class="text-xs font-medium text-slate-500 dark:text-slate-400">Urutkan</label>\n
+                    <select id="sort-top" name="sort" onchange="this.form.submit()"\n
+                            class="field-input py-2 pl-3 pr-8 w-auto">\n
+                                                    <option value="terbaru" selected>Terbaru</option>\n
+                                                    <option value="harga_terendah" >Harga Terendah</option>\n
+                                                    <option value="harga_tertinggi" >Harga Tertinggi</option>\n
+                                                    <option value="terbanyak_disewa" >Terbanyak Disewa</option>\n
+                                                    <option value="paling_banyak_favorit" >Paling Banyak Favorit</option>\n
+                                            </select>\n
+                </form>\n
+            </div>\n
+        \n
+                    \n
+            <div id="hasil" class="scroll-mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">\n
+                                    <div class="card-property group flex flex-col ">\n
+            <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-primary-100/80 via-primary-50 to-primary-50/60 dark:from-surface-elevated dark:via-surface-elevated dark:to-surface-elevated">\n
+        <a href="http://127.0.0.1:8000/tenant/kos/1" class="absolute inset-0 z-[1]" aria-label="Lihat detail Perum Kuswandari Budiman">\n
+                            <div class="absolute inset-0 flex items-center justify-center">\n
+                    <div class="flex flex-col items-center gap-2 group-hover:scale-105 transition-transform duration-500">\n
+                        <span class="text-4xl font-bold text-primary-300/70 dark:text-primary-400/30 select-none">PE</span>\n
+                        <span class="text-[10px] font-medium text-primary-300/50 dark:text-primary-400/30">Foto belum tersedia</span>\n
+                    </div>\n
+                </div>\n
+                    </a>\n
+\n
+        \n
+        <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2.5 py-0.5 shadow-sm backdrop-blur-sm bg-slate-800/90 text-white/90">\n
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>\n
+            PENUH\n
+        </span>\n
+\n
+        \n
+                    <form method="POST" action="http://127.0.0.1:8000/tenant/favorites/toggle" class="absolute top-3 right-3 z-10"\n
+                  x-data="{ submitting: false }" x-on:submit.stop.prevent="submitting = true; $el.submit();">\n
+                <input type="hidden" name="_token" value="uqTRtbNNQZCBBtj1mJ61KhmuGpNeU1mriHsVoUG0" autocomplete="off">                <input type="hidden" name="kos_id" value="1">\n
+                <button type="submit" :disabled="submitting"\n
+                        class="w-9 h-9 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm transition-all duration-300 transform-gpu active:scale-90 disabled:opacity-60 disabled:cursor-wait bg-black/20 text-white/90 hover:bg-white/95 hover:text-red-500"\n
+                        aria-label="Tambahkan ke favorit"\n
+                        title="Tambahkan ke favorit">\n
+                    <i class="ri-heart-3-line text-base"></i>\n
+                </button>\n
+            </form>\n
+            </div>\n
+\n
+    <div class="p-4 flex flex-col flex-1">\n
+        \n
+        <a href="http://127.0.0.1:8000/tenant/kos/1" class="block">\n
+            <h3 class="font-semibold not-italic text-[15px] sm:text-base text-slate-900 dark:text-slate-50 leading-snug line-clamp-2 break-words group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">Perum Kuswandari Budiman</h3>\n
+        </a>\n
+\n
+        \n
+        <p class="mt-1.5 text-[13px] text-slate-500 dark:text-slate-500 flex items-start gap-1 line-clamp-1">\n
+            <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-400"></i>\n
+            <span>Jl. Sudirman No. 10</span>\n
+        </p>\n
+\n
+                            <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Jl.+Sudirman+No.+10"\n
+               target="_blank" rel="noopener noreferrer"\n
+               class="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200"\n
+               aria-label="Buka petunjuk arah ke Perum Kuswandari Budiman">\n
+                <i class="ri-navigation-line text-[10px]"></i> Arah ke Kos\n
+            </a>\n
+        \n
+        \n
+        \n
+        <div class="mt-auto pt-3 border-t border-slate-100/80 dark:border-white/[0.08] flex items-end justify-between gap-3">\n
+                            <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>\n
+                        <a href="http://127.0.0.1:8000/tenant/kos/1" class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-primary-500 group-hover:text-primary-600 transition-all duration-300">\n
+                Lihat Detail <i class="ri-arrow-right-line text-[11px] group-hover:translate-x-0.5 transition-transform duration-300"></i>\n
+            </a>\n
+        </div>\n
+    </div>\n
+</div>\n
+                                    <div class="card-property group flex flex-col ">\n
+            <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-primary-100/80 via-primary-50 to-primary-50/60 dark:from-surface-elevated dark:via-surface-elevated dark:to-surface-elevated">\n
+        <a href="http://127.0.0.1:8000/tenant/kos/2" class="absolute inset-0 z-[1]" aria-label="Lihat detail Perum Wahyuni Widodo">\n
+                            <div class="absolute inset-0 flex items-center justify-center">\n
+                    <div class="flex flex-col items-center gap-2 group-hover:scale-105 transition-transform duration-500">\n
+                        <span class="text-4xl font-bold text-primary-300/70 dark:text-primary-400/30 select-none">PE</span>\n
+                        <span class="text-[10px] font-medium text-primary-300/50 dark:text-primary-400/30">Foto belum tersedia</span>\n
+                    </div>\n
+                </div>\n
+                    </a>\n
+\n
+        \n
+        <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2.5 py-0.5 shadow-sm backdrop-blur-sm bg-slate-800/90 text-white/90">\n
+            <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>\n
+            PENUH\n
+        </span>\n
+\n
+        \n
+                    <form method="POST" action="http://127.0.0.1:8000/tenant/favorites/toggle" class="absolute top-3 right-3 z-10"\n
+                  x-data="{ submitting: false }" x-on:submit.stop.prevent="submitting = true; $el.submit();">\n
+                <input type="hidden" name="_token" value="uqTRtbNNQZCBBtj1mJ61KhmuGpNeU1mriHsVoUG0" autocomplete="off">                <input type="hidden" name="kos_id" value="2">\n
+                <button type="submit" :disabled="submitting"\n
+                        class="w-9 h-9 rounded-full flex items-center justify-center shadow-sm backdrop-blur-sm transition-all duration-300 transform-gpu active:scale-90 disabled:opacity-60 disabled:cursor-wait bg-black/20 text-white/90 hover:bg-white/95 hover:text-red-500"\n
+                        aria-label="Tambahkan ke favorit"\n
+                        title="Tambahkan ke favorit">\n
+                    <i class="ri-heart-3-line text-base"></i>\n
+                </button>\n
+            </form>\n
+            </div>\n
+\n
+    <div class="p-4 flex flex-col flex-1">\n
+        \n
+        <a href="http://127.0.0.1:8000/tenant/kos/2" class="block">\n
+            <h3 class="font-semibold not-italic text-[15px] sm:text-base text-slate-900 dark:text-slate-50 leading-snug line-clamp-2 break-words group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">Perum Wahyuni Widodo</h3>\n
+        </a>\n
+\n
+        \n
+        <p class="mt-1.5 text-[13px] text-slate-500 dark:text-slate-500 flex items-start gap-1 line-clamp-1">\n
+            <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-400"></i>\n
+            <span>Jl. Sudirman No. 100</span>\n
+        </p>\n
+\n
+                            <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Jl.+Sudirman+No.+100"\n
+               target="_blank" rel="noopener noreferrer"\n
+               class="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200"\n
+               aria-label="Buka petunjuk arah ke Perum Wahyuni Widodo">\n
+                <i class="ri-navigation-line text-[10px]"></i> Arah ke Kos\n
+            </a>\n
+        \n
+        \n
+        \n
+        <div class="mt-auto pt-3 border-t border-slate-100/80 dark:border-white/[0.08] flex items-end justify-between gap-3">\n
+                            <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>\n
+                        <a href="http://127.0.0.1:8000/tenant/kos/2" class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-primary-500 group-hover:text-primary-600 transition-all duration-300">\n
+                Lihat Detail <i class="ri-arrow-right-line text-[11px] group-hover:translate-x-0.5 transition-transform duration-300"></i>\n
+            </a>\n
+        </div>\n
+    </div>\n
+</div>\n
+                            </div>\n
+\n
+            <div class="flex justify-center"></div>\n
+            </div>\n
+            </main>\n
+        </div>\n
+    </div>\n
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-card/95 dark:bg-surface-dark/95 backdrop-blur-xl border-t border-slate-200/60 dark:border-white/[0.08] safe-area-bottom" aria-label="Navigasi utama">\n
+        <div class="flex items-center justify-around h-[72px] px-1">\n
+            <a href="http://127.0.0.1:8000/dashboard"\n
+               class="relative flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[64px] px-2 py-1.5 rounded-xl transition text-slate-500 hover:text-slate-700 dark:text-slate-400"\n
+               aria-label="Beranda" >\n
+                <i class="ri-home-5-line text-xl" aria-hidden="true"></i>\n
+                <span class="text-[11px] font-semibold leading-none">Beranda</span>\n
+            </a>\n
+\n
+            <a href="http://127.0.0.1:8000/tenant/favorites"\n
+               class="relative flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[64px] px-2 py-1.5 rounded-xl transition text-slate-500 hover:text-slate-700 dark:text-slate-400"\n
+               aria-label="Favorit" >\n
+                <i class="ri-heart-line text-xl" aria-hidden="true"></i>\n
+                <span class="text-[11px] font-semibold leading-none">Favorit</span>\n
+            </a>\n
+\n
+            <a href="http://127.0.0.1:8000/tenant/booking"\n
+               class="relative flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[64px] px-2 py-1.5 rounded-xl transition text-slate-500 hover:text-slate-700 dark:text-slate-400"\n
+               aria-label="Booking Saya" >\n
+                <i class="ri-calendar-check-line text-xl" aria-hidden="true"></i>\n
+                <span class="text-[11px] font-semibold leading-none">Booking</span>\n
+                            </a>\n
+\n
+            <a href="http://127.0.0.1:8000/tenant/tagihan"\n
+               class="relative flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[64px] px-2 py-1.5 rounded-xl transition text-slate-500 hover:text-slate-700 dark:text-slate-400"\n
+               aria-label="Tagihan" >\n
+                <i class="ri-bill-line text-xl" aria-hidden="true"></i>\n
+                <span class="text-[11px] font-semibold leading-none">Tagihan</span>\n
+                            </a>\n
+\n
+            <a href="http://127.0.0.1:8000/profile"\n
+               class="relative flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[64px] px-2 py-1.5 rounded-xl transition text-slate-500 hover:text-slate-700 dark:text-slate-400"\n
+               aria-label="Profil" >\n
+                <i class="ri-user-3-line text-xl" aria-hidden="true"></i>\n
+                <span class="text-[11px] font-semibold leading-none">Profil</span>\n
+            </a>\n
+        </div>\n
+    </nav>\n
+            </body>\n
+</html>\n
+' [UTF-8](length: 59081) does not contain "Perum Wahyuni Widodo" [ASCII](length: 20).
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:634
+C:\Users\ASUS\KosManager\tests\Feature\PhaseDLocationDiscoveryTest.php:153
+
+2) Tests\Feature\PhaseETenantMarketplaceTest::test_existing_instant_booking_remains_functional
+Failed asserting that a row in the table [bookings] matches the attributes {
+    "user_id": 2,
+    "kamar_id": 1,
+    "price": 1500000,
+    "status": "approved"
+}.
+
+The table is empty.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithDatabase.php:29
+C:\Users\ASUS\KosManager\tests\Feature\PhaseETenantMarketplaceTest.php:217
+
+3) Tests\Feature\PolicyTestSuite::test_super_admin_can_view_any_user
+Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:68
+
+4) Tests\Feature\PolicyTestSuite::test_super_admin_can_manage_any_fasilitas
+Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:124
+
+5) Tests\Feature\PolicyTestSuite::test_admin_can_only_see_assigned_kos_fasilitas
+Expected response status code [200] but received 403.
+Failed asserting that 403 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:135
+
+6) Tests\Feature\PolicyTestSuite::test_owner_can_verify_only_own_kos_payment
+Expected response status code [200] but received 403.
+Failed asserting that 403 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\PolicyTestSuite.php:357
+
+7) Tests\Feature\ReportDashboardHardeningTest::test_pendapatan_report_summary_uses_approved_only
+Expected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\ReportDashboardHardeningTest.php:202
+
+8) Tests\Feature\ReportDashboardHardeningTest::test_kamar_report_summary_counts_statuses_correctly
+Expected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\ReportDashboardHardeningTest.php:219
+
+9) Tests\Feature\ReportDashboardHardeningTest::test_booking_report_summary_with_status_breakdown
+Expected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\ReportDashboardHardeningTest.php:254
+
+10) Tests\Feature\ReportDashboardHardeningTest::test_pendapatan_report_respects_date_filter
+Expected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:148
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+C:\Users\ASUS\KosManager\tests\Feature\ReportDashboardHardeningTest.php:304
+
+11) Tests\Feature\SchedulerResilienceTest::test_overdue_command_is_idempotent
+The expected [App\Mail\KosManagerMail] mailable was queued 2 times instead of 1 times.
+Failed asserting that 2 is identical to 1.
+
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Testing\Fakes\MailFake.php:190
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Testing\Fakes\MailFake.php:170
+C:\Users\ASUS\KosManager\vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:355
+C:\Users\ASUS\KosManager\tests\Feature\SchedulerResilienceTest.php:38
+
+12) Tests\Feature\SchedulerResilienceTest::test_remind_command_is_idempotent
+Failed asserting that 2 is identical to 1.
+
+C:\Users\ASUS\KosManager\tests\Feature\SchedulerResilienceTest.php:100
+
+13) Tests\Feature\ShowcaseFeasibilityTest::test_shared_room_booking_respects_capacity
+Failed asserting that false is true.
+
+C:\Users\ASUS\KosManager\tests\Feature\ShowcaseFeasibilityTest.php:78
+
+ERRORS!
+Tests: 298, Assertions: 935, Errors: 6, Failures: 13.

@@ -4,18 +4,18 @@
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Moderasi Advertising</h1>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50">Moderasi Advertising</h1>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Review kampanye iklan untuk kos yang Anda kelola.</p>
             </div>
-            <a href="{{ route('admin.advertising.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-500 hover:bg-primary-600 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 self-start sm:self-auto">
+            <a href="{{ route('admin.advertising.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 self-start sm:self-auto">
                 <i class="ri-add-circle-line"></i> Iklan Pihak Ketiga
             </a>
         </div>
 
         {{-- Filter --}}
-        <form method="GET" action="{{ route('admin.advertising.index') }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4">
+        <form method="GET" action="{{ route('admin.advertising.index') }}" class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-4">
             <div class="flex flex-col sm:flex-row gap-3">
-                <select name="status" class="text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 px-4 py-2.5">
+                <select name="status" class="text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5">
                     <option value="">Semua Status</option>
                     @foreach($statuses as $s)
                         <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>
@@ -23,19 +23,18 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-500 hover:bg-primary-600 text-white px-5 py-2.5 rounded-xl transition">
+                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
                     <i class="ri-filter-3-line"></i> Filter
                 </button>
                 @if(request('status'))
-                    <a href="{{ route('admin.advertising.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Reset</a>
+                    <a href="{{ route('admin.advertising.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Reset</a>
                 @endif
             </div>
         </form>
 
-        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
-            <div class="overflow-x-auto">
+        <div class="table-card">
                 <table class="w-full text-sm">
-                    <thead class="bg-slate-50 dark:bg-slate-800/40 text-left">
+                    <thead class="bg-slate-50 dark:bg-surface-elevated/40 text-left">
                         <tr>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Kampanye</th>
                             <th class="px-5 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Owner</th>
@@ -61,7 +60,7 @@
                                 </td>
                                 <td class="px-5 py-3 text-slate-600 dark:text-slate-300">{{ $c->package->name }}</td>
                                 <td class="px-5 py-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold {{ \App\Support\AdvertisingLabels::campaignBadge($c->status) }}">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold {{ \App\Support\AdvertisingLabels::campaignBadge($c->status) }}">
                                         {{ \App\Support\AdvertisingLabels::campaignLabel($c->status) }}
                                     </span>
                                 </td>
@@ -80,8 +79,7 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-            <div class="px-5 py-4 border-t border-slate-100 dark:border-slate-800 flex justify-center">{{ $campaigns->links() }}</div>
+            <div class="px-5 py-4 border-t border-slate-100 dark:border-white/10 flex justify-center">{{ $campaigns->links() }}</div>
         </div>
     </div>
 </x-app-layout>

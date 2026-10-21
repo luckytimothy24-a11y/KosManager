@@ -30,7 +30,9 @@ class KamarPolicy
         }
 
         if ($user->isTenant()) {
-            return $kamar->hasAvailableSlot() && $kamar->status !== 'maintenance';
+            $kosActive = $kamar->kos && $kamar->kos->status === 'active';
+
+            return $kosActive && $kamar->status !== 'maintenance' && $kamar->hasAvailableSlot();
         }
 
         return false;

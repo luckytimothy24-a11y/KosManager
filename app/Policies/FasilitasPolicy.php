@@ -38,15 +38,7 @@ class FasilitasPolicy
 
     public function create(User $user): bool
     {
-        if ($user->isSuperAdmin()) {
-            return true;
-        }
-
-        if ($user->isAdmin()) {
-            return $user->assignedKos()->exists();
-        }
-
-        return false;
+        return $user->isSuperAdmin();
     }
 
     public function update(User $user, Fasilitas $fasilitas): bool

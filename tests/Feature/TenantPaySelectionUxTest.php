@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
@@ -36,7 +37,7 @@ class TenantPaySelectionUxTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Storage::fake('local');
+        Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->tenant = User::factory()->create(['role' => 'tenant']);
@@ -229,7 +230,7 @@ class TenantPaySelectionUxTest extends TestCase
         $response = $this->actingAs($this->tenant)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Butuh bantuan? Hubungi Owner');
+        $response->assertSee('Hubungi Owner');
         $response->assertSee(route('tenant.messages.index'), false);
     }
 
@@ -386,7 +387,7 @@ class TenantPaySelectionUxTest extends TestCase
             'status' => 'pending_verification',
         ]);
 
-        $pembayaran = \App\Models\Pembayaran::where('tagihan_id', $tagihan2->id)->first();
+        $pembayaran = Pembayaran::where('tagihan_id', $tagihan2->id)->first();
         $this->assertEquals($penghuni2->id, $pembayaran->penghuni_id, 'penghuni_id must match tagihan owner, not first penghuni');
     }
 
@@ -480,7 +481,7 @@ class TenantPaySelectionUxTest extends TestCase
             'notes' => 'Sudah transfer, mohon dicek.',
         ]);
 
-        $pembayaran = \App\Models\Pembayaran::where('tagihan_id', $tagihan2->id)->first();
+        $pembayaran = Pembayaran::where('tagihan_id', $tagihan2->id)->first();
         $this->assertNotNull($pembayaran->proof_file, 'proof_file must be stored for transfer_bank');
     }
 

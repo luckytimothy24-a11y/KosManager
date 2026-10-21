@@ -1,15 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Activity Log" description="Rekam jejak seluruh aktivitas penting di sistem." />
+        <x-page-header title="Activity Log" description="Rekam jejak seluruh aktivitas penting di sistem." icon="ri-history-line" />
     </x-slot>
 
     <div class="space-y-6">
-        {{-- Timeline (desktop) --}}
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+        <div class="card-surface">
             @forelse($logs as $log)
-                <article class="flex gap-4 px-5 sm:px-6 py-4 {{ ! $loop->last ? 'border-b border-slate-100 dark:border-slate-800' : '' }}">
+                <article class="flex gap-4 px-5 sm:px-6 py-4 {{ ! $loop->last ? 'border-b border-slate-100 dark:border-white/[0.06]' : '' }}">
                     <div class="flex flex-col items-center shrink-0">
-                        <span class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                        <span class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center">
                             @php
                                 $actionIcon = match(true) {
                                     str_contains(strtolower($log->action), 'delete') => 'ri-delete-bin-line',
@@ -23,16 +22,16 @@
                             <i class="{{ $actionIcon }} text-slate-500 dark:text-slate-400"></i>
                         </span>
                         @if(! $loop->last)
-                            <span class="w-px flex-1 my-1.5 bg-slate-100 dark:bg-slate-800"></span>
+                            <span class="w-px flex-1 my-1.5 bg-slate-100 dark:bg-white/[0.06]"></span>
                         @endif
                     </div>
 
                     <div class="min-w-0 flex-1 pb-1">
                         <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                            <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ $log->user?->name ?? 'Sistem' }}</p>
+                            <p class="text-sm font-semibold text-slate-900 dark:text-slate-50">{{ $log->user?->name ?? 'Sistem' }}</p>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300">{{ $log->action }}</span>
                             @if($log->module)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">{{ $log->module }}</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-slate-400">{{ $log->module }}</span>
                             @endif
                         </div>
                         <p class="mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{{ $log->description }}</p>
@@ -49,7 +48,7 @@
                                     <i class="ri-database-2-line"></i> Metadata
                                     <i class="ri-arrow-down-s-line transition-transform group-open:rotate-180"></i>
                                 </summary>
-                                <pre class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 overflow-x-auto scrollbar-thin">{{ json_encode($log->timestamp_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
+                                <pre class="mt-2 p-3 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-100 dark:border-white/[0.06] text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 overflow-x-auto scrollbar-thin">{{ json_encode($log->timestamp_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}</pre>
                             </details>
                         @endif
                     </div>
@@ -59,7 +58,7 @@
             @endforelse
 
             @if($logs->hasPages())
-                <div class="p-4 border-t border-slate-100 dark:border-slate-800">
+                <div class="p-4 border-t border-slate-100 dark:border-white/[0.06]">
                     {{ $logs->links() }}
                 </div>
             @endif

@@ -227,10 +227,12 @@ class ApiV1BookingTest extends TestCase
         $this->assertDatabaseHas('bookings', [
             'user_id' => $this->tenant->id,
             'kamar_id' => $this->kamar->id,
-            'status' => 'approved',
+            'status' => 'pending',
             'price' => 1000000,
         ]);
         $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'booked']);
+        // Tenant tidak otomatis aktif
+        $this->assertDatabaseMissing('penghunis', ['user_id' => $this->tenant->id, 'status' => 'active']);
     }
 
     public function test_store_uses_existing_rental_price(): void
@@ -384,9 +386,16 @@ class ApiV1BookingTest extends TestCase
 
         $response->assertOk()
             ->assertHeader('content-type', 'application/json')
-            ->assertJson(['message' => 'Booking berhasil dibatalkan.']);
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
-        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'available']);
+            ->assertJsonPath('message', 'Pengajuan pembatalan terkirim. Menunggu konfirmasi pemilik kos.')
+            ->assertJsonPath('cancellation_request.status', 'pending')
+            ->assertJsonPath('data.status', 'approved');
+
+        // Tenant cancel ≠ booking cancelled
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('booking_cancellation_requests', [
+            'booking_id' => $booking->id,
+            'status' => 'pending',
+        ]);
     }
 
     public function test_cancel_denies_other_tenant_booking(): void
