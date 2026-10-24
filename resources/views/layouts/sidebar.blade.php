@@ -1,23 +1,9 @@
-@php
+﻿@php
     $user = Auth::user();
     $currentRoute = request()->route()->getName() ?? '';
-    $badges = $sidebarBadges ?? [];
+    $sidebarData = $sidebarBadges ?? [];
 
-    $navItem = fn ($route, $label, $icon, $badge = null) => [
-        'route' => $route,
-        'label' => $label,
-        'icon' => $icon,
-        'badge' => $badge,
-    ];
-
-    $isActive = function ($route) use ($currentRoute) {
-        if (str_ends_with($route, '*')) {
-            return str_starts_with($currentRoute, rtrim($route, '*'));
-        }
-        return $currentRoute === $route;
-    };
-
-    // Role accent untuk header icon — biar premium tiap role tetap terasa
+    // Role accent untuk header icon - biar premium tiap role tetap terasa
     $roleAccent = match(true) {
         $user->hasRole('super_admin') => 'from-violet-600 to-indigo-600',
         $user->isOwner() => 'from-orange-500 to-orange-600',
@@ -30,11 +16,21 @@
         $user->isAdmin() => 'Admin Kos',
         default => 'Tenant',
     };
+
+    // Extract frequently used badge values with defaults
+    $bookingPending = $sidebarData['bookingPending'] ?? 0;
+    $tagihanBelum = $sidebarData['tagihanBelum'] ?? 0;
+    $unreadMessages = $sidebarData['unreadMessages'] ?? 0;
+    $invitationPending = $sidebarData['invitationPending'] ?? 0;
+    $unreadNotif = $sidebarData['unreadNotif'] ?? 0;
+    $unreadAdminMessages = $sidebarData['unreadAdminMessages'] ?? 0;
+    $pendingDamageReports = $sidebarData['pendingDamageReports'] ?? 0;
+    $pendingCheckouts = $sidebarData['pendingCheckouts'] ?? 0;
 @endphp
 
-{{-- Sidebar: light = putih premium, dark = slate-950 — berlaku untuk SEMUA role --}}
+ {{-- Sidebar: light = putih premium, dark = slate-950 â€” berlaku untuk SEMUA role --}}
 <aside class="fixed top-0 left-0 z-40 w-64 h-dvh flex flex-col border-r transition-transform lg:translate-x-0 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100"
-       :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+   :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
 <div class="flex items-center gap-3 px-5 h-16 border-b shrink-0 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br {{ $roleAccent }} flex items-center justify-center shadow-lg shadow-black/5 dark:shadow-black/20 shrink-0">
@@ -42,7 +38,7 @@
         </div>
         <div class="min-w-0">
             <span class="text-[13px] font-black tracking-tight text-slate-900 dark:text-white leading-none">KosManager</span>
-            <p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 leading-none mt-1">{{ $roleLabel }} · Panel</p>
+            <p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 leading-none mt-1">{{ $roleLabel }} Â· Panel</p>
         </div>
         <button type="button" @click="sidebarOpen = false"
                 class="lg:hidden absolute right-2 top-2 flex items-center justify-center rounded-full bg-slate-200 px-2 py-1.5 text-sm font-semibold text-slate-600 shadow-sm transition"
@@ -53,9 +49,9 @@
         <span class="ml-auto hidden lg:grid h-7 w-7 place-items-center rounded-lg bg-slate-100 dark:bg-slate-800/10 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition">
             <i class="ri-layout-left-line text-sm"></i>
         </span>
-    </div>
+</div>
 
-    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-0.5 scrollbar-thin" aria-label="Navigasi sidebar">
+<nav class="flex-1 overflow-y-auto px-3 py-5 space-y-0.5 scrollbar-thin" aria-label="Navigasi sidebar">
 
         @if(!$user->isTenant())
             <a href="{{ route('dashboard') }}"
@@ -92,7 +88,7 @@
                         $navItem('super-admin.fasilitas.index', 'Fasilitas', 'ri-archive-drawer-line'),
                     ];
                     $groups['Transaksi'] = [
-                        $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $badges['bookingPending'] ?? 0),
+                        $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $bookingPending),
                         $navItem('owner.penghuni.index', 'Penghuni', 'ri-user-star-line'),
                         $navItem('owner.kontrak.index', 'Kontrak', 'ri-file-text-line'),
                         $navItem('owner.checkin.index', 'Check-in', 'ri-login-box-line'),
@@ -119,45 +115,45 @@
                         $navItem('owner.kamar.index', 'Kelola Kamar', 'ri-door-open-line'),
                     ];
                     $groups['Transaksi'] = [
-                        $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $badges['bookingPending'] ?? 0),
-                        $navItem('owner.penghuni.index', 'Penghuni', 'ri-user-star-line'),
-                        $navItem('owner.kontrak.index', 'Kontrak', 'ri-file-text-line'),
-                        $navItem('owner.checkin.index', 'Check-in', 'ri-login-box-line'),
-                        $navItem('owner.checkout.index', 'Check-out', 'ri-logout-box-line'),
+                        $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $bookingPending),
+                        $navItem('owner.penghuni.index', 'Penghuni', 'ri.user-star-line'),
+                        $navItem('owner.kontrak.index', 'Kontrak', 'ri.file-text-line'),
+                        $navItem('owner.checkin.index', 'Check-in', 'ri.login-box-line'),
+                        $navItem('owner.checkout.index', 'Check-out', 'ri.logout-box-line'),
                     ];
                     $groups['Keuangan'] = [
-                        $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
-                        $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                        $navItem('owner.tagihan.index', 'Tagihan', 'ri.file-list-3-line'),
+                        $navItem('owner.pembayaran.index', 'Pembayaran', 'ri.money-dollar-circle-line'),
                     ];
                     $groups['Komunikasi'] = [
-                        $navItem('owner.messages.index', 'Pesan Tenant', 'ri-customer-service-2-line', $badges['unreadMessages'] ?? 0),
+                        $navItem('owner.messages.index', 'Pesan Tenant', 'ri.customer-service-2-line', $unreadMessages),
                     ];
                     $groups['Lainnya'] = [
-                        $navItem('owner.laporan.index', 'Laporan', 'ri-file-chart-line'),
-                        $navItem('owner.advertising.dashboard', 'Advertising', 'ri-megaphone-line'),
+                        $navItem('owner.laporan.index', 'Laporan', 'ri.file-chart-line'),
+                        $navItem('owner.advertising.dashboard', 'Advertising', 'ri.megaphone-line'),
                     ];
                 } else {
                     $groups['Manajemen'] = [
-                        $navItem('admin.kos.index', 'Kelola Kos', 'ri-building-2-line'),
-                        $navItem('admin.kamar.index', 'Kelola Kamar', 'ri-door-open-line'),
+                        $navItem('admin.kos.index', 'Kelola Kos', 'ri.building-2-line'),
+                        $navItem('admin.kamar.index', 'Kelola Kamar', 'ri.door-open-line'),
                     ];
                     $groups['Transaksi'] = [
-                        $navItem('admin.booking.index', 'Booking', 'ri-calendar-check-line', $badges['bookingPending'] ?? 0),
-                        $navItem('admin.penghuni.index', 'Penghuni', 'ri-user-star-line'),
-                        $navItem('admin.kontrak.index', 'Kontrak', 'ri-file-text-line'),
-                        $navItem('admin.checkin.index', 'Check-in', 'ri-login-box-line'),
-                        $navItem('admin.checkout.index', 'Check-out', 'ri-logout-box-line'),
+                        $navItem('admin.booking.index', 'Booking', 'ri.calendar-check-line', $bookingPending),
+                        $navItem('admin.penghuni.index', 'Penghuni', 'ri.user-star-line'),
+                        $navItem('admin.kontrak.index', 'Kontrak', 'ri.file-text-line'),
+                        $navItem('admin.checkin.index', 'Check-in', 'ri.login-box-line'),
+                        $navItem('admin.checkout.index', 'Check-out', 'ri.logout-box-line'),
                     ];
                     $groups['Keuangan'] = [
-                        $navItem('admin.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
-                        $navItem('admin.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                        $navItem('admin.tagihan.index', 'Tagihan', 'ri.file-list-3-line'),
+                        $navItem('admin.pembayaran.index', 'Pembayaran', 'ri.money-dollar-circle-line'),
                     ];
                     $groups['Lainnya'] = [
-                        $navItem('admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
-                        $navItem('admin.advertising.index', 'Advertising', 'ri-megaphone-line'),
+                        $navItem('admin.laporan.index', 'Laporan', 'ri.bar-chart-grouped-line'),
+                        $navItem('admin.advertising.index', 'Advertising', 'ri.megaphone-line'),
                     ];
                 }
-@endphp
+            @endphp
 
             @foreach($groups as $groupLabel => $items)
                 @if(!empty($items))
@@ -173,7 +169,7 @@
                     <a href="{{ route($item['route']) }}"
                        class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
                               {{ $active ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
-                       @if($active) aria-current="page" @endif>
+                              @if($active) aria-current="page" @endif>
                         <span class="relative flex items-center justify-center w-5 shrink-0">
                             @if($active)
                                 <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-slate-100 rounded-full"></span>
@@ -193,19 +189,18 @@
             @php
                 $groups = [
                     'Utama' => [
-                        ['route' => 'dashboard*', 'label' => 'Dashboard', 'icon' => 'ri-dashboard-3-line', 'exact' => true],
-                        ['route' => 'tenant.kos*', 'label' => 'Cari Kos', 'icon' => 'ri-search-eye-line'],
-                        ['route' => 'tenant.favorites*', 'label' => 'Favorit', 'icon' => 'ri-heart-line'],
+                        ['route' => 'dashboard*', 'label' => 'Dashboard', 'icon' => 'ri.dashboard-3-line', 'exact' => true],
+                        ['route' => 'tenant.kos*', 'label' => 'Cari Kos', 'icon' => 'ri.search-eye-line'],
+                        ['route' => 'tenant.favorites*', 'label' => 'Favorit', 'icon' => 'ri.heart-line'],
                     ],
                     'Aktivitas' => [
-                        ['route' => 'tenant.booking*', 'label' => 'Booking Saya', 'icon' => 'ri-calendar-check-line'],
-                        ['route' => 'tenant.kontrak*', 'label' => 'Kontrak', 'icon' => 'ri-file-text-line'],
-                        ['route' => 'tenant.tagihan*', 'label' => 'Tagihan', 'icon' => 'ri-file-list-3-line', 'badge' => $badges['tagihanBelum'] ?? 0, 'badgeClass' => 'bg-red-500'],
-                        ['route' => 'tenant.pembayaran*', 'label' => 'Pembayaran', 'icon' => 'ri-money-dollar-circle-line'],
+                        ['route' => 'tenant.booking*', 'label' => 'Booking Saya', 'icon' => 'ri.calendar-check-line'],
+                        ['route' => 'tenant.kontrak*', 'label' => 'Kontrak', 'icon' => 'ri.file-text-line', 'badge' => $tagihanBelum, 'badgeClass' => 'bg-red-500'],
+                        ['route' => 'tenant.pembayaran*', 'label' => 'Pembayaran', 'icon' => 'ri.money-dollar-circle-line'],
                     ],
                     'Bantuan' => [
-                        ['route' => 'tenant.messages*', 'label' => 'Hubungi Owner', 'icon' => 'ri-customer-service-2-line', 'badge' => $badges['unreadMessages'] ?? 0, 'badgeClass' => 'bg-gradient-to-br from-orange-500 to-orange-600'],
-                        ['route' => 'tenant.invitations*', 'label' => 'Undangan Kos', 'icon' => 'ri-mail-send-line', 'badge' => $badges['invitationPending'] ?? 0, 'badgeClass' => 'bg-amber-500'],
+                        ['route' => 'tenant.messages*', 'label' => 'Hubungi Owner', 'icon' => 'ri.customer-service-2-line', 'badge' => $unreadMessages, 'badgeClass' => 'bg-gradient-to-br from-orange-500 to-orange-600'],
+                        ['route' => 'tenant.invitations*', 'label' => 'Undangan Kos', 'icon' => 'ri.mail-send-line', 'badge' => $invitationPending, 'badgeClass' => 'bg-amber-500'],
                     ],
                 ];
             @endphp
@@ -241,7 +236,7 @@
                 @endforeach
             @endforeach
 
-            @if(($badges['unreadNotif'] ?? 0) > 0)
+            @if(($unreadNotif) > 0)
                 <div class="pt-6 pb-2 px-3">
                     <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">Notifikasi</p>
                 </div>
@@ -251,7 +246,7 @@
                         <i class="ri-notification-3-line text-[18px]"></i>
                     </span>
                     Notifikasi
-                    <span class="ml-auto text-[10px] font-black text-white bg-orange-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm">{{ $badges['unreadNotif'] }}</span>
+                    <span class="ml-auto text-[10px] font-black text-white bg-orange-500 px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm">{{ $unreadNotif }}</span>
                 </a>
             @endif
         @endif
@@ -281,7 +276,7 @@
             </span>
             Pengaturan
         </a>
-        <p class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500">© {{ date('Y') }} KosManager</p>
+        <p class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500">Â© {{ date('Y') }} KosManager</p>
     </div>
 </aside>
 
@@ -292,4 +287,5 @@
      x-transition:leave="transition ease-in duration-200"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0"
+     x-transition:leave-start="opacity-0"
      class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-30 lg:hidden"></div>
