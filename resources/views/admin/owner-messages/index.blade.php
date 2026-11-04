@@ -13,6 +13,7 @@
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Hanya Owner dari kos yang ditugaskan kepada Anda.</p>
             </div>
 
+            <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -62,6 +63,7 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
         </div>
     </div>
 </x-app-layout>

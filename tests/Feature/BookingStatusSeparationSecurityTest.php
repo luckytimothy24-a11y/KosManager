@@ -248,7 +248,7 @@ class BookingStatusSeparationSecurityTest extends TestCase
         ]);
 
         // Payment prerequisite
-        $pay = app(PaymentService::class)->createForBooking($booking, $tenant, 'cash');
+        $pay = app(PaymentService::class)->createForBooking($booking, $tenant, 'qris');
         $this->assertTrue($pay['ok']);
         $this->actingAs($owner)->post(route('owner.pembayaran.verify', $pay['pembayaran']));
 

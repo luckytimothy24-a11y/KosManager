@@ -32,8 +32,43 @@
             </form>
         </div>
 
+        {{-- Mobile cards --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($kos as $item)
+                <x-mobile-record-card
+                    :title="$item->name"
+                    :subtitle="$item->address"
+                    :meta="[
+                        'Kamar' => $item->kamar_count . ' kamar',
+                        'Penghuni' => $item->penghunis_count . ' orang',
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$item->status" context="kos" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route($kosPrefix . '.kos.show', $item) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                        @if(!$isAdminView)
+                            <x-button href="{{ route('owner.kos.edit', $item) }}" type="secondary" size="sm" class="min-h-11">
+                                <i class="ri-edit-line"></i> Edit
+                            </x-button>
+                        @endif
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-building-2-line" title="Belum ada data kos"
+                                   description="{{ $isAdminView ? 'Belum ada Kos yang ditugaskan kepada Anda.' : 'Belum ada properti kos yang Anda kelola.' }}" />
+                </div>
+            @endforelse
+            @if($kos->hasPages())
+                <div>{{ $kos->links() }}</div>
+            @endif
+        </div>
+
         {{-- Table --}}
-        <div class="table-card">
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

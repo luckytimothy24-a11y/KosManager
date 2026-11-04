@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Detail Pembayaran" description="Status verifikasi &amp; bukti pembayaran Anda.">
+        <x-page-header title="Detail Pembayaran" description="Status verifikasi & bukti pembayaran Anda.">
             <x-button href="{{ route('tenant.pembayaran.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
         </x-page-header>
     </x-slot>

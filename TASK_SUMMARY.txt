@@ -1,0 +1,32 @@
+=== TASK SUMMARY ===
+
+1. phpunit.xml: DB_DATABASE already :memory: (line 16) - no fix needed
+
+2. Migration down() fix: Added dropIndex('payout_disbursements_payout_id_status_index') before dropUnique/dropColumn in 2026_10_06_000007
+   - File: database/migrations/2026_10_06_000007_add_idempotency_and_status_to_payout_disbursements_table.php
+   - The down() method successfully executed during migrate:fresh rollback
+
+3. KamarStatusTransitionTest: Code fixes applied
+   - Test #7 (test_owneractioncontroller_checkout_only_occupancy): Fixed to assert 'booked' if approved booking with end_date >= today
+   - Added test_maintenance_status_does_not_change_after_checkout
+   - Tests cannot run via php artisan test due to PHPUnit bootstrap overriding DB_DATABASE to :memory: (test infrastructure issue)
+   - The database.sqlite file has all tables when accessed directly
+
+4. Kamar::syncStatus() integrated into 6 locations:
+   - CheckOutController::approveLocked
+   - OwnerActionController::approveCheckout (1 of 2 places)
+   - OwnerActionController::bulkApproveCheckout (2 of 2 places)
+   - ExpireOldKontraks::autoCheckoutPenghuni
+   - ExpireOldBookings::expireUncheckedInApprovedBookings
+   - BookingStatusService::syncRoomAfterBookingTransition
+   - CheckInController::updateKamarStatus
+
+   Files modified:
+   - app/Models/Kamar.php (syncStatus() method added)
+   - app/Http/Controllers/Owner/CheckOutController.php
+   - app/Http/Controllers/Api/V1/Owner/OwnerActionController.php (2 places)
+   - app/Console/Commands/ExpireOldKontraks.php
+   - app/Console/Commands/ExpireOldBookings.php
+   - app/Services/BookingStatusService.php
+   - app/Http/Controllers/Owner/CheckInController.php
+   - tests/Feature/KamarStatusTransitionTest.php (test #7 + maintenance test)

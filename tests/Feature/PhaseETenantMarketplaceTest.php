@@ -200,7 +200,7 @@ class PhaseETenantMarketplaceTest extends TestCase
         $response->assertSee('Biaya sewa');
     }
 
-    public function test_existing_instant_booking_remains_functional(): void
+    public function test_existing_booking_creation_remains_functional(): void
     {
         $kos = $this->kos();
         $kamar = $this->kamar($kos, 'available', 1500000);
@@ -211,14 +211,18 @@ class PhaseETenantMarketplaceTest extends TestCase
             'start_date' => now()->addDays(1)->format('Y-m-d'),
             'end_date' => now()->addMonths(3)->format('Y-m-d'),
             'rental_type' => 'monthly',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No. 1',
         ]);
 
         $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('bookings', [
             'user_id' => $this->tenant->id,
             'kamar_id' => $kamar->id,
             'price' => 1500000,
-            'status' => 'approved',
+            'status' => 'pending',
         ]);
     }
 

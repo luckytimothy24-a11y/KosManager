@@ -169,6 +169,15 @@
             </div>
         </div>
 
+        @php
+            $qrData = 'KOSMANAGER|KUITANSI|' . $pembayaran->payment_number . '|' . $pembayaran->amount;
+            $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrData) . '&size=120x120';
+        @endphp
+        <div style="text-align: center; margin-top: 15px;">
+            <img src="{{ $qrUrl }}" alt="QR Kuitansi" style="width: 80px; height: 80px; margin: 0 auto;">
+            <p style="font-size: 8px; color: #999; margin-top: 4px;">Scan untuk verifikasi kuitansi</p>
+        </div>
+
         <div class="footer">
             <div class="line"></div>
             <p>Kuitansi ini sah dan diterbitkan oleh sistem KosManager.</p>

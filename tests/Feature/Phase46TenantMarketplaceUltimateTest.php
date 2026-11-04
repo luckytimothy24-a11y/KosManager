@@ -258,7 +258,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
         // Halaman show harus menampilkan form pembayaran
         $show = $this->actingAs($this->tenant)->get(route('tenant.booking.show', $booking));
         $show->assertOk();
-        $show->assertSee('Pembayaran Booking');
+        $show->assertSee('Pembayaran DP Booking');
         $show->assertSee(route('tenant.booking.payment.store', $booking), false);
     }
 
@@ -376,5 +376,19 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Dashboard');
+    }
+
+    public function test_sidebar_collapse_control_is_available_for_all_roles(): void
+    {
+        foreach (['tenant', 'owner', 'admin', 'super_admin'] as $role) {
+            $user = User::factory()->create(['role' => $role]);
+
+            $response = $this->actingAs($user)->get(route('dashboard'));
+
+            $response->assertOk();
+            $response->assertSee('id="sidebar-collapse"', false);
+            $response->assertSee('aria-controls="main-sidebar"', false);
+            $response->assertSee('lg:w-20', false);
+        }
     }
 }

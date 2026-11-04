@@ -32,8 +32,35 @@
             </form>
         </div>
 
+        <div class="space-y-3 md:hidden">
+            @forelse($admins as $admin)
+                <x-mobile-record-card
+                    :title="$admin->name"
+                    :subtitle="$admin->email"
+                    :meta="[
+                        'Telepon' => $admin->phone ?? '-',
+                        'Kos assigned' => $admin->assigned_kos_count ?? 0,
+                        'Daftar' => $admin->created_at->translatedFormat('d M Y'),
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$admin->is_active ? 'active' : 'inactive'" context="penghuni" :label="$admin->is_active ? 'Aktif' : 'Nonaktif'" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route('super-admin.admins.show', $admin) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-user-settings-line" title="Tidak ada admin ditemukan"
+                                   description="Coba ubah kata kunci pencarian atau filter." />
+                </div>
+            @endforelse
+        </div>
+
         <div class="table-card">
-            <div class="overflow-x-auto scrollbar-thin">
+            <div class="hidden overflow-x-auto scrollbar-thin md:block">
                 <table class="w-full">
                     <thead>
                         <tr>

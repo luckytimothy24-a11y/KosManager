@@ -9,7 +9,6 @@ use App\Models\Kontrak;
 use App\Models\Kos;
 use App\Models\Message;
 use App\Models\Pembayaran;
-use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
 use App\Services\AuditLogService;
@@ -68,7 +67,11 @@ class OwnerActionController extends Controller
                 AuditLogService::approve(
                     'Pembayaran',
                     "Pembayaran booking {$pembayaran->booking->booking_code} disetujui (API; booking tetap pending)",
-                    ['pembayaran_id' => $pembayaran->id]
+                    [
+                        'pembayaran_id' => $pembayaran->id,
+                        'booking_id' => $pembayaran->booking_id,
+                        'amount' => (float) $pembayaran->amount,
+                    ]
                 );
             } else {
                 NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
@@ -177,10 +180,7 @@ class OwnerActionController extends Controller
 
             $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->first();
             if ($kamar) {
-                $remaining = Penghuni::where('kamar_id', $kamar->id)
-                    ->where('id', '!=', $penghuni->id)
-                    ->where('status', 'active')->count();
-                $kamar->update(['status' => $remaining > 0 ? 'occupied' : 'available']);
+                $kamar->syncStatus();
             }
 
             $kontrak = Kontrak::where('penghuni_id', $penghuni->id)
@@ -237,8 +237,7 @@ class OwnerActionController extends Controller
 
                 $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->first();
                 if ($kamar) {
-                    $remaining = Penghuni::where('kamar_id', $kamar->id)->where('id', '!=', $locked->penghuni_id)->where('status', 'active')->count();
-                    $kamar->update(['status' => $remaining > 0 ? 'occupied' : 'available']);
+                    $kamar->syncStatus();
                 }
                 $kontrak = Kontrak::where('penghuni_id', $locked->penghuni->id)
                     ->where('status', 'active')->lockForUpdate()->first();

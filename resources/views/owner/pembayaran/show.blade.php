@@ -28,7 +28,7 @@
                 <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nominal Pembayaran</p>
                 <p class="mt-1 text-3xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp {{ number_format($pembayaran->amount, 0, ',', '.') }}</p>
                 <p class="mt-1.5 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-                    <i class="{{ ['transfer_bank' => 'ri-bank-line', 'cash' => 'ri-cash-line', 'e_wallet' => 'ri-smartphone-line'][$pembayaran->payment_method] ?? 'ri-wallet-3-line' }}"></i>
+                    <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$pembayaran->payment_method] ?? 'ri-wallet-3-line' }}"></i>
                     {{ \PaymentLabels::paymentMethod($pembayaran->payment_method) }} · {{ $pembayaran->payment_date?->translatedFormat('d F Y') ?? '-' }}
                 </p>
             </div>
@@ -59,7 +59,7 @@
                             <dd><a href="{{ route($prefix.'.booking.show', $pembayaran->booking) }}" class="font-mono font-semibold text-primary-600 hover:text-primary-700 dark:hover:text-primary-400 transition">{{ $pembayaran->booking->booking_code }}</a></dd>
                         </div>
                         <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Periode Sewa</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->booking->start_date?->translatedFormat('d M Y') ?? '-' }} – {{ $pembayaran->booking->end_date?->translatedFormat('d M Y') ?? '-' }}</dd></div>
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Harga Booking</dt><dd class="font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format((float) ($pembayaran->booking->price ?? 0), 0, ',', '.') }}</dd></div>
+                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">{{ $pembayaran->booking->usesDownPayment() ? 'DP Booking' : 'Harga Booking' }}</dt><dd class="font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($pembayaran->booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</dd></div>
                     @else
                         <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Penghuni</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->penghuni?->user?->name ?? '-' }}</dd></div>
                         <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Kos / Kamar</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->penghuni?->kos?->name ?? '-' }} · {{ $pembayaran->penghuni?->kamar?->room_number ?? '-' }}</dd></div>

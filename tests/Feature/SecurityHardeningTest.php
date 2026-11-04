@@ -103,7 +103,7 @@ class SecurityHardeningTest extends TestCase
         $response = $this->actingAs($tenant)->post('/tenant/pembayaran', [
             'tagihan_id' => $tagihan->id,
             'amount' => 1000000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertRedirect();

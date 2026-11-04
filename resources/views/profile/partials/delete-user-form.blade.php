@@ -2,7 +2,7 @@
     <button type="button"
             x-data=""
             x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition">
+            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 hover:bg-red-50 dark:hover:bg-red-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition lg:min-h-0">
         <i class="ri-delete-bin-line"></i> Hapus Akun
     </button>
 </div>

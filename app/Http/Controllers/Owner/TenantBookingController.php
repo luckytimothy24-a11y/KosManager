@@ -99,7 +99,6 @@ class TenantBookingController extends Controller
             'billing_mode' => 'personal',
             'requested_occupants' => 1,
             'notes' => $request->notes,
-            'identity_number' => $request->identity_number,
             'phone' => $request->phone,
             'address' => $request->address,
         ], $request->user()->id);

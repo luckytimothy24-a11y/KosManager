@@ -33,6 +33,7 @@
         </form>
 
         <div class="table-card">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-slate-50 dark:bg-surface-elevated/40 text-left">
                         <tr>
@@ -79,6 +80,7 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
             <div class="px-5 py-4 border-t border-slate-100 dark:border-white/10 flex justify-center">{{ $campaigns->links() }}</div>
         </div>
     </div>

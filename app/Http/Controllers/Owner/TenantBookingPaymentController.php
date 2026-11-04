@@ -45,7 +45,7 @@ class TenantBookingPaymentController extends Controller
         try {
             AuditLogService::create(
                 'Pembayaran',
-                "Tenant mengirim pembayaran booking {$booking->booking_code} (nominal Rp ".number_format((float) $booking->price, 0, ',', '.').')',
+                "Tenant mengirim pembayaran booking {$booking->booking_code} (nominal Rp ".number_format((float) $result['pembayaran']->amount, 0, ',', '.').')',
                 [
                     'booking_id' => $booking->id,
                     'pembayaran_id' => $result['pembayaran']->id,

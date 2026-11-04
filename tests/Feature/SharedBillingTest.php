@@ -346,6 +346,51 @@ class SharedBillingTest extends TestCase
         ]);
     }
 
+    public function test_shared_billing_deducts_dp_per_contract_only_once(): void
+    {
+        $kamar = $this->createSharedKamar();
+        $kontraks = $this->createOccupants($kamar, 2, 600000);
+
+        foreach ($kontraks as $kontrak) {
+            $kontrak->update(['down_payment_amount' => 100000]);
+        }
+
+        $tagihans = $this->service->createSharedTagihans(
+            $kamar,
+            'Sewa Bulanan',
+            '2026-09-01',
+            '2026-09-30',
+            '2026-10-05',
+        );
+
+        $this->assertCount(2, $tagihans);
+
+        foreach ($tagihans as $tagihan) {
+            $this->assertEquals(600000, (float) $tagihan->subtotal);
+            $this->assertEquals(100000, (float) $tagihan->down_payment_discount);
+            $this->assertEquals(500000, (float) $tagihan->total);
+        }
+
+        foreach ($kontraks as $kontrak) {
+            $this->assertEquals(0, (float) $kontrak->fresh()->down_payment_amount);
+        }
+
+        $next = $this->service->createSharedTagihans(
+            $kamar,
+            'Sewa Bulanan',
+            '2026-10-01',
+            '2026-10-31',
+            '2026-11-05',
+        );
+
+        $this->assertCount(2, $next);
+
+        foreach ($next as $tagihan) {
+            $this->assertEquals(0, (float) $tagihan->down_payment_discount);
+            $this->assertEquals(600000, (float) $tagihan->total);
+        }
+    }
+
     // ── Helpers ─────────────────────────────────────────────
 
     private function createSharedKamar(): Kamar

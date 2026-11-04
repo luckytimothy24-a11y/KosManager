@@ -15,6 +15,7 @@ class AuditLogService
         ?array $data = null
     ): AuditLog {
         $previousHash = static::latestHash();
+
         $resolvedUserId = $userId ?? auth()->id();
         $kosId = $data['kos_id'] ?? null;
 
@@ -30,7 +31,27 @@ class AuditLogService
             'kos_id' => $kosId,
         ]);
 
-        $log->update(['integrity_hash' => static::computeHash($log, $previousHash)]);
+        $secret = config('audit.hmac_secret');
+
+        if (static::isValidSecret($secret)) {
+            $payload = implode(':', [
+                $log->id ?? '',
+                $log->created_at instanceof Carbon
+                    ? $log->created_at->timestamp
+                    : '',
+                $log->user_id ?? '',
+                $log->action,
+                $log->module,
+                $log->description ?? '',
+                $log->ip_address ?? '',
+                json_encode($log->timestamp_data),
+                $previousHash ?? '',
+            ]);
+
+            $integrityHash = hash_hmac('sha256', $payload, $secret);
+
+            $log->update(['integrity_hash' => $integrityHash]);
+        }
 
         return $log;
     }

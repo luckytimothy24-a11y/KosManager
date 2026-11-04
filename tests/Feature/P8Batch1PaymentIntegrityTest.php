@@ -219,12 +219,34 @@ class P8Batch1PaymentIntegrityTest extends TestCase
             'penghuni' => $penghuni,
             'tagihan' => $this->tagihan,
             'amount' => $this->tagihan->total,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $this->assertTrue($result['ok']);
         $this->assertSame((int) $this->tagihan->id, (int) $result['pembayaran']->active_payment_key);
         $this->assertSame('pending', $result['pembayaran']->verification_status);
+    }
+
+    public function test_manual_payment_service_rejects_invalid_amount(): void
+    {
+        $penghuni = Penghuni::where('user_id', $this->tenant->id)->where('status', 'active')->firstOrFail();
+        $service = app(PaymentService::class);
+        $total = (float) $this->tagihan->total;
+
+        foreach ([0, -1500000, $total - 1] as $amount) {
+            $result = $service->createManual([
+                'penghuni' => $penghuni,
+                'tagihan' => $this->tagihan,
+                'amount' => $amount,
+                'payment_method' => 'qris',
+            ]);
+
+            $this->assertFalse($result['ok']);
+            $this->assertSame('invalid_amount', $result['error'] ?? null);
+        }
+
+        $this->assertDatabaseCount('pembayarans', 0);
+        $this->assertDatabaseHas('tagihans', ['id' => $this->tagihan->id, 'status' => 'unpaid']);
     }
 
     // ---------------------------------------------------------------- MySQL backup password not via argv

@@ -21,7 +21,7 @@ class TopikFactory extends Factory
                 'Kamar Standar', 'Kamar Deluxe', 'Kamar VIP',
                 'Fasilitas Umum', 'Fasilitas Kamar',
                 'Tagihan Sewa', 'Tagihan Listrik', 'Tagihan Air',
-                'Pembayaran Online', 'Pembayaran Tunai',
+                'Pembayaran Online', 'Pembayaran QRIS',
                 'Booking Confirm', 'Booking Pending',
                 'Kontrak Tahunan', 'Kontrak Bulanan',
                 'Lainnya',

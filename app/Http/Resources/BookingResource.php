@@ -40,6 +40,9 @@ class BookingResource extends JsonResource
             'end_date' => $this->end_date?->toDateString(),
             'rental_type' => $this->rental_type,
             'price' => $this->price,
+            'down_payment_amount' => $this->usesDownPayment() ? (float) $this->down_payment_amount : null,
+            'expected_payment_amount' => $this->expectedBookingPaymentAmount(),
+            'uses_down_payment' => $this->usesDownPayment(),
             'status' => $this->status,
             'notes' => $this->notes,
         ];

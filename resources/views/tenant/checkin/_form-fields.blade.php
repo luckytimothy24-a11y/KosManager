@@ -1,11 +1,4 @@
 <div>
-    <label for="identity_number_{{ $id ?? 'main' }}" class="field-label">Nomor KTP <span class="text-red-500">*</span></label>
-    <input type="text" id="identity_number_{{ $id ?? 'main' }}" name="identity_number" required maxlength="50" value="{{ old('identity_number', $booking->identity_number) }}"
-           class="field-input"
-           placeholder="16 digit, contoh: 3374012345670001">
-    @error('identity_number') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-</div>
-<div>
     <label for="phone_{{ $id ?? 'main' }}" class="field-label">Nomor WhatsApp <span class="text-red-500">*</span></label>
     <input type="tel" id="phone_{{ $id ?? 'main' }}" name="phone" required maxlength="20" value="{{ old('phone', $booking->phone ?? $booking->user->phone) }}"
            class="field-input"
@@ -13,10 +6,10 @@
     @error('phone') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
 </div>
 <div>
-    <label for="address_{{ $id ?? 'main' }}" class="field-label">Alamat Sesuai KTP <span class="text-red-500">*</span></label>
+    <label for="address_{{ $id ?? 'main' }}" class="field-label">Alamat Domisili <span class="text-red-500">*</span></label>
     <textarea id="address_{{ $id ?? 'main' }}" name="address" required rows="2" maxlength="500"
               class="field-input resize-none"
-              placeholder="Alamat sesuai KTP / domisili">{{ old('address', $booking->address) }}</textarea>
+              placeholder="Alamat domisili saat ini">{{ old('address', $booking->address) }}</textarea>
     @error('address') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
 </div>
 <div class="flex items-center justify-end gap-3 pt-1">

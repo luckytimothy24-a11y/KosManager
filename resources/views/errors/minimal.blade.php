@@ -8,7 +8,6 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=lato:300,400,700,900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         if (localStorage.theme === 'dark') {

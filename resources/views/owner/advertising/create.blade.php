@@ -129,6 +129,32 @@
                     </div>
 
                     <div>
+                        <label for="highlight_text" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Teks Penawaran Besar (opsional)</label>
+                        <input type="text" name="highlight_text" id="highlight_text" x-model="partner.highlight" value="{{ old('highlight_text') }}" maxlength="120" placeholder="cth: Cashback 20% / Gratis Ongkir"
+                               class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px]">
+                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tampil sebagai teks besar di area visual. Kosongkan agar visual hanya menampilkan ilustrasi.</p>
+                        @error('highlight_text')
+                            <p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="visual_theme" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Ilustrasi Visual</label>
+                        <select name="visual_theme" id="visual_theme" x-model="partner.visual_theme"
+                                class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px]">
+                            <option value="">Otomatis (deteksi dari mitra)</option>
+                            <option value="shopping">Belanja</option>
+                            <option value="payment">Pembayaran</option>
+                            <option value="wallet">Dompet digital</option>
+                            <option value="generic">Umum</option>
+                        </select>
+                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tema ilustrasi SVG. Pilih otomatis untuk mengikuti mitra (Shopee/DANA/GoPay).</p>
+                        @error('visual_theme')
+                            <p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
                         <label for="advertiser_description" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Deskripsi Iklan</label>
                         <textarea name="advertiser_description" id="advertiser_description" x-model="partner.description" rows="3" maxlength="1000" placeholder="Jelaskan penawaran untuk penghuni kos."
                                   class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">{{ old('advertiser_description') }}</textarea>
@@ -348,6 +374,7 @@
                                     <h3 class="mt-2 text-base sm:text-lg font-bold text-slate-900 dark:text-slate-50 leading-snug line-clamp-2">
                                         <span x-text="partner.headline || 'Headline iklan Anda'"></span>
                                     </h3>
+                                    <p x-show="partner.highlight" x-cloak class="mt-1 text-xl font-extrabold tracking-tight text-primary-700 dark:text-primary-300 line-clamp-1" x-text="partner.highlight"></p>
                                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                                         <span x-text="partner.description || 'Deskripsi penawaran untuk penghuni kos.'"></span>
                                     </p>
@@ -400,6 +427,8 @@
                     advertiser_logo: '{{ old("advertiser_logo") }}',
                     headline: '{{ old("headline") }}',
                     description: '{{ old("advertiser_description") }}',
+                    highlight: '{{ old("highlight_text") }}',
+                    visual_theme: '{{ old("visual_theme") }}',
                     image: '{{ old("image") }}',
                     cta: '{{ old("cta_label", "Lihat Penawaran") }}',
                     destination: '{{ old("destination_url") }}',

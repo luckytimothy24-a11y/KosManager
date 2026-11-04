@@ -208,12 +208,14 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::get('payouts', [PropertyOwnerPayoutController::class, 'index'])->name('payouts.index');
     Route::post('payouts', [PropertyOwnerPayoutController::class, 'store'])->name('payouts.store');
     Route::get('payouts/{payout}', [PropertyOwnerPayoutController::class, 'show'])->name('payouts.show');
+    Route::get('payouts/{payout}/recipient-account', [PropertyOwnerPayoutController::class, 'revealRecipientAccount'])->name('payouts.recipient-account');
     Route::post('payouts/{payout}/transfer', [PropertyOwnerPayoutController::class, 'markTransferred'])->name('payouts.transfer');
     Route::post('payouts/{payout}/verify', [PropertyOwnerPayoutController::class, 'verify'])->name('payouts.verify');
     Route::post('payouts/{payout}/reject', [PropertyOwnerPayoutController::class, 'reject'])->name('payouts.reject');
     Route::get('payouts/{payout}/proof', [PropertyOwnerPayoutController::class, 'downloadProof'])->name('payouts.proof');
     Route::post('kos/{kos}/property-owner', [PropertyOwnerPayoutController::class, 'setPropertyOwner'])->name('payouts.set-property-owner');
     Route::post('payouts/{payout}/disbursements', [PayoutDisbursementController::class, 'store'])->name('payouts.disbursements.store');
+    Route::get('disbursements/{disbursement}/proof', [PayoutDisbursementController::class, 'downloadProof'])->name('disbursements.proof');
     Route::post('disbursements/{disbursement}/verify', [PayoutDisbursementController::class, 'verify'])->name('disbursements.verify');
     Route::post('disbursements/{disbursement}/reject', [PayoutDisbursementController::class, 'reject'])->name('disbursements.reject');
     Route::post('adjustments', [PayoutAdjustmentController::class, 'store'])->name('adjustments.store');
@@ -235,8 +237,8 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran/bulk-verify', [PembayaranController::class, 'bulkVerify'])->name('pembayaran.bulk-verify');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
-    Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify');
-    Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject');
+    Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify')->middleware('throttle:5,30');
+    Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject')->middleware('throttle:5,30');
 
     Route::get('messages', [MessageController::class, 'index'])->name('messages.index');
     Route::get('messages/inquiries', [MessageController::class, 'inquiries'])->name('messages.inquiries');
@@ -247,25 +249,30 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
     // Owner review of tenant identity (pending -> confirm/reject) — tenant cannot hit these (owner/admin middleware)
-    Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm');
-    Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject');
+    Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm')->middleware('throttle:10,60');
+    Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject')->middleware('throttle:10,60');
 
     // Booking occupants — owner manages per-orang identity & check-in
     Route::get('booking/{booking}/occupants', [OwnerBookingOccupantController::class, 'index'])->name('booking-occupants.index');
-    Route::post('booking-occupants/{occupant}/confirm', [OwnerBookingOccupantController::class, 'confirmIdentity'])->name('booking-occupants.confirm');
-    Route::post('booking-occupants/{occupant}/reject', [OwnerBookingOccupantController::class, 'rejectIdentity'])->name('booking-occupants.reject');
-    Route::post('booking-occupants/{occupant}/checkin', [OwnerBookingOccupantController::class, 'checkIn'])->name('booking-occupants.checkin');
+    Route::post('booking-occupants/{occupant}/confirm', [OwnerBookingOccupantController::class, 'confirmIdentity'])->name('booking-occupants.confirm')->middleware('throttle:10,60');
+    Route::post('booking-occupants/{occupant}/reject', [OwnerBookingOccupantController::class, 'rejectIdentity'])->name('booking-occupants.reject')->middleware('throttle:10,60');
+    Route::post('booking-occupants/{occupant}/checkin', [OwnerBookingOccupantController::class, 'checkIn'])->name('booking-occupants.checkin')->middleware('throttle:10,60');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
-    Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve');
+    Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve')->middleware('throttle:5,60');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
-    Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve');
-    Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
-    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel');
+    Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve')->middleware('throttle:10,60');
+    Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject')->middleware('throttle:10,60');
+    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel')->middleware('throttle:10,60');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
     Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
+
+    // Refund management
+    Route::get('refund', [App\Http\Controllers\Owner\RefundController::class, 'index'])->name('refund.index');
+    Route::post('refund/{pembayaran}/approve', [App\Http\Controllers\Owner\RefundController::class, 'approve'])->name('refund.approve');
+    Route::post('refund/{pembayaran}/reject', [App\Http\Controllers\Owner\RefundController::class, 'reject'])->name('refund.reject');
 });
 
 // Admin Routes
@@ -311,8 +318,8 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::post('pembayaran/bulk-verify', [PembayaranController::class, 'bulkVerify'])->name('pembayaran.bulk-verify');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
-    Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify');
-    Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject');
+    Route::post('pembayaran/{pembayaran}/verify', [PembayaranController::class, 'verify'])->name('pembayaran.verify')->middleware('throttle:5,30');
+    Route::post('pembayaran/{pembayaran}/reject', [PembayaranController::class, 'reject'])->name('pembayaran.reject')->middleware('throttle:5,30');
 
     // Pesan read-only untuk admin (audit sengketa) — tanpa rute reply.
     Route::get('messages', [MessageController::class, 'adminIndex'])->name('messages.index');
@@ -325,15 +332,15 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
-    Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm');
-    Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject');
+    Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm')->middleware('throttle:10,60');
+    Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject')->middleware('throttle:10,60');
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
-    Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve');
+    Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve')->middleware('throttle:5,60');
     Route::post('check-out/{penghuni}/request', [CheckOutController::class, 'requestCheckout'])->name('checkout.request');
-    Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve');
-    Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject');
-    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel');
+    Route::post('check-out/{checkOut}/approve', [CheckOutController::class, 'approve'])->name('checkout.approve')->middleware('throttle:10,60');
+    Route::post('check-out/{checkOut}/reject', [CheckOutController::class, 'reject'])->name('checkout.reject')->middleware('throttle:10,60');
+    Route::post('check-out/{checkOut}/cancel', [CheckOutController::class, 'cancel'])->name('checkout.cancel')->middleware('throttle:10,60');
 
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('laporan/export-pdf', [LaporanController::class, 'exportCombinedPdf'])->name('laporan.export-pdf');
@@ -410,6 +417,26 @@ Route::middleware(['auth', 'role:tenant', 'billing'])->prefix('tenant')->name('t
     Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
 
     Route::get('laporan', [TenantLaporanController::class, 'index'])->name('laporan.index');
+
+    // Dispute (komplain)
+    Route::get('dispute', [App\Http\Controllers\Tenant\DisputeController::class, 'index'])->name('dispute.index');
+    Route::get('dispute/create', [App\Http\Controllers\Tenant\DisputeController::class, 'create'])->name('dispute.create');
+    Route::post('dispute', [App\Http\Controllers\Tenant\DisputeController::class, 'store'])->name('dispute.store');
+    Route::get('dispute/{dispute}', [App\Http\Controllers\Tenant\DisputeController::class, 'show'])->name('dispute.show');
+
+    // Marketplace (jual barang bekas)
+    Route::get('marketplace', [App\Http\Controllers\Tenant\MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('marketplace/create', [App\Http\Controllers\Tenant\MarketplaceController::class, 'create'])->name('marketplace.create');
+    Route::post('marketplace', [App\Http\Controllers\Tenant\MarketplaceController::class, 'store'])->name('marketplace.store');
+    Route::get('marketplace/my-items', [App\Http\Controllers\Tenant\MarketplaceController::class, 'myItems'])->name('marketplace.my-items');
+    Route::get('marketplace/{item}', [App\Http\Controllers\Tenant\MarketplaceController::class, 'show'])->name('marketplace.show');
+    Route::post('marketplace/{item}/buy', [App\Http\Controllers\Tenant\MarketplaceController::class, 'buy'])->name('marketplace.buy');
+    Route::get('marketplace/{item}/chat', [App\Http\Controllers\Tenant\MarketplaceController::class, 'chat'])->name('marketplace.chat');
+    Route::post('marketplace/{item}/chat', [App\Http\Controllers\Tenant\MarketplaceController::class, 'chatSend'])->name('marketplace.chat.send');
+    Route::post('marketplace/transaction/{transaction}/complete', [App\Http\Controllers\Tenant\MarketplaceController::class, 'completeTransaction'])->name('marketplace.complete');
+    Route::post('marketplace/transaction/{transaction}/review', [App\Http\Controllers\Tenant\MarketplaceController::class, 'storeReview'])->name('marketplace.review');
+    Route::post('marketplace/{item}/report', [App\Http\Controllers\Tenant\MarketplaceController::class, 'report'])->name('marketplace.report');
+    Route::delete('marketplace/{item}', [App\Http\Controllers\Tenant\MarketplaceController::class, 'destroy'])->name('marketplace.destroy');
 });
 
 // Tanya Owner — pencari kos (tenant login, tanpa perlu menghuni).
@@ -423,4 +450,6 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
 });
 
 require __DIR__.'/auth.php';
-require __DIR__.'/damage-report.php';
+if (file_exists(__DIR__.'/damage-report.php')) {
+    require __DIR__.'/damage-report.php';
+}

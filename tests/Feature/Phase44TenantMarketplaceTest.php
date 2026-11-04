@@ -110,11 +110,11 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response->assertSee('Bayar Tagihan Ini');
         $response->assertSee('Metode Pembayaran');
         $response->assertSee('Transfer Bank');
-        $response->assertSee('Cash');
-        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('QRIS');
+        $response->assertSee('Pembayaran QRIS');
         $response->assertSee('Bukti Pembayaran');
         $response->assertSee('name="payment_method" value="transfer_bank"', false);
-        $response->assertSee('name="payment_method" value="cash"', false);
+        $response->assertSee('name="payment_method" value="qris"', false);
         $response->assertDontSee('Bayar Online');
         $response->assertDontSee('E-Wallet / QRIS');
     }
@@ -159,35 +159,34 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response->assertSee('Bayar Sekarang');
     }
 
-    // ── Payment Method (cash + transfer_bank) ─────────────
+    // ── Payment Method (qris + transfer_bank) ─────────────
 
-    public function test_payment_form_is_cash_only(): void
+    public function test_payment_form_is_qris_only(): void
     {
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $this->tagihan));
 
         $response->assertOk();
-        $response->assertSee('name="payment_method" value="cash"', false);
+        $response->assertSee('name="payment_method" value="qris"', false);
         $response->assertSee('name="payment_method" value="transfer_bank"', false);
         $response->assertSee('Metode Pembayaran');
         $response->assertSee('Transfer Bank');
-        $response->assertSee('Cash');
-        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('QRIS');
+        $response->assertSee('Pembayaran QRIS');
         $response->assertDontSee('name="payment_method" value="e_wallet"', false);
-        $response->assertDontSee('name="payment_method" value="qris"', false);
         $response->assertDontSee('Bayar Online');
         $response->assertDontSee('Buat Pembayaran Online');
     }
 
     // ── Payment Proof Upload ────────────────────────────────
 
-    public function test_tenant_can_submit_cash_payment_with_proof(): void
+    public function test_tenant_can_submit_qris_payment_with_proof(): void
     {
         $proof = UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf');
 
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -196,7 +195,7 @@ class Phase44TenantMarketplaceTest extends TestCase
             'tagihan_id' => $this->tagihan->id,
             'penghuni_id' => $this->penghuni->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'verification_status' => 'pending',
         ]);
         $this->assertDatabaseHas('tagihans', [
@@ -212,7 +211,7 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -228,7 +227,7 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -243,7 +242,7 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -264,7 +263,7 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -322,13 +321,13 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihanCash->id,
             'amount' => 500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('pembayarans', [
             'tagihan_id' => $tagihanCash->id,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         // transfer_bank + valid proof → accepted
@@ -465,7 +464,7 @@ class Phase44TenantMarketplaceTest extends TestCase
         $response = $this->actingAs($this->otherTenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 

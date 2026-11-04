@@ -6,6 +6,7 @@ use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Tagihan;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SharedBillingService
@@ -34,9 +35,9 @@ class SharedBillingService
     }
 
     /**
-     * Hitung total tagihan kamar berdasarkan harga dan periode.
+     * Hitung total tagihan kamar berdasarkan harga dan jumlah unit.
      */
-    public function calculateTotalRoomBill(Kamar $kamar, string $rentalType, Carbon $periodStart, Carbon $periodEnd): float
+    public function calculateTotalRoomBillForUnits(Kamar $kamar, string $rentalType, int $units): float
     {
         $price = match ($rentalType) {
             'daily' => (float) $kamar->daily_price,
@@ -45,9 +46,17 @@ class SharedBillingService
             default => (float) $kamar->monthly_price,
         };
 
+        return round($price * max($units, 1), 2);
+    }
+
+    /**
+     * Hitung total tagihan kamar berdasarkan harga dan periode.
+     */
+    public function calculateTotalRoomBill(Kamar $kamar, string $rentalType, Carbon $periodStart, Carbon $periodEnd): float
+    {
         $units = $this->calculateUnits($rentalType, $periodStart, $periodEnd);
 
-        return round($price * $units, 2);
+        return $this->calculateTotalRoomBillForUnits($kamar, $rentalType, $units);
     }
 
     /**
@@ -225,6 +234,7 @@ class SharedBillingService
         string $dueDate,
         float $discount = 0,
         float $penalty = 0,
+        ?float $totalRoomBill = null,
     ): array {
         $pStart = Carbon::parse($periodStart);
         $pEnd = Carbon::parse($periodEnd);
@@ -236,7 +246,7 @@ class SharedBillingService
         }
 
         $rentalType = $activeKontraks->first()->rental_type;
-        $totalRoomBill = $this->calculateTotalRoomBill($kamar, $rentalType, $pStart, $pEnd);
+        $totalRoomBill ??= $this->calculateTotalRoomBill($kamar, $rentalType, $pStart, $pEnd);
         $activeCount = $activeKontraks->count();
 
         $allShares = $this->calculateAllShares($kamar, $totalRoomBill);
@@ -256,29 +266,50 @@ class SharedBillingService
             }
 
             $shareAmount = $shareData['share'];
-            $total = max(0, round($shareAmount - $discount + $penalty, 2));
             $billNumber = 'TB-'.strtoupper(Str::random(12));
 
             try {
-                $tagihan = Tagihan::create([
-                    'bill_number' => $billNumber,
-                    'penghuni_id' => $kontrak->penghuni_id,
-                    'kontrak_id' => $kontrak->id,
-                    'kamar_id' => $kamar->id,
-                    'bill_type' => $billType,
-                    'period_start' => $periodStart,
-                    'period_end' => $periodEnd,
-                    'subtotal' => $shareAmount,
-                    'discount' => $discount,
-                    'penalty' => $penalty,
-                    'total' => $total,
-                    'due_date' => $dueDate,
-                    'status' => 'unpaid',
-                    'active_billing_key' => Tagihan::billingKey($kontrak->id, $periodStart, $periodEnd),
-                    'total_room_bill' => $totalRoomBill,
-                ]);
+                // Lock per kontrak agar DP hanya terpakai sekali walau ada
+                // beberapa proses billing berjalan bersamaan.
+                $tagihan = DB::transaction(function () use ($kontrak, $kamar, $billType, $periodStart, $periodEnd, $shareAmount, $discount, $penalty, $dueDate, $billNumber, $totalRoomBill) {
+                    $lockedKontrak = Kontrak::whereKey($kontrak->id)->lockForUpdate()->first();
 
-                $createdTagihans[] = $tagihan;
+                    if (! $lockedKontrak) {
+                        return null;
+                    }
+
+                    $downPayment = app(DownPaymentService::class);
+                    $downPaymentDiscount = $downPayment->discountForNewBill($lockedKontrak, $shareAmount);
+                    $total = max(0, round($shareAmount - $discount - $downPaymentDiscount + $penalty, 2));
+                    $status = $total <= 0 ? Tagihan::STATUS_PAID : Tagihan::STATUS_UNPAID;
+
+                    $tagihan = Tagihan::create([
+                        'bill_number' => $billNumber,
+                        'penghuni_id' => $lockedKontrak->penghuni_id,
+                        'kontrak_id' => $lockedKontrak->id,
+                        'kamar_id' => $kamar->id,
+                        'bill_type' => $billType,
+                        'period_start' => $periodStart,
+                        'period_end' => $periodEnd,
+                        'subtotal' => $shareAmount,
+                        'discount' => $discount,
+                        'down_payment_discount' => $downPaymentDiscount,
+                        'penalty' => $penalty,
+                        'total' => $total,
+                        'due_date' => $dueDate,
+                        'status' => $status,
+                        'active_billing_key' => Tagihan::billingKey($lockedKontrak->id, $periodStart, $periodEnd),
+                        'total_room_bill' => $totalRoomBill,
+                    ]);
+
+                    $downPayment->consume($lockedKontrak, $downPaymentDiscount);
+
+                    return $tagihan;
+                });
+
+                if ($tagihan) {
+                    $createdTagihans[] = $tagihan;
+                }
             } catch (\Exception $e) {
                 \Log::warning("Shared billing: gagal buat tagihan untuk kontrak {$kontrak->id}: ".$e->getMessage());
             }
@@ -322,7 +353,7 @@ class SharedBillingService
             if ($tagihan) {
                 $tagihan->update([
                     'subtotal' => $shareData['share'],
-                    'total' => max(0, round($shareData['share'] - $tagihan->discount + $tagihan->penalty, 2)),
+                    'total' => max(0, round($shareData['share'] - $tagihan->discount - $tagihan->down_payment_discount + $tagihan->penalty, 2)),
                     'total_room_bill' => $totalRoomBill,
                 ]);
                 $updated++;

@@ -169,13 +169,28 @@ class GapPriorityTest extends TestCase
         }
     }
 
+    public function test_tenant_profile_ignores_identity_number(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'tenant',
+            'identity_number' => '3201010101010001',
+        ]);
+        Sanctum::actingAs($user);
+
+        $this->putJson(route('api.v1.me.update'), ['identity_number' => str_repeat('1', 51)])
+            ->assertOk();
+
+        $this->assertSame('3201010101010001', $user->fresh()->identity_number);
+    }
+
     public function test_profile_update_rejects_invalid_data(): void
     {
         $user = User::factory()->create(['role' => 'tenant']);
         Sanctum::actingAs($user);
 
-        $this->putJson(route('api.v1.me.update'), ['identity_number' => str_repeat('1', 51)])
-            ->assertStatus(422);
+        $this->putJson(route('api.v1.me.update'), ['phone' => str_repeat('1', 21)])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('phone');
     }
 
     public function test_guest_cannot_update_profile(): void

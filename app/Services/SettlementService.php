@@ -14,7 +14,15 @@ class SettlementService
     public function resolveCommissionForPembayaran(Kos $kos, Pembayaran $pembayaran): ?array
     {
         $paymentDate = $pembayaran->payment_date?->format('Y-m-d') ?? now()->format('Y-m-d');
-        $agreement = ManagementAgreement::activeForKosOn((int) $kos->id, $paymentDate);
+        if (! $kos->property_owner_id) {
+            return null;
+        }
+
+        $agreement = ManagementAgreement::activeForKosOn(
+            (int) $kos->id,
+            (int) $kos->property_owner_id,
+            $paymentDate
+        );
         if (! $agreement) {
             return null;
         }

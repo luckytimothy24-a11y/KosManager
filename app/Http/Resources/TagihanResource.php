@@ -27,6 +27,7 @@ class TagihanResource extends JsonResource
             'period_end' => $this->period_end?->toDateString(),
             'subtotal' => (float) $this->subtotal,
             'discount' => (float) $this->discount,
+            'down_payment_discount' => (float) $this->down_payment_discount,
             'penalty' => (float) $this->penalty,
             'total' => (float) $this->total,
             'due_date' => $this->due_date?->toDateString(),

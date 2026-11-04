@@ -21,6 +21,13 @@ class Pembayaran extends Model
 
     public const STATUS_REJECTED = 'rejected';
 
+    // Refund status constants
+    public const REFUND_NONE = 'none';
+    public const REFUND_REQUESTED = 'requested';
+    public const REFUND_APPROVED = 'approved';
+    public const REFUND_REJECTED = 'rejected';
+    public const REFUND_COMPLETED = 'completed';
+
     /**
      * Status verifikasi yang berarti pembayaran aktif / sudah terverifikasi
      * (menghalangi upload ulang).
@@ -48,6 +55,10 @@ class Pembayaran extends Model
         'gateway_instructions',
         'gateway_expires_at',
         'active_payment_key',
+        'refund_status',
+        'refund_amount',
+        'refunded_at',
+        'refund_reason',
     ];
 
     protected $casts = [
@@ -57,6 +68,8 @@ class Pembayaran extends Model
         'penalty_amount' => 'decimal:2',
         'verified_at' => 'datetime',
         'gateway_expires_at' => 'datetime',
+        'refunded_at' => 'datetime',
+        'refund_amount' => 'decimal:2',
     ];
 
     public function tagihan()
@@ -97,9 +110,14 @@ class Pembayaran extends Model
         return $this->verification_status === self::STATUS_APPROVED;
     }
 
-    public function isRejected(): bool
+    public function isRefunded(): bool
     {
-        return $this->verification_status === self::STATUS_REJECTED;
+        return $this->refund_status === self::REFUND_COMPLETED;
+    }
+
+    public function isRefundRequested(): bool
+    {
+        return $this->refund_status === self::REFUND_REQUESTED;
     }
 
     /**
@@ -108,7 +126,7 @@ class Pembayaran extends Model
     public function expectedAmount(): float
     {
         if ($this->isBookingPayment() && $this->booking) {
-            return (float) $this->booking->price;
+            return $this->booking->expectedBookingPaymentAmount();
         }
 
         return (float) ($this->tagihan?->total ?? 0);

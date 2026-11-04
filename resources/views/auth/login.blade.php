@@ -1,9 +1,9 @@
 <x-guest-layout>
-    <div class="flex flex-col items-center justify-center min-h-[85vh] px-4">
+    <div class="flex min-h-0 flex-col items-center justify-center px-0 py-6 sm:min-h-[85vh] sm:px-4 sm:py-0">
         {{-- Logo & Header --}}
-        <div class="text-center mb-8 fade-up animate-delay-1">
-            <a href="/" class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-600 shadow-lg shadow-primary-600/25 mb-4">
-                <img src="{{ asset('favicon.svg') }}" alt="KosManager" class="w-8 h-8 brightness-0 invert">
+        <div class="mb-6 text-center fade-up animate-delay-1 sm:mb-8">
+            <a href="/" class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-600 shadow-lg shadow-primary-600/25 sm:h-14 sm:w-14">
+                <img src="{{ asset('favicon.svg') }}" alt="KosManager" class="h-7 w-7 brightness-0 invert sm:h-8 sm:w-8">
             </a>
             <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100">Selamat Datang Kembali</h1>
             <p class="text-sm text-slate-400 dark:text-slate-500 mt-2">Masuk untuk mengelola atau cari kos Anda</p>
@@ -26,7 +26,7 @@
         @endif
 
         {{-- Login Form Card --}}
-        <div class="w-full max-w-sm bg-white dark:bg-surface-elevated rounded-3xl border border-slate-100 dark:border-white/[0.08] shadow-xl shadow-slate-200/60 dark:shadow-black/30 p-8 fade-up animate-delay-3">
+        <div class="w-full max-w-sm rounded-3xl border border-slate-100 bg-white p-6 shadow-xl shadow-slate-200/60 fade-up animate-delay-3 dark:border-white/[0.08] dark:bg-surface-elevated dark:shadow-black/30 sm:p-8">
             <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 

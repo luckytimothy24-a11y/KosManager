@@ -120,13 +120,13 @@ class TransferBankPaymentTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('pembayarans', [
             'tagihan_id' => $this->tagihan->id,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'verification_status' => 'pending',
         ]);
     }

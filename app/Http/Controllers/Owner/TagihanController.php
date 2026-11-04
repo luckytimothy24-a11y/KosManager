@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTagihanRequest;
 use App\Models\Kontrak;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
+use App\Services\DownPaymentService;
 use App\Services\NotificationService;
 use App\Services\SharedBillingService;
 use Carbon\Carbon;
@@ -199,12 +200,11 @@ class TagihanController extends Controller
             ])->withInput();
         }
 
-        $total = max(0, round($subtotal - $discount + $penalty, 2));
         $billNumber = 'TB-'.strtoupper(Str::random(12));
         $duplicate = false;
         $expired = false;
 
-        \DB::transaction(function () use ($kontrak, $request, $subtotal, $discount, $penalty, $total, $billNumber, &$duplicate, &$expired) {
+        \DB::transaction(function () use ($kontrak, $request, $subtotal, $discount, $penalty, $billNumber, &$duplicate, &$expired) {
             $lockedKontrak = Kontrak::whereKey($kontrak->id)->lockForUpdate()->first();
 
             if (! $lockedKontrak || $lockedKontrak->status !== 'active') {
@@ -222,6 +222,12 @@ class TagihanController extends Controller
                 return;
             }
 
+            // DP dipotongkan pada tagihan pertama kontrak.
+            $downPayment = app(DownPaymentService::class);
+            $downPaymentDiscount = $downPayment->discountForNewBill($lockedKontrak, $subtotal);
+            $total = max(0, round($subtotal - $discount - $downPaymentDiscount + $penalty, 2));
+            $status = $total <= 0 ? Tagihan::STATUS_PAID : Tagihan::STATUS_UNPAID;
+
             try {
                 Tagihan::create([
                     'bill_number' => $billNumber,
@@ -233,12 +239,15 @@ class TagihanController extends Controller
                     'period_end' => $request->period_end,
                     'subtotal' => $subtotal,
                     'discount' => $discount,
+                    'down_payment_discount' => $downPaymentDiscount,
                     'penalty' => $penalty,
                     'total' => $total,
                     'due_date' => $request->due_date,
-                    'status' => 'unpaid',
+                    'status' => $status,
                     'active_billing_key' => $this->billingKey($kontrak->id, $request->period_start, $request->period_end),
                 ]);
+
+                $downPayment->consume($lockedKontrak, $downPaymentDiscount);
             } catch (QueryException $e) {
                 // Backstop database-level: jika ada race yang lolos dari cek exists()
                 // di atas, unique(active_billing_key) menolak baris duplikat.

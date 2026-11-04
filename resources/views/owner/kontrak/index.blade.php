@@ -27,8 +27,39 @@
             </form>
         </div>
 
+        {{-- Mobile cards --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($kontraks as $k)
+                <x-mobile-record-card
+                    :title="$k->contract_number"
+                    :subtitle="($k->penghuni->user->name ?? '-') . ' · ' . ($k->kos->name ?? '-')"
+                    :meta="[
+                        'Kamar' => $k->kamar->room_number ?? '-',
+                        'Periode' => \Illuminate\Support\Carbon::parse($k->start_date)->format('d M Y') . ' — ' . \Illuminate\Support\Carbon::parse($k->end_date)->format('d M Y'),
+                        'Harga' => 'Rp ' . number_format($k->rental_price, 0, ',', '.'),
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$k->status" context="kontrak" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route($prefix . '.kontrak.show', $k) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-file-text-line" title="Belum ada kontrak"
+                                   description="Kontrak sewa akan dibuat otomatis setelah check-in disetujui." />
+                </div>
+            @endforelse
+            @if($kontraks->hasPages())
+                <div>{{ $kontraks->links() }}</div>
+            @endif
+        </div>
+
         {{-- Table --}}
-        <div class="table-card">
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

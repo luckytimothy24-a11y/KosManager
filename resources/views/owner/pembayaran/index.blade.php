@@ -57,7 +57,43 @@
                 </x-confirm-dialog>
                 <button type="button" @click="selected = []" class="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400">Batalkan pilihan</button>
             </div>
-            <div class="overflow-x-auto">
+            {{-- Mobile cards --}}
+            <div class="space-y-3 p-4 md:hidden">
+                @forelse($pembayarans as $p)
+                    @php
+                        $displayName = $p->penghuni?->user?->name ?? $p->booking?->user?->name ?? '-';
+                    @endphp
+                    <x-mobile-record-card
+                        :title="$p->payment_number"
+                        :subtitle="$displayName . ' · ' . \PaymentLabels::paymentMethod($p->payment_method)"
+                        :meta="[
+                            'Nominal' => 'Rp ' . number_format($p->amount, 0, ',', '.'),
+                            'Tanggal' => $p->payment_date?->translatedFormat('d M Y') ?? '-',
+                        ]">
+                        <x-slot name="badge">
+                            <x-status-badge :status="$p->verification_status" context="verification" />
+                        </x-slot>
+                        <x-slot name="actions">
+                            @if($p->verification_status === 'pending')
+                                <label class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-3 text-xs font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300">
+                                    <input type="checkbox" :value="{{ $p->id }}" :checked="selected.includes({{ $p->id }})"
+                                           @change="selected = $event.target.checked ? [...selected, {{ $p->id }}] : selected.filter(id => id !== {{ $p->id }})"
+                                           class="h-5 w-5 rounded border-slate-300 text-green-600 focus:ring-green-500/30">
+                                    Pilih
+                                </label>
+                            @endif
+                            <x-button href="{{ route($prefix . '.pembayaran.show', $p) }}" type="secondary" size="sm" class="min-h-11">
+                                <i class="ri-eye-line"></i> Detail
+                            </x-button>
+                        </x-slot>
+                    </x-mobile-record-card>
+                @empty
+                    <x-empty-state icon="ri-bank-card-line" title="Belum ada pembayaran"
+                                   description="Pembayaran yang dikirim penghuni akan tampil di sini untuk diverifikasi." />
+                @endforelse
+            </div>
+
+            <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-sm">
                     <thead>
                         <tr>
@@ -107,7 +143,7 @@
                                 <td class="hidden lg:table-cell text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ $p->payment_date?->translatedFormat('d M Y') ?? '-' }}</td>
                                 <td class="hidden sm:table-cell">
                                     <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                                        <i class="{{ ['transfer_bank' => 'ri-bank-line', 'cash' => 'ri-cash-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }} text-slate-400"></i>
+                                        <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }} text-slate-400"></i>
                                         {{ \PaymentLabels::paymentMethod($p->payment_method) }}
                                         @if($p->isFromGateway())
                                             <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-300" title="Verifikasi otomatis"><i class="ri-global-line"></i> Online</span>

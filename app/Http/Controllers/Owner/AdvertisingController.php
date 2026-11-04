@@ -116,6 +116,8 @@ class AdvertisingController extends Controller
             'advertiser_description' => 'nullable|string|max:1000',
             'headline' => 'required_if:ad_type,partner|nullable|string|max:190',
             'description' => 'nullable|string|max:1000',
+            'highlight_text' => 'nullable|string|max:120',
+            'visual_theme' => 'nullable|in:shopping,payment,wallet,generic',
             'image' => 'nullable|url|max:255',
             'cta_label' => 'nullable|string|max:60',
             'destination_url' => 'required_if:ad_type,partner|nullable|url|max:500',

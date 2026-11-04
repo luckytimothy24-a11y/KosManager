@@ -97,6 +97,12 @@
                     <span class="text-sm text-slate-500 dark:text-slate-400">Total harga sewa ({{ \StatusLabels::rentalTypeLabel($booking->rental_type) }})</span>
                     <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format($booking->price, 0, ',', '.') }}</span>
                 </div>
+                @if($booking->usesDownPayment())
+                    <div class="mt-3 flex items-center justify-between rounded-xl bg-primary-50/70 dark:bg-primary-500/[0.06] border border-primary-100 dark:border-primary-500/20 px-3 py-2">
+                        <span class="text-xs font-semibold text-primary-800 dark:text-primary-300">DP booking (dibayar tenant)</span>
+                        <span class="text-sm font-bold text-primary-700 dark:text-primary-300">Rp {{ number_format($booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</span>
+                    </div>
+                @endif
             </div>
 
             @if($booking->notes)
@@ -135,7 +141,7 @@
                             </span>
                             <div class="flex-1">
                                 <p class="text-sm font-bold text-amber-800 dark:text-amber-300">Menunggu Konfirmasi Owner</p>
-                                <p class="mt-1 text-sm text-amber-700/90 dark:text-amber-300/90">Tenant telah mengirim data — KTP: {{ $booking->maskedIdentityNumber() }}, WA: {{ $booking->phone }}. Silakan periksa di menu Check-In dan konfirmasi atau tolak.</p>
+                                <p class="mt-1 text-sm text-amber-700/90 dark:text-amber-300/90">Tenant telah mengirim data — WA: {{ $booking->phone }}, Alamat: {{ $booking->address }}. Silakan periksa di menu Check-In dan konfirmasi atau tolak.</p>
                                 <a href="{{ route("$prefix.checkin.index") }}" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-800 transition"><i class="ri-shield-check-line"></i> Review di Check-In →</a>
                             </div>
                         </div>

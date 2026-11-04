@@ -21,6 +21,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('payout_disbursements', function (Blueprint $table) {
+            $table->dropIndex('payout_disbursements_payout_id_status_index');
             $table->dropUnique('payout_disbursements_idempotency_unique');
             $table->dropColumn(['idempotency_key', 'status', 'verified_at', 'verified_by']);
         });

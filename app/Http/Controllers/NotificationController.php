@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Support\NotificationLink;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -36,6 +37,15 @@ class NotificationController extends Controller
 
         if (! $notification->is_read) {
             $notification->update(['is_read' => true]);
+        }
+
+        // Satu request: tandai dibaca lalu langsung ke halaman terkait,
+        // supaya tidak ada dua navigasi yang saling membatalkan.
+        if ($request->boolean('redirect_to_target')) {
+            $target = NotificationLink::resolve($notification, $request->user());
+            if ($target) {
+                return redirect()->to($target);
+            }
         }
 
         return back()->with('success', 'Notifikasi ditandai sudah dibaca.');

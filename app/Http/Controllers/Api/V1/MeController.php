@@ -19,6 +19,11 @@ class MeController extends Controller
 
     public function update(Request $request): JsonResponse
     {
+        // Tenant tidak lagi memiliki field NIK di profil. Abaikan input lama.
+        if ($request->user()->isTenant()) {
+            $request->request->remove('identity_number');
+        }
+
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],

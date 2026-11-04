@@ -69,7 +69,7 @@ class PembayaranTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 1500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -169,7 +169,7 @@ class PembayaranTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 100000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -178,5 +178,21 @@ class PembayaranTest extends TestCase
 
         $this->assertDatabaseCount('pembayarans', 0);
         $this->assertDatabaseHas('tagihans', ['id' => $this->tagihan->id, 'status' => 'unpaid']);
+    }
+
+    public function test_payment_rejects_zero_and_negative_amount(): void
+    {
+        foreach ([0, -1500000] as $amount) {
+            $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
+                'tagihan_id' => $this->tagihan->id,
+                'amount' => $amount,
+                'payment_method' => 'qris',
+            ]);
+
+            $response->assertSessionHasErrors('amount');
+
+            $this->assertDatabaseMissing('pembayarans', ['tagihan_id' => $this->tagihan->id]);
+            $this->assertDatabaseHas('tagihans', ['id' => $this->tagihan->id, 'status' => 'unpaid']);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AuditLog;
 use App\Models\Booking;
 use App\Models\Kamar;
 use App\Models\Kontrak;
@@ -9,6 +10,7 @@ use App\Models\Kos;
 use App\Models\ManagementAgreement;
 use App\Models\OwnerBankAccount;
 use App\Models\Payout;
+use App\Models\PayoutDisbursement;
 use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\PropertyOwner;
@@ -215,6 +217,42 @@ class PropertyOwnerPayoutTest extends TestCase
             ->assertSee($payout->payout_number)
             ->assertSee('Kos Gejayan Owner A')
             ->assertSee('Budi Santoso');
+    }
+
+    public function test_owner_sees_clear_two_stage_money_flow_labels(): void
+    {
+        $this->actingAs($this->owner)
+            ->get(route('owner.distribution.index'))
+            ->assertOk()
+            ->assertSee('Dana Booking Masuk ke Pengelola')
+            ->assertSee('Lanjut ke Transfer Pemilik Kos')
+            ->assertSee('Dana belum otomatis diteruskan ke Pemilik Kos Asli');
+
+        $this->actingAs($this->owner)
+            ->get(route('owner.payouts.index'))
+            ->assertOk()
+            ->assertSee('Transfer ke Pemilik Kos')
+            ->assertSee('Cara menghitung pembagian dana')
+            ->assertSee('Komisi Pengelola')
+            ->assertSee('Dana Pemilik Kos');
+    }
+
+    public function test_owner_can_view_payout_detail_with_clear_money_labels(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+
+        $this->actingAs($this->owner)
+            ->get(route('owner.payouts.show', $payout))
+            ->assertOk()
+            ->assertSee('Transfer ke Pemilik Kos')
+            ->assertSee('Dana untuk Pemilik Kos')
+            ->assertSee('Komisi Pengelola')
+            ->assertSee('Konfirmasi Sudah Transfer')
+            ->assertSee('Lihat nomor lengkap')
+            ->assertSee('Nomor lengkap hanya untuk Pengelola/Super Admin')
+            ->assertDontSee('001234567890');
     }
 
     public function test_owner_cannot_view_other_owners_payout(): void
@@ -720,6 +758,145 @@ class PropertyOwnerPayoutTest extends TestCase
             ->assertOk()
             ->assertSee('Kos Gejayan Owner A')
             ->assertDontSee('Kos Milik Owner B');
+    }
+
+    public function test_payout_recipient_snapshot_does_not_change_with_bank_profile(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+        $this->assertSame('BCA', $payout->recipient_bank_name);
+        $this->assertSame('001234567890', $payout->recipient_account_number);
+        $this->assertSame('Budi Santoso', $payout->recipient_account_holder_name);
+
+        PropertyOwnerBankAccount::where('property_owner_id', $this->propertyOwner->id)->update([
+            'bank_name' => 'MANDIRI',
+            'account_number' => '009999999999',
+            'account_holder_name' => 'Budi Baru',
+        ]);
+
+        $payout->refresh();
+        $this->assertSame('BCA', $payout->recipient_bank_name);
+        $this->assertSame('001234567890', $payout->recipient_account_number);
+        $this->assertSame('Budi Santoso', $payout->recipient_account_holder_name);
+    }
+
+    public function test_owner_can_reveal_recipient_account_with_audit_log(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+
+        $this->actingAs($this->owner)
+            ->getJson(route('owner.payouts.recipient-account', $payout))
+            ->assertOk()
+            ->assertJson([
+                'bank_name' => 'BCA',
+                'account_number' => '001234567890',
+                'account_holder_name' => 'Budi Santoso',
+                'source' => 'snapshot',
+                'legacy' => false,
+            ]);
+
+        $log = AuditLog::where('action', 'View')
+            ->where('module', 'Payout')
+            ->where('user_id', $this->owner->id)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame($payout->id, $log->timestamp_data['payout_id']);
+        $this->assertSame($payout->kos_id, $log->timestamp_data['kos_id']);
+        $this->assertSame('snapshot', $log->timestamp_data['source']);
+        $this->assertStringNotContainsString('001234567890', json_encode($log->timestamp_data));
+    }
+
+    public function test_owner_cannot_reveal_other_owners_recipient_account(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+
+        $this->actingAs($this->ownerB)
+            ->getJson(route('owner.payouts.recipient-account', $payout))
+            ->assertForbidden();
+    }
+
+    public function test_tenant_cannot_reveal_recipient_account(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+
+        $this->actingAs($this->tenant)
+            ->getJson(route('owner.payouts.recipient-account', $payout))
+            ->assertForbidden();
+    }
+
+    public function test_super_admin_can_reveal_recipient_account(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+
+        $this->actingAs($this->superAdmin)
+            ->getJson(route('owner.payouts.recipient-account', $payout))
+            ->assertOk()
+            ->assertJsonPath('account_number', '001234567890');
+    }
+
+    public function test_reveal_recipient_account_returns_404_when_account_missing(): void
+    {
+        $propertyOwnerWithoutBank = PropertyOwner::factory()->create();
+
+        $payout = Payout::factory()->create([
+            'kos_id' => $this->kos->id,
+            'owner_id' => $this->owner->id,
+            'property_owner_id' => $propertyOwnerWithoutBank->id,
+            'recipient_bank_name' => null,
+            'recipient_account_number' => null,
+            'recipient_account_holder_name' => null,
+        ]);
+
+        $this->actingAs($this->owner)
+            ->getJson(route('owner.payouts.recipient-account', $payout))
+            ->assertNotFound();
+    }
+
+    public function test_payout_requires_agreement_for_current_property_owner(): void
+    {
+        $this->seedApprovedIncome();
+        $otherPropertyOwner = PropertyOwner::factory()->create();
+        PropertyOwnerBankAccount::factory()->create(['property_owner_id' => $otherPropertyOwner->id]);
+        $this->kos->update(['property_owner_id' => $otherPropertyOwner->id]);
+
+        $this->createPayoutViaHttp()->assertSessionHas('error');
+
+        $this->assertDatabaseMissing('payouts', ['kos_id' => $this->kos->id]);
+    }
+
+    public function test_whole_payout_verify_is_rejected_when_disbursements_exist(): void
+    {
+        $this->seedApprovedIncome();
+        $this->createPayoutViaHttp()->assertRedirect();
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+        $this->transferViaHttp($payout)->assertRedirect();
+
+        PayoutDisbursement::create([
+            'payout_id' => $payout->id,
+            'idempotency_key' => 'test-disbursement-verify-guard',
+            'amount' => $payout->amount,
+            'status' => 'pending',
+            'proof_path' => 'payout-proof/test.pdf',
+            'transferred_at' => now(),
+            'created_by' => $this->owner->id,
+        ]);
+
+        $this->actingAs($this->superAdmin)
+            ->post(route('owner.payouts.verify', $payout))
+            ->assertSessionHas('error');
+
+        $this->assertSame(Payout::STATUS_TRANSFERRED, $payout->fresh()->status);
     }
 
     public function test_owner_bank_account_and_distribution_features_remain_untouched(): void

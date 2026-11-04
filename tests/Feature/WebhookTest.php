@@ -25,7 +25,7 @@ class WebhookTest extends TestCase
         $pembayaran = Pembayaran::factory()->create([
             'penghuni_id' => $penghuni->id,
             'tagihan_id' => $tagihan->id,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'amount' => $tagihan->total,
             'gateway_reference' => 'TEST-REF-001',
             'verification_status' => Pembayaran::STATUS_PENDING,

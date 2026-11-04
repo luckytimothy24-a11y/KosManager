@@ -48,6 +48,21 @@ class AdvertisingCampaign extends Model
         self::PLACEMENT_TENANT_DASHBOARD,
     ];
 
+    public const VISUAL_THEME_SHOPPING = 'shopping';
+
+    public const VISUAL_THEME_PAYMENT = 'payment';
+
+    public const VISUAL_THEME_WALLET = 'wallet';
+
+    public const VISUAL_THEME_GENERIC = 'generic';
+
+    public const VISUAL_THEMES = [
+        self::VISUAL_THEME_SHOPPING,
+        self::VISUAL_THEME_PAYMENT,
+        self::VISUAL_THEME_WALLET,
+        self::VISUAL_THEME_GENERIC,
+    ];
+
     protected $table = 'advertising_campaigns';
 
     protected $fillable = [
@@ -68,6 +83,8 @@ class AdvertisingCampaign extends Model
         'advertiser_description',
         'headline',
         'description',
+        'highlight_text',
+        'visual_theme',
         'image',
         'cta_label',
         'destination_url',
@@ -185,6 +202,64 @@ class AdvertisingCampaign extends Model
                     ? 'Segera isi kamar kos ini sebelum kehabisan.'
                     : 'Promosi kos tersedia.'));
     }
+
+    /**
+     * Teks penawaran besar di area visual iklan.
+     *
+     * Diisi advertiser lewat kolom opsional highlight_text. Bila kosong,
+     * area visual hanya menampilkan ilustrasi tanpa teks besar. — TIDAK pernah mengarang angka diskon.
+     */
+    public function displayHighlight(): string
+    {
+        return trim((string) $this->highlight_text);
+    }
+
+    /**
+     * Tema ilustrasi kartu: nilai eksplisit visual_theme, atau deteksi dari
+     * slug/nama mitra. Selalu mengembalikan salah satu dari VISUAL_THEMES.
+     */
+    public function visualTheme(): string
+    {
+        $theme = mb_strtolower(trim((string) $this->visual_theme));
+
+        if (in_array($theme, self::VISUAL_THEMES, true)) {
+            return $theme;
+        }
+
+        $haystack = mb_strtolower(implode(' ', array_filter([
+            $this->partner?->slug,
+            $this->partner?->name,
+            $this->advertiser_name,
+        ])));
+
+        if (str_contains($haystack, 'shopee')) {
+            return self::VISUAL_THEME_SHOPPING;
+        }
+
+        if (str_contains($haystack, 'dana')) {
+            return self::VISUAL_THEME_PAYMENT;
+        }
+
+        if (str_contains($haystack, 'gopay') || str_contains($haystack, 'go-pay') || str_contains($haystack, 'go pay')) {
+            return self::VISUAL_THEME_WALLET;
+        }
+
+        return self::VISUAL_THEME_GENERIC;
+    }
+
+    /**
+     * Sisa hari menuju akhir tayang (0 = hari ini). Null bila tidak ada data.
+     * Digunakan hanya untuk badge urgensi berbasis data nyata.
+     */
+    public function remainingDays(): ?int
+    {
+        if (! $this->ends_at) {
+            return null;
+        }
+
+        return (int) now()->startOfDay()->diffInDays($this->ends_at->copy()->startOfDay(), false);
+    }
+
 
     public function displayCta(): string
     {

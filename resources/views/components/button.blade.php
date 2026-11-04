@@ -15,7 +15,7 @@
         'md' => 'px-4 py-2 text-sm rounded-xl font-semibold',
         'lg' => 'px-5 py-2.5 text-sm rounded-xl font-semibold',
     ];
-    $base = 'inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-dark ' . ($colors[$variant] ?? $colors['primary']) . ' ' . ($sizes[$size] ?? $sizes['md']);
+    $base = 'inline-flex min-h-11 items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-dark lg:min-h-0 ' . ($colors[$variant] ?? $colors['primary']) . ' ' . ($sizes[$size] ?? $sizes['md']);
     $isButton = $as === 'button' || $href === null;
 @endphp
 

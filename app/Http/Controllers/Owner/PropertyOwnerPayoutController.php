@@ -9,6 +9,7 @@ use App\Http\Requests\StorePayoutRequest;
 use App\Http\Requests\TransferPayoutRequest;
 use App\Models\Kos;
 use App\Models\Payout;
+use App\Services\AuditLogService;
 use App\Services\PropertyOwnerPayoutService;
 use App\Services\SettlementReportService;
 use Illuminate\Http\Request;
@@ -75,6 +76,69 @@ class PropertyOwnerPayoutController extends Controller
         return view('owner.payouts.show', compact('payout'));
     }
 
+    /**
+     * Reveal nomor rekening penerima lengkap untuk Owner/Super Admin.
+     *
+     * Nomor lengkap tidak dimasukkan ke HTML awal (tetap masked); endpoint ini
+     * hanya dipanggil saat pengguna meminta melihat, dan setiap akses dicatat
+     * di audit log tanpa menyimpan nomor rekening.
+     */
+    public function revealRecipientAccount(Payout $payout)
+    {
+        $this->authorize('view', $payout);
+
+        $payout->loadMissing('propertyOwnerBankAccount');
+
+        $source = null;
+        $bankName = null;
+        $accountNumber = null;
+        $accountHolderName = null;
+
+        if ($payout->hasRecipientSnapshot()) {
+            $source = 'snapshot';
+            $bankName = $payout->recipient_bank_name;
+            $accountNumber = $payout->recipient_account_number;
+            $accountHolderName = $payout->recipient_account_holder_name;
+        } elseif ($payout->propertyOwnerBankAccount) {
+            // Legacy payout: snapshot historis tidak tersedia. Nomor yang
+            // ditampilkan adalah rekening profil saat ini.
+            $source = 'legacy';
+            $bankName = $payout->propertyOwnerBankAccount->bank_name;
+            $accountNumber = $payout->propertyOwnerBankAccount->account_number;
+            $accountHolderName = $payout->propertyOwnerBankAccount->account_holder_name;
+        }
+
+        if ($accountNumber === null || $accountNumber === '') {
+            return response()->json([
+                'message' => 'Rekening tujuan belum terdaftar.',
+            ], 404);
+        }
+
+        try {
+            AuditLogService::log(
+                'View',
+                'Payout',
+                'Nomor rekening penerima payout dilihat',
+                data: [
+                    'payout_id' => $payout->id,
+                    'kos_id' => $payout->kos_id,
+                    'property_owner_id' => $payout->property_owner_id,
+                    'source' => $source,
+                ]
+            );
+        } catch (\Throwable $e) {
+            \Log::warning('Payout recipient account reveal audit failed: '.$e->getMessage());
+        }
+
+        return response()->json([
+            'bank_name' => $bankName,
+            'account_number' => (string) $accountNumber,
+            'account_holder_name' => $accountHolderName,
+            'source' => $source,
+            'legacy' => $source === 'legacy',
+        ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    }
+
     public function store(StorePayoutRequest $request, PropertyOwnerPayoutService $service)
     {
         $this->authorize('create', Payout::class);
@@ -135,6 +199,7 @@ class PropertyOwnerPayoutController extends Controller
             $error = match ($result['error'] ?? '') {
                 'forbidden' => 'Hanya Super Admin yang dapat memverifikasi payout.',
                 'invalid_status' => 'Payout harus berstatus menunggu verifikasi (transferred).',
+                'disbursements_require_item_verification' => 'Payout ini memiliki pencairan parsial. Verifikasi disbursement terlebih dahulu; payout induk akan otomatis terverifikasi setelah seluruh disbursement verified dan totalnya sesuai.',
                 default => 'Gagal memverifikasi payout.',
             };
 

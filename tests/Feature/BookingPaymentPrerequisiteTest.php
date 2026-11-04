@@ -68,7 +68,7 @@ class BookingPaymentPrerequisiteTest extends TestCase
     private function submitBookingPayment(Booking $booking, array $overrides = []): TestResponse
     {
         return $this->actingAs($this->tenant)->post(route('tenant.booking.payment.store', $booking), array_merge([
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ], $overrides));
     }
 
@@ -128,6 +128,18 @@ class BookingPaymentPrerequisiteTest extends TestCase
 
         $payment = Pembayaran::where('booking_id', $booking->id)->firstOrFail();
         $this->assertEquals(1000000.0, (float) $payment->amount);
+    }
+
+    public function test_booking_payment_rejects_non_positive_price(): void
+    {
+        foreach ([0.0, -1000000.0] as $price) {
+            $booking = $this->makeBooking('pending', $price);
+
+            $this->submitBookingPayment($booking)->assertSessionHas('error');
+
+            $this->assertDatabaseMissing('pembayarans', ['booking_id' => $booking->id]);
+            $this->assertEquals('pending', $booking->fresh()->status);
+        }
     }
 
     // ── D: Owner approve payment — TIDAK auto-confirm ─────────
@@ -324,7 +336,7 @@ class BookingPaymentPrerequisiteTest extends TestCase
         $tenantToken = $this->tenant->createToken('test')->plainTextToken;
         $this->withToken($tenantToken)
             ->postJson("/api/v1/bookings/{$booking->id}/payment", [
-                'payment_method' => 'cash',
+                'payment_method' => 'qris',
                 'verification_status' => 'approved',
                 'amount' => 1,
             ])
@@ -406,7 +418,7 @@ class BookingPaymentPrerequisiteTest extends TestCase
         $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
             'amount' => $tagihan->total,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ])->assertRedirect();
 

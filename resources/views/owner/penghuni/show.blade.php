@@ -1,7 +1,7 @@
 <x-app-layout>
-    @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $backUrl = route($prefix.'.penghuni.index'); $kontrakShowUrl = route($prefix.'.kontrak.show'); @endphp
+    @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $backUrl = route($prefix.'.penghuni.index'); $kontrakShowUrl = null; @endphp
     <x-slot name="header">
-        <x-page-header title="{{ $penghuni->user->name }}" description="Detail data diri &amp; riwayat kontrak penghuni.">
+        <x-page-header title="{{ $penghuni->user->name }}" description="Detail data diri & riwayat kontrak penghuni.">
             <x-button href="{{ $backUrl }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
         </x-page-header>
     </x-slot>
@@ -72,7 +72,7 @@
 
                     <div class="divide-y divide-slate-100 dark:divide-slate-800 max-h-[26rem] overflow-y-auto scrollbar-thin">
                         @forelse($penghuni->kontraks as $k)
-                            <a href="{{ $kontrakShowUrl }}" class="block px-6 py-4 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                            <a href="{{ route($prefix.'.kontrak.show', $k) }}" class="block px-6 py-4 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $k->contract_number }}</p>

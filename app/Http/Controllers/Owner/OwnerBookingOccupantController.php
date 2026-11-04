@@ -161,7 +161,6 @@ class OwnerBookingOccupantController extends Controller
                 'user_id' => $userId,
                 'kos_id' => $booking->kos_id,
                 'kamar_id' => $booking->kamar_id,
-                'identity_number' => $lockedOccupant->identity_number,
                 'phone' => $lockedOccupant->phone,
                 'address' => $lockedOccupant->address,
                 'check_in_date' => now(),
@@ -180,6 +179,11 @@ class OwnerBookingOccupantController extends Controller
                 'kamar_id' => $booking->kamar_id,
                 'rental_type' => $booking->rental_type,
                 'rental_price' => $booking->price,
+                // DP adalah pembayaran level booking; hanya occupant utama yang
+                // membawa snapshot DP agar tidak terpotong berulang.
+                'down_payment_amount' => $lockedOccupant->occupant_index === 1
+                    ? (float) ($booking->down_payment_amount ?? 0)
+                    : 0,
                 'billing_mode' => $billingMode,
                 'start_date' => $booking->start_date,
                 'end_date' => $booking->end_date,

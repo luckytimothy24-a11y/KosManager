@@ -100,6 +100,25 @@
     </div>
 
     <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Teks Penawaran Besar (opsional)</label>
+        <input type="text" name="highlight_text" value="{{ old('highlight_text', $editMode ? $campaign->highlight_text : '') }}" maxlength="120" placeholder="cth: Cashback 20% / Gratis Ongkir"
+               class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tampil sebagai teks besar di area visual. Kosongkan agar visual hanya menampilkan ilustrasi — jangan menulis klaim yang belum disetujui advertiser.</p>
+        @error('highlight_text')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
+        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Ilustrasi Visual</label>
+        <select name="visual_theme" class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+            @foreach (['' => 'Otomatis (deteksi dari mitra)', 'shopping' => 'Belanja', 'payment' => 'Pembayaran', 'wallet' => 'Dompet digital', 'generic' => 'Umum'] as $themeValue => $themeLabel)
+                <option value="{{ $themeValue }}" {{ old('visual_theme', $editMode ? $campaign->visual_theme : '') === $themeValue ? 'selected' : '' }}>{{ $themeLabel }}</option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tema ilustrasi SVG. Pilih otomatis untuk mengikuti mitra (Shopee/DANA/GoPay) atau pilih manual.</p>
+        @error('visual_theme')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
+    </div>
+
+    <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Deskripsi Advertiser</label>
         <textarea name="advertiser_description" rows="3" maxlength="1000" class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">{{ old('advertiser_description', $editMode ? $campaign->advertiser_description : '') }}</textarea>
         @error('advertiser_description')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror

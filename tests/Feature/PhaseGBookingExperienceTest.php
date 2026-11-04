@@ -369,6 +369,17 @@ class PhaseGBookingExperienceTest extends TestCase
     // G7 — Timeline dibatalkan / ditolak
     // ---------------------------------------------------------------
 
+    public function test_completed_booking_detail_shows_success_terminal_state(): void
+    {
+        $booking = $this->makeBooking('completed');
+
+        $response = $this->actingAs($this->tenant)->get(route('tenant.booking.show', $booking));
+
+        $response->assertOk();
+        $response->assertSeeText('Check-In Berhasil');
+        $response->assertDontSeeText('Booking dihentikan dan tidak dapat dilanjutkan');
+    }
+
     public function test_cancelled_booking_detail_shows_distinct_terminal_state(): void
     {
         $booking = $this->makeBooking('cancelled');

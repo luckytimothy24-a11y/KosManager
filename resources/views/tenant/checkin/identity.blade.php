@@ -22,7 +22,7 @@
                     </span>
                     <div>
                         <h1 class="text-base font-bold text-slate-900 dark:text-slate-50">Lengkapi Data Diri</h1>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Isi Nomor KTP dan Nomor WhatsApp milik Anda. Data akan diperiksa owner sebelum check-in diproses.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Isi Nomor WhatsApp dan alamat Anda. Data akan diperiksa owner sebelum check-in diproses.</p>
                     </div>
                 </div>
 
@@ -80,10 +80,6 @@
                                 <p class="mt-1 text-sm text-green-700/90 dark:text-green-300/90">Pengajuan Anda telah dikonfirmasi owner. Silakan datang ke kos pada tanggal mulai sewa untuk proses check-in final.</p>
                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                     <div>
-                                        <span class="text-label text-green-600/80 dark:text-green-400/80">No. KTP</span>
-                                        <p class="mt-0.5 font-mono font-medium text-green-800 dark:text-green-200">{{ $booking->identity_number ?: '-' }}</p>
-                                    </div>
-                                    <div>
                                         <span class="text-label text-green-600/80 dark:text-green-400/80">No. WhatsApp</span>
                                         <p class="mt-0.5 font-mono font-medium text-green-800 dark:text-green-200">{{ $booking->phone ?: '-' }}</p>
                                     </div>
@@ -109,10 +105,6 @@
                                 <p class="text-sm font-bold text-amber-800 dark:text-amber-300">Menunggu Konfirmasi Owner</p>
                                 <p class="mt-1 text-sm text-amber-700/90 dark:text-amber-300/90">Pengajuan Check-In Berhasil — Data Anda telah dikirim kepada owner untuk dikonfirmasi. Mohon tunggu hingga owner melakukan review.</p>
                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                    <div>
-                                        <span class="text-label text-amber-600/80 dark:text-amber-400/80">No. KTP</span>
-                                        <p class="mt-0.5 font-mono font-medium text-amber-800 dark:text-amber-200">{{ $booking->identity_number ?: '-' }}</p>
-                                    </div>
                                     <div>
                                         <span class="text-label text-amber-600/80 dark:text-amber-400/80">No. WhatsApp</span>
                                         <p class="mt-0.5 font-mono font-medium text-amber-800 dark:text-amber-200">{{ $booking->phone ?: '-' }}</p>
@@ -165,10 +157,6 @@
                                 @endif
                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm opacity-80">
                                     <div>
-                                        <span class="text-label text-red-600/80 dark:text-red-400/80">No. KTP Terakhir</span>
-                                        <p class="mt-0.5 font-mono font-medium text-red-800 dark:text-red-200">{{ $booking->identity_number ?: '-' }}</p>
-                                    </div>
-                                    <div>
                                         <span class="text-label text-red-600/80 dark:text-red-400/80">No. WA Terakhir</span>
                                         <p class="mt-0.5 font-mono font-medium text-red-800 dark:text-red-200">{{ $booking->phone ?: '-' }}</p>
                                     </div>
@@ -191,7 +179,7 @@
                     {{-- not_submitted --}}
                     <div class="mt-6 rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/[0.06] px-4 py-3">
                         <p class="text-sm font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-1.5"><i class="ri-information-line"></i> Check-In Belum Diajukan</p>
-                        <p class="mt-1 text-xs text-blue-700/80 dark:text-blue-300/80">Lengkapi Nomor KTP dan Nomor WhatsApp Anda di bawah ini, lalu klik Ajukan Check-In. Status akan menjadi Menunggu Konfirmasi Owner.</p>
+                        <p class="mt-1 text-xs text-blue-700/80 dark:text-blue-300/80">Lengkapi Nomor WhatsApp dan alamat Anda di bawah ini, lalu klik Ajukan Check-In. Status akan menjadi Menunggu Konfirmasi Owner.</p>
                     </div>
                     <form method="POST" action="{{ route('tenant.checkin.identity.confirm', $booking) }}"
                           class="mt-6 space-y-4" x-data="{ submitting: false }" x-on:submit="submitting = true">
@@ -204,13 +192,6 @@
                             <p class="text-xs text-slate-500 dark:text-slate-400 -mt-2">Data ini akan digunakan owner untuk verifikasi check-in.</p>
 
                             <div>
-                                <label for="identity_number" class="field-label">Nomor KTP <span class="text-red-500">*</span></label>
-                                <input type="text" id="identity_number" name="identity_number" required maxlength="50" value="{{ old('identity_number', $booking->identity_number) }}"
-                                       class="field-input"
-                                       placeholder="16 digit, contoh: 3374012345670001">
-                                @error('identity_number') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
                                 <label for="phone" class="field-label">Nomor WhatsApp <span class="text-red-500">*</span></label>
                                 <input type="tel" id="phone" name="phone" required maxlength="20" value="{{ old('phone', $booking->phone ?? $booking->user->phone) }}"
                                        class="field-input"
@@ -218,10 +199,10 @@
                                 @error('phone') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="address" class="field-label">Alamat Sesuai KTP <span class="text-red-500">*</span></label>
+                                <label for="address" class="field-label">Alamat Domisili <span class="text-red-500">*</span></label>
                                 <textarea id="address" name="address" required rows="2" maxlength="500"
                                           class="field-input resize-none"
-                                          placeholder="Alamat sesuai KTP / domisili">{{ old('address', $booking->address) }}</textarea>
+                                          placeholder="Alamat domisili saat ini">{{ old('address', $booking->address) }}</textarea>
                                 @error('address') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
@@ -255,7 +236,7 @@
 
             <div class="flex items-start gap-2.5 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/40 px-5 py-4 text-xs text-slate-500 dark:text-slate-400">
                 <i class="ri-information-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
-                <p>Setelah pengajuan dikirim, owner akan memeriksa Nomor KTP (ditampilkan masking) dan Nomor WhatsApp Anda. Jika disetujui, status berubah menjadi Dikonfirmasi dan owner akan memproses check-in Anda.</p>
+                <p>Setelah pengajuan dikirim, owner akan memeriksa Nomor WhatsApp dan alamat Anda. Jika disetujui, status berubah menjadi Dikonfirmasi dan owner akan memproses check-in Anda.</p>
             </div>
         </div>
     </div>

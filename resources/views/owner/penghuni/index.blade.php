@@ -26,8 +26,39 @@
             </form>
         </div>
 
+        {{-- Mobile cards --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($penghunis as $p)
+                <x-mobile-record-card
+                    :title="$p->user->name"
+                    :subtitle="$p->user->email"
+                    :meta="[
+                        'Kamar' => $p->kamar->room_number ?? '-',
+                        'Kos' => $p->kos->name ?? '-',
+                        'Telepon' => $p->phone ?: '-',
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$p->status" context="penghuni" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route($prefix . '.penghuni.show', $p) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-user-star-line" title="Belum ada penghuni"
+                                   description="Penghuni akan muncul otomatis setelah check-in disetujui." />
+                </div>
+            @endforelse
+            @if($penghunis->hasPages())
+                <div>{{ $penghunis->links() }}</div>
+            @endif
+        </div>
+
         {{-- Table --}}
-        <div class="table-card">
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

@@ -52,7 +52,7 @@
                             </div>
                             <div>
                                 <span class="block text-label">Periode</span>
-                                <span class="font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $t->period_start->translatedFormat('d M Y') }} – {{ $t->period_end->translatedFormat('d M Y') }}</span>
+                                <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $t->period_start->translatedFormat('d M Y') }} – {{ $t->period_end->translatedFormat('d M Y') }}</span>
                             </div>
                             <div>
                                 <span class="block text-label">Dibuat</span>

@@ -50,10 +50,13 @@ class BookingPolicy
 
     /**
      * Owner/admin menolak booking pending.
+     * Hanya booking dengan status pending yang bisa ditolak menjadi rejected.
+     * Status approved tidak bisa langsung direject — harus melalui transisi state machine.
      */
     public function reject(User $user, Booking $booking): bool
     {
-        return $this->approve($user, $booking);
+        return $this->isOwnerOrAdminOfKos($user, $booking)
+            && $booking->status === Booking::STATUS_PENDING;
     }
 
     /**

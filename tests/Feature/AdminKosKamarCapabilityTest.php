@@ -315,20 +315,19 @@ class AdminKosKamarCapabilityTest extends TestCase
 
     public function test_admin_can_create_kos_and_redirect_to_admin_index(): void
     {
-        $owner = User::factory()->create(['role' => 'owner']);
-
+        // Use the existing owner that the admin is assigned to via $this->assignedKos
         $response = $this->actingAs($this->admin)->post(route('admin.kos.store'), [
             'name' => 'Kos Admin',
             'address' => 'Jl. Admin Test',
             'phone' => '081234567890',
             'status' => 'active',
-            'owner_id' => $owner->id,
+            'owner_id' => $this->owner->id,
         ]);
 
         $response->assertRedirect(route('admin.kos.index'));
         $this->assertDatabaseHas('kos', [
             'name' => 'Kos Admin',
-            'owner_id' => $owner->id,
+            'owner_id' => $this->owner->id,
         ]);
     }
 

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Payout Pemilik" description="Settlement ke Pemilik Kos Asli. Transfer manual di luar aplikasi — KosManager hanya mencatat.">
-            <x-button href="{{ route('owner.distribution.index') }}" type="secondary"><i class="ri-wallet-3-line"></i> Distribusi Booking</x-button>
+        <x-page-header title="Transfer ke Pemilik Kos" description="Tahap 2 dari alur dana: hitung komisi Pengelola, transfer manual ke Pemilik Kos Asli, lalu unggah bukti untuk diverifikasi Super Admin.">
+            <x-button href="{{ route('owner.distribution.index') }}" type="secondary"><i class="ri-wallet-3-line"></i> Dana Booking Masuk</x-button>
         </x-page-header>
     </x-slot>
 
@@ -10,11 +10,11 @@
         @isset($settlement)
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-4">
-                    <p class="text-[11px] uppercase tracking-wider text-slate-400">Sewa Diterima</p>
+                    <p class="text-[11px] uppercase tracking-wider text-slate-400">Sewa Disetujui</p>
                     <p class="text-base font-bold text-slate-900 dark:text-white">Rp {{ number_format((float) $settlement['received'], 0, ',', '.') }}</p>
                 </div>
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-4">
-                    <p class="text-[11px] uppercase tracking-wider text-amber-600">Komisi Owner</p>
+                    <p class="text-[11px] uppercase tracking-wider text-amber-600">Komisi Pengelola</p>
                     <p class="text-base font-bold text-amber-600">Rp {{ number_format((float) $settlement['commission'], 0, ',', '.') }}</p>
                 </div>
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-4">
@@ -30,6 +30,29 @@
                 </div>
             </div>
         @endisset
+
+        <section class="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-surface-elevated">
+            <h2 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50">
+                <i class="ri-calculator-line text-lg text-primary-500"></i> Cara menghitung pembagian dana
+            </h2>
+            <div class="mt-4 grid gap-3 md:grid-cols-3">
+                <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-800/50">
+                    <p class="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">1. Sewa disetujui</p>
+                    <p class="mt-1 text-sm text-slate-700 dark:text-slate-200">Pembayaran tenant yang sudah diverifikasi, di luar penalti/denda.</p>
+                </div>
+                <div class="rounded-xl bg-amber-50 p-4 dark:bg-amber-500/10">
+                    <p class="text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">2. Komisi Pengelola</p>
+                    <p class="mt-1 text-sm text-amber-800 dark:text-amber-200">Sesuai Management Agreement: persentase dari sewa, atau nominal tetap satu kali per Kos per periode.</p>
+                </div>
+                <div class="rounded-xl bg-emerald-50 p-4 dark:bg-emerald-500/10">
+                    <p class="text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">3. Dana Pemilik Kos</p>
+                    <p class="mt-1 text-sm text-emerald-800 dark:text-emerald-200">Sewa disetujui dikurangi komisi Pengelola. Nominal dihitung server-side dan tidak dapat diedit dari form.</p>
+                </div>
+            </div>
+            <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                Transfer dilakukan manual oleh Pengelola. Status <strong>Terverifikasi</strong> hanya berarti bukti transfer telah diperiksa Super Admin—bukan konfirmasi otomatis dari bank.
+            </p>
+        </section>
 
         {{-- Warning: kos tanpa pemilik asli --}}
         @if($kosWithoutPropertyOwner->isNotEmpty())
@@ -52,10 +75,10 @@
             {{-- Buat Payout --}}
             <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
-                    <i class="ri-add-circle-line text-primary-500"></i> Buat Payout
+                    <i class="ri-add-circle-line text-primary-500"></i> Buat Tagihan Transfer
                 </h3>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Nominal = sewa approved − komisi per-kos (penalti tidak masuk basis).
+                    Pilih Kos dan periode. Sistem menghitung dana bersih untuk Pemilik Kos setelah komisi Pengelola; penalti tidak masuk basis.
                 </p>
 
                 @if($kosOptions->isEmpty())
@@ -91,7 +114,7 @@
                         </div>
                         <div class="flex justify-end">
                             <button type="submit" class="btn-primary">
-                                <i class="ri-money-dollar-circle-line"></i> Buat Payout
+                                <i class="ri-money-dollar-circle-line"></i> Hitung &amp; Buat Tagihan Transfer
                             </button>
                         </div>
                     </form>
@@ -164,11 +187,11 @@
             </div>
         </div>
 
-        {{-- Daftar Payout --}}
+        {{-- Daftar Transfer --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Daftar Payout</h3>
-                <span class="text-xs text-slate-500 dark:text-slate-400">Transfer manual → unggah bukti → verifikasi Super Admin</span>
+                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Daftar Transfer ke Pemilik Kos</h3>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Hitung → transfer manual → unggah bukti → verifikasi Super Admin</span>
             </div>
 
             @if($payouts->isEmpty())
@@ -176,8 +199,8 @@
                     <div class="mx-auto w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                         <i class="ri-hand-coin-line text-2xl text-slate-400"></i>
                     </div>
-                    <p class="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada payout.</p>
-                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Buat payout setelah ada pendapatan approved pada suatu periode.</p>
+                    <p class="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada tagihan transfer.</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Buat tagihan transfer setelah ada pendapatan approved pada suatu periode.</p>
                 </div>
             @else
                 <div class="divide-y divide-slate-100 dark:divide-white/10">
@@ -191,10 +214,10 @@
                                 default => 'bg-slate-100 text-slate-700',
                             };
                             $statusLabel = match($p->status) {
-                                'pending' => 'Belum Dibayar',
-                                'transferred' => 'Menunggu Verifikasi',
+                                'pending' => 'Belum Ditransfer',
+                                'transferred' => 'Menunggu Verifikasi Bukti',
                                 'verified' => 'Terverifikasi',
-                                'rejected' => 'Ditolak',
+                                'rejected' => 'Ditolak — Kirim Ulang Bukti',
                                 default => $p->status,
                             };
                         @endphp
@@ -205,17 +228,17 @@
                                     <span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold {{ $badge }}">{{ $statusLabel }}</span>
                                 </div>
                                 <p class="mt-1 text-sm font-bold text-slate-900 dark:text-slate-50">{{ $p->kos?->name ?? '-' }}</p>
-                                <p class="text-xs text-slate-500 dark:text-slate-400">Pemilik: {{ $p->propertyOwner?->name ?? '-' }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Pemilik Kos: {{ $p->propertyOwner?->name ?? '-' }}</p>
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Periode: {{ \Illuminate\Support\Carbon::parse($p->period_start)->translatedFormat('d M Y') }} — {{ \Illuminate\Support\Carbon::parse($p->period_end)->translatedFormat('d M Y') }}</p>
                             </div>
                             <div class="sm:text-right shrink-0">
-                                <p class="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wide font-medium">Pendapatan</p>
+                                <p class="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wide font-medium">Sewa Disetujui</p>
                                 <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Rp {{ number_format((float) $p->gross_amount, 0, ',', '.') }}</p>
-                                <p class="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Komisi: -Rp {{ number_format((float) ($p->commission_total ?? 0), 0, ',', '.') }}</p>
+                                <p class="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Komisi Pengelola: -Rp {{ number_format((float) ($p->commission_total ?? 0), 0, ',', '.') }}</p>
                                 <p class="text-base font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format((float) $p->amount, 0, ',', '.') }}</p>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500">Hak Pemilik Kos Asli</p>
+                                <p class="text-[11px] text-slate-400 dark:text-slate-500">Dana untuk Pemilik Kos</p>
                                 <a href="{{ route('owner.payouts.show', $p) }}" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline">
-                                    {{ $p->status === 'pending' || $p->status === 'rejected' ? 'Bayar Pemilik' : 'Lihat Detail' }}
+                                    {{ $p->status === 'pending' || $p->status === 'rejected' ? 'Transfer Sekarang' : 'Lihat Detail' }}
                                     <i class="ri-arrow-right-line"></i>
                                 </a>
                             </div>

@@ -7,7 +7,7 @@
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50">Kampanye Advertising</h1>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola dan moderasi semua kampanye iklan.</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex w-full flex-wrap gap-2 sm:w-auto">
                 <a href="{{ route('super-admin.advertising.campaigns.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">
                     <i class="ri-add-circle-line"></i> Iklan Pihak Ketiga
                 </a>
@@ -52,6 +52,7 @@
 
         {{-- Campaign list --}}
         <div class="table-card">
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-slate-50 dark:bg-surface-elevated/40 text-left">
                         <tr>

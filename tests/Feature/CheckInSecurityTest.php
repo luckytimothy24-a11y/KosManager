@@ -117,17 +117,19 @@ class CheckInSecurityTest extends TestCase
         $this->post(route('owner.checkin.confirm', $this->bookingA))->assertRedirect(route('login'));
     }
 
-    /** Test 6: Invalid KTP rejected. */
-    public function test_invalid_ktp_rejected(): void
+    /** Test 6: KTP is no longer collected or validated at check-in. */
+    public function test_ktp_is_ignored_on_checkin(): void
     {
         $response = $this->actingAs($this->tenantA)->post(route('tenant.checkin.identity.confirm', $this->bookingA), [
-            'identity_number' => 'abc', // too short + non-numeric
+            'identity_number' => 'abc',
             'phone' => '08123456789',
             'address' => 'Jl. Test No 1',
         ]);
 
-        $response->assertSessionHasErrors('identity_number');
-        $this->assertNull($this->bookingA->fresh()->identity_data_submitted_at);
+        $response->assertSessionHasNoErrors();
+        $fresh = $this->bookingA->fresh();
+        $this->assertEquals('pending', $fresh->identityStatus());
+        $this->assertNull($fresh->identity_number);
     }
 
     /** Test 7: Invalid WhatsApp rejected. */
@@ -255,9 +257,8 @@ class CheckInSecurityTest extends TestCase
         $this->actingAs($this->ownerA)->post(route('owner.checkin.reject', $this->bookingA), ['reason' => 'Nomor WA salah, perbaiki 08...'])->assertRedirect();
         $this->assertEquals('rejected', $this->bookingA->fresh()->identityStatus());
 
-        // tenant resubmit (clears rejected)
+        // tenant resubmit (clears rejected, keeps legacy KTP unchanged)
         $this->actingAs($this->tenantA)->post(route('tenant.checkin.identity.confirm', $this->bookingA), [
-            'identity_number' => '3374012345670002',
             'phone' => '081987654321',
             'address' => 'Jl. Baru No 2',
         ])->assertRedirect();
@@ -265,7 +266,9 @@ class CheckInSecurityTest extends TestCase
         $this->assertEquals('pending', $fresh->identityStatus());
         $this->assertNull($fresh->identity_rejected_at);
         $this->assertNull($fresh->identity_rejection_reason);
-        $this->assertEquals('3374012345670002', $fresh->identity_number);
+        $this->assertEquals('3374012345670001', $fresh->identity_number);
+        $this->assertEquals('081987654321', $fresh->phone);
+        $this->assertEquals('Jl. Baru No 2', $fresh->address);
 
         // owner confirm now succeeds
         $this->actingAs($this->ownerA)->post(route('owner.checkin.confirm', $this->bookingA))->assertRedirect();

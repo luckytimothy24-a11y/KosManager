@@ -8,6 +8,7 @@ use App\Http\Requests\StoreDisbursementRequest;
 use App\Models\Payout;
 use App\Models\PayoutDisbursement;
 use App\Services\PropertyOwnerPayoutService;
+use Illuminate\Support\Facades\Storage;
 
 class PayoutDisbursementController extends Controller
 {
@@ -55,6 +56,28 @@ class PayoutDisbursementController extends Controller
         }
 
         return redirect()->route('owner.payouts.show', $payout)->with('success', 'Disbursement berhasil dicatat. Menunggu verifikasi Super Admin.');
+    }
+
+    /**
+     * Tampilkan bukti transfer disbursement (inline) untuk Owner/Super Admin.
+     * File disimpan di disk private; otorisasi mengikuti payout induknya.
+     */
+    public function downloadProof(PayoutDisbursement $disbursement)
+    {
+        $payout = $disbursement->payout;
+        abort_unless($payout, 404);
+
+        $this->authorize('downloadProof', $payout);
+
+        $path = $disbursement->proof_path;
+        abort_unless($path && Storage::disk('private')->exists($path), 404);
+
+        return Storage::disk('private')->response(
+            $path,
+            null,
+            ['Cache-Control' => 'private, no-store, max-age=0'],
+            'inline'
+        );
     }
 
     public function verify(PayoutDisbursement $disbursement, PropertyOwnerPayoutService $service)

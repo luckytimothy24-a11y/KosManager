@@ -15,10 +15,9 @@ class StoreCheckInRequest extends FormRequest
 
     public function rules(): array
     {
-        // Identitas sudah tersimpan di booking setelah tenant submit + owner confirm.
-        // Check-in process hanya membutuhkan notes tambahan (opsional).
+        // Identitas check-in tenant baru memakai WhatsApp + alamat.
+        // KTP tidak lagi dikumpulkan; data KTP lama tetap tersimpan di database.
         return [
-            'identity_number' => ['nullable', 'string', 'max:50'],
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:500'],
             'notes' => ['nullable', 'string', 'max:1000'],

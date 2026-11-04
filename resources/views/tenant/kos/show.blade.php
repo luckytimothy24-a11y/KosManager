@@ -684,7 +684,7 @@
     </div>
 
     @if($kamarTersedia->count())
-        <div class="fixed inset-x-0 bottom-16 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] safe-area-bottom lg:hidden dark:border-white/[0.08] dark:bg-surface-elevated/95">
+        <div class="fixed inset-x-0 bottom-[var(--bottom-nav-total)] z-40 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.06)] lg:hidden dark:border-white/[0.08] dark:bg-surface-elevated/95">
             <div class="flex items-center gap-3">
                 <div class="min-w-0 flex-1">
                     @if(!is_null($hargaMulai))
@@ -699,7 +699,7 @@
                 </a>
             </div>
         </div>
-        <div class="h-32 lg:hidden"></div>
+        <div class="h-24 lg:hidden"></div>
     @endif
 
     {{-- Record this kos into recently-viewed (localStorage) --}}

@@ -117,7 +117,7 @@ if ($firstTagihan) {
             'active_payment_key' => $firstTagihan->id,
         ]);
         $firstTagihan->update(['status' => 'pending_verification']);
-        echo "Pembayaran demo {$pay->payment_number} for {$firstTagihan->bill_number} amount=".number_format($pay->amount,0,',','.')." pending\n";
+        echo "Pembayaran demo {$pay->payment_number} for {$firstTagihan->bill_number} amount=".number_format($pay->amount, 0, ',', '.')." pending\n";
     } else {
         echo "Pembayaran for {$firstTagihan->bill_number} already exists\n";
     }

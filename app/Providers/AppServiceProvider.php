@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\View\Composers\LayoutComposer;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -148,6 +149,8 @@ class AppServiceProvider extends ServiceProvider
                         }
                     }
                 } catch (\Throwable $e) {
+                    // Jika terjadi error total, gabungkan dengan empty
+                    $badges = $empty;
                 }
             }
 

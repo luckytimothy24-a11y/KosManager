@@ -25,7 +25,11 @@ class StoreBookingRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        foreach (['status', 'tenant_status', 'payment_status', 'check_in_status', 'check_in', 'verified_at'] as $key) {
+        foreach ([
+            'status', 'tenant_status', 'payment_status', 'check_in_status', 'check_in', 'verified_at',
+            // Nominal selalu dihitung server: harga kamar + DP dari config.
+            'price', 'rental_price', 'down_payment_amount',
+        ] as $key) {
             $this->request->remove($key);
         }
 
@@ -55,7 +59,6 @@ class StoreBookingRequest extends FormRequest
             'requested_occupants' => ['sometimes', 'nullable', 'integer', 'in:1'],
             'billing_mode' => ['sometimes', 'nullable', 'string', 'in:personal'],
             'notes' => ['nullable', 'string', 'max:1000'],
-            'identity_number' => ['required', 'string', 'min:8', 'max:50'],
             'phone' => ['required', 'string', 'min:9', 'max:30'],
             'address' => ['required', 'string', 'min:5'],
         ];

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCheckOutRequest;
-use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
@@ -117,17 +116,7 @@ class CheckOutController extends Controller
             $penghuni->update(['status' => 'inactive']);
 
             if ($kamar) {
-                // Occupancy-aware: jika masih ada penghuni aktif, tetap occupied
-                $remainingOccupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
-                if ($remainingOccupancy > 0) {
-                    $kamar->update(['status' => 'occupied']);
-                } else {
-                    $stillReserved = Booking::where('kamar_id', $kamar->id)
-                        ->where('status', 'approved')
-                        ->whereDate('end_date', '>=', today())
-                        ->exists();
-                    $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
-                }
+                $kamar->syncStatus();
             }
 
             $kontrak = Kontrak::where('penghuni_id', $penghuni->id)

@@ -14,8 +14,8 @@ use Illuminate\Http\JsonResponse;
 
 /**
  * Tenant submit pembayaran booking via API.
- * Nominal SELALU dari booking.price (server). Status payment = pending.
- * Booking TIDAK berubah.
+ * Nominal SELALU dari server: DP booking baru / harga penuh booking legacy.
+ * Status payment = pending. Booking TIDAK berubah.
  */
 class TenantBookingPaymentController extends Controller
 {
@@ -58,7 +58,11 @@ class TenantBookingPaymentController extends Controller
             AuditLogService::create(
                 'Pembayaran',
                 "Tenant mengirim pembayaran booking {$booking->booking_code} via API",
-                ['booking_id' => $booking->id, 'pembayaran_id' => $result['pembayaran']->id]
+                [
+                    'booking_id' => $booking->id,
+                    'pembayaran_id' => $result['pembayaran']->id,
+                    'amount' => (float) $result['pembayaran']->amount,
+                ]
             );
             NotificationService::bookingPaymentSubmitted(
                 $booking->kos->owner_id,

@@ -73,7 +73,7 @@
                                 <div class="flex items-start gap-2.5">
                                         <i class="ri-group-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
                                         <div>
-                                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kapasitas</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kapasitas maksimal</dt>
                                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $capacity }} Orang</dd>
                                         </div>
                                     </div>
@@ -136,17 +136,8 @@
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
                     <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-4">
                         <i class="ri-user-star-line text-primary-500"></i> Penghuni Aktif
-                        <span class="ml-auto text-xs font-bold text-slate-500 dark:text-slate-400">{{ $occupied }} / {{ $capacity }}</span>
+                        <span class="ml-auto text-xs font-bold text-slate-500 dark:text-slate-400">{{ $occupied }} Penghuni</span>
                     </h3>
-
-                    @if($capacity > 1)
-                        <div class="mb-4">
-                            <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-surface-elevated">
-                                <div class="h-full rounded-full bg-primary-500 transition-all" style="width: {{ min(100, (int) round($occupied / max(1, $capacity) * 100)) }}%"></div>
-                            </div>
-                            <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">Terisi {{ $occupied }} dari {{ $capacity }} kapasitas</p>
-                        </div>
-                    @endif
 
                     <div class="space-y-2.5">
                         @forelse($activePenghunis as $p)
@@ -186,80 +177,7 @@
                             </div>
                         @endforelse
                     </div>
-                    @if($occupied < $capacity && $occupied > 0)
-                        <p class="mt-3 text-xs text-center text-green-600 dark:text-green-400 font-medium"><i class="ri-checkbox-circle-line"></i> {{ $capacity - $occupied }} slot tersedia — bisa tambah penghuni lagi</p>
-                    @endif
-
-                    @if($canManage && $occupied < $capacity)
-                        <div class="mt-4 border-t border-slate-100 pt-4 dark:border-white/10" x-data="{ open: {{ $errors->any() ? 'true' : 'false' }} }">
-                            <div class="rounded-xl border border-slate-100 dark:border-white/10 bg-slate-50/60 dark:bg-surface-elevated/40 px-4 py-3 mb-3">
-                                <p class="flex items-start gap-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300"><i class="ri-information-line text-slate-400 dark:text-slate-500 mt-0.5"></i><span>Untuk penghuni walk-in, data identitas dapat diisi oleh owner. Jika penghuni berasal dari booking, minta tenant melakukan <span class="font-semibold">Konfirmasi Identitas</span> terlebih dahulu.</span></p>
-                            </div>
-                            <button type="button" @click="open = !open"
-                                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary-300 bg-primary-50/50 px-4 py-2.5 text-sm font-semibold text-primary-600 transition hover:bg-primary-50 dark:border-primary-500/40 dark:bg-primary-500/10 dark:text-primary-300 dark:hover:bg-primary-500/20">
-                                <i class="ri-user-add-line"></i> <span x-show="!open">+ Tambah Penghuni</span><span x-show="open" x-cloak>Tutup</span>
-                            </button>
-
-                            <form method="POST" action="{{ route('owner.kamar.add-penghuni', $kamar) }}" x-show="open" x-cloak class="mt-3 space-y-3">
-                                @csrf
-                                <div>
-                                    <label for="add_user_id" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Tenant</label>
-                                    <select id="add_user_id" name="user_id" required
-                                            class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                        <option value="">Pilih tenant</option>
-                                        @foreach($tenantCandidates as $tc)
-                                            <option value="{{ $tc->id }}">{{ $tc->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label for="add_rental_type" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Tipe Sewa</label>
-                                        <select id="add_rental_type" name="rental_type" class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                            <option value="monthly">Bulanan</option>
-                                            <option value="weekly">Mingguan</option>
-                                            <option value="daily">Harian</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="add_rental_price" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Harga Sewa</label>
-                                        <input id="add_rental_price" type="number" name="rental_price" min="0" step="any" required value="{{ old('rental_price', $kamar->monthly_price) }}"
-                                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="add_check_in_date" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Tanggal Masuk</label>
-                                    <input id="add_check_in_date" type="date" name="check_in_date" required value="{{ old('check_in_date', now()->toDateString()) }}"
-                                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                </div>
-                                <div>
-                                    <label for="add_identity_number" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">No. Identitas</label>
-                                    <input id="add_identity_number" type="text" name="identity_number" value="{{ old('identity_number') }}"
-                                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                </div>
-                                <div>
-                                    <label for="add_phone" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Telepon</label>
-                                    <input id="add_phone" type="text" name="phone" value="{{ old('phone') }}"
-                                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                </div>
-                                @if(($kamar->billing_mode ?? 'personal') === 'shared')
-                                    <div>
-                                        <label for="add_custom_share" class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Bagian Patungan (opsional)</label>
-                                        <input id="add_custom_share" type="number" name="custom_share_amount" min="0" step="any" value="{{ old('custom_share_amount') }}"
-                                               placeholder="Kosongkan = bagi rata (Rp {{ number_format((int) round($kamar->monthly_price / max(1,$capacity)),0,',','.') }})"
-                                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">
-                                        <p class="text-[11px] text-slate-400 mt-1">Jika diisi, total semua bagian harus = harga kamar.</p>
-                                    </div>
-                                @endif
-                                @error('user_id') <p role="alert" class="text-xs text-red-500">{{ $message }}</p> @enderror
-                                @error('rental_price') <p role="alert" class="text-xs text-red-500">{{ $message }}</p> @enderror
-                                <button type="submit"
-                                        class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600">
-                                    <i class="ri-user-add-line"></i> Simpan Penghuni
-                                </button>
-                            </form>
-                        </div>
-                    @endif
+                    </div>
                 </div>
 
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">

@@ -112,6 +112,8 @@ class AdvertisingService
             'advertiser_description' => data_get($data, 'advertiser_description') ?: null,
             'headline' => trim((string) data_get($data, 'headline')),
             'description' => data_get($data, 'description') ?: null,
+            'highlight_text' => data_get($data, 'highlight_text') ?: null,
+            'visual_theme' => data_get($data, 'visual_theme') ?: null,
             'image' => data_get($data, 'image') ?: null,
             'cta_label' => trim((string) data_get($data, 'cta_label')),
             'destination_url' => $destinationUrl,
@@ -439,6 +441,8 @@ class AdvertisingService
                 'advertiser_description' => data_get($data, 'advertiser_description') ?: null,
                 'headline' => trim((string) data_get($data, 'headline')),
                 'description' => data_get($data, 'description') ?: null,
+                'highlight_text' => data_get($data, 'highlight_text') ?: null,
+                'visual_theme' => data_get($data, 'visual_theme') ?: null,
                 'image' => data_get($data, 'image') ?: null,
                 'cta_label' => trim((string) data_get($data, 'cta_label')),
                 'destination_url' => $destinationUrl,
@@ -567,6 +571,12 @@ class AdvertisingService
             'advertiser_description' => data_get($data, 'advertiser_description') ?: $campaign->advertiser_description,
             'headline' => trim((string) data_get($data, 'headline', $campaign->headline)),
             'description' => data_get($data, 'description') ?: $campaign->description,
+            'highlight_text' => array_key_exists('highlight_text', $data)
+                ? (trim((string) $data['highlight_text']) ?: null)
+                : $campaign->highlight_text,
+            'visual_theme' => array_key_exists('visual_theme', $data)
+                ? (trim((string) $data['visual_theme']) ?: null)
+                : $campaign->visual_theme,
             'image' => data_get($data, 'image') ?: $campaign->image,
             'cta_label' => data_get($data, 'cta_label') ?: $campaign->cta_label,
             'destination_url' => $destinationUrl,

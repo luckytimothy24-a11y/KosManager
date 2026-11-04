@@ -120,13 +120,13 @@
                                 <input type="radio" id="pay-method-transfer_bank" name="payment_method" value="transfer_bank" x-model="method" class="sr-only">
                                 <i class="ri-bank-line text-base"></i> Transfer Bank
                             </label>
-                            <label for="pay-method-cash"
+                            <label for="pay-method-qris"
                                    class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
-                                   :class="method === 'cash'
+                                   :class="method === 'qris'
                                        ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
                                        : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
-                                <input type="radio" id="pay-method-cash" name="payment_method" value="cash" x-model="method" class="sr-only">
-                                <i class="ri-hand-coin-line text-base"></i> Cash
+                                <input type="radio" id="pay-method-qris" name="payment_method" value="qris" x-model="method" class="sr-only">
+                                <i class="ri-qr-code-2-line text-base"></i> QRIS
                             </label>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                         <label for="proof_file" class="field-label">
                             Bukti Pembayaran
                             <span class="font-normal">
-                                <template x-if="method === 'cash'">(opsional)</template>
+                                <template x-if="method === 'qris'">(opsional)</template>
                                 <template x-if="method === 'transfer_bank'">(wajib)</template>
                             </span>
                         </label>
@@ -242,7 +242,7 @@
                     amount: auto ? String(auto.total) : '',
                     selected: auto || null,
                     submitting: false,
-                    method: 'cash',
+                    method: 'qris',
                     notes: '',
                     proof: { name: '', size: 0, sizeLabel: '', isImage: false, preview: '', oversize: false },
                     onPick(rawId) {

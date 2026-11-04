@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Booking;
 use App\Models\Kamar;
-use App\Models\Penghuni;
 use App\Services\NotificationService;
+use App\Services\PaymentDistributionService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -49,21 +49,13 @@ class ExpireOldBookings extends Command
 
                     $booking->update(['status' => 'expired']);
 
+                    // DP non-refundable: lepaskan distribusi ke owner.
+                    if ($booking->usesDownPayment()) {
+                        app(PaymentDistributionService::class)->markReadyForBooking($booking);
+                    }
+
                     if ($kamar && $kamar->status === 'booked') {
-                        $stillReserved = Booking::where('kamar_id', $kamar->id)
-                            ->whereKeyNot($booking->id)
-                            ->where('status', 'approved')
-                            ->whereDate('end_date', '>=', today())
-                            ->exists();
-                        if (! $stillReserved) {
-                            // Occupancy-aware: jangan bebaskan kamar jika masih ada penghuni aktif (shared)
-                            $occupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
-                            if ($occupancy > 0) {
-                                $kamar->update(['status' => 'occupied']);
-                            } else {
-                                $kamar->update(['status' => 'available']);
-                            }
-                        }
+                        $kamar->syncStatus();
                     }
 
                     return $booking;

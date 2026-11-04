@@ -182,4 +182,36 @@ class Kamar extends Model
     {
         return $this->hasMany(Tagihan::class);
     }
+
+    /**
+     * Sinkron status kamar berdasarkan occupancy dan booking active.
+     * - Jika ada penghuni aktif → occupied
+     * - Jika tidak ada penghuni tapi ada booking approved dengan end_date >= hari ini → booked
+     * - Jika tidak ada → available
+     * - Jika status sedang maintenance → tetap maintenance (tidak berubah)
+     */
+    public function syncStatus(): void
+    {
+        // Jika kamar maintenance, jangan berapa-apa
+        if ($this->status === 'maintenance') {
+            return;
+        }
+
+        $occupancy = Penghuni::where('kamar_id', $this->id)
+            ->where('status', 'active')
+            ->count();
+
+        if ($occupancy > 0) {
+            $this->update(['status' => 'occupied']);
+
+            return;
+        }
+
+        $stillReserved = Booking::where('kamar_id', $this->id)
+            ->where('status', 'approved')
+            ->whereDate('end_date', '>=', today())
+            ->exists();
+
+        $this->update(['status' => $stillReserved ? 'booked' : 'available']);
+    }
 }

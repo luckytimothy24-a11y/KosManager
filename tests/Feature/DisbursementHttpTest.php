@@ -141,6 +141,133 @@ class DisbursementHttpTest extends TestCase
         $this->assertSame('verified', $d->fresh()->status);
     }
 
+    public function test_owner_can_view_disbursement_proof(): void
+    {
+        $disbursement = $this->createDisbursement('http-key-proof-aaaaaaaa');
+
+        $this->actingAs($this->owner)
+            ->get(route('owner.disbursements.proof', $disbursement))
+            ->assertOk();
+    }
+
+    public function test_super_admin_can_view_disbursement_proof(): void
+    {
+        $disbursement = $this->createDisbursement('http-key-proof-bbbbbbbb');
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('owner.disbursements.proof', $disbursement))
+            ->assertOk();
+    }
+
+    public function test_other_owner_cannot_view_disbursement_proof(): void
+    {
+        $disbursement = $this->createDisbursement('http-key-proof-cccccccc');
+
+        $this->actingAs($this->ownerOther)
+            ->get(route('owner.disbursements.proof', $disbursement))
+            ->assertForbidden();
+    }
+
+    public function test_tenant_cannot_view_disbursement_proof(): void
+    {
+        $disbursement = $this->createDisbursement('http-key-proof-dddddddd');
+        $tenant = User::where('role', 'tenant')->firstOrFail();
+
+        $this->actingAs($tenant)
+            ->get(route('owner.disbursements.proof', $disbursement))
+            ->assertForbidden();
+    }
+
+    public function test_missing_disbursement_proof_returns_404(): void
+    {
+        $disbursement = $this->createDisbursement('http-key-proof-eeeeeeee');
+        Storage::disk('private')->delete($disbursement->proof_path);
+
+        $this->actingAs($this->owner)
+            ->get(route('owner.disbursements.proof', $disbursement))
+            ->assertNotFound();
+    }
+
+    public function test_disbursement_proof_link_is_visible_on_payout_detail(): void
+    {
+        $disbursement = $this->createDisbursement('http-key-proof-ffffffff');
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('owner.payouts.show', $this->payout))
+            ->assertOk()
+            ->assertSee('Lihat bukti')
+            ->assertSee(route('owner.disbursements.proof', $disbursement), false);
+    }
+
+    public function test_whole_payout_verify_with_disbursement_returns_actionable_error(): void
+    {
+        $this->payout->update([
+            'status' => Payout::STATUS_TRANSFERRED,
+            'transferred_at' => now(),
+            'proof_path' => 'payout-proof/parent.pdf',
+        ]);
+        $this->createDisbursement('http-key-parent-verify-guard');
+
+        $this->actingAs($this->superAdmin)
+            ->from(route('owner.payouts.show', $this->payout))
+            ->post(route('owner.payouts.verify', $this->payout))
+            ->assertRedirect(route('owner.payouts.show', $this->payout))
+            ->assertSessionHas(
+                'error',
+                'Payout ini memiliki pencairan parsial. Verifikasi disbursement terlebih dahulu; payout induk akan otomatis terverifikasi setelah seluruh disbursement verified dan totalnya sesuai.'
+            );
+
+        $this->assertSame(Payout::STATUS_TRANSFERRED, $this->payout->fresh()->status);
+    }
+
+    public function test_parent_verify_actions_are_hidden_when_disbursement_exists(): void
+    {
+        $this->payout->update([
+            'status' => Payout::STATUS_TRANSFERRED,
+            'transferred_at' => now(),
+            'proof_path' => 'payout-proof/parent.pdf',
+        ]);
+        $disbursement = $this->createDisbursement('http-key-parent-ui-guard');
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('owner.payouts.show', $this->payout))
+            ->assertOk()
+            ->assertSee('Verifikasi lewat Pencairan Parsial')
+            ->assertSee('1 disbursement menunggu verifikasi')
+            ->assertSee('id="payout-disbursements"', false)
+            ->assertSee(route('owner.disbursements.verify', $disbursement), false)
+            ->assertDontSee(route('owner.payouts.verify', $this->payout), false)
+            ->assertDontSee(route('owner.payouts.reject', $this->payout), false);
+    }
+
+    public function test_parent_verify_action_is_visible_without_disbursements(): void
+    {
+        $this->payout->update([
+            'status' => Payout::STATUS_TRANSFERRED,
+            'transferred_at' => now(),
+            'proof_path' => 'payout-proof/parent.pdf',
+        ]);
+
+        $this->actingAs($this->superAdmin)
+            ->get(route('owner.payouts.show', $this->payout))
+            ->assertOk()
+            ->assertSee('Verifikasi Payout')
+            ->assertSee(route('owner.payouts.verify', $this->payout), false)
+            ->assertDontSee('Verifikasi lewat Pencairan Parsial');
+    }
+
+    private function createDisbursement(string $idempotencyKey): PayoutDisbursement
+    {
+        $this->actingAs($this->owner)->post(route('owner.payouts.disbursements.store', $this->payout), [
+            'amount' => 500000,
+            'idempotency_key' => $idempotencyKey,
+            'transferred_at' => '2026-09-20',
+            'proof_file' => UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf'),
+        ])->assertRedirect();
+
+        return PayoutDisbursement::where('idempotency_key', $idempotencyKey)->firstOrFail();
+    }
+
     public function test_idor_other_owner_forbidden_http(): void
     {
         $this->actingAs($this->ownerOther)->post(route('owner.payouts.disbursements.store', $this->payout), [

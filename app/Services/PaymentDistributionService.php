@@ -62,10 +62,19 @@ class PaymentDistributionService
                 return ['ok' => false, 'error' => 'owner_not_found'];
             }
 
-            // Nominal dasar dari server-side booking.price (bukan request client)
-            $gross = round((float) ($booking->price ?? $locked->amount), 2);
+            // Nominal dasar dari payment yang benar-benar disetujui (server-side).
+            // Booking baru: DP. Booking legacy: harga penuh.
+            $gross = round((float) $locked->amount, 2);
             if ($gross <= 0) {
                 return ['ok' => false, 'error' => 'invalid_amount'];
+            }
+
+            // DP bersifat non-refundable. Jika booking sudah terminal, hak owner
+            // langsung siap dicairkan. Booking legacy tetap mengikuti alur lama.
+            $status = PaymentDistribution::STATUS_PENDING;
+            if ($booking->status === Booking::STATUS_APPROVED
+                || ($booking->usesDownPayment() && in_array($booking->status, Booking::terminalStatuses(), true))) {
+                $status = PaymentDistribution::STATUS_READY;
             }
 
             // TIDAK ada business rule platform fee existing → fee = 0
@@ -79,7 +88,7 @@ class PaymentDistributionService
                 'gross_amount' => $gross,
                 'platform_fee' => $platformFee,
                 'owner_amount' => $ownerAmount,
-                'status' => PaymentDistribution::STATUS_PENDING,
+                'status' => $status,
             ]);
 
             return ['ok' => true, 'distribution' => $distribution];

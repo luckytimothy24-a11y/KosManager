@@ -107,7 +107,7 @@
     @if($variant === 'banner')
         {{-- Hero: full-width premium, split visual di desktop, aksen di mobile. --}}
         <a href="{{ $adUrl }}" aria-label="{{ $a11y }}"
-           class="group relative block overflow-hidden rounded-3xl border {{ $theme['border'] }} {{ $theme['grad'] }} transition-colors duration-200">
+           class="group relative block overflow-hidden rounded-3xl border {{ $theme['border'] }} {{ $theme['grad'] }} shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             <div aria-hidden="true" class="pointer-events-none absolute right-2 top-2 h-40 w-40 rounded-full {{ $theme['blob'] }} blur-2xl"></div>
             <div aria-hidden="true" class="pointer-events-none absolute left-2 bottom-2 h-36 w-36 rounded-full {{ $theme['blob2'] }} blur-2xl"></div>
 
@@ -153,14 +153,14 @@
     @elseif($variant === 'card')
         {{-- Kartu vertikal kompak: digunakan untuk slot sekunder dashboard. --}}
         <a href="{{ $adUrl }}" aria-label="{{ $a11y }}"
-           class="group relative flex flex-col overflow-hidden rounded-3xl border {{ $theme['border'] }} {{ $theme['grad'] }} transition-colors duration-200">
+           class="group relative flex flex-col overflow-hidden rounded-3xl border {{ $theme['border'] }} {{ $theme['grad'] }} shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
             <div aria-hidden="true" class="pointer-events-none absolute right-2 top-2 h-32 w-32 rounded-full {{ $theme['blob'] }} blur-2xl"></div>
 
             @if($image)
                 <div class="relative aspect-[16/7] shrink-0 overflow-hidden">
-                    <img src="{{ $image }}" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 motion-safe:group-hover:scale-[1.03]" onerror="this.style.display='none'">
-                    <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2 py-0.5 border {{ $theme['badge'] }}">
-                        <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full {{ $theme['cta'] }}"></span>
+                    <img src="{{ $image }}" alt="" loading="lazy" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.08]" onerror="this.style.display='none'">
+                    <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full text-[11px] font-bold px-2.5 py-1 border {{ $theme['badge'] }} shadow-sm">
+                        <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full {{ $theme['cta'] }} animate-pulse"></span>
                         Sponsored
                     </span>
                 </div>
@@ -170,18 +170,18 @@
                 <div class="flex items-center gap-2.5">
                     {!! $monogram($brandLogo, $initial, $theme['mono']) !!}
                     <span class="min-w-0">
-                        <span class="block text-[11px] font-semibold uppercase tracking-wide {{ $theme['accent'] }}">Sponsored</span>
+                        <span class="block text-[11px] font-bold uppercase tracking-wide {{ $theme['accent'] }}">Sponsored</span>
                         <span class="block truncate text-sm font-bold text-slate-900 dark:text-slate-50">{{ $brandName }}</span>
                     </span>
-                    <span class="ml-auto inline-flex items-center rounded-full text-[11px] font-semibold px-2 py-0.5 {{ $placementBadgeClass }}">{{ $placementLabelText }}</span>
+                    <span class="ml-auto inline-flex items-center rounded-full text-[11px] font-bold px-2.5 py-1 {{ $placementBadgeClass }} shadow-sm">{{ $placementLabelText }}</span>
                 </div>
 
-                <h3 class="mt-3 text-[15px] font-semibold text-slate-900 dark:text-slate-50 leading-snug line-clamp-2">{{ $ad->displayHeadline() }}</h3>
+                <h3 class="mt-3 text-[15px] font-bold text-slate-900 dark:text-slate-50 leading-snug line-clamp-2">{{ $ad->displayHeadline() }}</h3>
                 <p class="mt-1.5 text-xs text-slate-600 dark:text-slate-300 leading-snug line-clamp-2">{{ $ad->displayDescription() }}</p>
 
                 <div class="mt-auto pt-4 flex items-end justify-between gap-3">
                     <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400"><i class="ri-information-line"></i> Iklan Partner</span>
-                    <span class="inline-flex min-h-[44px] items-center gap-1.5 rounded-2xl {{ $theme['cta'] }} text-white text-xs font-bold px-4 shadow-sm transition-colors duration-200 active:scale-95">
+                    <span class="inline-flex min-h-[44px] items-center gap-1.5 rounded-2xl {{ $theme['cta'] }} text-white text-xs font-bold px-5 shadow-md transition-all duration-200 active:scale-95 group-hover:shadow-lg">
                         {{ $cta }} <i class="ri-arrow-right-line transition-transform motion-safe:group-hover:translate-x-0.5"></i>
                     </span>
                 </div>

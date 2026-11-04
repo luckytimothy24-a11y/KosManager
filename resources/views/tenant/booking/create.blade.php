@@ -13,7 +13,10 @@
         <div class="max-w-4xl">
             <div class="card-surface p-6 sm:p-8 relative overflow-hidden">
                 <div class="absolute -top-28 -right-28 w-80 h-80 rounded-full bg-gradient-to-br from-primary-500/10 via-primary-500/10 to-transparent blur-3xl pointer-events-none"></div>
-                @php $preselectedKamarId = old('kamar_id', request('kamar_id')); @endphp
+                @php
+                    $preselectedKamarId = old('kamar_id', request('kamar_id'));
+                    $downPaymentAmount = (float) config('booking.down_payment_amount', 100000);
+                @endphp
 
                 {{-- Pilih kos --}}
                 <div class="relative">
@@ -117,19 +120,13 @@
                                         @endif
                                     </div>
 
-                                     {{-- Identitas Tenant (Wajib) --}}
+                                     {{-- Kontak Tenant (Wajib) --}}
                                      <div class="rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-slate-50/50 dark:bg-surface-elevated/50 p-4">
-                                         <h3 class="text-xs font-bold text-slate-900 dark:text-slate-50 mb-3"><i class="ri-shield-keyhole-line text-primary-500 mr-1"></i> Identitas Tenant (Wajib)</h3>
+                                         <h3 class="text-xs font-bold text-slate-900 dark:text-slate-50 mb-3"><i class="ri-whatsapp-line text-emerald-500 mr-1"></i> Kontak Tenant (Wajib)</h3>
                                          <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
-                                             Data KTP dan WhatsApp diperlukan untuk proses verifikasi owner saat check-in. Data hanya digunakan untuk keperluan administrasi kos ini.
+                                             WhatsApp dan alamat diperlukan untuk koordinasi check-in dengan owner.
                                          </p>
                                          <div class="grid grid-cols-1 gap-4">
-                                             <div>
-                                                 <label for="identity_number" class="field-label"><i class="ri-pass-valid-line text-primary-500 mr-1"></i> Nomor KTP (NIK) <span class="text-red-500">*</span></label>
-                                                 <input type="text" id="identity_number" name="identity_number" value="{{ old('identity_number') }}" required inputmode="numeric" maxlength="50" placeholder="16 digit — contoh 3201xxxxxxxxxxxx"
-                                                        class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated dark:text-slate-50 text-sm px-4 py-3 focus:border-primary-500 focus:ring-primary-500 shadow-sm">
-                                                 @error('identity_number') <p class="text-xs font-medium text-red-500 mt-1.5" role="alert">{{ $message }}</p> @enderror
-                                             </div>
                                              <div>
                                                  <label for="phone" class="field-label"><i class="ri-whatsapp-line text-emerald-500 mr-1"></i> WhatsApp <span class="text-red-500">*</span></label>
                                                  <input type="text" id="phone" name="phone" value="{{ old('phone') }}" required inputmode="tel" maxlength="20" placeholder="0812xxxxxxx"
@@ -146,13 +143,18 @@
                                          </div>
                                      </div>
 
-                                     {{-- Pembayaran kamar — selalu tagihan pribadi --}}
-                                     <div class="rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-slate-50/50 dark:bg-surface-elevated/50 p-4">
-                                         <div class="flex items-center gap-2 mb-2">
-                                             <i class="ri-hand-coin-line text-primary-500 mr-1"></i>
-                                             <span class="text-xs font-semibold text-slate-900 dark:text-slate-50">Pembayaran</span>
+                                     {{-- Down Payment Booking — nominal tetap dari server --}}
+                                     <div class="rounded-2xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/70 dark:bg-primary-500/[0.06] p-4">
+                                         <div class="flex items-start justify-between gap-3">
+                                             <div>
+                                                 <p class="text-xs font-bold text-primary-800 dark:text-primary-300"><i class="ri-secure-payment-line mr-1"></i> Down Payment (DP)</p>
+                                                 <p class="mt-1 text-[11px] leading-relaxed text-primary-700/90 dark:text-primary-300/80">
+                                                     DP dibayar saat booking, diverifikasi owner, lalu dipotongkan dari tagihan sewa pertama.
+                                                     DP tidak dapat dikembalikan jika booking ditolak atau dibatalkan.
+                                                 </p>
+                                             </div>
+                                             <span class="shrink-0 text-base font-bold text-primary-700 dark:text-primary-300">Rp {{ number_format($downPaymentAmount, 0, ',', '.') }}</span>
                                          </div>
-                                         <p class="text-sm text-slate-700 dark:text-slate-300">Seluruh biaya kamar menjadi tanggunganmu (tagihan pribadi).</p>
                                          <input type="hidden" name="billing_mode" value="personal">
                                      </div>
 
@@ -233,12 +235,17 @@
                                                 <dd id="sum-periode" class="font-bold text-slate-900 dark:text-slate-50 text-right text-xs">—</dd>
                                             </div>
                                             <p id="sum-occupant-help" class="hidden text-[11px] text-primary-700 dark:text-primary-300 leading-relaxed rounded-xl border border-primary-100 dark:border-primary-500/20 bg-white dark:bg-surface-elevated px-3 py-2"></p>
-                                            <div class="pt-4 border-t border-primary-100 dark:border-primary-500/15">
+                                            <div class="pt-4 border-t border-primary-100 dark:border-primary-500/15 space-y-3">
                                                 <div class="flex items-center justify-between gap-3">
                                                     <dt class="text-label font-semibold uppercase tracking-wide">Biaya sewa</dt>
                                                     <dd id="sum-total" class="text-xl font-semibold text-primary-600 dark:text-primary-400">—</dd>
                                                 </div>
-                                                <p id="sum-total-note" class="mt-2 text-meta leading-relaxed hidden"></p>
+                                                <div class="flex items-center justify-between gap-3 rounded-xl bg-white dark:bg-surface-elevated border border-primary-100 dark:border-primary-500/20 px-3 py-2.5">
+                                                    <dt class="text-xs font-semibold text-slate-600 dark:text-slate-300">DP dibayar saat booking</dt>
+                                                    <dd class="text-sm font-bold text-primary-700 dark:text-primary-300">Rp {{ number_format($downPaymentAmount, 0, ',', '.') }}</dd>
+                                                </div>
+                                                <p class="text-meta leading-relaxed">DP dipotongkan dari tagihan sewa pertama dan tidak dapat dikembalikan jika booking ditolak atau dibatalkan.</p>
+                                                <p id="sum-total-note" class="text-meta leading-relaxed hidden"></p>
                                             </div>
                                         </dl>
 

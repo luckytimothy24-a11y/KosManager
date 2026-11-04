@@ -293,14 +293,14 @@ class TenantCapabilityFollowUpTest extends TestCase
         $this->actingAs($tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
             'amount' => 1500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ])->assertRedirect();
 
         // Create untuk tagihan tenant lain DENY.
         $this->actingAs($tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihanB->id,
             'amount' => 1500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ])->assertForbidden();
 
         // Tenant tidak boleh verify (hanya owner/admin).

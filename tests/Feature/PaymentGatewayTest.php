@@ -147,7 +147,7 @@ class PaymentGatewayTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => $this->tagihan->total,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertRedirect();
@@ -155,7 +155,7 @@ class PaymentGatewayTest extends TestCase
         $payment = Pembayaran::where('tagihan_id', $this->tagihan->id)->first();
 
         $this->assertNotNull($payment);
-        $this->assertSame('cash', $payment->payment_method);
+        $this->assertSame('qris', $payment->payment_method);
         $this->assertFalse($payment->isFromGateway());
         $this->assertNull($payment->gateway_reference);
         $this->assertSame(Pembayaran::STATUS_PENDING, $payment->verification_status);
@@ -275,7 +275,7 @@ class PaymentGatewayTest extends TestCase
         $response->assertDontSee('Bayar Online');
         $response->assertDontSee('Buat Pembayaran Online');
         $response->assertDontSee('tenant.pembayaran.gateway', false);
-        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('Pembayaran QRIS');
     }
 
     public function test_tenant_pembayaran_show_shows_legacy_gateway_instructions(): void

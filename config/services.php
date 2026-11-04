@@ -35,4 +35,22 @@ return [
         'api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    'whatsapp' => [
+        'api_url' => env('WHATSAPP_API_URL'),
+        'api_token' => env('WHATSAPP_API_TOKEN'),
+    ],
+
+    'payment_gateway' => [
+        'driver' => env('PAYMENT_GATEWAY_DRIVER', 'midtrans'),
+        'midtrans' => [
+            'server_key' => env('MIDTRANS_SERVER_KEY'),
+            'client_key' => env('MIDTRANS_CLIENT_KEY'),
+            'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+        ],
+        'xendit' => [
+            'secret_key' => env('XENDIT_SECRET_KEY'),
+            'public_key' => env('XENDIT_PUBLIC_KEY'),
+        ],
+    ],
+
 ];

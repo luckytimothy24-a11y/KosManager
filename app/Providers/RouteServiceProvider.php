@@ -44,5 +44,14 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Login: dual-layer throttle - per-IP (10/15min) + per-email (5/15min)
+        // Mencegah brute force (per-email) dan shared-IP problem (per-IP lebih longgar)
+        RateLimiter::for('login', function (Request $request) {
+            return [
+                Limit::perMinutes(15, 10)->by($request->ip()),
+                Limit::perMinutes(15, 5)->by($request->input('email', $request->ip())),
+            ];
+        });
     }
 }

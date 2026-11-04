@@ -168,7 +168,7 @@ class TenantPaySelectionUxTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ]);
 
@@ -211,7 +211,7 @@ class TenantPaySelectionUxTest extends TestCase
         $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $foreignBill->id,
             'amount' => 600000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ])->assertForbidden();
 
@@ -328,7 +328,7 @@ class TenantPaySelectionUxTest extends TestCase
         $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $foreignBill->id,
             'amount' => 700000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ])->assertForbidden();
 
@@ -368,7 +368,7 @@ class TenantPaySelectionUxTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan2->id,
             'amount' => 700000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'notes' => 'Halo Owner, saya ingin menanyakan pembayaran tagihan ini.',
         ]);
 
@@ -378,7 +378,7 @@ class TenantPaySelectionUxTest extends TestCase
             'tagihan_id' => $tagihan2->id,
             'penghuni_id' => $penghuni2->id,
             'amount' => 700000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'verification_status' => 'pending',
             'notes' => 'Halo Owner, saya ingin menanyakan pembayaran tagihan ini.',
         ]);
@@ -420,7 +420,7 @@ class TenantPaySelectionUxTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan2->id,
             'amount' => 700000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertRedirect();
@@ -429,7 +429,7 @@ class TenantPaySelectionUxTest extends TestCase
             'tagihan_id' => $tagihan2->id,
             'penghuni_id' => $penghuni2->id,
             'amount' => 700000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'verification_status' => 'pending',
             'notes' => null,
         ]);
@@ -553,7 +553,7 @@ class TenantPaySelectionUxTest extends TestCase
         $response1 = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,
             'amount' => 800000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
         $response1->assertRedirect();
         $this->assertDatabaseHas('pembayarans', [
@@ -565,7 +565,7 @@ class TenantPaySelectionUxTest extends TestCase
         $response2 = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan2->id,
             'amount' => 600000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
         $response2->assertRedirect();
         $this->assertDatabaseHas('pembayarans', [

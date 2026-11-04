@@ -71,7 +71,7 @@ class PaymentLabels
     {
         return match ($method) {
             'transfer_bank' => 'Transfer Bank',
-            'cash' => 'Tunai',
+            'qris' => 'QRIS',
             'e_wallet' => 'E-Wallet / QRIS',
             default => ucfirst(str_replace('_', ' ', $method)),
         };

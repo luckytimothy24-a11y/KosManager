@@ -48,7 +48,7 @@ class TenantLanguageTest extends TestCase
         $response = $this->actingAs($tenant)->post(route('tenant.checkin.identity.confirm', $booking), []);
 
         $response->assertSessionHasErrors();
-        $this->assertStringContainsString('wajib diisi', session('errors')->first('identity_number'));
+        $this->assertStringContainsString('wajib diisi', session('errors')->first('phone'));
     }
 
     public function test_kos_pages_have_no_english_leftovers(): void

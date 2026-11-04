@@ -158,7 +158,7 @@ class Phase45TenantMarketplaceTest extends TestCase
     }
 
     /** Payment methods shown on tagihan */
-    public function test_cash_only_payment_method_display_on_tagihan(): void
+    public function test_qris_only_payment_method_display_on_tagihan(): void
     {
         $penghuni = Penghuni::factory()->create([
             'user_id' => $this->tenant->id,
@@ -174,9 +174,9 @@ class Phase45TenantMarketplaceTest extends TestCase
 
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $tagihan));
         $response->assertOk();
-        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('Pembayaran QRIS');
         $response->assertSee('Transfer Bank');
-        $response->assertSee('Konfirmasi Pembayaran Tunai');
+        $response->assertSee('Konfirmasi QRIS');
     }
 
     /** Payment status unpaid shows correctly */

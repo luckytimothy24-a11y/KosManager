@@ -47,21 +47,26 @@ class BusinessFlowTest extends TestCase
             'start_date' => now()->toDateString(),
             'end_date' => now()->addMonth()->toDateString(),
             'rental_type' => 'monthly',
-            'identity_number' => '3201234567890001',
             'phone' => '081234567890',
             'address' => 'Jl. Test No. 1',
         ])->assertRedirect();
-        $this->assertDatabaseHas('bookings', ['user_id' => $tenant->id, 'status' => 'pending']);
+        $this->assertDatabaseHas('bookings', [
+            'user_id' => $tenant->id,
+            'status' => 'pending',
+            'down_payment_amount' => 100000,
+        ]);
         $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'booked']);
         // Tenant tidak otomatis aktif karena booking dibuat
         $this->assertDatabaseMissing('penghunis', ['user_id' => $tenant->id, 'status' => 'active']);
 
         $booking = Booking::where('user_id', $tenant->id)->firstOrFail();
+        $this->assertNull($booking->identity_number);
 
-        // 1a. Owner approve booking — payment prerequisite wajib
+        // 1a. Owner approve booking — payment prerequisite wajib (DP, bukan harga penuh)
         $service = app(PaymentService::class);
-        $payResult = $service->createForBooking($booking, $tenant, 'cash');
+        $payResult = $service->createForBooking($booking, $tenant, 'qris');
         $this->assertTrue($payResult['ok'], $payResult['message'] ?? 'payment failed');
+        $this->assertEquals(100000, (float) $payResult['pembayaran']->amount);
         $this->actingAs($owner)->post(route('owner.pembayaran.verify', $payResult['pembayaran']));
         $this->assertSame('approved', $payResult['pembayaran']->fresh()->verification_status);
         $this->assertEquals('pending', $booking->fresh()->status);
@@ -73,12 +78,11 @@ class BusinessFlowTest extends TestCase
 
         // 1b. Tenant submit identity -> pending, then owner confirms (new flow: tenant cannot self-confirm)
         $this->actingAs($tenant)->post(route('tenant.checkin.identity.confirm', $booking), [
-            'identity_number' => '3201234567890001',
             'phone' => '081234567890',
             'address' => 'Jl. Test No. 1',
         ])->assertRedirect();
         $this->assertEquals('pending', $booking->fresh()->identityStatus());
-        $this->assertEquals('3201234567890001', $booking->fresh()->identity_number);
+        $this->assertNull($booking->fresh()->identity_number);
 
         // 1c. Owner confirms identity (tenant owns data, owner owns verification)
         $this->actingAs($owner)->post(route('owner.checkin.confirm', $booking))->assertRedirect();
@@ -112,12 +116,16 @@ class BusinessFlowTest extends TestCase
         $tagihan = Tagihan::where('kontrak_id', $kontrak->id)->firstOrFail();
         // Subtotal dihitung server: 1 bulan x harga kontrak (1500000), bukan input client.
         $this->assertEquals(1500000, (float) $tagihan->subtotal);
+        // DP snapshot check-in dipotongkan pada tagihan pertama.
+        $this->assertEquals(100000, (float) $tagihan->down_payment_discount);
+        $this->assertEquals(1400000, (float) $tagihan->total);
+        $this->assertEquals(0, (float) $kontrak->fresh()->down_payment_amount);
 
         $proof = UploadedFile::fake()->create('bukti.pdf', 100, 'application/pdf');
         $this->actingAs($tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
             'amount' => $tagihan->total,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ])->assertRedirect();
         $this->assertDatabaseHas('tagihans', ['id' => $tagihan->id, 'status' => 'pending_verification']);

@@ -36,7 +36,37 @@
                 'resolved' => 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
             ];
         @endphp
-        <div class="table-card">
+        <div class="space-y-3 md:hidden">
+            @forelse($reports as $report)
+                <x-mobile-record-card
+                    :title="$report->user->name ?? '-'"
+                    :subtitle="$report->kos->name ?? '-'"
+                    :meta="[
+                        'Kamar' => $report->kamar->room_number ?? '-',
+                        'Kategori' => $report->category,
+                    ]">
+                    <x-slot name="badge">
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold {{ $drStatusBadge[$report->status] ?? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' }}">{{ ucfirst($report->status) }}</span>
+                    </x-slot>
+                    <x-slot name="actions">
+                        @php $prefix = Auth::user()->isAdmin() ? 'admin' : 'owner'; @endphp
+                        <x-button href="{{ route($prefix . '.damage-reports.show', $report) }}" type="secondary" size="sm" class="min-h-11">
+                            Lihat <i class="ri-arrow-right-s-line"></i>
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-tools-line" title="Tidak ada laporan kerusakan"
+                                   description="Laporan kerusakan dari penghuni akan tampil di sini." />
+                </div>
+            @endforelse
+            @if($reports->hasPages())
+                <div>{{ $reports->links() }}</div>
+            @endif
+        </div>
+
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

@@ -27,8 +27,39 @@
             </form>
         </div>
 
+        {{-- Mobile cards --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($bookings as $b)
+                <x-mobile-record-card
+                    :title="$b->booking_code"
+                    :subtitle="($b->user->name ?? '-') . ' · ' . ($b->kos->name ?? '-')"
+                    :meta="[
+                        'Kamar' => $b->kamar->room_number ?? '-',
+                        'Periode' => ($b->start_date?->format('d M Y') ?? '-') . ' — ' . ($b->end_date?->format('d M Y') ?? '-'),
+                        'Harga' => 'Rp ' . number_format($b->price, 0, ',', '.'),
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$b->status" context="booking" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route($prefix . '.booking.show', $b) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-calendar-check-line" title="Belum ada booking"
+                                   description="Booking dari calon penyewa akan muncul di sini." />
+                </div>
+            @endforelse
+            @if($bookings->hasPages())
+                <div>{{ $bookings->links() }}</div>
+            @endif
+        </div>
+
         {{-- Table --}}
-        <div class="table-card">
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

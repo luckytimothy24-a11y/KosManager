@@ -116,6 +116,13 @@
                 $isCompleted = $booking->status === 'completed';
                 $isApproved = $booking->status === 'approved';
                 $isTerminal = $booking->isTerminal();
+                $timelinePaymentStatus = isset($bookingPayment) ? ($bookingPayment->verification_status ?? 'none') : 'none';
+                $timelineUsesDp = $booking->usesDownPayment();
+                $paymentStepState = $timelinePaymentStatus === 'approved'
+                    ? 'done'
+                    : ($timelinePaymentStatus === 'pending'
+                        ? 'waiting'
+                        : ($booking->status === 'pending' ? 'current' : 'upcoming'));
             @endphp
             <div class="card-surface p-6 sm:p-8">
                 @if($isTerminal)
@@ -123,55 +130,79 @@
                     <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-5">
                         <i class="ri-stop-circle-line text-red-500"></i> Status Booking
                     </h3>
-                    <div class="flex items-center gap-4 rounded-xl border border-red-100 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] px-4 py-4">
-                        <div class="w-11 h-11 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">
-                            <i class="{{ $booking->status === 'expired' ? 'ri-time-zone-line' : 'ri-close-circle-line' }} text-red-600 dark:text-red-400 text-lg"></i>
+                    @if($isCompleted)
+                        <div class="flex items-center gap-4 rounded-xl border border-green-100 dark:border-green-500/20 bg-green-50/70 dark:bg-green-500/[0.06] px-4 py-4">
+                            <div class="w-11 h-11 rounded-full bg-green-100 dark:bg-green-500/15 flex items-center justify-center shrink-0">
+                                <i class="ri-checkbox-circle-line text-green-600 dark:text-green-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-green-800 dark:text-green-300">Check-In Berhasil</p>
+                                <p class="mt-0.5 text-sm text-green-700/80 dark:text-green-300/80">
+                                    Anda telah terdaftar sebagai penghuni aktif. Kontrak dan tagihan sewa Anda tersedia di bawah.
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-bold text-red-800 dark:text-red-300">{{ \StatusLabels::bookingLabel($booking->status) }}</p>
-                            <p class="mt-0.5 text-sm text-red-700/80 dark:text-red-300/80">
-                                {{ $booking->status === 'expired'
-                                    ? 'Periode sewa berakhir tanpa check-in; booking tidak berlanjut.'
-                                    : ($booking->status === 'rejected'
-                                        ? 'Booking tidak dilanjutkan oleh pengelola kos.'
-                                        : 'Booking dihentikan dan tidak dapat dilanjutkan.') }}
-                            </p>
+                    @else
+                        <div class="flex items-center gap-4 rounded-xl border border-red-100 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] px-4 py-4">
+                            <div class="w-11 h-11 rounded-full bg-red-100 dark:bg-red-500/15 flex items-center justify-center shrink-0">
+                                <i class="{{ $booking->status === 'expired' ? 'ri-time-zone-line' : 'ri-close-circle-line' }} text-red-600 dark:text-red-400 text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-red-800 dark:text-red-300">{{ \StatusLabels::bookingLabel($booking->status) }}</p>
+                                <p class="mt-0.5 text-sm text-red-700/80 dark:text-red-300/80">
+                                    {{ $booking->status === 'expired'
+                                        ? 'Periode sewa berakhir tanpa check-in; booking tidak berlanjut.'
+                                        : ($booking->status === 'rejected'
+                                            ? 'Booking tidak dilanjutkan oleh pengelola kos.'
+                                            : 'Booking dihentikan dan tidak dapat dilanjutkan.') }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @else
                     <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-5">
                         <i class="ri-road-map-line text-primary-500"></i> Status Booking
                     </h3>
                     @php
                         $steps = [
-                            ['label' => 'Booking Dibuat', 'done' => true, 'current' => false],
-                            ['label' => 'Pembayaran', 'done' => isset($bookingPayment) && in_array($bookingPayment->verification_status ?? null, ['pending', 'approved'], true), 'current' => $booking->status === 'pending' && (! isset($bookingPayment) || ($bookingPayment->verification_status ?? 'none') === 'none')],
-                            ['label' => 'Booking Dikonfirmasi', 'done' => $isApproved || $isCompleted, 'current' => false],
-                            ['label' => 'Check-In', 'done' => $isCompleted, 'current' => $isApproved && !$isCompleted],
-                            ['label' => 'Check-Out', 'done' => $hasCheckOut, 'current' => false],
+                            ['key' => 'booking', 'label' => 'Booking Dibuat', 'short' => 'Booking', 'state' => 'done'],
+                            ['key' => 'payment', 'label' => $timelineUsesDp ? 'Pembayaran DP' : 'Pembayaran', 'short' => $timelineUsesDp ? 'DP' : 'Bayar', 'state' => $paymentStepState],
+                            ['key' => 'confirmed', 'label' => 'Booking Dikonfirmasi', 'short' => 'Konfirmasi', 'state' => ($isApproved || $isCompleted) ? 'done' : 'upcoming'],
+                            ['key' => 'checkin', 'label' => 'Check-In', 'short' => 'Check-In', 'state' => $isCompleted ? 'done' : ($isApproved ? 'current' : 'upcoming')],
+                            ['key' => 'checkout', 'label' => 'Check-Out', 'short' => 'Check-Out', 'state' => $hasCheckOut ? 'done' : 'upcoming'],
                         ];
                     @endphp
-                    <div class="flex items-center gap-0">
+                    <div class="flex items-start gap-0">
                         @foreach($steps as $i => $step)
                             @php
-                                $color = $step['done'] ? 'bg-green-500' : ($step['current'] ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600');
-                                $textColor = $step['done'] ? 'text-green-600 dark:text-green-400' : ($step['current'] ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500');
-                                $lineColor = $step['done'] && ($i < count($steps) - 1 && $steps[$i+1]['done']) ? 'bg-green-500' : 'bg-slate-200 dark:bg-surface-elevated';
+                                $state = $step['state'];
+                                $isDone = $state === 'done';
+                                $isWaiting = $state === 'waiting';
+                                $isCurrent = $state === 'current';
+                                $color = $isDone ? 'bg-green-500' : ($isWaiting ? 'bg-amber-500' : ($isCurrent ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'));
+                                $textColor = $isDone ? 'text-green-600 dark:text-green-400' : ($isWaiting ? 'text-amber-600 dark:text-amber-400' : ($isCurrent ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'));
+                                $nextDone = $i < count($steps) - 1 && $steps[$i + 1]['state'] === 'done';
+                                $lineColor = $isDone && $nextDone ? 'bg-green-500' : 'bg-slate-200 dark:bg-surface-elevated';
                             @endphp
-                            <div class="flex flex-col items-center flex-1 last:flex-none">
+                            <div class="flex min-w-0 flex-1 flex-col items-center" data-step="{{ $step['key'] }}" data-state="{{ $state }}">
                                 <div class="w-7 h-7 rounded-full {{ $color }} flex items-center justify-center shrink-0">
-                                    @if($step['done'])
+                                    @if($isDone)
                                         <i class="ri-check-line text-white text-xs"></i>
-                                    @elseif($step['current'])
+                                    @elseif($isWaiting)
+                                        <i class="ri-time-line text-white text-xs"></i>
+                                    @elseif($isCurrent)
                                         <div class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></div>
                                     @else
                                         <div class="w-2 h-2 rounded-full bg-white/60"></div>
                                     @endif
                                 </div>
-                                <p class="mt-2 text-[11px] font-semibold {{ $textColor }} text-center leading-tight whitespace-nowrap">{{ $step['label'] }}</p>
+                                <p class="mt-2 text-[9px] font-semibold {{ $textColor }} text-center leading-tight sm:text-[11px]">
+                                    <span class="whitespace-nowrap sm:hidden">{{ $step['short'] }}</span>
+                                    <span class="hidden sm:inline">{{ $step['label'] }}</span>
+                                </p>
                             </div>
                             @if($i < count($steps) - 1)
-                                <div class="flex-1 h-0.5 {{ $lineColor }} -mt-4 mx-1"></div>
+                                <div class="mt-[13px] h-0.5 w-2 shrink-0 {{ $lineColor }} sm:mx-1 sm:w-auto sm:flex-1"></div>
                             @endif
                         @endforeach
                     </div>
@@ -248,10 +279,43 @@
                         @endif
                     </dl>
                     @if($tagihan)
+                        <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5 text-sm">
+                            <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-3">
+                                <dt class="text-label">Periode Tagihan</dt>
+                                <dd class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50">{{ $tagihan->period_start->format('d M Y') }} ? {{ $tagihan->period_end->format('d M Y') }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-3">
+                                <dt class="text-label">Jatuh Tempo</dt>
+                                <dd class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50">{{ $tagihan->due_date->format('d M Y') }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-3">
+                                <dt class="text-label">Subtotal</dt>
+                                <dd class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format((float) $tagihan->subtotal, 0, ',', '.') }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-3">
+                                <dt class="text-label">Potongan DP</dt>
+                                <dd class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format((float) $tagihan->down_payment_discount, 0, ',', '.') }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-3">
+                                <dt class="text-label">Total Tagihan</dt>
+                                <dd class="mt-0.5 text-base font-bold text-slate-900 dark:text-slate-50">Rp {{ number_format((float) $tagihan->total, 0, ',', '.') }}</dd>
+                            </div>
+                            <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-3">
+                                <dt class="text-label">Status Tagihan</dt>
+                                <dd class="mt-0.5"><x-status-badge :status="$tagihan->status" context="tagihan" /></dd>
+                            </div>
+                        </dl>
                         <a href="{{ route('tenant.tagihan.show', $tagihan) }}"
                            class="btn-primary">
                             <i class="ri-wallet-3-line"></i> Lihat Tagihan Terbaru
                         </a>
+                    @else
+                        <div class="rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/[0.06] p-4">
+                            <p class="text-sm font-semibold text-amber-800 dark:text-amber-300">Tagihan pertama belum tersedia</p>
+                            <p class="mt-1 text-xs text-amber-700/80 dark:text-amber-300/80">
+                                Tagihan akan muncul setelah proses check-in selesai atau sesuai tanggal mulai kontrak.
+                            </p>
+                        </div>
                     @endif
                 </div>
             @endif
@@ -399,15 +463,23 @@
             @if($booking->status === 'pending')
                 @php
                     $paymentStatus = isset($bookingPayment) ? ($bookingPayment->verification_status ?? 'none') : 'none';
+                    $paymentAmount = $booking->expectedBookingPaymentAmount();
+                    $usesDp = $booking->usesDownPayment();
                 @endphp
                 <div id="pembayaran" class="card-surface p-6 sm:p-8 scroll-mt-24">
                     <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/[0.08]">
-                        <i class="ri-wallet-3-line text-primary-500"></i> Pembayaran Booking
+                        <i class="ri-wallet-3-line text-primary-500"></i> {{ $usesDp ? 'Pembayaran DP Booking' : 'Pembayaran Booking' }}
                     </h3>
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-sm text-slate-600 dark:text-slate-400">Nominal (dihitung server)</span>
-                        <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format((float) $booking->price, 0, ',', '.') }}</span>
+                        <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format($paymentAmount, 0, ',', '.') }}</span>
                     </div>
+                    @if($usesDp)
+                        <div class="rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/70 dark:bg-primary-500/[0.06] px-4 py-3 mb-4">
+                            <p class="text-xs font-semibold text-primary-800 dark:text-primary-300"><i class="ri-secure-payment-line mr-1"></i> Down Payment (DP) Rp {{ number_format($paymentAmount, 0, ',', '.') }}</p>
+                            <p class="mt-1 text-xs leading-relaxed text-primary-700/90 dark:text-primary-300/80">DP dipotongkan dari tagihan sewa pertama. DP tidak dapat dikembalikan jika booking ditolak atau dibatalkan.</p>
+                        </div>
+                    @endif
                     @if($bookingPayment)
                         <div class="rounded-xl border border-slate-100 dark:border-white/[0.08] p-4 mb-4">
                             <p class="text-label">Status Pembayaran</p>
@@ -415,6 +487,19 @@
                                 {{ \PaymentLabels::verificationLabel($bookingPayment->verification_status) }}
                             </p>
                             <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Metode: {{ \PaymentLabels::paymentMethod($bookingPayment->payment_method) }}</p>
+                            @if($bookingPayment->verification_status === 'rejected' && filled($bookingPayment->admin_notes))
+                                <div class="mt-3 rounded-xl border border-red-100 dark:border-red-500/20 bg-red-50/70 dark:bg-red-500/[0.06] p-3">
+                                    <p class="text-xs font-bold text-red-800 dark:text-red-300">Alasan penolakan</p>
+                                    <p class="mt-1 text-xs text-red-700/90 dark:text-red-300/90">{{ $bookingPayment->admin_notes }}</p>
+                                </div>
+                            @endif
+                            @if($bookingPayment->proof_file && \Storage::disk('private')->exists($bookingPayment->proof_file))
+                                <p class="mt-2 text-xs">
+                                    <a href="{{ route('pembayaran.proof', $bookingPayment) }}" target="_blank" rel="noopener" class="text-primary-600 dark:text-primary-400 hover:underline">
+                                        <i class="ri-file-line mr-1"></i>Lihat bukti pembayaran sebelumnya
+                                    </a>
+                                </p>
+                            @endif
                         </div>
                     @endif
 
@@ -427,7 +512,7 @@
                         ])
                         <form method="POST" action="{{ route('tenant.booking.payment.store', $booking) }}" enctype="multipart/form-data"
                               x-data="{
-                                  method: @js(old('payment_method', 'cash')),
+                                  method: @js(old('payment_method', 'qris')),
                                   submitting: false,
                                   proof: { name: '', oversize: false },
                                   handleProofChange(event) {
@@ -448,20 +533,21 @@
                                 <p class="field-label mb-2">Metode Pembayaran</p>
                                 <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Metode pembayaran">
                                     <label for="method-transfer_bank"
-                                           class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
+                                           class="relative flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none overflow-hidden"
                                            :class="method === 'transfer_bank'
-                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
+                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200 ring-2 ring-primary-500/20'
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400 hover:shadow-sm'">
                                         <input type="radio" id="method-transfer_bank" name="payment_method" value="transfer_bank" x-model="method" class="sr-only">
-                                        <i class="ri-bank-line text-base"></i> Transfer Bank
+                                        <i class="ri-bank-line text-lg"></i> Transfer Bank
                                     </label>
-                                    <label for="method-cash"
-                                           class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
-                                           :class="method === 'cash'
-                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
-                                        <input type="radio" id="method-cash" name="payment_method" value="cash" x-model="method" class="sr-only">
-                                        <i class="ri-hand-coin-line text-base"></i> Tunai
+                                    <label for="method-qris"
+                                           class="relative flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none overflow-hidden"
+                                           :class="method === 'qris'
+                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200 ring-2 ring-primary-500/20'
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400 hover:shadow-sm'">
+                                        <input type="radio" id="method-qris" name="payment_method" value="qris" x-model="method" class="sr-only">
+                                        <i class="ri-qr-code-2-line text-lg"></i> QRIS
+                                        <span class="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg">INSTANT</span>
                                     </label>
                                 </div>
                                 @error('payment_method') <p class="text-red-500 text-xs mt-1.5" aria-live="polite">{{ $message }}</p> @enderror
@@ -469,27 +555,72 @@
 
                             {{-- Transfer detail --}}
                             <div x-show="method === 'transfer_bank'" x-cloak
-                                 class="rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/[0.06] p-4" aria-live="polite">
-                                <p class="flex items-center gap-1.5 text-sm font-semibold text-blue-800 dark:text-blue-200">
-                                    <i class="ri-bank-line text-blue-600 dark:text-blue-300"></i> Transfer Bank
-                                </p>
-                                <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 class="rounded-2xl border border-blue-200 dark:border-blue-500/30 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-500/5 dark:to-indigo-500/5 p-5" aria-live="polite">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white">
+                                        <i class="ri-bank-line text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-blue-800 dark:text-blue-200">Transfer Bank</p>
+                                        <p class="text-[11px] text-blue-600 dark:text-blue-400">Manual verification</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                                     Transfer sebesar nominal di atas ke rekening pemilik kos yang tercantum di atas, lalu unggah bukti transfer di bawah.
                                 </p>
                                 <p class="mt-2 text-[11px] font-medium text-blue-700 dark:text-blue-300">Wajib unggah bukti transfer (JPG/PNG/PDF, maks 5MB).</p>
                             </div>
 
-                            {{-- Cash detail --}}
-                            <div x-show="method === 'cash'" x-cloak
-                                 class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
-                                <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                    <i class="ri-hand-coin-line text-emerald-600 dark:text-emerald-300"></i> Pembayaran Tunai
+                            {{-- QRIS detail --}}
+                            <div x-show="method === 'qris'" x-cloak
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 class="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-500/5 dark:to-blue-500/5 p-5" aria-live="polite">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
+                                        <i class="ri-qr-code-2-line text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-emerald-800 dark:text-emerald-200">Bayar dengan QRIS</p>
+                                        <p class="text-[11px] text-emerald-600 dark:text-emerald-400">Scan & bayar instan</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
+                                    Scan QR code di bawah menggunakan aplikasi banking atau e-wallet Anda (GoPay, OVO, Dana, ShopeePay, dll).
+                                    Pembayaran akan terverifikasi otomatis setelah berhasil.
                                 </p>
-                                <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                                    Bayar sejumlah <strong class="text-slate-700 dark:text-slate-200">Rp {{ number_format((float) $booking->price, 0, ',', '.') }}</strong> langsung kepada pemilik/admin kos,
-                                    lalu kirim konfirmasi di bawah. Pemilik kos akan memverifikasi pembayaran Anda.
-                                </p>
-                                <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Bukti pembayaran opsional untuk metode tunai.</p>
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="p-3 bg-white rounded-2xl shadow-lg border border-emerald-100 dark:border-emerald-500/20">
+                                        @php
+                                            $qrCodeData = 'QRIS|BOOKING|' . $booking->booking_code . '|' . $paymentAmount;
+                                            $qrCode = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrCodeData) . '&size=220x220';
+                                        @endphp
+                                        <img src="{{ $qrCode }}" alt="QRIS Booking {{ $booking->booking_code }}" class="rounded-lg" style="width: 220px; height: 220px;">
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Pembayaran</p>
+                                        <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">Rp {{ number_format($paymentAmount, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
+                                        <i class="ri-flashlight-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Instan</p>
+                                    </div>
+                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
+                                        <i class="ri-shield-check-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Aman</p>
+                                    </div>
+                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
+                                        <i class="ri-bank-card-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Semua Bank</p>
+                                    </div>
+                                </div>
+                                <p class="mt-3 text-[11px] text-emerald-700 dark:text-emerald-300 text-center font-medium">Pembayaran QRIS otomatis tervalidasi sistem.</p>
                             </div>
 
                             <div>
@@ -520,8 +651,14 @@
                                 @error('notes') <p class="text-red-500 text-xs mt-1" aria-live="polite">{{ $message }}</p> @enderror
                             </div>
                             <p class="text-xs text-slate-500 dark:text-slate-400">
-                                Nominal mengikuti harga booking di server. Booking belum dikonfirmasi sampai pemilik kos memverifikasi pembayaran.
+                                Nominal mengikuti {{ $usesDp ? 'DP booking' : 'harga booking' }} di server. Booking belum dikonfirmasi sampai pemilik kos memverifikasi pembayaran.
                             </p>
+                            @if($paymentStatus === 'rejected')
+                                <div class="rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/[0.06] p-3">
+                                    <p class="text-xs font-semibold text-amber-800 dark:text-amber-300">Pengiriman ulang</p>
+                                    <p class="mt-1 text-xs text-amber-700/90 dark:text-amber-300/90">Pembayaran baru akan dikirim untuk diverifikasi. Pembayaran lama tetap tercatat sebagai ditolak.</p>
+                                </div>
+                            @endif
                             <div class="flex justify-end">
                                 <button type="submit" x-bind:disabled="submitting" class="btn-primary">
                                     <i class="ri-upload-2-line"></i> {{ $paymentStatus === 'rejected' ? 'Bayar Ulang' : 'Bayar Sekarang' }}

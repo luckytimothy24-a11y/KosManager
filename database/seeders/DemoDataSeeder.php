@@ -255,7 +255,7 @@ class DemoDataSeeder extends Seeder
                 'penghuni_id' => $tagihan->penghuni_id,
                 'tagihan_id' => $tagihan->id,
                 'amount' => $tagihan->total,
-                'payment_method' => $i === 0 ? 'transfer_bank' : 'cash',
+                'payment_method' => $i === 0 ? 'transfer_bank' : 'qris',
                 'payment_date' => now()->subDays(rand(1, 3)),
                 'notes' => $i === 0 ? 'Transfer BCA' : 'Bayar tunai via owner',
                 'verification_status' => 'approved',

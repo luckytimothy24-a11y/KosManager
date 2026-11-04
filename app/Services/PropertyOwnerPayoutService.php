@@ -140,16 +140,27 @@ class PropertyOwnerPayoutService
         }
 
         try {
-            $payout = DB::transaction(function () use ($actor, $kos, $periodStart, $periodEnd, $propertyOwnerId) {
-                Kos::whereKey($kos->id)->lockForUpdate()->first();
-                $duplicate = Payout::where('kos_id', $kos->id)
+            $payout = DB::transaction(function () use ($actor, $kos, $periodStart, $periodEnd) {
+                $lockedKos = Kos::whereKey($kos->id)->lockForUpdate()->first();
+                if (! $lockedKos || ! $lockedKos->property_owner_id) {
+                    throw new \RuntimeException('property_owner_missing');
+                }
+
+                $recipientAccount = PropertyOwnerBankAccount::where('property_owner_id', $lockedKos->property_owner_id)
+                    ->lockForUpdate()
+                    ->first();
+                if (! $recipientAccount) {
+                    throw new \RuntimeException('bank_account_missing');
+                }
+
+                $duplicate = Payout::where('kos_id', $lockedKos->id)
                     ->where('period_start', $periodStart)
                     ->where('period_end', $periodEnd)
                     ->exists();
                 if ($duplicate) {
                     throw new \RuntimeException('duplicate_payout');
                 }
-                $settlement = app(SettlementService::class)->resolveSettlementItems($kos, $periodStart, $periodEnd);
+                $settlement = app(SettlementService::class)->resolveSettlementItems($lockedKos, $periodStart, $periodEnd);
                 if (! empty($settlement['needs_agreement_ids'])) {
                     throw new \RuntimeException('needs_agreement');
                 }
@@ -170,9 +181,13 @@ class PropertyOwnerPayoutService
                 }
                 $payout = new Payout;
                 $payout->payout_number = 'PO-'.strtoupper(Str::random(12));
-                $payout->kos_id = $kos->id;
+                $payout->kos_id = $lockedKos->id;
                 $payout->owner_id = (int) $actor->id;
-                $payout->property_owner_id = (int) $propertyOwnerId;
+                $payout->property_owner_id = (int) $lockedKos->property_owner_id;
+                $payout->recipient_bank_account_id = $recipientAccount->id;
+                $payout->recipient_bank_name = $recipientAccount->bank_name;
+                $payout->recipient_account_number = $recipientAccount->account_number;
+                $payout->recipient_account_holder_name = $recipientAccount->account_holder_name;
                 $payout->gross_amount = $gross;
                 $payout->platform_fee = $platformFee;
                 $payout->commission_total = $commissionTotal;
@@ -380,15 +395,26 @@ class PropertyOwnerPayoutService
         }
         try {
             $disbursement = DB::transaction(function () use ($actor, $disbursement) {
-                $locked = PayoutDisbursement::whereKey($disbursement->id)->lockForUpdate()->first();
-                if ($locked->status !== 'pending') {
+                $candidate = PayoutDisbursement::whereKey($disbursement->id)->first();
+                if (! $candidate) {
+                    throw new \RuntimeException('not_found');
+                }
+
+                // Lock the aggregate before its child to serialize status and sums.
+                $payout = Payout::whereKey($candidate->payout_id)->lockForUpdate()->first();
+                $locked = PayoutDisbursement::whereKey($candidate->id)->lockForUpdate()->first();
+                if (! $payout || ! $locked || $locked->status !== 'pending') {
                     throw new \RuntimeException('invalid_status');
                 }
+                if (! in_array($payout->status, [Payout::STATUS_PENDING, Payout::STATUS_TRANSFERRED], true)) {
+                    throw new \RuntimeException('invalid_status');
+                }
+
                 $locked->status = 'verified';
                 $locked->verified_at = now();
                 $locked->verified_by = $actor->id;
                 $locked->save();
-                $payout = $locked->payout;
+
                 $verifiedSum = (float) PayoutDisbursement::where('payout_id', $payout->id)->where('status', 'verified')->sum('amount');
                 $pendingSum = (float) PayoutDisbursement::where('payout_id', $payout->id)->where('status', 'pending')->sum('amount');
                 if ($verifiedSum >= (float) $payout->amount - 0.005 && $pendingSum < 0.005) {
@@ -396,11 +422,9 @@ class PropertyOwnerPayoutService
                     $payout->verified_at = now();
                     $payout->verified_by = $actor->id;
                     $payout->save();
-                } elseif ($locked->status === 'verified') {
-                    if ($payout->status === Payout::STATUS_PENDING) {
-                        $payout->status = Payout::STATUS_TRANSFERRED;
-                        $payout->save();
-                    }
+                } elseif ($payout->status === Payout::STATUS_PENDING) {
+                    $payout->status = Payout::STATUS_TRANSFERRED;
+                    $payout->save();
                 }
 
                 return $locked;
@@ -654,8 +678,11 @@ class PropertyOwnerPayoutService
         try {
             DB::transaction(function () use ($actor, $payout) {
                 $locked = Payout::whereKey($payout->id)->lockForUpdate()->first();
-                if ($locked->status !== Payout::STATUS_TRANSFERRED) {
+                if (! $locked || $locked->status !== Payout::STATUS_TRANSFERRED) {
                     throw new \RuntimeException('invalid_status');
+                }
+                if (PayoutDisbursement::where('payout_id', $locked->id)->lockForUpdate()->exists()) {
+                    throw new \RuntimeException('disbursements_require_item_verification');
                 }
                 $locked->status = Payout::STATUS_VERIFIED;
                 $locked->verified_at = now();

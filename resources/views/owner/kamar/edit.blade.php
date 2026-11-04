@@ -84,44 +84,6 @@
                 <input type="hidden" name="capacity" value="1">
             </section>
 
-            {{-- Section: Kapasitas --}}
-            <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 space-y-5">
-                <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/10">
-                    <span class="w-7 h-7 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center"><i class="ri-group-line text-primary-600 dark:text-primary-400"></i></span>
-                    Kapasitas Kamar
-                </h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 -mt-2">Berapa orang yang dapat menghuni kamar ini?</p>
-
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    @foreach([1, 2, 3, 4] as $n)
-                        <label class="flex items-center justify-center gap-2 px-3 py-3 rounded-xl border cursor-pointer transition has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50 has-[:checked]:dark:bg-primary-500/10 {{ $kapasitasOld === (int) $n && ! $kapasitasCustom ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10' : 'border-slate-200 dark:border-white/[0.08]' }}">
-                            <input type="radio" name="kapasitasRadio" value="{{ $n }}" x-model="kapasitas" @click="custom = false"
-                                   class="sr-only">
-                            <span class="flex flex-col items-center gap-0.5">
-                                <span class="text-lg font-bold text-slate-800 dark:text-slate-50">{{ $n }}</span>
-                                <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Orang</span>
-                            </span>
-                        </label>
-                    @endforeach
-
-                    <label class="flex items-center justify-center gap-2 px-3 py-3 rounded-xl border cursor-pointer transition has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50 has-[:checked]:dark:bg-primary-500/10 {{ $kapasitasCustom ? 'border-primary-500 bg-primary-50 dark:bg-primary-500/10' : 'border-slate-200 dark:border-white/[0.08]' }}">
-                        <input type="radio" name="kapasitasRadio" value="custom" x-model="kapasitas" @click="custom = true"
-                               class="sr-only">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Lainnya</span>
-                    </label>
-                </div>
-
-                <div x-show="custom" x-cloak class="sm:max-w-xs">
-                    <label for="kapasitasCustom" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1.5">Jumlah orang</label>
-                    <input id="kapasitasCustom" type="number" min="1" max="20" x-model.number="customNumber"
-                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500"
-                           placeholder="cth: 6">
-                </div>
-
-                <input type="hidden" name="capacity" :value="custom ? customNumber : kapasitas">
-                @error('capacity') <p class="text-red-500 text-xs mt-1" role="alert">{{ $message }}</p> @enderror
-            </section>
-
             {{-- Section: Harga --}}
             <section class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 space-y-5">
                 <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 border-b border-slate-100 dark:border-white/10">

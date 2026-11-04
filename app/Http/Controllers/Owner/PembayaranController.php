@@ -163,7 +163,11 @@ class PembayaranController extends Controller
                     AuditLogService::approve(
                         'Pembayaran',
                         "Pembayaran booking {$pembayaran->booking->booking_code} disetujui (bulk; booking tetap pending)",
-                        ['pembayaran_id' => $pembayaran->id, 'booking_id' => $pembayaran->booking_id]
+                        [
+                            'pembayaran_id' => $pembayaran->id,
+                            'booking_id' => $pembayaran->booking_id,
+                            'amount' => (float) $pembayaran->amount,
+                        ]
                     );
                 } else {
                     NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
@@ -197,7 +201,7 @@ class PembayaranController extends Controller
             round((float) $pembayaran->amount, 2) !== round((float) $pembayaran->expectedAmount(), 2),
             400,
             $pembayaran->isBookingPayment()
-                ? 'Nominal pembayaran tidak sesuai harga booking.'
+                ? 'Nominal pembayaran tidak sesuai DP/harga booking yang ditentukan server.'
                 : 'Nominal pembayaran tidak sesuai total tagihan.'
         );
 
@@ -228,7 +232,11 @@ class PembayaranController extends Controller
                 AuditLogService::approve(
                     'Pembayaran',
                     "Pembayaran booking {$pembayaran->booking->booking_code} disetujui (booking tetap pending)",
-                    ['pembayaran_id' => $pembayaran->id, 'booking_id' => $pembayaran->booking_id]
+                    [
+                        'pembayaran_id' => $pembayaran->id,
+                        'booking_id' => $pembayaran->booking_id,
+                        'amount' => (float) $pembayaran->amount,
+                    ]
                 );
             } else {
                 NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);

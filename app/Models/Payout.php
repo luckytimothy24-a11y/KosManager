@@ -35,6 +35,10 @@ class Payout extends Model
         'kos_id',
         'owner_id',
         'property_owner_id',
+        'recipient_bank_account_id',
+        'recipient_bank_name',
+        'recipient_account_number',
+        'recipient_account_holder_name',
         'gross_amount',
         'platform_fee',
         'commission_total',
@@ -77,9 +81,39 @@ class Payout extends Model
         return $this->belongsTo(PropertyOwner::class);
     }
 
+    public function recipientBankAccount()
+    {
+        return $this->belongsTo(PropertyOwnerBankAccount::class, 'recipient_bank_account_id');
+    }
+
+    /**
+     * Legacy payouts have no immutable recipient snapshot. New payouts use the
+     * snapshot fields; this relation remains only for legacy records.
+     */
     public function propertyOwnerBankAccount()
     {
         return $this->belongsTo(PropertyOwnerBankAccount::class, 'property_owner_id', 'property_owner_id');
+    }
+
+    public function hasRecipientSnapshot(): bool
+    {
+        return $this->recipient_bank_name !== null
+            && $this->recipient_account_number !== null
+            && $this->recipient_account_holder_name !== null;
+    }
+
+    public function maskedRecipientAccountNumber(): string
+    {
+        $number = (string) $this->recipient_account_number;
+        if ($number === '') {
+            return '-';
+        }
+
+        $length = mb_strlen($number);
+
+        return $length <= 4
+            ? str_repeat('*', $length)
+            : str_repeat('*', $length - 4).mb_substr($number, -4);
     }
 
     public function verifier()

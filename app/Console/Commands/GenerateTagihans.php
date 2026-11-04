@@ -11,7 +11,7 @@ class GenerateTagihans extends Command
 {
     protected $signature = 'tagihan:auto-generate {--kos= : ID kos spesifik} {--dry-run : Hanya tampilkan, jangan buat tagihan}';
 
-    protected $description = 'Buat tagihan otomatis untuk kontrak aktif berdasarkan pengaturan billing_day kos';
+    protected $description = 'Buat tagihan otomatis untuk kontrak aktif berdasarkan tanggal mulai kontrak';
 
     public function handle(BillingService $billingService): int
     {
@@ -67,11 +67,14 @@ class GenerateTagihans extends Command
             ->where('kos_id', $kos->id)
             ->where('status', 'active')
             ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
+            ->where('end_date', '>', now())
             ->get();
 
         foreach ($kontraks as $kontrak) {
             $period = $billingService->calculatePeriod($kontrak, $kos->billing_day, now());
+            if ($period === null) {
+                continue;
+            }
             $alreadyBilled = $billingService->alreadyBilled($kontrak, $period['period_start'], $period['period_end']);
             $status = $alreadyBilled ? '<comment>SKIP (sudah ada)</comment>' : '<info>AKAN DIBUAT</info>';
             $tenantName = $kontrak->penghuni->user->name ?? 'N/A';

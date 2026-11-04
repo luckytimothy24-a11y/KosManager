@@ -6,7 +6,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Submit pembayaran booking (prerequisite konfirmasi).
- * amount TIDAK dipercaya — server selalu memakai booking.price.
+ * amount TIDAK dipercaya — server memakai DP booking baru atau harga penuh
+ * untuk booking legacy.
  */
 class StoreBookingPaymentRequest extends FormRequest
 {
@@ -26,7 +27,7 @@ class StoreBookingPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_method' => ['required', 'in:cash,transfer_bank'],
+            'payment_method' => ['required', 'in:qris,transfer_bank'],
             'proof_file' => [
                 'nullable',
                 'file',

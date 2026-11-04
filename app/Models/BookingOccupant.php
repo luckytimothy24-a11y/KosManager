@@ -105,8 +105,8 @@ class BookingOccupant extends Model
 
     public function hasIdentityData(): bool
     {
+        // KTP tidak lagi dikumpulkan pada alur tenant baru.
         return $this->identity_data_submitted_at !== null
-            && filled($this->identity_number)
             && filled($this->phone)
             && filled($this->address);
     }

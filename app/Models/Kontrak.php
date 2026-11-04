@@ -17,6 +17,7 @@ class Kontrak extends Model
         'kamar_id',
         'rental_type',
         'rental_price',
+        'down_payment_amount',
         'billing_mode',
         'custom_share_amount',
         'start_date',
@@ -29,6 +30,7 @@ class Kontrak extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'rental_price' => 'decimal:2',
+        'down_payment_amount' => 'decimal:2',
         'custom_share_amount' => 'decimal:2',
         'billing_mode' => 'string',
     ];

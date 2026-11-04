@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Validation\ValidationException;
 use Psr\Log\LogLevel;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -62,6 +63,23 @@ class Handler extends ExceptionHandler
             return redirect($request->fullUrl())
                 ->withInput($request->only('email'))
                 ->with('error', 'Sesi Anda telah berakhir. Sila cuba semula.');
+        });
+
+        // 429 - Rate limit exceeded (throttle). Redirect ke login dengan pesan yang jelas.
+        $this->renderable(function (ThrottleRequestsException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Terlalu banyak percobaan. Silakan tunggu beberapa menit.',
+                ], 429);
+            }
+
+            if ($request->is('login') || $request->is('*/login')) {
+                return redirect()->route('login')
+                    ->with('error', 'Terlalu banyak percobaan login. Silakan tunggu 15 menit sebelum mencoba lagi.');
+            }
+
+            // Untuk route non-login, biarkan Laravel handle default (429)
+            return null;
         });
 
         // 404 — Per kontrak JSON: tidak mengekspos nama model / SQL.

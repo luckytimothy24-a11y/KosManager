@@ -56,7 +56,7 @@
         $coverPath = method_exists($kos, 'coverPath') ? $kos->coverPath() : $kos->photo;
         $initials = strtoupper(mb_substr(preg_replace('/\s+/', '', $kos->name), 0, 2));
     @endphp
-    <div class="group relative flex flex-col card-property border-amber-200/70 dark:border-amber-500/20 hover:border-amber-300 dark:hover:border-amber-500/40">
+    <div class="group relative flex flex-col card-property border-amber-200/70 dark:border-amber-500/20 hover:border-amber-400 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
         {{-- Foto — bagian paling atas card --}}
         <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-amber-100/60 via-primary-50 to-blue-50 dark:from-surface-elevated dark:via-surface-elevated dark:to-surface-elevated">
             <a href="{{ $adUrl }}" class="absolute inset-0 z-[1]" aria-label="Lihat detail {{ $kos->name }}">
@@ -79,7 +79,11 @@
             </a>
 
             {{-- Availability badge — top left --}}
-            <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2.5 py-0.5 shadow-sm backdrop-blur-sm {{ $availableRooms > 0 ? 'bg-white/90 dark:bg-surface-elevated/90 text-green-700 dark:text-green-300' : 'bg-slate-800/90 text-white/90' }}">
+            <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full text-[11px] font-bold px-3 py-1 shadow-lg backdrop-blur-sm bg-amber-500 text-white">
+                <i class="ri-star-fill text-[11px]"></i> PROMOSI
+            </span>
+            {{-- Status badge — top right (below favorite) --}}
+            <span class="absolute top-3 right-14 z-10 inline-flex items-center gap-1.5 rounded-full text-[10px] font-semibold px-2 py-0.5 shadow-sm backdrop-blur-sm {{ $availableRooms > 0 ? 'bg-white/90 dark:bg-surface-elevated/90 text-green-700 dark:text-green-300' : 'bg-slate-800/90 text-white/90' }}">
                 <span class="w-1.5 h-1.5 rounded-full {{ $availableRooms > 0 ? 'bg-green-500 badge-pulse' : 'bg-slate-400' }}"></span>
                 {{ $availableRooms > 0 ? 'TERSEDIA' : 'PENUH' }}
             </span>
@@ -158,7 +162,7 @@
                 @else
                     <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
                 @endif
-                <a href="{{ $adUrl }}" class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-primary-500 group-hover:text-primary-600 transition-all duration-300">
+                <a href="{{ $adUrl }}" class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-all duration-300 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-500/20">
                     Lihat Detail <i class="ri-arrow-right-line text-[11px] group-hover:translate-x-0.5 transition-transform duration-300"></i>
                 </a>
             </div>

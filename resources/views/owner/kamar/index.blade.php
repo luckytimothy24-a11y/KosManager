@@ -39,8 +39,47 @@
             </form>
         </div>
 
+        {{-- Mobile cards --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($kamars as $kamar)
+                <x-mobile-record-card
+                    :title="$kamar->room_number . ' · ' . $kamar->room_name"
+                    :subtitle="($kamar->kos->name ?? '-') . ' · ' . ($kamar->room_type ?? '-')"
+                    :meta="[
+                        'Mode' => \StatusLabels::billingModeLabel($kamar->billing_mode ?? 'personal'),
+                        'Harga/bulan' => 'Rp ' . number_format($kamar->monthly_price, 0, ',', '.'),
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$kamar->status" context="kamar" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route($prefix . '.kamar.show', $kamar) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                        @if($canManage)
+                            <x-button href="{{ route($prefix . '.kamar.edit', $kamar) }}" type="secondary" size="sm" class="min-h-11">
+                                <i class="ri-edit-line"></i> Edit
+                            </x-button>
+                        @endif
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-door-open-line" title="Belum ada data kamar"
+                                   description="Tambahkan kamar untuk mulai menerima booking penghuni.">
+                        @if($canManage)
+                            <x-button href="{{ route('owner.kamar.create') }}" type="primary"><i class="ri-add-line"></i> Tambah Kamar</x-button>
+                        @endif
+                    </x-empty-state>
+                </div>
+            @endforelse
+            @if($kamars->hasPages())
+                <div>{{ $kamars->links() }}</div>
+            @endif
+        </div>
+
         {{-- Table --}}
-        <div class="table-card">
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

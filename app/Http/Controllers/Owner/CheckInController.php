@@ -10,6 +10,7 @@ use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Penghuni;
 use App\Services\AuditLogService;
+use App\Services\BillingService;
 use App\Services\NotificationService;
 use App\Support\NotificationType;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class CheckInController extends Controller
 
         $query = CheckIn::with(['penghuni.user', 'kamar.kos', 'officer']);
 
-        $bookingQuery = Booking::with(['user', 'kos', 'kamar'])
+        $bookingQuery = Booking::with(['user', 'kos', 'kamar', 'activeBookingPayment'])
             ->where('status', 'approved')
             ->whereDate('end_date', '>=', now()->toDateString())
             ->latest('booking_date');
@@ -138,86 +139,53 @@ class CheckInController extends Controller
 
         $data = $request->validate(app(StoreCheckInRequest::class)->rules());
 
-        $result = \DB::transaction(function () use ($booking, $request, $data) {
-            $locked = Booking::whereKey($booking->id)->lockForUpdate()->first();
-            abort_unless($locked && $locked->status === 'approved', 400, 'Booking sudah diproses sebelumnya.');
-            $authUser = $request->user();
-            if ($authUser->isOwner() && (int) $locked->kos->owner_id !== (int) $authUser->id) {
-                abort(403, 'Bukan kos Anda.');
-            }
-            if ($authUser->isAdmin() && ! $authUser->canAccessKos((int) $locked->kos_id)) {
-                abort(403, 'Bukan kos yang ditugaskan kepada Anda.');
-            }
-            abort_unless(now()->startOfDay()->lessThanOrEqualTo($locked->end_date), 400, 'Masa booking sudah berakhir.');
-            abort_unless($locked->identity_confirmed_at !== null, 400, 'Identitas tenant belum dikonfirmasi owner. Menunggu konfirmasi owner terlebih dahulu.');
-            abort_unless($locked->hasIdentityData(), 400, 'Data identitas tenant belum lengkap. Tenant harus melengkapi data identitas terlebih dahulu.');
+        \Log::info('Check-in process started', [
+            'booking_id' => $booking->id,
+            'booking_code' => $booking->booking_code,
+            'user_id' => $request->user()->id,
+        ]);
 
-            $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->first();
-            abort_unless($kamar && $kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');
-            // Shared kamar: available masih valid meski ada occupant lain; personal harus booked
-            $isShared = ($kamar->billing_mode ?? 'personal') === 'shared';
-            if (! $isShared) {
-                abort_unless($kamar->status === 'booked', 400, 'Kamar tidak tersedia.');
-            } else {
-                abort_unless($kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');
-            }
-            abort_unless($kamar->occupancy() < (int) $kamar->capacity, 400, 'Kamar sudah penuh. Kapasitas tidak mencukupi.');
+        try {
+            $result = \DB::transaction(function () use ($booking, $request) {
+                $locked = $this->lockBooking($booking);
+                $this->validateBookingPrerequisites($locked, $request->user());
 
-            $penghuni = Penghuni::create([
-                'user_id' => $locked->user_id,
-                'kos_id' => $locked->kos_id,
-                'kamar_id' => $locked->kamar_id,
-                'identity_number' => $locked->identity_number,
-                'phone' => $locked->phone,
-                'address' => $locked->address,
-                'check_in_date' => now(),
-                'status' => 'active',
+                $kamar = $this->lockAndValidateKamar($locked);
+
+                $penghuni = $this->createPenghuni($locked, $kamar);
+
+                $billingMode = $this->determineBillingMode($locked);
+                $kontrak = $this->createKontrak($locked, $penghuni, $kamar, $billingMode);
+
+                $this->generateFirstBill($kontrak, $locked);
+
+                $this->createCheckInRecord($penghuni, $kamar, $request);
+
+                // Booking completed SETELAH check-in sukses.
+                $this->completeBooking($locked);
+
+                // Update kamar status occupancy-aware
+                $this->updateKamarStatus($kamar, $penghuni);
+
+                return ['booking' => $locked, 'kontrak' => $kontrak, 'kamar' => $kamar];
+            });
+        } catch (\Throwable $e) {
+            \Log::error('Check-in process failed', [
+                'booking_id' => $booking->id,
+                'booking_code' => $booking->booking_code,
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage(),
             ]);
 
-            $billingMode = $locked->billing_mode ?? 'personal';
-            // Snapshot billing_mode from booking; fallback to personal for legacy bookings
-            if (! in_array($billingMode, ['personal', 'shared'], true)) {
-                $billingMode = 'personal';
-            }
+            throw $e;
+        }
 
-            $kontrak = Kontrak::create([
-                'contract_number' => 'KT-'.strtoupper(Str::random(12)),
-                'penghuni_id' => $penghuni->id,
-                'kos_id' => $locked->kos_id,
-                'kamar_id' => $locked->kamar_id,
-                'rental_type' => $locked->rental_type,
-                'rental_price' => $locked->price,
-                'billing_mode' => $billingMode,
-                'start_date' => $locked->start_date,
-                'end_date' => $locked->end_date,
-                'status' => 'active',
-            ]);
-
-            CheckIn::create([
-                'penghuni_id' => $penghuni->id,
-                'kamar_id' => $locked->kamar_id,
-                'check_in_date' => now(),
-                'check_in_time' => now()->format('H:i'),
-                'officer_id' => $request->user()->id,
-                'notes' => $data['notes'] ?? null,
-            ]);
-
-            // Booking completed SETELAH check-in sukses.
-            // Tenant/status penghuni hanya aktif lewat jalur ini — bukan karena booking dibuat/dibayar.
-            $locked->update(['status' => Booking::STATUS_COMPLETED]);
-            // Status kamar occupancy-aware: full -> occupied, masih ada slot -> available/booked
-            // Re-query occupancy to be safe
-            $freshOccupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
-            if ($freshOccupancy >= (int) $kamar->capacity) {
-                $kamar->update(['status' => 'occupied']);
-            } elseif ($freshOccupancy === 0) {
-                $kamar->update(['status' => 'booked']);
-            } else {
-                $kamar->update(['status' => 'available']);
-            }
-
-            return ['booking' => $locked, 'kontrak' => $kontrak, 'kamar' => $kamar];
-        });
+        \Log::info('Check-in process succeeded', [
+            'booking_id' => $result['booking']->id,
+            'booking_code' => $result['booking']->booking_code,
+            'kontrak_id' => $result['kontrak']->id ?? null,
+            'kamar_id' => $result['kamar']->id,
+        ]);
 
         $freshBooking = $result['booking'];
         $freshKamar = $result['kamar'];
@@ -233,5 +201,152 @@ class CheckInController extends Controller
         $prefix = auth()->user()->isAdmin() ? 'admin' : 'owner';
 
         return redirect()->route("$prefix.booking.index")->with('success', 'Check-in berhasil dilakukan.');
+    }
+
+    /**
+     * Lock the booking for update and verify status.
+     */
+    private function lockBooking(Booking $booking): ?Booking
+    {
+        $locked = Booking::whereKey($booking->id)->lockForUpdate()->first();
+        abort_unless($locked && $locked->status === 'approved', 400, 'Booking sudah diproses sebelumnya.');
+
+        return $locked;
+    }
+
+    /**
+     * Validate booking prerequisites: date, identity confirmed, identity data complete.
+     */
+    private function validateBookingPrerequisites(Booking $locked, $authUser)
+    {
+        abort_unless(now()->startOfDay()->lessThanOrEqualTo($locked->end_date), 400, 'Masa booking sudah berakhir.');
+        abort_unless($locked->identity_confirmed_at !== null, 400, 'Identitas tenant belum dikonfirmasi owner. Menunggu konfirmasi owner terlebih dahulu.');
+        abort_unless($locked->hasIdentityData(), 400, 'Data identitas tenant belum lengkap. Tenant harus melengkapi data identitas terlebih dahulu.');
+
+        // Scope validation
+        if ($authUser->isOwner() && (int) $locked->kos->owner_id !== (int) $authUser->id) {
+            abort(403, 'Bukan kos Anda.');
+        }
+        if ($authUser->isAdmin() && ! $authUser->canAccessKos((int) $locked->kos_id)) {
+            abort(403, 'Bukan kos yang ditugaskan kepada Anda.');
+        }
+    }
+
+    /**
+     * Lock kamar and validate availability (shared vs personal).
+     */
+    private function lockAndValidateKamar(Booking $locked)
+    {
+        $kamar = Kamar::whereKey($locked->kamar_id)->lockForUpdate()->first();
+        abort_unless($kamar && $kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');
+
+        $isShared = ($kamar->billing_mode ?? 'personal') === 'shared';
+        if (! $isShared) {
+            abort_unless($kamar->status === 'booked', 400, 'Kamar tidak tersedia.');
+        } else {
+            abort_unless($kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');
+        }
+        abort_unless($kamar->occupancy() < (int) $kamar->capacity, 400, 'Kamar sudah penuh. Kapasitas tidak mencukupi.');
+
+        return $kamar;
+    }
+
+    /**
+     * Create Penghuni record.
+     */
+    private function createPenghuni(Booking $locked, $kamar)
+    {
+        return Penghuni::create([
+            'user_id' => $locked->user_id,
+            'kos_id' => $locked->kos_id,
+            'kamar_id' => $locked->kamar_id,
+            'phone' => $locked->phone,
+            'address' => $locked->address,
+            'check_in_date' => now(),
+            'status' => 'active',
+        ]);
+    }
+
+    /**
+     * Determine billing mode from booking or kamar, fallback to personal.
+     */
+    private function determineBillingMode(Booking $locked): string
+    {
+        $billingMode = $locked->billing_mode ?? 'personal';
+        if (! in_array($billingMode, ['personal', 'shared'], true)) {
+            $billingMode = 'personal';
+        }
+
+        return $billingMode;
+    }
+
+    /**
+     * Create Kontrak record.
+     */
+    private function createKontrak(Booking $locked, $penghuni, $kamar, string $billingMode)
+    {
+        return Kontrak::create([
+            'contract_number' => 'KT-'.strtoupper(Str::random(12)),
+            'penghuni_id' => $penghuni->id,
+            'kos_id' => $locked->kos_id,
+            'kamar_id' => $locked->kamar_id,
+            'rental_type' => $locked->rental_type,
+            'rental_price' => $locked->price,
+            'down_payment_amount' => (float) ($locked->down_payment_amount ?? 0),
+            'billing_mode' => $billingMode,
+            'start_date' => $locked->start_date,
+            'end_date' => $locked->end_date,
+            'status' => 'active',
+        ]);
+    }
+
+    /**
+     * Create the first rent bill from the contract start date.
+     *
+     * Shared rooms keep the existing shared-billing flow (owner/scheduler) to
+     * avoid recalculating other occupants' bills during a single check-in.
+     */
+    private function generateFirstBill(Kontrak $kontrak, Booking $booking): void
+    {
+        if ($kontrak->isShared()) {
+            return;
+        }
+
+        if (! ($booking->kos?->auto_billing_enabled ?? false)) {
+            return;
+        }
+
+        app(BillingService::class)->generateFirstBill($kontrak);
+    }
+
+    /**
+     * Create CheckIn record.
+     */
+    private function createCheckInRecord($penghuni, $kamar, $request)
+    {
+        CheckIn::create([
+            'penghuni_id' => $penghuni->id,
+            'kamar_id' => $kamar->id,
+            'check_in_date' => now(),
+            'check_in_time' => now()->format('H:i'),
+            'officer_id' => $request->user()->id,
+            'notes' => $request->notes ?? null,
+        ]);
+    }
+
+    /**
+     * Complete booking by setting status to completed.
+     */
+    private function completeBooking(Booking $locked)
+    {
+        $locked->update(['status' => Booking::STATUS_COMPLETED]);
+    }
+
+    /**
+     * Update kamar status based on occupancy.
+     */
+    private function updateKamarStatus($kamar, $penghuni)
+    {
+        $kamar->syncStatus();
     }
 }

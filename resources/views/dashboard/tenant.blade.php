@@ -42,20 +42,23 @@
             </a>
         </header>
 
-<x-ads-carousel :ads="$partnerAds ?? collect()" />
+<x-ads-carousel :ads="$partnerAds ?? collect()" heading="Promo & Partner Pilihan" description="Temukan penawaran menarik untuk menemani kebutuhan harianmu." />
 
 
 {{-- Promosi kos OWNER ber-placement homepage (is_homepage, kos_id TIDAK NULL) --}}
 @if(($kosPromosHome ?? collect())->isNotEmpty())
-<section aria-label="Promosi kos di beranda" class="space-y-3">
-    <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-500/10 px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-amber-700 dark:border-amber-500/30 dark:text-amber-400">
-            <i class="ri-star-fill text-[11px]"></i> Promosi Kos
-        </span>
-        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-              aria-label="Konten iklan berbayar">
-            <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
-        </span>
+<section aria-label="Promosi kos di beranda" class="space-y-4">
+    <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-md">
+                <i class="ri-star-fill text-[11px]"></i> Promosi Kos
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                  aria-label="Konten iklan berbayar">
+                <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
+            </span>
+        </div>
+        <div class="flex-1 h-px bg-gradient-to-r from-amber-200 to-transparent dark:from-amber-500/30"></div>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         @foreach($kosPromosHome as $promo)
@@ -140,7 +143,7 @@
                 </div>
 
                 {{-- Ringkasan pembayaran (data dari $stats) --}}
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     <div class="card-surface rounded-xl p-3.5">
                         <p class="flex items-start gap-1.5 text-[11px] font-medium leading-tight text-slate-500 dark:text-slate-400"><i class="ri-file-list-3-line mt-0.5 text-amber-500"></i> Tagihan Belum Bayar</p>
                         <p class="mt-1.5 text-xl font-black text-slate-900 dark:text-white">{{ $stats['tagihan_pending'] ?? 0 }}</p>
@@ -149,7 +152,7 @@
                         <p class="flex items-start gap-1.5 text-[11px] font-medium leading-tight text-slate-500 dark:text-slate-400"><i class="ri-time-line mt-0.5 text-yellow-500"></i> Menunggu Verifikasi</p>
                         <p class="mt-1.5 text-xl font-black text-slate-900 dark:text-white">{{ $stats['tagihan_pending_verification'] ?? 0 }}</p>
                     </div>
-                    <div class="card-surface rounded-xl p-3.5">
+                    <div class="card-surface col-span-2 rounded-xl p-3.5 sm:col-span-1">
                         <p class="flex items-start gap-1.5 text-[11px] font-medium leading-tight text-slate-500 dark:text-slate-400"><i class="ri-money-dollar-circle-line mt-0.5 text-green-500"></i> Total Belum Dibayar</p>
                         <p class="mt-1.5 text-sm font-black leading-tight text-slate-900 dark:text-white">
                             @if(($stats['total_belum_dibayar'] ?? 0) > 0)
@@ -205,7 +208,7 @@
                             <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 dark:text-slate-500">
                                 <i class="ri-secure-payment-line"></i> Metode pembayaran
                             </span>
-                            <span class="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">Tunai ke Pengelola</span>
+                            <span class="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">QRIS / Transfer Bank</span>
                             <span class="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">Diverifikasi Pengelola</span>
                         </div>
                     @else
@@ -630,14 +633,27 @@
              B2B (mis. DANA, Shopee, GoPay). JELAS terpisah dari kos organik.
              ============================================================ --}}
         @if(($tenantDashboardAds ?? collect())->isNotEmpty())
-            <section aria-label="Penawaran partner untuk penghuni kos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                @foreach($tenantDashboardAds as $ad)
-                    @include('tenant.partials.partner-ad', [
-                        'ad' => $ad,
-                        'placement' => 'tenant_dashboard',
-                        'variant' => 'card',
-                    ])
-                @endforeach
+            <section aria-label="Penawaran partner untuk penghuni kos" class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-500 to-indigo-500 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-md">
+                            <i class="ri-gift-line text-[11px]"></i> Penawaran Partner
+                        </span>
+                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                            <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
+                        </span>
+                    </div>
+                    <div class="flex-1 h-px bg-gradient-to-r from-primary-200 to-transparent dark:from-primary-500/30"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach($tenantDashboardAds as $ad)
+                        @include('tenant.partials.partner-ad', [
+                            'ad' => $ad,
+                            'placement' => 'tenant_dashboard',
+                            'variant' => 'card',
+                        ])
+                    @endforeach
+                </div>
             </section>
         @endif
 

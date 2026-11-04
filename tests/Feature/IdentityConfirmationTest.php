@@ -63,7 +63,6 @@ class IdentityConfirmationTest extends TestCase
         $response = $this->actingAs($this->tenant)->post(
             route('tenant.checkin.identity.confirm', $this->booking),
             [
-                'identity_number' => '3374012345670001',
                 'phone' => '08123456789',
                 'address' => 'Jl. Merdeka No. 1, Yogyakarta',
             ]
@@ -76,13 +75,13 @@ class IdentityConfirmationTest extends TestCase
         $this->assertNull($fresh->identity_confirmed_at);
         $this->assertTrue($fresh->identityPending());
         $this->assertEquals('pending', $fresh->identityStatus());
-        $this->assertEquals('3374012345670001', $fresh->identity_number);
+        $this->assertNull($fresh->identity_number);
         $this->assertEquals('08123456789', $fresh->phone);
         $this->assertEquals('Jl. Merdeka No. 1, Yogyakarta', $fresh->address);
         $this->assertNotNull($fresh->identity_data_submitted_at);
     }
 
-    public function test_confirmation_requires_identity_number(): void
+    public function test_confirmation_does_not_require_identity_number(): void
     {
         $response = $this->actingAs($this->tenant)->post(
             route('tenant.checkin.identity.confirm', $this->booking),
@@ -92,8 +91,9 @@ class IdentityConfirmationTest extends TestCase
             ]
         );
 
-        $response->assertSessionHasErrors('identity_number');
-        $this->assertFalse($this->booking->fresh()->identityConfirmed());
+        $response->assertSessionHasNoErrors();
+        $this->assertTrue($this->booking->fresh()->identityPending());
+        $this->assertNull($this->booking->fresh()->identity_number);
     }
 
     public function test_confirmation_requires_phone(): void
@@ -250,7 +250,6 @@ class IdentityConfirmationTest extends TestCase
     public function test_owner_checkin_proceeds_after_identity_confirmation(): void
     {
         $this->booking->update([
-            'identity_number' => '3201234567890001',
             'phone' => '08123456789',
             'address' => 'Jl. Test',
             'identity_data_submitted_at' => now(),
@@ -264,7 +263,7 @@ class IdentityConfirmationTest extends TestCase
         $this->assertDatabaseHas('penghunis', [
             'user_id' => $this->tenant->id,
             'kamar_id' => $this->kamar->id,
-            'identity_number' => '3201234567890001',
+            'identity_number' => null,
             'phone' => '08123456789',
             'address' => 'Jl. Test',
             'status' => 'active',
@@ -319,10 +318,9 @@ class IdentityConfirmationTest extends TestCase
         $response->assertDontSee('name="address"');
     }
 
-    public function test_identity_data_flows_to_penghuni_on_checkin(): void
+    public function test_contact_data_flows_to_penghuni_on_checkin_without_ktp(): void
     {
         $this->booking->update([
-            'identity_number' => '3374012345670001',
             'phone' => '08987654321',
             'address' => 'Jl. Pahlawan No. 42, Semarang',
             'identity_data_submitted_at' => now(),
@@ -333,7 +331,7 @@ class IdentityConfirmationTest extends TestCase
 
         $penghuni = Penghuni::where('user_id', $this->tenant->id)->first();
         $this->assertNotNull($penghuni);
-        $this->assertEquals('3374012345670001', $penghuni->identity_number);
+        $this->assertNull($penghuni->identity_number);
         $this->assertEquals('08987654321', $penghuni->phone);
         $this->assertEquals('Jl. Pahlawan No. 42, Semarang', $penghuni->address);
     }

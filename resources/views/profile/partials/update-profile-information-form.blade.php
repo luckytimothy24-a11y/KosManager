@@ -44,12 +44,14 @@
         <x-input-error class="mt-2" :messages="$errors->get('address')" />
     </div>
 
-    <div>
-        <x-input-label for="identity_number" :value="__('Identity Number (NIK)')" />
-        <x-text-input id="identity_number" name="identity_number" type="text" class="mt-1.5 block w-full" :value="old('identity_number', $user->identity_number)" inputmode="numeric" maxlength="50" placeholder="16 digit NIK" />
-        <x-input-error class="mt-2" :messages="$errors->get('identity_number')" />
-        <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">Nomor identitas hanya terlihat oleh Anda dan tidak dibagikan ke pengguna lain.</p>
-    </div>
+    @unless(Auth::user()->isTenant())
+        <div>
+            <x-input-label for="identity_number" :value="__('Identity Number (NIK)')" />
+            <x-text-input id="identity_number" name="identity_number" type="text" class="mt-1.5 block w-full" :value="old('identity_number', $user->identity_number)" inputmode="numeric" maxlength="50" placeholder="16 digit NIK" />
+            <x-input-error class="mt-2" :messages="$errors->get('identity_number')" />
+            <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">Nomor identitas hanya terlihat oleh Anda dan tidak dibagikan ke pengguna lain.</p>
+        </div>
+    @endunless
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}" class="hidden">
         @csrf

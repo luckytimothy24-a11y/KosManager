@@ -8,6 +8,7 @@ use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
 use App\Models\Penghuni;
+use App\Models\Tagihan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -203,5 +204,41 @@ class CheckInOutTest extends TestCase
     {
         $response = $this->actingAs($this->owner)->get(route('owner.checkout.index'));
         $response->assertStatus(200);
+    }
+
+    public function test_process_checkin_creates_first_bill_from_contract_start(): void
+    {
+        $start = now()->addMonth()->startOfDay();
+        $end = $start->copy()->addMonth();
+
+        $booking = Booking::factory()->create([
+            'user_id' => $this->tenant->id,
+            'kos_id' => $this->kos->id,
+            'kamar_id' => $this->kamar->id,
+            'status' => 'approved',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test',
+            'identity_data_submitted_at' => now(),
+            'identity_confirmed_at' => now(),
+            'identity_confirmed_by' => $this->owner->id,
+            'start_date' => $start,
+            'end_date' => $end,
+            'down_payment_amount' => 100000,
+        ]);
+
+        $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
+            'notes' => 'Check-in lancar',
+        ])->assertRedirect(route('owner.booking.index'));
+
+        $penghuni = Penghuni::where('user_id', $this->tenant->id)->firstOrFail();
+        $kontrak = Kontrak::where('penghuni_id', $penghuni->id)->firstOrFail();
+        $tagihan = Tagihan::where('kontrak_id', $kontrak->id)->firstOrFail();
+
+        $this->assertEquals($start->toDateString(), $tagihan->period_start->toDateString());
+        $this->assertEquals($start->copy()->addMonth()->subDay()->toDateString(), $tagihan->period_end->toDateString());
+        $this->assertEquals(100000, (float) $tagihan->down_payment_discount);
+        $this->assertEquals(0, (float) $kontrak->fresh()->down_payment_amount);
+        $this->assertEquals($start->toDateString(), $kontrak->start_date->toDateString());
     }
 }

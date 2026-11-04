@@ -34,7 +34,7 @@
                     </span>
                     <div>
                         <h2 class="font-bold text-slate-900 dark:text-slate-50 text-sm">Pengajuan Check-In</h2>
-                        <p class="text-xs text-slate-400 dark:text-slate-500">Tenant mengisi KTP & WhatsApp — Anda hanya perlu verifikasi & konfirmasi.</p>
+                        <p class="text-xs text-slate-400 dark:text-slate-500">Tenant mengisi WhatsApp & alamat — Anda cukup verifikasi kontak dan pembayaran DP.</p>
                     </div>
                     <span class="ml-auto px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{{ $readyBookings->count() }} booking</span>
                 </div>
@@ -92,7 +92,7 @@
                                  x-transition:enter-end="opacity-100 translate-y-0"
                                  x-cloak>
 
-                                {{-- PENDING: show data + Confirm / Reject (owner does NOT retype KTP/WA) --}}
+                                {{-- PENDING: show contact data + DP + Confirm / Reject --}}
                                 @if($identityStatus === 'pending')
                                     <div class="px-4 pb-4 pt-4 border-t border-slate-100 dark:border-white/[0.06] mt-1">
                                         <div class="flex items-start gap-3 rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/[0.06] px-4 py-4 mb-4">
@@ -101,7 +101,7 @@
                                             </span>
                                             <div class="min-w-0 flex-1">
                                                 <p class="text-sm font-bold text-amber-800 dark:text-amber-300">Check-In Menunggu Konfirmasi</p>
-                                                <p class="mt-1 text-sm text-amber-700/90 dark:text-amber-300/90">Periksa data identitas tenant di bawah ini. Anda tidak perlu mengetik ulang — cukup konfirmasi atau tolak.</p>
+                                                <p class="mt-1 text-sm text-amber-700/90 dark:text-amber-300/90">Periksa kontak tenant dan pembayaran DP di bawah ini. Anda tidak perlu mengetik ulang — cukup konfirmasi atau tolak.</p>
                                                 <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                                     <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Nama Tenant</span>
@@ -113,11 +113,6 @@
                                                         <p class="mt-0.5 font-medium text-slate-900 dark:text-slate-50">{{ $rb->kos->name }} · Kamar {{ $rb->kamar->room_number }}</p>
                                                     </div>
                                                     <div>
-                                                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">Nomor KTP</span>
-                                                        <p class="mt-0.5 font-mono font-medium text-slate-900 dark:text-slate-50">{{ $rb->maskedIdentityNumber() }}</p>
-                                                        <p class="text-[11px] text-slate-400">Masking penuh untuk keamanan — data lengkap tersimpan di sistem.</p>
-                                                    </div>
-                                                    <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-amber-600/80 dark:text-amber-400/80">WhatsApp</span>
                                                         <p class="mt-0.5 font-mono font-medium text-slate-900 dark:text-slate-50">{{ $rb->phone ?: '-' }}</p>
                                                     </div>
@@ -126,6 +121,7 @@
                                                         <p class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $rb->address ?: '-' }}</p>
                                                     </div>
                                                 </div>
+                                                @include('owner.checkin._dp-status', ['booking' => $rb, 'prefix' => $prefix])
                                                 @if($rb->identity_data_submitted_at)
                                                     <p class="mt-3 text-xs text-amber-600/80 dark:text-amber-400/80 flex items-center gap-1.5">
                                                         <i class="ri-time-line"></i> Diajukan: {{ $rb->identity_data_submitted_at->translatedFormat('d F Y, H:i') }}
@@ -180,12 +176,8 @@
                                             </span>
                                             <div class="min-w-0 flex-1">
                                                 <p class="text-sm font-bold text-green-800 dark:text-green-300">✓ Check-In Dikonfirmasi</p>
-                                                <p class="mt-1 text-sm text-green-700/90 dark:text-green-300/90">Identitas tenant telah Anda konfirmasi. Lanjutkan ke proses check-in final.</p>
+                                                <p class="mt-1 text-sm text-green-700/90 dark:text-green-300/90">Kontak tenant telah Anda konfirmasi. Lanjutkan ke proses check-in final.</p>
                                                 <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                                    <div>
-                                                        <span class="text-xs font-semibold uppercase tracking-wider text-green-600/80 dark:text-green-400/80">No. KTP (masking)</span>
-                                                        <p class="mt-0.5 font-mono font-medium text-green-800 dark:text-green-200">{{ $rb->maskedIdentityNumber() }}</p>
-                                                    </div>
                                                     <div>
                                                         <span class="text-xs font-semibold uppercase tracking-wider text-green-600/80 dark:text-green-400/80">No. WhatsApp</span>
                                                         <p class="mt-0.5 font-mono font-medium text-green-800 dark:text-green-200">{{ $rb->phone ?: '-' }}</p>
@@ -195,6 +187,7 @@
                                                         <p class="mt-0.5 font-medium text-green-800 dark:text-green-200">{{ $rb->address ?: '-' }}</p>
                                                     </div>
                                                 </div>
+                                                @include('owner.checkin._dp-status', ['booking' => $rb, 'prefix' => $prefix])
                                                 @if($rb->identity_confirmed_at)
                                                     <p class="mt-2 text-xs text-green-600/80 dark:text-green-400/80 flex items-center gap-1.5">
                                                         <i class="ri-time-line"></i> Dikonfirmasi: {{ $rb->identity_confirmed_at->translatedFormat('d F Y, H:i') }}
@@ -261,8 +254,9 @@
                                                 <i class="ri-information-line text-slate-500"></i>
                                             </span>
                                             <div>
-                                                <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Menunggu Data Identitas Tenant</p>
+                                                <p class="text-sm font-bold text-slate-800 dark:text-slate-200">Menunggu Data Kontak Tenant</p>
                                                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Tenant belum mengajukan check-in. Minta tenant membuka menu <span class="font-semibold">Booking Saya → Pengajuan Check-In</span> pada akunnya.</p>
+                                                @include('owner.checkin._dp-status', ['booking' => $rb, 'prefix' => $prefix])
                                                 <a href="{{ route("$prefix.booking.show", $rb) }}"
                                                    class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-surface-elevated border border-slate-200/60 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.06] transition">
                                                     <i class="ri-eye-line"></i> Detail Booking

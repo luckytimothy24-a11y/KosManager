@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class PaymentService
 {
     /**
-     * Buat pembayaran manual (tunai) dengan business rule existing:
+     * Buat pembayaran manual (QRIS) dengan business rule existing:
      * - transaction + lockForUpdate pada tagihan untuk cegah race condition,
      * - cek status tagihan PAYABLE (unpaid/overdue),
      * - cek nominal pembayaran harus sesuai total tagihan,
@@ -42,6 +42,13 @@ class PaymentService
 
             if ($hasActivePayment) {
                 return 'duplicate';
+            }
+
+            $amount = round((float) ($payload['amount'] ?? 0), 2);
+            $total = round((float) $locked->total, 2);
+
+            if ($amount <= 0 || $amount !== $total) {
+                return 'invalid_amount';
             }
 
             $proofPath = $payload['proof_file'] ?? null;
@@ -101,6 +108,14 @@ class PaymentService
             ];
         }
 
+        if ($saved === 'invalid_amount') {
+            return [
+                'ok' => false,
+                'error' => 'invalid_amount',
+                'message' => 'Nominal pembayaran harus lebih dari 0 dan sesuai total tagihan.',
+            ];
+        }
+
         if (! is_array($saved)) {
             return [
                 'ok' => false,
@@ -119,7 +134,8 @@ class PaymentService
     /**
      * Buat pembayaran booking (prerequisite konfirmasi booking).
      *
-     * - amount SELALU dari booking.price (server-side) — request client diabaikan.
+     * - amount SELALU dari server: DP untuk booking baru, harga penuh untuk
+     *   booking legacy (down_payment_amount NULL). Request client diabaikan.
      * - verification_status SELALU pending (tenant tidak bisa approve sendiri).
      * - booking.status TIDAK berubah.
      * - hanya pemilik booking (tenant) yang boleh submit.
@@ -145,7 +161,7 @@ class PaymentService
             ];
         }
 
-        if (! in_array($paymentMethod, ['cash', 'transfer_bank'], true)) {
+        if (! in_array($paymentMethod, ['qris', 'transfer_bank'], true)) {
             return [
                 'ok' => false,
                 'error' => 'invalid_method',
@@ -181,7 +197,11 @@ class PaymentService
             }
 
             // NOMINAL DARI SERVER — bukan request client.
-            $amount = (float) $locked->price;
+            $amount = $locked->expectedBookingPaymentAmount();
+
+            if ($amount <= 0) {
+                return 'invalid_amount';
+            }
 
             try {
                 $pembayaran = Pembayaran::create([
@@ -228,6 +248,14 @@ class PaymentService
                 'ok' => false,
                 'error' => 'duplicate',
                 'message' => 'Pembayaran untuk booking ini sudah dikirim dan menunggu verifikasi.',
+            ];
+        }
+
+        if ($saved === 'invalid_amount') {
+            return [
+                'ok' => false,
+                'error' => 'invalid_amount',
+                'message' => 'Nominal pembayaran booking tidak valid.',
             ];
         }
 

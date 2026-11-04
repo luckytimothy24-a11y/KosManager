@@ -1,7 +1,7 @@
 <x-app-layout>
     @php $prefix = Auth::user()->hasRole('owner', 'super_admin') ? 'owner' : 'admin'; $createUrl = route("$prefix.tagihan.create"); @endphp
     <x-slot name="header">
-        <x-page-header title="Manajemen Tagihan" description="Kelola tagihan sewa &amp; status pembayarannya." icon="ri-file-list-3-line">
+        <x-page-header title="Manajemen Tagihan" description="Kelola tagihan sewa & status pembayarannya." icon="ri-file-list-3-line">
             <x-button href="{{ $createUrl }}" type="primary">
                 <i class="ri-add-line text-base"></i> Buat Tagihan
             </x-button>
@@ -31,8 +31,41 @@
             </form>
         </div>
 
+        {{-- Mobile cards --}}
+        <div class="space-y-3 md:hidden">
+            @forelse($tagihans as $t)
+                <x-mobile-record-card
+                    :title="$t->bill_number"
+                    :subtitle="\PaymentLabels::billType($t->bill_type) . ' · ' . ($t->penghuni->user->name ?? '-')"
+                    :meta="[
+                        'Kamar' => $t->kamar->room_number ?? '-',
+                        'Jatuh tempo' => $t->due_date->translatedFormat('d M Y'),
+                        'Total' => 'Rp ' . number_format($t->total, 0, ',', '.'),
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$t->status" context="tagihan" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route(Auth::user()->isTenant() ? 'tenant.tagihan.show' : ($prefix . '.tagihan.show'), $t) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-file-list-3-line" title="Belum ada tagihan"
+                                   description="Buat tagihan sewa untuk penghuni dengan kontrak aktif.">
+                        <x-button href="{{ $createUrl }}" type="primary"><i class="ri-add-line"></i> Buat Tagihan</x-button>
+                    </x-empty-state>
+                </div>
+            @endforelse
+            @if($tagihans->hasPages())
+                <div>{{ $tagihans->links() }}</div>
+            @endif
+        </div>
+
         {{-- Table --}}
-        <div class="table-card">
+        <div class="table-card hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>

@@ -32,8 +32,39 @@
             </form>
         </div>
 
+        <div class="space-y-3 md:hidden">
+            @forelse($users as $u)
+                <x-mobile-record-card
+                    :title="$u->name"
+                    :subtitle="$u->email"
+                    :meta="[
+                        'Dibuat' => $u->created_at->translatedFormat('d M Y'),
+                    ]">
+                    <x-slot name="badge">
+                        <div class="flex flex-col items-end gap-1">
+                            <x-status-badge :status="$u->role" context="role" />
+                            <x-status-badge :status="$u->is_active ? 'active' : 'inactive'" context="penghuni" :label="$u->is_active ? 'Aktif' : 'Nonaktif'" />
+                        </div>
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route('super-admin.users.show', $u) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                        <x-button href="{{ route('super-admin.users.edit', $u) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-edit-line"></i> Edit
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-team-line" title="Tidak ada user ditemukan"
+                                   description="Coba ubah kata kunci pencarian atau filter role." />
+                </div>
+            @endforelse
+        </div>
+
         <div class="table-card">
-            <div class="overflow-x-auto scrollbar-thin">
+            <div class="hidden overflow-x-auto scrollbar-thin md:block">
                 <table class="w-full">
                     <thead>
                         <tr>

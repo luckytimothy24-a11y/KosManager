@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Kontrak {{ $kontrak->contract_number }}" description="Detail kontrak sewa &amp; tagihan terkait Anda.">
+        <x-page-header title="Kontrak {{ $kontrak->contract_number }}" description="Detail kontrak sewa & tagihan terkait Anda.">
             <x-button href="{{ route('tenant.kontrak.index') }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
         </x-page-header>
     </x-slot>

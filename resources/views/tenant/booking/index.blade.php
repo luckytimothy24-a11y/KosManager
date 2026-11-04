@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Booking Saya" description="Riwayat &amp; status booking kamar Anda.">
+        <x-page-header title="Booking Saya" description="Riwayat & status booking kamar Anda.">
             <x-button href="{{ route('tenant.booking.create') }}" type="primary">
                 <i class="ri-add-line text-base"></i> Booking Baru
             </x-button>

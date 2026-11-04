@@ -23,11 +23,13 @@ class BillingService
         $billingDay = min($kos->billing_day, $billingDate->daysInMonth);
         $dueDays = $kos->due_days;
 
+        // end_date adalah tanggal check-out (eksklusif), sehingga kontrak yang
+        // berakhir hari ini tidak perlu dibuatkan tagihan periode baru.
         $kontraks = Kontrak::with(['penghuni.user', 'penghuni.kos.owner', 'kamar'])
             ->where('kos_id', $kos->id)
             ->where('status', 'active')
             ->where('start_date', '<=', $billingDate)
-            ->where('end_date', '>=', $billingDate)
+            ->where('end_date', '>', $billingDate)
             ->get();
 
         $stats = ['generated' => 0, 'skipped' => 0, 'errors' => 0];
@@ -48,6 +50,9 @@ class BillingService
     /**
      * Generate tagihan untuk satu kontrak.
      *
+     * Siklus mengikuti tanggal mulai kontrak, bukan billing_day kos. Parameter
+     * $billingDay dipertahankan untuk kompatibilitas pemanggil lama.
+     *
      * @return 'generated'|'skipped'
      */
     public function generateForKontrak(Kontrak $kontrak, int $billingDay, int $dueDays, ?Carbon $billingDate = null): string
@@ -55,6 +60,18 @@ class BillingService
         $billingDate ??= Carbon::today();
 
         $period = $this->calculatePeriod($kontrak, $billingDay, $billingDate);
+
+        \Log::info('DEBUG generateForKontrak', [
+            'kontrak_id' => $kontrak->id,
+            'start' => $kontrak->start_date,
+            'end' => $kontrak->end_date,
+            'billingDate' => $billingDate,
+            'period' => $period,
+        ]);
+
+        if ($period === null) {
+            return 'skipped';
+        }
 
         if ($this->alreadyBilled($kontrak, $period['period_start'], $period['period_end'])) {
             return 'skipped';
@@ -72,43 +89,99 @@ class BillingService
     }
 
     /**
-     * Hitung period billing berdasarkan billing_day dan rental_type kontrak.
+     * Buat tagihan pertama saat kontrak aktif (dipanggil setelah check-in).
+     * Periode dihitung dari tanggal mulai kontrak sehingga check-in lebih awal
+     * tetap menghasilkan tagihan future-dated.
+     *
+     * @return 'generated'|'skipped'
      */
-    public function calculatePeriod(Kontrak $kontrak, int $billingDay, Carbon $billingDate): array
+    public function generateFirstBill(Kontrak $kontrak): string
     {
+        $kos = $kontrak->kos;
+
+        if (! $kos) {
+            return 'skipped';
+        }
+
+        \Log::info('Auto-billing first bill started', [
+            'kontrak_id' => $kontrak->id,
+            'kos_id' => $kontrak->kos_id,
+            'start_date' => $kontrak->start_date,
+        ]);
+
+        $result = $this->generateForKontrak(
+            $kontrak,
+            (int) ($kos->billing_day ?? 1),
+            (int) ($kos->due_days ?? 5),
+            $kontrak->start_date->copy()->startOfDay()
+        );
+
+        \Log::info('Auto-billing first bill finished', [
+            'kontrak_id' => $kontrak->id,
+            'result' => $result,
+        ]);
+
+        return $result;
+    }
+
+    /**
+     * Hitung period billing berdasarkan tanggal mulai kontrak.
+     *
+     * - monthly: satu periode = satu bulan dari tanggal mulai kontrak.
+     * - weekly: satu periode = tujuh hari dari tanggal mulai kontrak.
+     * - daily: satu periode = satu hari.
+     *
+     * end_date kontrak diperlakukan sebagai tanggal check-out (eksklusif).
+     */
+    public function calculatePeriod(Kontrak $kontrak, int $billingDay, Carbon $billingDate): ?array
+    {
+        $contractStart = $kontrak->start_date->copy()->startOfDay();
+        $contractEnd = $kontrak->end_date ? $kontrak->end_date->copy()->startOfDay() : null;
+        $lastBillableDay = $contractEnd?->copy()->subDay();
+
+        $billingDate = $billingDate->copy()->startOfDay();
+
+        if ($billingDate->lt($contractStart)) {
+            $billingDate = $contractStart->copy();
+        }
+
+        if ($lastBillableDay !== null && $billingDate->gt($lastBillableDay)) {
+            return null;
+        }
+
         $rentalType = $kontrak->rental_type;
 
         if ($rentalType === 'daily') {
-            $periodStart = $billingDate->copy()->startOfDay();
-            $periodEnd = $billingDate->copy()->endOfDay();
+            $days = max(0, (int) $contractStart->diffInDays($billingDate));
+            $periodStart = $contractStart->copy()->addDays($days);
+            $periodEnd = $periodStart->copy();
+        } elseif ($rentalType === 'weekly') {
+            $days = max(0, (int) $contractStart->diffInDays($billingDate));
+            $weeks = intdiv($days, 7);
+            $periodStart = $contractStart->copy()->addWeeks($weeks);
+            $periodEnd = $periodStart->copy()->addDays(6);
+        } else {
+            $months = ($billingDate->year - $contractStart->year) * 12
+                + ($billingDate->month - $contractStart->month);
 
-            return [
-                'period_start' => $periodStart->toDateString(),
-                'period_end' => $periodEnd->toDateString(),
-            ];
+            $periodStart = $contractStart->copy()->addMonthsNoOverflow(max($months, 0));
+
+            if ($periodStart->gt($billingDate)) {
+                $months--;
+                $periodStart = $contractStart->copy()->addMonthsNoOverflow(max($months, 0));
+            }
+
+            $nextStart = $contractStart->copy()->addMonthsNoOverflow(max($months, 0) + 1);
+            $periodEnd = $nextStart->copy()->subDay();
+
         }
 
-        if ($rentalType === 'weekly') {
-            $periodStart = $billingDate->copy()->startOfWeek();
-            $periodEnd = $billingDate->copy()->endOfWeek();
-
-            return [
-                'period_start' => $periodStart->toDateString(),
-                'period_end' => $periodEnd->toDateString(),
-            ];
+        if ($lastBillableDay !== null && $periodEnd->gt($lastBillableDay)) {
+            $periodEnd = $lastBillableDay->copy();
         }
 
-        // monthly
-        $month = $billingDate->month;
-        $year = $billingDate->year;
-
-        $periodStart = Carbon::createFromDate($year, $month, min($billingDay, Carbon::createFromDate($year, $month, 1)->daysInMonth))->startOfDay();
-        $nextMonth = $periodStart->copy()->addMonthNoOverflow();
-        $periodEnd = $nextMonth->copy()->subDay()->endOfDay();
-
-        // Pastikan tidak melewati end_date kontrak
-        if ($kontrak->end_date && $periodEnd->greaterThan($kontrak->end_date)) {
-            $periodEnd = Carbon::parse($kontrak->end_date)->endOfDay();
+        if ($periodStart->gt($periodEnd)) {
+            return null;
         }
 
         return [
@@ -138,16 +211,23 @@ class BillingService
 
         $units = $this->calculateUnits($kontrak->rental_type, $periodStart, $periodEnd);
         $subtotal = round((float) $kontrak->rental_price * $units, 2);
-        $total = $subtotal;
 
-        DB::transaction(function () use ($kontrak, $period, $dueDate, $subtotal, $total) {
+        $billNumber = 'TB-'.strtoupper(Str::random(12));
+        $createdTagihan = null;
+        $totalAmount = 0.0;
+
+        DB::transaction(function () use ($kontrak, $period, $dueDate, $subtotal, $billNumber, &$createdTagihan, &$totalAmount) {
             $locked = Kontrak::whereKey($kontrak->id)->lockForUpdate()->first();
 
             if (! $locked || $locked->status !== 'active') {
                 return;
             }
 
-            $billNumber = 'TB-'.strtoupper(Str::random(12));
+            // DP hanya dipotongkan pada tagihan pertama kontrak.
+            $downPayment = app(DownPaymentService::class);
+            $downPaymentDiscount = $downPayment->discountForNewBill($locked, $subtotal);
+            $total = max(0, round($subtotal - $downPaymentDiscount, 2));
+            $status = $total <= 0 ? Tagihan::STATUS_PAID : Tagihan::STATUS_UNPAID;
 
             try {
                 $tagihan = Tagihan::create([
@@ -160,13 +240,38 @@ class BillingService
                     'period_end' => $period['period_end'],
                     'subtotal' => $subtotal,
                     'discount' => 0,
+                    'down_payment_discount' => $downPaymentDiscount,
                     'penalty' => 0,
                     'total' => $total,
                     'due_date' => $dueDate,
-                    'status' => Tagihan::STATUS_UNPAID,
+                    'status' => $status,
                     'active_billing_key' => Tagihan::billingKey($kontrak->id, $period['period_start'], $period['period_end']),
                 ]);
 
+                $downPayment->consume($locked, $downPaymentDiscount);
+
+                $createdTagihan = $tagihan;
+                $totalAmount = $total;
+
+                \Log::info('Auto-billing first bill generated', [
+                    'kontrak_id' => $kontrak->id,
+                    'bill_number' => $billNumber,
+                    'period_start' => $period['period_start'],
+                    'period_end' => $period['period_end'],
+                    'total' => $total,
+                ]);
+            } catch (QueryException $e) {
+                // Unique constraint violation = duplikat, skip
+                \Log::info("Auto-billing: duplikat kontrak {$kontrak->id}, skip.");
+            }
+        });
+
+        if (! $createdTagihan) {
+            return;
+        }
+
+        DB::afterCommit(function () use ($kontrak, $billNumber, $dueDate, $totalAmount) {
+            try {
                 NotificationService::billCreated(
                     $kontrak->penghuni->user_id,
                     $billNumber,
@@ -178,7 +283,7 @@ class BillingService
                         $kontrak->penghuni->kos->owner->id,
                         $kontrak->penghuni->user->name,
                         $billNumber,
-                        number_format($total, 0, ',', '.'),
+                        number_format($totalAmount, 0, ',', '.'),
                         $dueDate
                     );
                 }
@@ -188,9 +293,8 @@ class BillingService
                     "Auto-billing: tagihan {$billNumber} dibuat untuk {$kontrak->penghuni->user->name}",
                     ['kontrak_id' => $kontrak->id, 'auto' => true]
                 );
-            } catch (QueryException $e) {
-                // Unique constraint violation = duplikat, skip
-                \Log::info("Auto-billing: duplikat kontrak {$kontrak->id}, skip.");
+            } catch (\Throwable $e) {
+                \Log::warning('Auto-billing notification/audit failed: '.$e->getMessage());
             }
         });
     }
@@ -203,65 +307,80 @@ class BillingService
         $kamar = $kontrak->kamar;
         $sharedService = app(SharedBillingService::class);
 
+        $units = $this->calculateUnits(
+            $kontrak->rental_type,
+            Carbon::parse($period['period_start']),
+            Carbon::parse($period['period_end'])
+        );
+
+        $totalRoomBill = $sharedService->calculateTotalRoomBillForUnits(
+            $kamar,
+            $kontrak->rental_type,
+            $units
+        );
+
         $created = $sharedService->createSharedTagihans(
             $kamar,
             $this->resolveBillType($kontrak->rental_type),
             $period['period_start'],
             $period['period_end'],
             $dueDate,
+            totalRoomBill: $totalRoomBill,
         );
 
-        foreach ($created as $tagihan) {
-            try {
-                $penghuni = $tagihan->penghuni()->with(['user', 'kos.owner'])->first();
-                if ($penghuni && $penghuni->user) {
-                    NotificationService::billCreated(
-                        $penghuni->user_id,
-                        $tagihan->bill_number,
-                        $dueDate
-                    );
-
-                    if ($penghuni->kos?->owner) {
-                        NotificationService::billCreatedOwner(
-                            $penghuni->kos->owner->id,
-                            $penghuni->user->name,
+        DB::afterCommit(function () use ($created, $dueDate) {
+            foreach ($created as $tagihan) {
+                try {
+                    $penghuni = $tagihan->penghuni()->with(['user', 'kos.owner'])->first();
+                    if ($penghuni && $penghuni->user) {
+                        NotificationService::billCreated(
+                            $penghuni->user_id,
                             $tagihan->bill_number,
-                            number_format($tagihan->total, 0, ',', '.'),
                             $dueDate
                         );
-                    }
 
-                    AuditLogService::create(
-                        'Tagihan',
-                        "Auto-billing (shared): tagihan {$tagihan->bill_number} dibuat",
-                        ['kontrak_id' => $tagihan->kontrak_id, 'auto' => true]
-                    );
+                        if ($penghuni->kos?->owner) {
+                            NotificationService::billCreatedOwner(
+                                $penghuni->kos->owner->id,
+                                $penghuni->user->name,
+                                $tagihan->bill_number,
+                                number_format($tagihan->total, 0, ',', '.'),
+                                $dueDate
+                            );
+                        }
+
+                        AuditLogService::create(
+                            'Tagihan',
+                            "Auto-billing (shared): tagihan {$tagihan->bill_number} dibuat",
+                            ['kontrak_id' => $tagihan->kontrak_id, 'auto' => true]
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    \Log::warning("Auto-billing shared notification failed for tagihan {$tagihan->id}: ".$e->getMessage());
                 }
-            } catch (\Throwable $e) {
-                \Log::warning("Auto-billing shared notification failed for tagihan {$tagihan->id}: ".$e->getMessage());
             }
-        }
+        });
     }
 
     /**
-     * Hitung jumlah unit billing.
+     * Hitung jumlah unit billing untuk satu periode siklus kontrak.
+     *
+     * Siklus monthly selalu satu unit (satu bulan penuh, tanpa pro-rata),
+     * meskipun rentang tanggalnya menyentuh dua bulan kalender.
      */
     protected function calculateUnits(string $rentalType, Carbon $periodStart, Carbon $periodEnd): int
     {
         if ($rentalType === 'daily') {
-            return (int) $periodStart->startOfDay()->diffInDays($periodEnd->startOfDay()) + 1;
+            return max(1, (int) $periodStart->copy()->startOfDay()->diffInDays($periodEnd->copy()->startOfDay()) + 1);
         }
 
         if ($rentalType === 'weekly') {
-            $days = (int) $periodStart->startOfDay()->diffInDays($periodEnd->startOfDay()) + 1;
+            $days = (int) $periodStart->copy()->startOfDay()->diffInDays($periodEnd->copy()->startOfDay()) + 1;
 
-            return (int) ceil($days / 7);
+            return max(1, (int) ceil($days / 7));
         }
 
-        $months = ($periodEnd->year - $periodStart->year) * 12
-            + ($periodEnd->month - $periodStart->month) + 1;
-
-        return max($months, 1);
+        return 1;
     }
 
     protected function resolveBillType(string $rentalType): string

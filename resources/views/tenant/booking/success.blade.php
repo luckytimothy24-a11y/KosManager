@@ -80,6 +80,12 @@
                     <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-money-dollar-circle-line text-slate-400"></i> Total harga kamar</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($booking->price, 0, ',', '.') }}<span class="text-xs text-slate-400">/{{ $booking->rental_type === 'daily' ? 'hari' : 'bulan' }}</span></dd>
                 </div>
+                @if($booking->usesDownPayment())
+                    <div class="flex items-center justify-between gap-4 rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/70 dark:bg-primary-500/[0.06] px-3 py-2.5">
+                        <dt class="text-primary-800 dark:text-primary-300 flex items-center gap-2 font-semibold"><i class="ri-secure-payment-line"></i> DP dibayar sekarang</dt>
+                        <dd class="font-bold text-primary-700 dark:text-primary-300">Rp {{ number_format($booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</dd>
+                    </div>
+                @endif
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-line text-slate-400"></i> Periode</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50 text-right">{{ $booking->start_date->format('d M Y') }} – {{ $booking->end_date->format('d M Y') }}</dd>
@@ -110,8 +116,11 @@
             <div class="rounded-2xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/50 dark:bg-blue-500/[0.06] px-5 py-4">
                 <p class="text-sm font-semibold text-blue-900 dark:text-blue-200">Langkah selanjutnya</p>
                 <p class="text-xs text-blue-800/80 dark:text-blue-300/80 mt-1">
-                    Selesaikan pembayaran booking <span class="font-semibold">Rp {{ number_format($booking->price, 0, ',', '.') }}</span> di halaman detail booking (tunai / transfer bank).
+                    Selesaikan pembayaran {{ $booking->usesDownPayment() ? 'DP booking' : 'booking' }} <span class="font-semibold">Rp {{ number_format($booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</span> di halaman detail booking (tunai / transfer bank).
                     Setelah pembayaran diverifikasi pemilik kos, booking akan dikonfirmasi.
+                    @if($booking->usesDownPayment())
+                        DP dipotongkan dari tagihan sewa pertama dan tidak dapat dikembalikan jika booking ditolak atau dibatalkan.
+                    @endif
                 </p>
                 <a href="{{ route('tenant.booking.show', $booking) }}#pembayaran"
                    class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 transition">

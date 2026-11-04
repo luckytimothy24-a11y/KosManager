@@ -32,8 +32,9 @@ class BookingStatusService
     {
         $result = $this->transition($booking, $actor, Booking::STATUS_APPROVED, 'approve');
 
-        // Defense-in-depth: meski state machine lolos, payment prerequisite wajib.
-        if (($result['ok'] ?? false) && isset($result['booking']) && ! $result['booking']->hasApprovedPayment()) {
+        // Defense-in-depth: meski state machine lolos, payment prerequisite wajib
+        // dan nominalnya harus sesuai DP/harga booking yang ditentukan server.
+        if (($result['ok'] ?? false) && isset($result['booking']) && ! $result['booking']->hasApprovedPaymentInExpectedAmount()) {
             return ['ok' => false, 'error' => 'payment_required'];
         }
 
@@ -164,8 +165,12 @@ class BookingStatusService
             // Final transition booking → cancelled (satu jalur terkontrol).
             $booking->update(['status' => Booking::STATUS_CANCELLED]);
 
+            // DP non-refundable: hak owner langsung siap dicairkan.
+            $this->releaseDownPaymentDistribution($booking);
+
             // Distribution tidak otomatis processed saat cancel — biarkan pending/failed oleh policy bisnis.
-            // Owner amount hanya "hak" setelah booking confirmed; jika cancel sebelum confirm, distribution tetap pending.
+            // Owner amount hanya "hak" setelah booking confirmed; untuk booking DP yang terminal,
+            // DP tetap menjadi hak owner (non-refundable).
 
             $lockedRequest->update([
                 'status' => BookingCancellationRequest::STATUS_APPROVED,
@@ -175,6 +180,9 @@ class BookingStatusService
             ]);
 
             $this->syncRoomAfterBookingTransition($booking, Booking::STATUS_CANCELLED);
+
+            // Refund: mark approved payments as refund requested
+            $this->requestRefundForCancelledBooking($booking, $actor);
 
             return [
                 'ok' => true,
@@ -243,8 +251,9 @@ class BookingStatusService
                 return ['ok' => false, 'error' => 'invalid_transition'];
             }
 
-            // Payment prerequisite untuk konfirmasi booking.
-            if ($target === Booking::STATUS_APPROVED && ! $locked->hasApprovedPayment()) {
+            // Payment prerequisite untuk konfirmasi booking. Nominal harus sesuai
+            // DP booking baru atau harga penuh booking legacy.
+            if ($target === Booking::STATUS_APPROVED && ! $locked->hasApprovedPaymentInExpectedAmount()) {
                 return ['ok' => false, 'error' => 'payment_required'];
             }
 
@@ -266,8 +275,64 @@ class BookingStatusService
                 }
             }
 
+            // Booking terminal dengan DP → DP non-refundable menjadi hak owner.
+            if (in_array($target, [Booking::STATUS_REJECTED, Booking::STATUS_CANCELLED, Booking::STATUS_EXPIRED], true)) {
+                $this->releaseDownPaymentDistribution($locked);
+            }
+
             return ['ok' => true, 'booking' => $locked->fresh(['user', 'kos', 'kamar']), 'action' => $action];
         });
+    }
+
+/**
+     * Tandai pembayaran yang sudah approved sebagai refund requested
+     * saat booking dibatalkan oleh owner.
+     */
+    private function requestRefundForCancelledBooking(Booking $booking, User $actor): void
+    {
+        $pembayarans = \App\Models\Pembayaran::where('booking_id', $booking->id)
+            ->where('verification_status', 'approved')
+            ->where('refund_status', 'none')
+            ->get();
+
+        foreach ($pembayarans as $pembayaran) {
+            $pembayaran->update([
+                'refund_status' => \App\Models\Pembayaran::REFUND_REQUESTED,
+                'refund_amount' => $pembayaran->amount,
+                'refund_reason' => 'Booking dibatalkan oleh owner: ' . ($booking->booking_code ?? ''),
+            ]);
+
+            // Notifikasi ke tenant
+            try {
+                \App\Services\NotificationService::create(
+                    $booking->user_id,
+                    'refund',
+                    'Refund Diminta',
+                    "Booking {$booking->booking_code} dibatalkan. Refund sebesar Rp " . number_format($pembayaran->amount, 0, ',', '.') . " akan diproses.",
+                    ['url' => route('tenant.pembayaran.show', $pembayaran)],
+                    "refund:{$pembayaran->id}"
+                );
+            } catch (\Exception $e) {
+                \Log::warning("Refund notification failed for pembayaran {$pembayaran->id}: {$e->getMessage()}");
+            }
+        }
+    }
+
+    /**
+     * Lepaskan distribusi DP ke owner saat booking terminal.
+     * Hanya berlaku untuk booking baru yang memiliki DP; booking legacy tidak diubah.
+     */
+    private function releaseDownPaymentDistribution(Booking $booking): void
+    {
+        if (! $booking->usesDownPayment()) {
+            return;
+        }
+
+        try {
+            app(PaymentDistributionService::class)->markReadyForBooking($booking);
+        } catch (\Throwable $e) {
+            \Log::warning('Release DP distribution failed: '.$e->getMessage());
+        }
     }
 
     /**
@@ -316,21 +381,6 @@ class BookingStatusService
             return;
         }
 
-        $occupancy = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
-
-        if ($occupancy > 0) {
-            $kamar->update(['status' => 'occupied']);
-
-            return;
-        }
-
-        $stillReserved = Booking::where('kamar_id', $kamar->id)
-            ->whereIn('status', Booking::roomReservingStatuses())
-            ->whereDate('end_date', '>=', today())
-            ->exists();
-
-        $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
+        $kamar->syncStatus();
     }
 }

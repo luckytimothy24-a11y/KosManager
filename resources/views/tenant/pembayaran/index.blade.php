@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Pembayaran Saya" description="Riwayat pembayaran &amp; status verifikasinya." />
+        <x-page-header title="Pembayaran Saya" description="Riwayat pembayaran & status verifikasinya." />
     </x-slot>
 
     <div class="space-y-6">

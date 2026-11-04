@@ -58,7 +58,7 @@ class GroupBookingInvitationTest extends TestCase
 
     private function approve(Booking $booking): Booking
     {
-        $pay = app(PaymentService::class)->createForBooking($booking, $this->primary, 'cash');
+        $pay = app(PaymentService::class)->createForBooking($booking, $this->primary, 'qris');
         $this->assertTrue($pay['ok'], $pay['message'] ?? 'payment failed');
         $this->actingAs($this->owner)->post(route('owner.pembayaran.verify', $pay['pembayaran']));
 
@@ -96,7 +96,7 @@ class GroupBookingInvitationTest extends TestCase
         $occ = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', 1)->first();
         $this->assertNotNull($occ);
         $this->assertSame('accepted', $occ->status);
-        $this->assertSame('pending', $occ->identity_status);
+        $this->assertSame(BookingOccupant::IDENTITY_NOT_SUBMITTED, $occ->identity_status);
         $this->assertSame((int) $this->primary->id, (int) $occ->user_id);
     }
 
@@ -116,11 +116,11 @@ class GroupBookingInvitationTest extends TestCase
         $this->assertSame(1, (int) $b->requested_occupants);
     }
 
-    public function test_primary_occupant_identity_status_pending(): void
+    public function test_primary_occupant_identity_not_submitted_without_contact(): void
     {
         $b = $this->book();
         $occ = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', 1)->first();
-        $this->assertSame('pending', $occ->identity_status);
+        $this->assertSame(BookingOccupant::IDENTITY_NOT_SUBMITTED, $occ->identity_status);
     }
 
     public function test_owner_can_confirm_primary_identity(): void
@@ -130,7 +130,6 @@ class GroupBookingInvitationTest extends TestCase
         $token = Str::random(64);
         $occ->update([
             'invite_token_hash' => hash('sha256', $token),
-            'identity_number' => '3201234567890001',
             'phone' => '08123456789',
             'address' => 'Jl Test',
             'identity_data_submitted_at' => now(),
@@ -146,7 +145,6 @@ class GroupBookingInvitationTest extends TestCase
         $b = $this->approve($this->book());
         $occ = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', 1)->first();
         $occ->update([
-            'identity_number' => '3201234567890001',
             'phone' => '08123456789',
             'address' => 'Jl Test',
             'identity_data_submitted_at' => now(),
@@ -166,7 +164,6 @@ class GroupBookingInvitationTest extends TestCase
         $b = $this->approve($this->book());
         $occ = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', 1)->first();
         $occ->update([
-            'identity_number' => '3201234567890001',
             'phone' => '08123456789',
             'address' => 'Jl Test',
             'identity_data_submitted_at' => now(),
@@ -182,7 +179,6 @@ class GroupBookingInvitationTest extends TestCase
         $occ = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', 1)->first();
         $this->assertSame(0, $this->kamar->fresh()->occupancy());
         $occ->update([
-            'identity_number' => '3201234567890001',
             'phone' => '08123456789',
             'address' => 'Jl Test',
             'identity_data_submitted_at' => now(),
@@ -199,7 +195,6 @@ class GroupBookingInvitationTest extends TestCase
         $b = $this->approve($this->book());
         $occ = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', 1)->first();
         $occ->update([
-            'identity_number' => '3201234567890001',
             'phone' => '08123456789',
             'address' => 'Jl Test',
             'identity_data_submitted_at' => now(),

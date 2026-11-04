@@ -254,7 +254,7 @@ class NotificationSystemTest extends TestCase
         $response = $this->actingAs($tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
             'amount' => $tagihan->total,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertRedirect();

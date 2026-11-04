@@ -2,11 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
-use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
@@ -123,16 +121,7 @@ class ExpireOldKontraks extends Command
         $penghuni->update(['status' => 'inactive']);
 
         if ($kamar) {
-            $remainingOccupancy = Penghuni::where('kamar_id', $kamar->id)->where('status', 'active')->count();
-            if ($remainingOccupancy > 0) {
-                $kamar->update(['status' => 'occupied']);
-            } elseif ($kamar->status === 'occupied') {
-                $stillReserved = Booking::where('kamar_id', $kamar->id)
-                    ->where('status', 'approved')
-                    ->whereDate('end_date', '>=', today())
-                    ->exists();
-                $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
-            }
+            $kamar->syncStatus();
         }
 
         CheckOut::create([

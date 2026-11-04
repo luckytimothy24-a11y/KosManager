@@ -104,7 +104,7 @@ class ApiV1BillingTest extends TestCase
     {
         return [
             'amount' => 1500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => UploadedFile::fake()->create('bukti.pdf', 200, 'application/pdf'),
         ];
     }
@@ -265,15 +265,15 @@ class ApiV1BillingTest extends TestCase
         Storage::disk('private')->assertExists($payment->proof_file);
     }
 
-    public function test_payment_store_accepts_cash_without_proof(): void
+    public function test_payment_store_accepts_qris_without_proof(): void
     {
         $response = $this->withToken($this->token($this->tenant))->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
             'amount' => 1500000,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
         ]);
 
         $response->assertStatus(201);
-        $this->assertDatabaseHas('pembayarans', ['tagihan_id' => $this->tagihan->id, 'payment_method' => 'cash']);
+        $this->assertDatabaseHas('pembayarans', ['tagihan_id' => $this->tagihan->id, 'payment_method' => 'qris']);
     }
 
     public function test_payment_store_requires_authentication(): void
@@ -298,7 +298,7 @@ class ApiV1BillingTest extends TestCase
         $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$other->id}/pembayaran", [
                 'amount' => 1000000,
-                'payment_method' => 'cash',
+                'payment_method' => 'qris',
             ])
             ->assertStatus(403)
             ->assertJson(['message' => 'This action is unauthorized.']);
@@ -308,7 +308,7 @@ class ApiV1BillingTest extends TestCase
     public function test_payment_store_validates_amount_required(): void
     {
         $this->withToken($this->token($this->tenant))
-            ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", ['payment_method' => 'cash'])
+            ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", ['payment_method' => 'qris'])
             ->assertStatus(422)
             ->assertJsonStructure(['message', 'errors' => ['amount']]);
     }
@@ -318,11 +318,27 @@ class ApiV1BillingTest extends TestCase
         $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
                 'amount' => 500000,
-                'payment_method' => 'cash',
+                'payment_method' => 'qris',
             ])
             ->assertStatus(422)
             ->assertJson(['message' => 'The given data was invalid.'])
             ->assertJsonStructure(['errors' => ['amount']]);
+    }
+
+    public function test_payment_store_rejects_zero_and_negative_amount(): void
+    {
+        foreach ([0, -1500000] as $amount) {
+            $this->withToken($this->token($this->tenant))
+                ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
+                    'amount' => $amount,
+                    'payment_method' => 'qris',
+                ])
+                ->assertStatus(422)
+                ->assertJsonStructure(['message', 'errors' => ['amount']]);
+
+            $this->assertDatabaseMissing('pembayarans', ['tagihan_id' => $this->tagihan->id]);
+            $this->assertDatabaseHas('tagihans', ['id' => $this->tagihan->id, 'status' => 'unpaid']);
+        }
     }
 
     public function test_payment_store_rejects_invalid_method(): void
@@ -396,7 +412,7 @@ class ApiV1BillingTest extends TestCase
         $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
                 'amount' => 1500000,
-                'payment_method' => 'cash',
+                'payment_method' => 'qris',
                 'proof_file' => UploadedFile::fake()->create('bukti.txt', 200, 'text/plain'),
             ])
             ->assertStatus(422)
@@ -408,7 +424,7 @@ class ApiV1BillingTest extends TestCase
         $this->withToken($this->token($this->tenant))
             ->postJson("/api/v1/tagihan/{$this->tagihan->id}/pembayaran", [
                 'amount' => 1500000,
-                'payment_method' => 'cash',
+                'payment_method' => 'qris',
                 'proof_file' => UploadedFile::fake()->create('bukti.pdf', 6000, 'application/pdf'),
             ])
             ->assertStatus(422)

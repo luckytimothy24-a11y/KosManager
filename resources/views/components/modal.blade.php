@@ -47,8 +47,8 @@ $maxWidth = [
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-[60]"
-    style="display: {{ $show ? 'block' : 'none' }};"
+    class="fixed inset-0 z-[60] flex items-end justify-center overflow-y-auto px-3 py-4 sm:items-center sm:px-0 sm:py-6"
+    style="display: {{ $show ? 'flex' : 'none' }};"
 >
     <div
         x-show="show"
@@ -69,7 +69,7 @@ $maxWidth = [
         role="dialog" aria-modal="true" id="{{ $name }}-panel"
         aria-labelledby="{{ $name }}-title"
         @if($ariaLabel) aria-label="{{ $ariaLabel }}" @endif
-        class="mb-6 bg-white dark:bg-surface-elevated rounded-2xl overflow-hidden shadow-xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto border border-slate-100 dark:border-white/10"
+        class="w-full max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-surface-elevated rounded-2xl shadow-xl transform transition-all sm:mx-auto border border-slate-100 dark:border-white/10 {{ $maxWidth }}"
         tabindex="-1"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"

@@ -1,0 +1,1343 @@
+[
+  {
+    "role": "guest",
+    "path": "/",
+    "error": "Navigation timeout of 15000 ms exceeded"
+  },
+  {
+    "role": "guest",
+    "path": "/login",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 800,
+    "clientWidth": 800
+  },
+  {
+    "role": "guest",
+    "path": "/register",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "guest",
+    "path": "/kos",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/dashboard",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 800,
+    "clientWidth": 800
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/booking",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/tagihan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/pembayaran",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/checkin",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/kontrak",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/kos",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/favorites",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/damage-reports",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/messages",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/tenant/invitations",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/kamar",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/penghuni",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/kontrak",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/laporan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/messages",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/payouts",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/owner/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/kamar",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/penghuni",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/laporan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/admin/owners",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/users",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/owners",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/admins",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/kos",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/settings",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/system-health",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/super-admin/audit-log",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "tenant",
+    "path": "/profile",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/dashboard",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 800,
+    "clientWidth": 800
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/checkin",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/kontrak",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/favorites",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/messages",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/tenant/invitations",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/kos",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/kamar",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/booking",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/pembayaran",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/tagihan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/penghuni",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/kontrak",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/laporan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/messages",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/payouts",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/owner/damage-reports",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/kamar",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/penghuni",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/laporan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/admin/owners",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/users",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/owners",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/admins",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/kos",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/settings",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/system-health",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/super-admin/audit-log",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "owner",
+    "path": "/profile",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/dashboard",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 800,
+    "clientWidth": 800
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/checkin",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/kontrak",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/favorites",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/messages",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/tenant/invitations",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/kamar",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/penghuni",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/kontrak",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/laporan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/messages",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/payouts",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/owner/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/kos",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/kamar",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/booking",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/pembayaran",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/tagihan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/penghuni",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/laporan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/damage-reports",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/admin/owners",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/users",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/owners",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/admins",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/kos",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/settings",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/system-health",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/super-admin/audit-log",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "admin",
+    "path": "/profile",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/dashboard",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 800,
+    "clientWidth": 800
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/booking",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/tagihan",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/pembayaran",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/checkin",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/kontrak",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/kos",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/favorites",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/damage-reports",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/messages",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/tenant/invitations",
+    "status": 403,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/kos",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/kamar",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/booking",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/pembayaran",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/tagihan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/penghuni",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/kontrak",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/laporan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/messages",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/payouts",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/owner/damage-reports",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/kos",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/kamar",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/booking",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/pembayaran",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/tagihan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/checkin",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/penghuni",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/laporan",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/damage-reports",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/admin/owners",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/users",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/owners",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/admins",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/kos",
+    "status": 404,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/settings",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/system-health",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/super-admin/audit-log",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  },
+  {
+    "role": "super_admin",
+    "path": "/profile",
+    "status": 200,
+    "overflow": false,
+    "scrollWidth": 768,
+    "clientWidth": 768
+  }
+]

@@ -1,3 +1,5 @@
+@import './remixicon-subset.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -251,5 +253,292 @@
 
     .safe-area-bottom {
         padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Promo carousel
+   -------------------------------------------------------------------------- */
+.promo-track {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.promo-track::-webkit-scrollbar {
+    display: none;
+}
+
+.promo-reveal-item {
+    transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.promo-reveal-init .promo-reveal-item {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.promo-reveal-init .promo-reveal-item.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   Promo visual: ilustrasi SVG + motion yang hanya aktif saat kartu terlihat.
+   Semua animasi memakai transform/opacity, kecuali checkmark pembayaran yang
+   memakai stroke-dashoffset sesuai kebutuhan visual.
+   -------------------------------------------------------------------------- */
+.promo-art-stage {
+    transform: translate3d(0, 0, 0);
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
+.promo-reveal-item:hover .promo-art-stage {
+    transform: translate3d(-6px, 0, 0);
+}
+
+.promo-art-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.promo-art-svg [class*="pa-"] {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.pa-grain {
+    opacity: 0.12;
+    background-image: radial-gradient(#ffffff 1px, transparent 1px);
+    background-size: 14px 14px;
+}
+
+.pa-highlight {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), 0 4px 18px rgba(0, 0, 0, 0.45);
+}
+
+.pa-shine {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.pa-shine::after {
+    content: "";
+    position: absolute;
+    top: -60%;
+    left: 0;
+    width: 34%;
+    height: 220%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: translateX(-180%) rotate(22deg);
+}
+
+.pa-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+}
+
+.promo-reveal-item.is-playing .pa-float {
+    animation: pa-float 5.2s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-float-slow {
+    animation: pa-float-slow 6.4s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-pop {
+    animation: pa-pop 5.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.promo-reveal-item.is-playing .pa-sway {
+    animation: pa-sway 5.8s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-twinkle {
+    animation: pa-twinkle 4.6s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-spin {
+    animation: pa-spin 8s linear infinite;
+}
+
+.promo-reveal-item.is-playing .pa-slide {
+    animation: pa-slide 5.4s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-draw {
+    animation: pa-draw 5.4s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-badge {
+    animation: pa-badge 4s ease-in-out infinite;
+}
+
+.promo-reveal-item.is-playing .pa-shine::after {
+    animation: pa-shine 4.2s ease-in-out infinite;
+}
+
+.pa-delay-1 { animation-delay: 0.12s; animation-fill-mode: backwards; }
+.pa-delay-2 { animation-delay: 0.24s; animation-fill-mode: backwards; }
+.pa-delay-3 { animation-delay: 0.36s; animation-fill-mode: backwards; }
+.pa-delay-4 { animation-delay: 0.48s; animation-fill-mode: backwards; }
+.pa-delay-5 { animation-delay: 0.6s; animation-fill-mode: backwards; }
+
+.promo-reveal-item:hover .pa-float { animation-duration: 3.8s; }
+.promo-reveal-item:hover .pa-float-slow { animation-duration: 4.8s; }
+.promo-reveal-item:hover .pa-pop { animation-duration: 4.2s; }
+.promo-reveal-item:hover .pa-sway { animation-duration: 4.2s; }
+.promo-reveal-item:hover .pa-spin { animation-duration: 5.4s; }
+.promo-reveal-item:hover .pa-slide { animation-duration: 4.2s; }
+.promo-reveal-item:hover .pa-draw { animation-duration: 4.2s; }
+
+@keyframes pa-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes pa-float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes pa-pop {
+    0%, 8% { opacity: 0.28; transform: translateY(9px) scale(0.72); }
+    18% { opacity: 1; transform: translateY(-2px) scale(1.04); }
+    26%, 88% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0.28; transform: translateY(9px) scale(0.72); }
+}
+
+@keyframes pa-sway {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes pa-twinkle {
+    0%, 100% { opacity: 0.35; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes pa-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pa-slide {
+    0%, 30% { opacity: 0; transform: translateY(10px); }
+    45%, 84% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(6px); }
+}
+
+@keyframes pa-draw {
+    0%, 20% { stroke-dashoffset: 1; }
+    45%, 80% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 1; }
+}
+
+@keyframes pa-badge {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.94; transform: scale(1.035); }
+}
+
+@keyframes pa-shine {
+    0%, 68% { transform: translateX(-180%) rotate(22deg); }
+    88%, 100% { transform: translateX(420%) rotate(22deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .promo-reveal-init .promo-reveal-item {
+        opacity: 1;
+        transform: none;
+    }
+
+    .promo-art-stage,
+    .promo-reveal-item:hover .promo-art-stage {
+        transform: none !important;
+        transition: none !important;
+    }
+
+    .promo-art-svg [class*="pa-"],
+    .pa-badge {
+        animation: none !important;
+    }
+
+    .pa-shine::after {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile UX safeguards
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023.98px) {
+    .app-main {
+        padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    #main-sidebar nav a {
+        min-height: 2.75rem;
+    }
+
+    .page-header-actions > *,
+    .page-header-actions > form > button {
+        min-height: 2.75rem;
+    }
+
+    .table-card .h-8.w-8 {
+        min-height: 2.75rem;
+        min-width: 2.75rem;
+    }
+
+    nav[aria-label='Navigasi halaman'] a,
+    nav[aria-label='Navigasi halaman'] span {
+        min-height: 2.75rem;
+        min-width: 2.75rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .field-input,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        min-height: 2.75rem;
+    }
+
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']),
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    main form button[type='submit'] {
+        min-height: 2.75rem;
+    }
+
+    main form button.absolute[type='button'] {
+        right: 0.25rem;
+        display: grid;
+        min-height: 2.75rem;
+        min-width: 2.75rem;
+        place-items: center;
+    }
+
+    button[aria-haspopup='dialog'] {
+        min-height: 2.75rem;
+    }
+
+    button[aria-haspopup='dialog'].w-8 {
+        min-width: 2.75rem;
+    }
+}
+
+@media (max-width: 639.98px) {
+    .page-header-actions > * {
+        flex: 1 1 auto;
     }
 }

@@ -25,6 +25,9 @@ class KosFactory extends Factory
             'description' => fake()->paragraph(),
             'phone' => fake()->phoneNumber(),
             'status' => 'active',
+            'auto_billing_enabled' => true,
+            'billing_day' => 1,
+            'due_days' => 5,
         ];
     }
 }

@@ -74,20 +74,27 @@ class KosController extends Controller
         $coverIndex = $request->input('cover_index');
         unset($data['photos'], $data['cover_index']);
 
-        if ($request->user()->isOwner()) {
-            $data['owner_id'] = $request->user()->id;
+        $user = $request->user();
+        if ($user->isOwner()) {
+            $data['owner_id'] = $user->id;
         } else {
+            // Admin (or super_admin) must be assigned to at least one kos owned by the target owner
             $request->validate([
                 'owner_id' => ['required', Rule::exists('users', 'id')->where('role', 'owner')],
             ]);
-            $ownerId = $request->input('owner_id');
-            $adminKosIds = $request->user()->assignedKos()->pluck('kos.id');
-            $ownerHasAssignedKos = User::where('id', $ownerId)
-                ->where('role', 'owner')
-                ->whereHas('ownedKos', fn ($q) => $q->whereIn('id', $adminKosIds))
-                ->exists();
-            abort_unless($ownerHasAssignedKos, 403, 'Owner tidak berada dalam scope operasional Admin.');
-            $data['owner_id'] = $ownerId;
+            $targetOwnerId = $request->input('owner_id');
+
+            if ($user->isAdmin() && ! $user->isSuperAdmin()) {
+                $hasAccess = $user->assignedKos()
+                    ->where('owner_id', $targetOwnerId)
+                    ->exists();
+
+                if (! $hasAccess) {
+                    abort(403, 'Admin tidak memiliki akses untuk membuat kos untuk owner ini.');
+                }
+            }
+
+            $data['owner_id'] = $targetOwnerId;
         }
 
         // Legacy single photo backward compat

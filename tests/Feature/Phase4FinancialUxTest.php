@@ -227,29 +227,28 @@ class Phase4FinancialUxTest extends TestCase
         $response->assertOk();
         $response->assertSee('id="proof_file"', false);
         $response->assertSee('aria-describedby="proof-feedback proof-hint"', false);
-        $response->assertSee('name="payment_method" value="cash"', false);
+        $response->assertSee('name="payment_method" value="qris"', false);
         $response->assertSee('name="payment_method" value="transfer_bank"', false);
         $response->assertSee('Metode Pembayaran');
         $response->assertSee('Transfer Bank');
-        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('Pembayaran QRIS');
     }
 
-    public function test_tenant_tagihan_show_only_offers_cash_payment(): void
+    public function test_tenant_tagihan_show_only_offers_qris_payment(): void
     {
         $response = $this->actingAs($this->tenant)->get(route('tenant.tagihan.show', $this->tagihan));
 
         $response->assertOk();
         $response->assertSee('Metode Pembayaran');
         $response->assertSee('Transfer Bank');
-        $response->assertSee('Cash');
-        $response->assertSee('Pembayaran Tunai');
+        $response->assertSee('QRIS');
+        $response->assertSee('Pembayaran QRIS');
         $response->assertSee('name="payment_method" value="transfer_bank"', false);
-        $response->assertSee('name="payment_method" value="cash"', false);
+        $response->assertSee('name="payment_method" value="qris"', false);
         $response->assertSee('id="method-transfer_bank"', false);
         $response->assertDontSee('name="payment_method" value="e_wallet"', false);
         $response->assertDontSee('id="method-e_wallet"', false);
         $response->assertDontSee('Bayar Online');
-        $response->assertDontSee('QRIS');
         $response->assertDontSee('Virtual Account');
         $response->assertDontSee('E-Wallet');
     }

@@ -73,6 +73,12 @@
                             <span class="text-slate-500 dark:text-slate-400">Diskon</span>
                             <span class="font-medium text-green-600 dark:text-green-400">&minus; Rp {{ number_format($tagihan->discount, 0, ',', '.') }}</span>
                         </div>
+                        @if($tagihan->down_payment_discount > 0)
+                            <div class="flex items-center justify-between px-4 py-3">
+                                <span class="text-slate-500 dark:text-slate-400">Potongan DP Booking</span>
+                                <span class="font-medium text-green-600 dark:text-green-400">&minus; Rp {{ number_format($tagihan->down_payment_discount, 0, ',', '.') }}</span>
+                            </div>
+                        @endif
                         <div class="flex items-center justify-between px-4 py-3">
                             <span class="text-slate-500 dark:text-slate-400">Denda</span>
                             <span class="font-medium text-red-600 dark:text-red-400">+ Rp {{ number_format($tagihan->penalty, 0, ',', '.') }}</span>
@@ -99,7 +105,7 @@
                                     <div class="min-w-0">
                                         <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $p->payment_number }}</p>
                                         <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                                            <i class="{{ ['transfer_bank' => 'ri-bank-line', 'cash' => 'ri-cash-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }}"></i>
+                                            <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }}"></i>
                                             {{ \PaymentLabels::paymentMethod($p->payment_method) }}
                                         </p>
                                         <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ $p->payment_date->translatedFormat('d M Y') }}</p>
@@ -124,19 +130,22 @@
                 @if(Auth::user()->isTenant() && !in_array($tagihan->status, ['paid', 'cancelled']))
                     <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-primary-100 dark:border-primary-500/20 p-6">
                         <h4 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-1">
-                            <i class="ri-hand-coin-line text-primary-500"></i> Konfirmasi Pembayaran Tunai
+                            <i class="ri-qr-code-2-line text-primary-500"></i> Pembayaran QRIS
                         </h4>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Pembayaran tunai akan diverifikasi oleh pemilik kos dalam 1&times;24 jam.</p>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Scan QR code, lalu kirim konfirmasi. Pembayaran akan diverifikasi oleh pemilik kos.</p>
                         <form method="POST" action="{{ route('tenant.pembayaran.store') }}" enctype="multipart/form-data" x-data="{ submitting: false }" x-on:submit="submitting = true">
                             @csrf
                             <input type="hidden" name="tagihan_id" value="{{ $tagihan->id }}">
                             <input type="hidden" name="amount" value="{{ $tagihan->total }}">
-                            <input type="hidden" name="payment_method" value="cash">
+                            <input type="hidden" name="payment_method" value="qris">
                             <div class="space-y-4">
-                                <div>
-                                    <label for="amount_display" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Nominal</label>
-                                    <input id="amount_display" type="text" value="Rp {{ number_format($tagihan->total, 0, ',', '.') }}" readonly disabled
-                                           class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-surface-elevated/60 dark:text-slate-200 text-sm font-bold cursor-not-allowed">
+                                <div class="flex flex-col items-center gap-2 rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/[0.06] p-4">
+                                    @php
+                                        $qrCodeData = 'QRIS|TAGIHAN|' . $tagihan->bill_number . '|' . $tagihan->total;
+                                        $qrCode = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrCodeData) . '&size=180x180';
+                                    @endphp
+                                    <img src="{{ $qrCode }}" alt="QRIS Tagihan {{ $tagihan->bill_number }}" class="rounded-lg border border-slate-200 dark:border-slate-700 p-2 bg-white">
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Total: <strong class="text-slate-800 dark:text-slate-100">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</strong></p>
                                 </div>
                                 <div>
                                     <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Bukti Pembayaran <span class="font-normal">(opsional)</span></label>
@@ -146,7 +155,7 @@
                                 </div>
                                 <button type="submit" :disabled="submitting"
                                         class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
-                                    <i class="ri-hand-coin-line"></i> Kirim &amp; Tunggu Verifikasi
+                                    <i class="ri-qr-code-2-line"></i> Kirim Konfirmasi QRIS
                                 </button>
                             </div>
                         </form>

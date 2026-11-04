@@ -103,8 +103,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/owner/kontrak/{kontrak}', [OwnerKontrakController::class, 'show'])->name('api.v1.owner.kontrak.show');
         Route::get('/owner/kontrak/{kontrak}/tagihan', [OwnerKontrakController::class, 'tagihan'])->name('api.v1.owner.kontrak.tagihan');
         Route::get('/owner/tagihan/{tagihan}/pembayaran', [OwnerTagihanController::class, 'pembayaran'])->name('api.v1.owner.tagihan.pembayaran.index');
-        Route::post('/owner/pembayaran/{pembayaran}/verify', [OwnerActionController::class, 'verifyPayment'])->name('api.v1.owner.pembayaran.verify');
-        Route::post('/owner/pembayaran/{pembayaran}/reject', [OwnerActionController::class, 'rejectPayment'])->name('api.v1.owner.pembayaran.reject');
+        Route::post('/owner/pembayaran/{pembayaran}/verify', [OwnerActionController::class, 'verifyPayment'])->name('api.v1.owner.pembayaran.verify')->middleware('throttle:5,30');
+        Route::post('/owner/pembayaran/{pembayaran}/reject', [OwnerActionController::class, 'rejectPayment'])->name('api.v1.owner.pembayaran.reject')->middleware('throttle:5,30');
         Route::post('/owner/checkout/{checkout}/approve', [OwnerActionController::class, 'approveCheckout'])->name('api.v1.owner.checkout.approve');
         Route::post('/owner/checkout/{checkout}/cancel', [OwnerActionController::class, 'cancelCheckout'])->name('api.v1.owner.checkout.cancel');
         Route::post('/owner/checkout/bulk-approve', [OwnerActionController::class, 'bulkApproveCheckout'])->name('api.v1.owner.checkout.bulk-approve');

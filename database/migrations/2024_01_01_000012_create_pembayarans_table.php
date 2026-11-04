@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('penghuni_id')->constrained('penghunis')->onDelete('cascade');
             $table->decimal('amount', 12, 2);
             $table->date('payment_date');
-            $table->enum('payment_method', ['transfer_bank', 'cash', 'e_wallet']);
+            $table->enum('payment_method', ['transfer_bank', 'qris', 'e_wallet']);
             $table->string('proof_file')->nullable();
             $table->enum('verification_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('admin_notes')->nullable();

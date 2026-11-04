@@ -44,6 +44,7 @@ class Booking extends Model
         'billing_mode',
         'requested_occupants',
         'price',
+        'down_payment_amount',
         'status',
         'identity_confirmed_at',
         'identity_confirmed_by',
@@ -65,6 +66,7 @@ class Booking extends Model
         'identity_rejected_at' => 'datetime',
         'identity_data_submitted_at' => 'datetime',
         'price' => 'decimal:2',
+        'down_payment_amount' => 'decimal:2',
         'billing_mode' => 'string',
         'requested_occupants' => 'integer',
     ];
@@ -206,6 +208,26 @@ class Booking extends Model
     }
 
     /**
+     * Booking baru memakai DP; booking legacy (NULL) memakai harga penuh.
+     */
+    public function usesDownPayment(): bool
+    {
+        return $this->down_payment_amount !== null;
+    }
+
+    /**
+     * Nominal pembayaran booking yang diharapkan server.
+     */
+    public function expectedBookingPaymentAmount(): float
+    {
+        if ($this->usesDownPayment()) {
+            return round((float) $this->down_payment_amount, 2);
+        }
+
+        return round((float) $this->price, 2);
+    }
+
+    /**
      * Prerequisite konfirmasi booking: minimal ada payment approved.
      */
     public function hasApprovedPayment(): bool
@@ -213,6 +235,25 @@ class Booking extends Model
         return Pembayaran::where('booking_id', $this->id)
             ->where('verification_status', Pembayaran::STATUS_APPROVED)
             ->exists();
+    }
+
+    /**
+     * Payment approved harus sesuai nominal server (DP untuk booking baru,
+     * harga penuh untuk booking legacy). Mencegah approved payment nominal lain
+     * dipakai untuk mengonfirmasi booking.
+     */
+    public function hasApprovedPaymentInExpectedAmount(): bool
+    {
+        $expected = $this->expectedBookingPaymentAmount();
+
+        if ($expected <= 0) {
+            return false;
+        }
+
+        return Pembayaran::where('booking_id', $this->id)
+            ->where('verification_status', Pembayaran::STATUS_APPROVED)
+            ->get()
+            ->contains(fn (Pembayaran $payment) => round((float) $payment->amount, 2) === $expected);
     }
 
     /**
@@ -379,8 +420,9 @@ class Booking extends Model
 
     public function hasIdentityData(): bool
     {
+        // KTP tidak lagi dikumpulkan untuk alur tenant baru. Identitas check-in
+        // cukup memakai WhatsApp + alamat.
         return $this->identity_data_submitted_at !== null
-            && filled($this->identity_number)
             && filled($this->phone)
             && filled($this->address);
     }

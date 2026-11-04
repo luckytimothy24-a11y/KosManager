@@ -12,7 +12,6 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         html { scroll-behavior: smooth; }
@@ -51,7 +50,7 @@
             </a>
 
             <nav class="hidden md:flex items-center gap-8" aria-label="Navigasi utama">
-                <a href="#properti" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Cari Kos</a>
+                <a href="{{ route('tenant.kos.index') }}" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Cari Kos</a>
                 <a href="#kategori" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Kategori</a>
                 <a href="#keunggulan" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">Keunggulan</a>
                 <a href="#faq" class="text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-300 transition">FAQ</a>
@@ -61,14 +60,20 @@
                 <a href="{{ route('tenant.kos.index') }}"
                    class="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition"
                    title="Cari Kos" aria-label="Cari Kos">
-                    <i class="ri-search-line text-lg"></i>
+                    <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                    </svg>
                 </a>
                 <button type="button"
                         onclick="document.documentElement.classList.toggle('dark'); localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';"
                         class="p-2 rounded-lg text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition"
                         title="Ganti tema" aria-label="Ganti tema gelap/terang">
-                    <i class="ri-moon-line text-lg dark:hidden"></i>
-                    <i class="ri-sun-line text-lg hidden dark:block"></i>
+                    <svg class="h-[18px] w-[18px] dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                    </svg>
+                    <svg class="hidden h-[18px] w-[18px] dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                    </svg>
                 </button>
 
                 @guest
@@ -82,17 +87,29 @@
                         <summary class="list-none cursor-pointer select-none flex items-center gap-2 pl-1 pr-2 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition" aria-label="Menu akun">
                             <span class="w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 text-xs font-bold flex items-center justify-center uppercase">{{ mb_substr($authUser->name, 0, 1) }}</span>
                             <span class="hidden lg:block max-w-[120px] truncate text-sm font-medium text-gray-700 dark:text-slate-200">{{ $authUser->name }}</span>
-                            <i class="ri-arrow-down-s-line text-gray-400 text-base"></i>
+                            <svg class="h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
                         </summary>
                         <div class="absolute right-0 mt-2 w-52 bg-white dark:bg-surface-elevated rounded-xl shadow-lg border border-gray-100 dark:border-white/10 py-1.5 z-50">
                             <div class="px-4 py-2 border-b border-gray-100 dark:border-white/10">
                                 <p class="text-sm font-semibold text-gray-800 dark:text-slate-50 truncate">{{ $authUser->name }}</p>
                                 <p class="text-xs text-gray-400 dark:text-slate-500 truncate">{{ $authUser->email }}</p>
                             </div>
-                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-user-settings-line text-base"></i> Profile</a>
+                            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Profile
+                            </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition text-left"><i class="ri-logout-box-r-line text-base"></i> Logout</button>
+                                <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition text-left">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>
+                                    </svg>
+                                    Logout
+                                </button>
                             </form>
                         </div>
                     </details>
@@ -100,8 +117,13 @@
 
                 <button type="button" id="mobile-menu-button"
                         class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition"
-                        aria-expanded="false" aria-controls="mobile-menu" aria-label="Buka menu navigasi">
-                    <i class="ri-menu-line text-xl"></i>
+                        aria-expanded="false" aria-controls="mobile-menu" aria-label="Buka menu navigasi" title="Buka menu navigasi">
+                    <svg class="menu-icon-open h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
+                    </svg>
+                    <svg class="menu-icon-close hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                    </svg>
                 </button>
             </div>
         </div>
@@ -109,10 +131,22 @@
         {{-- MOBILE MENU --}}
         <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 dark:border-white/10 bg-white dark:bg-surface-elevated">
             <nav class="max-w-[1170px] mx-auto px-4 py-3 space-y-1" aria-label="Navigasi mobile">
-                <a href="#properti" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-search-eye-line mr-2 text-primary-500"></i>Cari Kos</a>
-                <a href="#kategori" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-grid-line mr-2 text-primary-500"></i>Kategori</a>
-                <a href="#keunggulan" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-award-line mr-2 text-primary-500"></i>Keunggulan</a>
-                <a href="#faq" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-question-line mr-2 text-primary-500"></i>FAQ</a>
+                <a href="{{ route('tenant.kos.index') }}" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                    <svg class="mr-2 inline h-4 w-4 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    Cari Kos
+                </a>
+                <a href="#kategori" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                    <svg class="mr-2 inline h-4 w-4 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+                    Kategori
+                </a>
+                <a href="#keunggulan" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                    <svg class="mr-2 inline h-4 w-4 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    Keunggulan
+                </a>
+                <a href="#faq" class="block px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                    <svg class="mr-2 inline h-4 w-4 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    FAQ
+                </a>
                 <div class="pt-2 mt-2 border-t border-gray-100 dark:border-white/10 grid grid-cols-2 gap-2">
                     @guest
                         <a href="{{ route('login') }}" class="inline-flex justify-center items-center text-sm font-medium text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-white/[0.08] px-4 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition">Masuk</a>
@@ -120,19 +154,26 @@
                             <a href="{{ route('register') }}" class="inline-flex justify-center items-center text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">Daftar</a>
                         @endif
                     @else
-                        <a href="{{ url('/dashboard') }}" class="col-span-2 inline-flex justify-center items-center gap-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition"><i class="ri-dashboard-line"></i> Dashboard</a>
-                        <a href="{{ route('profile.edit') }}" class="inline-flex justify-center items-center gap-2 text-sm font-medium text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-white/[0.08] px-4 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition"><i class="ri-user-settings-line"></i> Profile</a>
+                        <a href="{{ url('/dashboard') }}" class="col-span-2 inline-flex justify-center items-center gap-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                            Dashboard
+                        </a>
+                        <a href="{{ route('profile.edit') }}" class="inline-flex justify-center items-center gap-2 text-sm font-medium text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-white/[0.08] px-4 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Profile
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="w-full inline-flex justify-center items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 px-4 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition"><i class="ri-logout-box-r-line"></i> Logout</button>
+                            <button type="submit" class="w-full inline-flex justify-center items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/30 px-4 py-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10 transition">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+                                Logout
+                            </button>
                         </form>
                     @endguest
                 </div>
             </nav>
         </div>
     </header>
-
-    <x-ads-carousel :ads="$partnerAds" />
 
 
     @if(session('status'))
@@ -160,7 +201,7 @@
                     Cari kos sesuai lokasi, budget, dan kebutuhanmu dalam satu platform.
                 </p>
 
-                <form method="GET" action="/" class="mt-8 max-w-xl mx-auto lg:mx-0 bg-gray-50 dark:bg-surface-elevated rounded-2xl p-2 border border-gray-200 dark:border-white/10 focus-within:border-primary-300 dark:focus-within:border-primary-500/50 focus-within:ring-2 focus-within:ring-primary-500/10 transition shadow-sm">
+                <form method="GET" action="{{ route('tenant.kos.index') }}" class="mt-8 max-w-xl mx-auto lg:mx-0 bg-gray-50 dark:bg-surface-elevated rounded-2xl p-2 border border-gray-200 dark:border-white/10 focus-within:border-primary-300 dark:focus-within:border-primary-500/50 focus-within:ring-2 focus-within:ring-primary-500/10 transition shadow-sm">
                     <div class="flex items-center">
                         <label for="hero-search" class="sr-only">Cari kos</label>
                         <div class="flex-1 flex items-center gap-2 px-3 min-w-0">
@@ -185,7 +226,7 @@
                 </form>
 
                 <div class="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-                    <a href="#properti" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
+                    <a href="{{ route('tenant.kos.index') }}" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
                         <i class="ri-search-line"></i> Lihat Kos
                     </a>
                     @guest
@@ -339,6 +380,9 @@
             </div>
         </div>
     </section>
+
+    {{-- ============================== PROMO PARTNER (di bawah hero agar search tetap di atas fold) ============================== --}}
+    <x-ads-carousel :ads="$partnerAds" />
 
     {{-- ============================== PROPERTY GRID (POPULAR KOS) ============================== --}}
     <section id="properti" class="scroll-mt-20 bg-gray-50 dark:bg-surface-elevated/60 py-16">
@@ -632,7 +676,7 @@
                 <div>
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Produk</p>
                     <ul class="mt-3.5 space-y-2.5">
-                        <li><a href="#properti" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Cari Kos</a></li>
+                        <li><a href="{{ route('tenant.kos.index') }}" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Cari Kos</a></li>
                         <li><a href="#keunggulan" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Untuk Pemilik Kos</a></li>
                         <li><a href="#faq" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">FAQ</a></li>
                         <li><a href="{{ Route::has('login') ? route('login') : '#' }}" class="text-sm text-gray-400 hover:text-white transition-colors duration-200">Masuk</a></li>
@@ -680,21 +724,25 @@
             var menu = document.getElementById('mobile-menu');
 
             if (btn && menu) {
-                btn.addEventListener('click', function () {
-                    var isOpen = !menu.classList.toggle('hidden');
+                function setMenuState(isOpen) {
                     btn.setAttribute('aria-expanded', String(isOpen));
-                    var icon = btn.querySelector('i');
-                    if (icon) {
-                        icon.className = isOpen ? 'ri-close-line text-xl' : 'ri-menu-line text-xl';
-                    }
+                    btn.setAttribute('aria-label', isOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+                    btn.setAttribute('title', isOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi');
+                    var openIcon = btn.querySelector('.menu-icon-open');
+                    var closeIcon = btn.querySelector('.menu-icon-close');
+                    if (openIcon) { openIcon.classList.toggle('hidden', isOpen); }
+                    if (closeIcon) { closeIcon.classList.toggle('hidden', ! isOpen); }
+                }
+
+                btn.addEventListener('click', function () {
+                    var isOpen = ! menu.classList.toggle('hidden');
+                    setMenuState(isOpen);
                 });
 
                 menu.querySelectorAll('a').forEach(function (a) {
                     a.addEventListener('click', function () {
                         menu.classList.add('hidden');
-                        btn.setAttribute('aria-expanded', 'false');
-                        var icon = btn.querySelector('i');
-                        if (icon) { icon.className = 'ri-menu-line text-xl'; }
+                        setMenuState(false);
                     });
                 });
             }
@@ -714,7 +762,15 @@
                     if (menu && !menu.classList.contains('hidden')) {
                         menu.classList.add('hidden');
                         var b = document.getElementById('mobile-menu-button');
-                        if (b) { b.setAttribute('aria-expanded', 'false'); }
+                        if (b) {
+                            b.setAttribute('aria-expanded', 'false');
+                            b.setAttribute('aria-label', 'Buka menu navigasi');
+                            b.setAttribute('title', 'Buka menu navigasi');
+                            var openIcon = b.querySelector('.menu-icon-open');
+                            var closeIcon = b.querySelector('.menu-icon-close');
+                            if (openIcon) { openIcon.classList.remove('hidden'); }
+                            if (closeIcon) { closeIcon.classList.add('hidden'); }
+                        }
                     }
                 }
             });
@@ -746,23 +802,23 @@
 <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-surface-elevated/90 backdrop-blur-xl border-t border-slate-200/60 dark:border-white/[0.08]/50 safe-area-bottom" aria-label="Navigasi utama">
     <div class="flex items-center justify-around h-16 px-1">
         <a href="/" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-500/15" aria-label="Beranda">
-            <i class="ri-home-fill text-lg"></i>
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2 2.8 11a1 1 0 0 0 1.3 1.5L5 11.8V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-8.2l.9.7a1 1 0 0 0 1.3-1.5L12 3.2Z"/></svg>
             <span class="text-[10px] font-semibold leading-none">Beranda</span>
         </a>
         <a href="{{ route('tenant.favorites.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Favorit">
-            <i class="ri-heart-line text-lg"></i>
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
             <span class="text-[10px] font-semibold leading-none">Favorit</span>
         </a>
         <a href="{{ route('tenant.booking.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Booking">
-            <i class="ri-calendar-check-line text-lg"></i>
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
             <span class="text-[10px] font-semibold leading-none">Booking</span>
         </a>
         <a href="{{ route('tenant.tagihan.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Tagihan">
-            <i class="ri-bill-line text-lg"></i>
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>
             <span class="text-[10px] font-semibold leading-none">Tagihan</span>
         </a>
         <a href="{{ route('login') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Profil">
-            <i class="ri-user-line text-lg"></i>
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span class="text-[10px] font-semibold leading-none">Profil</span>
         </a>
     </div>

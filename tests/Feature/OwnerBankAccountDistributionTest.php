@@ -76,7 +76,7 @@ class OwnerBankAccountDistributionTest extends TestCase
 
     private function payAndApprove(Booking $booking): Pembayaran
     {
-        $pay = app(PaymentService::class)->createForBooking($booking, $this->tenant, 'cash');
+        $pay = app(PaymentService::class)->createForBooking($booking, $this->tenant, 'qris');
         $this->assertTrue($pay['ok'], $pay['message'] ?? 'pay failed');
 
         $this->actingAs($this->owner)->post(route('owner.pembayaran.verify', $pay['pembayaran']));
@@ -174,7 +174,7 @@ class OwnerBankAccountDistributionTest extends TestCase
             'end_date' => today()->addMonths(2),
         ]);
 
-        $pay = app(PaymentService::class)->createForBooking($booking, $this->tenant, 'cash');
+        $pay = app(PaymentService::class)->createForBooking($booking, $this->tenant, 'qris');
         // Verify oleh owner B (pemilik kos) — owner A tidak punya scope
         $this->actingAs($ownerB)->post(route('owner.pembayaran.verify', $pay['pembayaran']));
 
@@ -302,7 +302,7 @@ class OwnerBankAccountDistributionTest extends TestCase
         $pay = app(PaymentService::class)->createForBooking(
             $booking,
             $this->tenant,
-            'cash',
+            'qris',
             null,
             null
         );
@@ -343,7 +343,7 @@ class OwnerBankAccountDistributionTest extends TestCase
         $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $tagihan->id,
             'amount' => $tagihan->total,
-            'payment_method' => 'cash',
+            'payment_method' => 'qris',
             'proof_file' => $proof,
         ])->assertRedirect();
 

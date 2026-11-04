@@ -82,7 +82,12 @@ class BookingService
                 return ['ok' => false, 'error' => 'no_price'];
             }
 
+            $phone = trim((string) ($payload['phone'] ?? ''));
+            $address = trim((string) ($payload['address'] ?? ''));
+            $identitySubmittedAt = $phone !== '' && $address !== '' ? now() : null;
+
             // STATUS SELALU pending — jangan percaya status dari frontend.
+            // DP selalu dari server; KTP tidak lagi dikumpulkan.
             $booking = Booking::create([
                 'booking_code' => 'BK-'.strtoupper(Str::random(8)),
                 'user_id' => $userId,
@@ -93,13 +98,13 @@ class BookingService
                 'end_date' => $payload['end_date'],
                 'rental_type' => $payload['rental_type'],
                 'price' => $price,
+                'down_payment_amount' => app(DownPaymentService::class)->configuredAmount(),
                 'billing_mode' => $billingMode,
                 'requested_occupants' => $requestedOccupants,
                 'notes' => $payload['notes'] ?? null,
-                'identity_number' => trim($payload['identity_number'] ?? ''),
-                'phone' => $payload['phone'] ?? '',
-                'address' => trim($payload['address'] ?? ''),
-                'identity_data_submitted_at' => now(),
+                'phone' => $phone,
+                'address' => $address,
+                'identity_data_submitted_at' => $identitySubmittedAt,
                 'status' => Booking::STATUS_PENDING,
             ]);
 
@@ -114,11 +119,10 @@ class BookingService
                             'email' => strtolower($user?->email ?? ''),
                             'display_name' => $user?->name ?? null,
                             'status' => BookingOccupant::STATUS_ACCEPTED,
-                            'identity_status' => BookingOccupant::IDENTITY_PENDING,
-                            'identity_number' => trim($payload['identity_number'] ?? ''),
-                            'phone' => $payload['phone'] ?? '',
-                            'address' => trim($payload['address'] ?? ''),
-                            'identity_data_submitted_at' => now(),
+                            'identity_status' => $phone !== '' && $address !== '' ? BookingOccupant::IDENTITY_PENDING : BookingOccupant::IDENTITY_NOT_SUBMITTED,
+                            'phone' => $phone,
+                            'address' => $address,
+                            'identity_data_submitted_at' => $identitySubmittedAt,
                         ]
                     );
                 }

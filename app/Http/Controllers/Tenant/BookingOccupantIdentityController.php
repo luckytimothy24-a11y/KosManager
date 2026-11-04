@@ -20,7 +20,8 @@ class BookingOccupantIdentityController extends Controller
             return response()->json(['data' => [
                 'id' => $occupant->id,
                 'identity_status' => $occupant->identity_status,
-                'identity_number' => $occupant->maskedIdentityNumber(),
+                'phone' => $occupant->phone,
+                'address' => $occupant->address,
             ]]);
         }
 
@@ -36,7 +37,6 @@ class BookingOccupantIdentityController extends Controller
         abort_unless($occupant->status === BookingOccupant::STATUS_ACCEPTED, 422);
 
         $data = $request->validate([
-            'identity_number' => ['required', 'string', 'min:8', 'max:50'],
             'phone' => ['required', 'string', 'min:9', 'max:30'],
             'address' => ['required', 'string', 'min:5'],
         ]);
@@ -44,7 +44,6 @@ class BookingOccupantIdentityController extends Controller
         $phone = $this->normalizePhone($data['phone']);
 
         $occupant->update([
-            'identity_number' => trim($data['identity_number']),
             'phone' => $phone,
             'address' => trim($data['address']),
             'identity_data_submitted_at' => now(),

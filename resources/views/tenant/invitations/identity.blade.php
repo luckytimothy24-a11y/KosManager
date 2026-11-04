@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Lengkapi Identitas" description="Isi KTP, WhatsApp & alamat — untuk verifikasi owner saat check-in." icon="ri-shield-keyhole-line" />
+        <x-page-header title="Lengkapi Kontak" description="Isi WhatsApp & alamat — untuk verifikasi owner saat check-in." icon="ri-shield-keyhole-line" />
     </x-slot>
 
     <div class="max-w-lg mx-auto space-y-6">
@@ -32,7 +32,7 @@
                     <span class="grid w-10 h-10 place-items-center rounded-xl bg-primary-500 text-white shrink-0"><i class="ri-time-line text-xl"></i></span>
                     <div>
                         <p class="text-sm font-bold text-primary-800 dark:text-primary-300">Menunggu konfirmasi owner</p>
-                        <p class="text-xs leading-relaxed text-primary-700 dark:text-primary-400 mt-1">Data sudah kami kirim. Owner akan cek KTP & kontakmu sebelum menyetujui check-in. Kamu akan mendapat notifikasi.</p>
+                        <p class="text-xs leading-relaxed text-primary-700 dark:text-primary-400 mt-1">Data sudah kami kirim. Owner akan cek kontak & alamatmu sebelum menyetujui check-in. Kamu akan mendapat notifikasi.</p>
                     </div>
                 </div>
                 <p class="mt-4 text-center text-xs text-slate-400 dark:text-slate-500"><i class="ri-information-line mr-1"></i> Jika ada yang salah, hubungi owner lewat pesan.</p>
@@ -41,13 +41,7 @@
                     @csrf
                     <div class="rounded-2xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/50 dark:bg-primary-500/5 p-4 flex gap-3">
                         <span class="hidden sm:grid w-9 h-9 place-items-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-white shadow-sm shrink-0"><i class="ri-lightbulb-flash-line"></i></span>
-                        <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-300"><b class="text-slate-900 dark:text-slate-50">Tips:</b> Pastikan NIK 16 digit, WhatsApp aktif, dan alamat jelas agar verifikasi cepat disetujui.</p>
-                    </div>
-                    <div>
-                        <label class="field-label"><i class="ri-pass-valid-line text-primary-500 mr-1"></i> Nomor KTP (NIK) <span class="text-red-500">*</span></label>
-                        <input type="text" name="identity_number" value="{{ old('identity_number', $occupant->identity_number) }}" required inputmode="numeric" maxlength="50" placeholder="16 digit — contoh 3201xxxxxxxxxxxx"
-                               class="field-input">
-                        @error('identity_number')<p role="alert" class="text-xs font-medium text-red-500 mt-1.5">{{ $message }}</p>@enderror
+                        <p class="text-xs leading-relaxed text-slate-700 dark:text-slate-300"><b class="text-slate-900 dark:text-slate-50">Tips:</b> Pastikan WhatsApp aktif dan alamat jelas agar verifikasi cepat disetujui.</p>
                     </div>
                     <div>
                         <label class="field-label"><i class="ri-whatsapp-line text-emerald-500 mr-1"></i> WhatsApp <span class="text-red-500">*</span></label>
@@ -58,8 +52,7 @@
                     </div>
                     <div>
                         <label class="field-label"><i class="ri-map-pin-line text-primary-500 mr-1"></i> Alamat Lengkap <span class="text-red-500">*</span></label>
-                        <textarea name="address" rows="3" required maxlength="500" placeholder="Alamat domisili saat ini — jalan, RT/RW, kelurahan"
-                                  class="field-input resize-none">{{ old('address', $occupant->address) }}</textarea>
+                        <textarea name="address" rows="3" required maxlength="500" placeholder="Alamat domisili saat ini — jalan, RT/RW, kelurahan"                                  class="field-input resize-none">{{ old('address', $occupant->address) }}</textarea>
                         @error('address')<p role="alert" class="text-xs font-medium text-red-500 mt-1.5">{{ $message }}</p>@enderror
                     </div>
                     <button :disabled="submitting" class="btn-primary w-full py-3">

@@ -9,6 +9,17 @@ use Illuminate\Validation\Rule;
 class ProfileUpdateRequest extends FormRequest
 {
     /**
+     * Tenant tidak lagi memiliki field NIK di profil. Jika client lama masih
+     * mengirim identity_number, nilainya diabaikan (tidak ditolak).
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->user()?->isTenant()) {
+            $this->request->remove('identity_number');
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>

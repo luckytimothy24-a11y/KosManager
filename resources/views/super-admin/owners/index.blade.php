@@ -32,8 +32,36 @@
             </form>
         </div>
 
+        <div class="space-y-3 md:hidden">
+            @forelse($owners as $owner)
+                <x-mobile-record-card
+                    :title="$owner->name"
+                    :subtitle="$owner->email"
+                    :meta="[
+                        'Telepon' => $owner->phone ?? '-',
+                        'Kos' => $owner->owned_kos_count ?? 0,
+                        'Kamar' => $owner->ownedKos->sum('kamar_count') ?? 0,
+                        'Tenant' => $owner->penghunis_count ?? 0,
+                    ]">
+                    <x-slot name="badge">
+                        <x-status-badge :status="$owner->is_active ? 'active' : 'inactive'" context="penghuni" :label="$owner->is_active ? 'Aktif' : 'Nonaktif'" />
+                    </x-slot>
+                    <x-slot name="actions">
+                        <x-button href="{{ route('super-admin.owners.show', $owner) }}" type="secondary" size="sm" class="min-h-11">
+                            <i class="ri-eye-line"></i> Detail
+                        </x-button>
+                    </x-slot>
+                </x-mobile-record-card>
+            @empty
+                <div class="card-surface">
+                    <x-empty-state icon="ri-building-2-line" title="Tidak ada owner ditemukan"
+                                   description="Coba ubah kata kunci pencarian atau filter." />
+                </div>
+            @endforelse
+        </div>
+
         <div class="table-card">
-            <div class="overflow-x-auto scrollbar-thin">
+            <div class="hidden overflow-x-auto scrollbar-thin md:block">
                 <table class="w-full">
                     <thead>
                         <tr>

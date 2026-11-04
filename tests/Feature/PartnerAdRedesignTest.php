@@ -148,31 +148,56 @@ class PartnerAdRedesignTest extends TestCase
 
     public function test_banner_without_logo_or_image_falls_back_to_typographic_monogram(): void
     {
-        $ad = $this->livePartnerCampaign('dana', 'marketplace');
+        $ad = $this->livePartnerCampaign('tokopedia', 'marketplace');
 
         $html = $this->renderAd($ad, 'marketplace', 'banner');
 
         // Monogram inisial muncul dan TIDAK ada <img> broken/placeholder.
-        $this->assertStringContainsString('aria-hidden="true">D', $html);
+        // 'tokopedia' tidak ada di $partnerLogos, jadi hanya monogram inisial (T).
+        $this->assertStringContainsString('aria-hidden="true">T', $html);
         $this->assertStringNotContainsString('<img', $html);
 
         // Card & compact juga memakai monogram.
         $card = $this->renderAd($ad, 'marketplace', 'card');
-        $this->assertStringContainsString('aria-hidden="true">D', $card);
+        $this->assertStringContainsString('aria-hidden="true">T', $card);
         $this->assertStringNotContainsString('<img', $card);
 
         $compact = $this->renderAd($ad, 'marketplace', 'compact');
-        $this->assertStringContainsString('aria-hidden="true">D', $compact);
+        $this->assertStringContainsString('aria-hidden="true">T', $compact);
     }
 
-    public function test_campaign_with_logo_renders_registered_partner_logo(): void
+    public function test_campaign_with_external_logo_renders_when_partner_not_in_registry(): void
     {
-        $ad = $this->livePartnerCampaign('shopee', 'homepage');
-        $ad->partner->update(['logo' => 'https://cdn.example.com/shopee.png']);
+        $ad = $this->livePartnerCampaign('tokopedia', 'homepage');
+        $ad->partner->update(['logo' => 'https://cdn.example.com/tokopedia.png']);
 
         $html = $this->renderAd($ad->fresh(), 'homepage', 'banner');
 
-        $this->assertStringContainsString('https://cdn.example.com/shopee.png', $html);
+        // Partner tidak ada di $partnerLogos registry → external logo ditampilkan.
+        $this->assertStringContainsString('https://cdn.example.com/tokopedia.png', $html);
+    }
+
+    public function test_campaign_with_external_logo_overridden_by_registry_partner(): void
+    {
+        // Uji registry partners (dana, shopee, gopay) prioritizes official SVG
+        // meskipun partner->logo eksternal sudah diset.
+        $registryPartners = [
+            'dana' => asset('images/partners/dana.svg'),
+            'shopee' => asset('images/partners/shopee.svg'),
+            'gopay' => asset('images/partners/gopay.svg'),
+        ];
+
+        foreach ($registryPartners as $slug => $expectedSvgUrl) {
+            $ad = $this->livePartnerCampaign($slug, 'homepage');
+            $ad->partner->update(['logo' => 'https://cdn.example.com/' . $slug . '.png']);
+
+            $html = $this->renderAd($ad->fresh(), 'homepage', 'banner');
+
+            // Official SVG dari images/partners/{slug}.svg harus ada di HTML.
+            $this->assertStringContainsString($expectedSvgUrl, $html);
+            // External URL dari partner->logo TIDAK boleh ada (tertimpa registry).
+            $this->assertStringNotContainsString('https://cdn.example.com/' . $slug . '.png', $html);
+        }
     }
 
     // ---------------------------------------------------------------------

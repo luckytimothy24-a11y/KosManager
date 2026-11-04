@@ -41,9 +41,10 @@ class ManagementAgreement extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public static function activeForKosOn(int $kosId, string $date): ?self
+    public static function activeForKosOn(int $kosId, int $propertyOwnerId, string $date): ?self
     {
         return static::where('kos_id', $kosId)
+            ->where('property_owner_id', $propertyOwnerId)
             ->where('effective_from', '<=', $date)
             ->where(function ($q) use ($date) {
                 $q->whereNull('effective_to')->orWhere('effective_to', '>=', $date);

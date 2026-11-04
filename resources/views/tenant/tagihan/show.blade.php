@@ -36,7 +36,7 @@
                             </p>
                         @endif
                         <p class="mt-1.5 text-xs text-red-600/80 dark:text-red-300/70">
-                            Silakan bayar tagihan kembali menggunakan metode Transfer Bank atau Tunai (Cash) di bawah sesuai petunjuk pengelola.
+                            Silakan bayar tagihan kembali menggunakan metode Transfer Bank atau QRIS di bawah sesuai petunjuk pengelola.
                         </p>
                     </div>
                 </div>
@@ -130,6 +130,12 @@
                         <div class="flex items-center justify-between px-4 py-3">
                             <span class="text-slate-500 dark:text-slate-400">Diskon</span>
                             <span class="font-medium text-green-600 dark:text-green-400">&minus; Rp {{ number_format($tagihan->discount, 0, ',', '.') }}</span>
+                        </div>
+                    @endif
+                    @if($tagihan->down_payment_discount > 0)
+                        <div class="flex items-center justify-between px-4 py-3">
+                            <span class="text-slate-500 dark:text-slate-400">Potongan DP Booking</span>
+                            <span class="font-medium text-green-600 dark:text-green-400">&minus; Rp {{ number_format($tagihan->down_payment_discount, 0, ',', '.') }}</span>
                         </div>
                     @endif
                     @if($tagihan->penalty > 0)
@@ -230,30 +236,41 @@
                                 <p class="field-label mb-2">Metode Pembayaran</p>
                                 <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Metode pembayaran">
                                     <label for="method-transfer_bank"
-                                           class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
+                                           class="relative flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none overflow-hidden"
                                            :class="method === 'transfer_bank'
-                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
+                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200 ring-2 ring-primary-500/20'
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400 hover:shadow-sm'">
                                         <input type="radio" id="method-transfer_bank" name="payment_method" value="transfer_bank" x-model="method" class="sr-only">
-                                        <i class="ri-bank-line text-base"></i> Transfer Bank
+                                        <i class="ri-bank-line text-lg"></i> Transfer Bank
                                     </label>
-                                    <label for="method-cash"
-                                           class="flex h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none"
-                                           :class="method === 'cash'
-                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200'
-                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400'">
-                                        <input type="radio" id="method-cash" name="payment_method" value="cash" x-model="method" class="sr-only">
-                                        <i class="ri-hand-coin-line text-base"></i> Cash
+                                    <label for="method-qris"
+                                           class="relative flex h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border-[1.5px] px-3 text-sm font-semibold transition select-none overflow-hidden"
+                                           :class="method === 'qris'
+                                               ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-200 ring-2 ring-primary-500/20'
+                                               : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400 hover:shadow-sm'">
+                                        <input type="radio" id="method-qris" name="payment_method" value="qris" x-model="method" class="sr-only">
+                                        <i class="ri-qr-code-2-line text-lg"></i> QRIS
+                                        <span class="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg">INSTANT</span>
                                     </label>
                                 </div>
                                 @error('payment_method') <p class="text-red-500 text-xs mt-1.5" aria-live="polite">{{ $message }}</p> @enderror
                             </div>
 
                             {{-- Transfer detail --}}
-                            <div x-show="method === 'transfer_bank'" x-cloak class="rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/60 dark:bg-blue-500/[0.06] p-4" aria-live="polite">
-                                <p class="flex items-center gap-1.5 text-sm font-semibold text-blue-800 dark:text-blue-200">
-                                    <i class="ri-bank-line text-blue-600 dark:text-blue-300"></i> Transfer Bank
-                                </p>
+                            <div x-show="method === 'transfer_bank'" x-cloak
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 class="rounded-2xl border border-blue-200 dark:border-blue-500/30 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-500/5 dark:to-indigo-500/5 p-5" aria-live="polite">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white">
+                                        <i class="ri-bank-line text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-blue-800 dark:text-blue-200">Transfer Bank</p>
+                                        <p class="text-[11px] text-blue-600 dark:text-blue-400">Manual verification</p>
+                                    </div>
+                                </div>
                                 @if($tagihan->kamar->kos->owner?->bankAccount)
                                     <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                                         Transfer sebesar nominal di atas ke rekening pemilik kos yang tercantum di atas, lalu unggah bukti transfer di bawah.
@@ -266,16 +283,53 @@
                                 <p class="mt-2 text-[11px] font-medium text-blue-700 dark:text-blue-300">Wajib unggah bukti transfer (JPG/PNG/PDF, maks 5MB).</p>
                             </div>
 
-                            {{-- Cash detail --}}
-                            <div x-show="method === 'cash'" x-cloak class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/[0.06] p-4" aria-live="polite">
-                                <p class="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                    <i class="ri-hand-coin-line text-emerald-600 dark:text-emerald-300"></i> Pembayaran Tunai
+                            {{-- QRIS detail --}}
+                            <div x-show="method === 'qris'" x-cloak
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 translate-y-2"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 class="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-500/5 dark:to-blue-500/5 p-5" aria-live="polite">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
+                                        <i class="ri-qr-code-2-line text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-emerald-800 dark:text-emerald-200">Bayar dengan QRIS</p>
+                                        <p class="text-[11px] text-emerald-600 dark:text-emerald-400">Scan & bayar instan</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
+                                    Scan QR code di bawah menggunakan aplikasi banking atau e-wallet Anda (GoPay, OVO, Dana, ShopeePay, dll).
+                                    Pembayaran akan terverifikasi otomatis setelah berhasil.
                                 </p>
-                                <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-                                    Bayar sejumlah <strong class="text-slate-700 dark:text-slate-200">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</strong> langsung kepada pengelola/admin kos,
-                                    lalu kirim konfirmasi di bawah. Pengelola akan memverifikasi pembayaran Anda.
-                                </p>
-                                <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Bukti pembayaran opsional untuk metode tunai.</p>
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="p-3 bg-white rounded-2xl shadow-lg border border-emerald-100 dark:border-emerald-500/20">
+                                        @php
+                                            $qrCodeData = 'QRIS|TAGIHAN|' . $tagihan->bill_number . '|' . $tagihan->total;
+                                            $qrCode = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrCodeData) . '&size=220x220';
+                                        @endphp
+                                        <img src="{{ $qrCode }}" alt="QRIS Tagihan {{ $tagihan->bill_number }}" class="rounded-lg" style="width: 220px; height: 220px;">
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Tagihan</p>
+                                        <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-3 gap-2 text-center">
+                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
+                                        <i class="ri-flashlight-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Instan</p>
+                                    </div>
+                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
+                                        <i class="ri-shield-check-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Aman</p>
+                                    </div>
+                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
+                                        <i class="ri-bank-card-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Semua Bank</p>
+                                    </div>
+                                </div>
+                                <p class="mt-3 text-[11px] text-emerald-700 dark:text-emerald-300 text-center font-medium">Pembayaran QRIS otomatis tervalidasi sistem.</p>
                             </div>
 
                             {{-- Proof Upload --}}
@@ -331,8 +385,8 @@
                                     class="btn-primary w-full py-3">
                                 <template x-if="!submitting">
                                     <span class="flex items-center gap-2">
-                                        <i :class="method === 'transfer_bank' ? 'ri-bank-line' : 'ri-hand-coin-line'"></i>
-                                        <span x-text="method === 'transfer_bank' ? 'Konfirmasi Transfer Bank' : 'Konfirmasi Pembayaran Tunai'"></span>
+                                        <i :class="method === 'transfer_bank' ? 'ri-bank-line' : 'ri-qr-code-2-line'"></i>
+                                        <span x-text="method === 'transfer_bank' ? 'Konfirmasi Transfer Bank' : 'Konfirmasi QRIS'"></span>
                                     </span>
                                 </template>
                                 <template x-if="submitting" x-cloak>
@@ -403,7 +457,7 @@
             window.paymentForm = function () {
                 return {
                     submitting: false,
-                    method: @js(old('payment_method', 'cash')),
+                    method: @js(old('payment_method', 'qris')),
                     proof: { name: '', size: 0, sizeLabel: '', isImage: false, preview: '', oversize: false },
                     handleProofChange(event) {
                         const file = event.target.files && event.target.files[0];
