@@ -410,6 +410,20 @@ Route::middleware(['auth', 'role:tenant', 'billing'])->prefix('tenant')->name('t
     Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
 
     Route::get('laporan', [TenantLaporanController::class, 'index'])->name('laporan.index');
+
+    // Marketplace (jual barang bekas)
+    Route::get('marketplace', [App\Http\Controllers\Tenant\MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('marketplace/create', [App\Http\Controllers\Tenant\MarketplaceController::class, 'create'])->name('marketplace.create');
+    Route::post('marketplace', [App\Http\Controllers\Tenant\MarketplaceController::class, 'store'])->name('marketplace.store');
+    Route::get('marketplace/my-items', [App\Http\Controllers\Tenant\MarketplaceController::class, 'myItems'])->name('marketplace.my-items');
+    Route::get('marketplace/{item}', [App\Http\Controllers\Tenant\MarketplaceController::class, 'show'])->name('marketplace.show');
+    Route::post('marketplace/{item}/buy', [App\Http\Controllers\Tenant\MarketplaceController::class, 'buy'])->name('marketplace.buy');
+    Route::get('marketplace/{item}/chat', [App\Http\Controllers\Tenant\MarketplaceController::class, 'chat'])->name('marketplace.chat');
+    Route::post('marketplace/{item}/chat', [App\Http\Controllers\Tenant\MarketplaceController::class, 'chatSend'])->name('marketplace.chat.send');
+    Route::post('marketplace/transaction/{transaction}/complete', [App\Http\Controllers\Tenant\MarketplaceController::class, 'completeTransaction'])->name('marketplace.complete');
+    Route::post('marketplace/transaction/{transaction}/review', [App\Http\Controllers\Tenant\MarketplaceController::class, 'storeReview'])->name('marketplace.review');
+    Route::post('marketplace/{item}/report', [App\Http\Controllers\Tenant\MarketplaceController::class, 'report'])->name('marketplace.report');
+    Route::delete('marketplace/{item}', [App\Http\Controllers\Tenant\MarketplaceController::class, 'destroy'])->name('marketplace.destroy');
 });
 
 // Tanya Owner — pencari kos (tenant login, tanpa perlu menghuni).
