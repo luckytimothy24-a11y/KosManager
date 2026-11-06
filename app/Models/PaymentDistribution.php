@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Model;
  * - pembayarans.verification_status (payment verification)
  * - bookings.status (booking confirmation)
  *
- * platform_fee = 0 bila tidak ada business rule fee existing.
+ * platform_fee dihitung dari gross_amount via PlatformFeeService/config kosmanager.platform_fee.
+ * owner_amount = gross_amount - platform_fee.
  */
 class PaymentDistribution extends Model
 {

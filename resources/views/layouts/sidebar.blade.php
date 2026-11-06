@@ -3,6 +3,21 @@
     $currentRoute = request()->route()->getName() ?? '';
     $sidebarData = $sidebarBadges ?? [];
 
+    $navItem = fn ($route, $label, $icon, $badge = null) => [
+        'route' => $route,
+        'label' => $label,
+        'icon' => $icon,
+        'badge' => $badge,
+    ];
+
+    $isActive = function ($route) use ($currentRoute) {
+        if (str_ends_with($route, '*')) {
+            return str_starts_with($currentRoute, rtrim($route, '*'));
+        }
+
+        return $currentRoute === $route;
+    };
+
     // Role accent untuk header icon - biar premium tiap role tetap terasa
     $roleAccent = match(true) {
         $user->hasRole('super_admin') => 'from-violet-600 to-indigo-600',

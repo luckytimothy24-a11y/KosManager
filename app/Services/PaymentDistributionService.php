@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * - Tenant tidak bisa menentukan owner_id / amount / recipient.
  * - Payment approved ≠ booking approved ≠ payout processed.
  * - 1 payment → maksimal 1 distribution (unique pembayaran_id).
- * - platform_fee = 0 tanpa business rule fee existing (jangan hard-code %).
+ * - platform_fee dihitung dari config kosmanager.platform_fee (fixed/percent dari gross).
  */
 class PaymentDistributionService
 {

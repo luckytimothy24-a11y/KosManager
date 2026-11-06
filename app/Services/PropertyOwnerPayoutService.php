@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
  * - hitung gross dari pembayarans approved (tagihan chain + booking chain)
  * - pastikan payment_date masuk periode
  * - cegah duplicate (kos + periode) + lock transaksi
- * - tentukan amount (gross - fee; fee MVP = 0, tidak dari request)
+ * - tentukan amount (net - platform_fee; fee dari config kosmanager.platform_fee)
  * - transisi status dengan guards
  *
  * Transfer bank dilakukan OWNER di luar aplikasi. KosManager hanya mencatat.
@@ -162,7 +162,7 @@ class PropertyOwnerPayoutService
                 $commissionTotal = $settlement['commission_total'];
                 $net = $settlement['net_total'];
                 $platformFeeService = app(PlatformFeeService::class);
-                $platformFee = $platformFeeService->calculate($net);
+                $platformFee = $platformFeeService->calculate($gross);
                 $amount = round($net - $platformFee, 2);
                 if ($amount <= 0 || $gross <= 0) {
                     throw new \RuntimeException('no_eligible_income');

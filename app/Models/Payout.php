@@ -14,8 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * TERPISAH dari PaymentDistribution (distribusi booking → hak role Owner).
  *
- * platform_fee MVP selalu 0 — tidak editable Owner, tidak dari request.
- * amount = hak Pemilik Kos Asli = gross_amount - platform_fee.
+ * platform_fee dihitung dari config kosmanager.platform_fee (fixed/percent, dari gross_amount).
+ * amount = hak Pemilik Kos Asli = net_total - platform_fee (net sudah dikurangi komisi manajemen).
  * Nominal dihitung SERVER-SIDE — jangan pernah mass-assign dari request.
  */
 class Payout extends Model

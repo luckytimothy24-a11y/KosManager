@@ -17,6 +17,7 @@ use App\Models\Tagihan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
@@ -26,7 +27,7 @@ use Tests\TestCase;
  *
  * Owner = pengelola/perantara (bukan pemilik legal properti).
  * Transfer manual di luar aplikasi; KosManager hanya mencatat.
- * platform_fee MVP = 0, tidak editable Owner. Nominal server-side.
+ * platform_fee dihitung dari config kosmanager.platform_fee (fixed/percent dari gross). Nominal server-side.
  */
 class PropertyOwnerPayoutTest extends TestCase
 {
@@ -243,6 +244,26 @@ class PropertyOwnerPayoutTest extends TestCase
         $this->assertSame(350000.0, (float) $payout->commission_total);
         $this->assertSame(0.0, (float) $payout->platform_fee);
         $this->assertSame(3150000.0, (float) $payout->amount);
+    }
+
+    public function test_owner_can_create_payout_with_percent_fee(): void
+    {
+        Config::set('kosmanager.platform_fee', [
+            'type' => 'percent',
+            'fixed_amount' => 0,
+            'percent_rate' => 5,
+        ]);
+
+        $this->seedApprovedIncome();
+
+        $this->createPayoutViaHttp()->assertRedirect();
+
+        $payout = Payout::where('kos_id', $this->kos->id)->firstOrFail();
+        // Gross 3.500.000, komisi manajemen 10% = 350.000, platform fee 5% dari gross = 175.000.
+        $this->assertSame(3500000.0, (float) $payout->gross_amount);
+        $this->assertSame(350000.0, (float) $payout->commission_total);
+        $this->assertSame(175000.0, (float) $payout->platform_fee);
+        $this->assertSame(2975000.0, (float) $payout->amount);
     }
 
     public function test_owner_cannot_create_payout_for_other_owners_kos(): void

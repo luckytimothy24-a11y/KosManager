@@ -87,6 +87,43 @@ class CreateMonthlyPayoutsCommandTest extends TestCase
         $this->assertDatabaseMissing('payouts', ['kos_id' => $kosNoPo->id]);
     }
 
+    public function test_command_skips_kos_without_management_agreement(): void
+    {
+        // Kos WITH property owner + bank account, BUT NO management agreement
+        $poNoAgreement = PropertyOwner::factory()->create();
+        PropertyOwnerBankAccount::factory()->create([
+            'property_owner_id' => $poNoAgreement->id,
+        ]);
+
+        $kosNoAgreement = Kos::factory()->create([
+            'owner_id' => $this->owner->id,
+            'property_owner_id' => $poNoAgreement->id,
+            'status' => 'active',
+            'name' => 'Kos Tanpa Agreement',
+        ]);
+
+        // Seed approved payments
+        $tenant = User::factory()->create(['role' => 'tenant']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kosNoAgreement->id, 'monthly_price' => 1500000]);
+        $penghuni = Penghuni::factory()->create(['user_id' => $tenant, 'kos_id' => $kosNoAgreement->id, 'kamar_id' => $kamar->id]);
+        $kontrak = Kontrak::factory()->create(['penghuni_id' => $penghuni->id, 'kos_id' => $kosNoAgreement->id, 'kamar_id' => $kamar->id]);
+        $tagihan = Tagihan::factory()->create(['penghuni_id' => $penghuni->id, 'kontrak_id' => $kontrak->id, 'kamar_id' => $kamar->id, 'total' => 1500000]);
+        Pembayaran::factory()->create([
+            'payment_number' => 'PY-NO-AGREEMENT-001',
+            'tagihan_id' => $tagihan->id,
+            'penghuni_id' => $penghuni->id,
+            'amount' => 1500000,
+            'payment_date' => now()->subMonth()->toDateString(),
+            'verification_status' => 'approved',
+        ]);
+
+        // Run command — should skip (needs_agreement) with exit code 0
+        $this->artisan('payout:create-monthly')
+            ->assertExitCode(0);
+
+        $this->assertDatabaseMissing('payouts', ['kos_id' => $kosNoAgreement->id]);
+    }
+
     public function test_command_skips_kos_without_approved_payments(): void
     {
         $this->artisan('payout:create-monthly')

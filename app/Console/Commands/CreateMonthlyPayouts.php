@@ -67,6 +67,9 @@ class CreateMonthlyPayouts extends Command
         $errorCount = 0;
         $createdPayouts = [];
 
+        // Conditions treated as skip (not error)
+        $skipConditions = ['needs_agreement', 'property_owner_missing', 'bank_account_missing', 'no_eligible_income', 'duplicate_payout'];
+
         $kosList = $query->get();
         $bar = $this->output->createProgressBar(count($kosList));
         $bar->setMessage('🔄 Processing kos');
@@ -147,8 +150,13 @@ class CreateMonthlyPayouts extends Command
                     $successCount++;
                 } else {
                     $error = $result['error'] ?? 'unknown';
-                    $this->line(" <fg=red>✗</> Kos {$kos->id} - {$error}");
-                    $errorCount++;
+                    if (in_array($error, $skipConditions)) {
+                        $this->line(" <fg=yellow>⊘</> Kos {$kos->id} ({$kos->name}) - Skipped ({$error})");
+                        $skipCount++;
+                    } else {
+                        $this->line(" <fg=red>✗</> Kos {$kos->id} - {$error}");
+                        $errorCount++;
+                    }
                 }
             } catch (\Exception $e) {
                 $this->line(" <fg=red>✗</> Kos {$kos->id} - Exception: {$e->getMessage()}");
