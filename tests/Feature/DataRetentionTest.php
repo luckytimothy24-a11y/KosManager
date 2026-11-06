@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\AdvertisingCampaign;
 use App\Models\AdvertisingOrder;
+use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\ManagementAgreement;
 use App\Models\MarketplaceItem;
@@ -13,6 +14,7 @@ use App\Models\Payout;
 use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\PropertyOwner;
+use App\Models\Tagihan;
 use App\Models\User;
 use App\Services\SettlementReportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -298,5 +300,137 @@ class DataRetentionTest extends TestCase
 
         // Kos still exists
         $this->assertDatabaseHas('kos', ['id' => $kos->id, 'deleted_at' => null]);
+    }
+
+    /**
+     * Buat data laporan lengkap (kamar, penghuni, tagihan, pembayaran approved) untuk satu kos.
+     */
+    private function createApprovedReportPayment(Kos $kos, User $tenant, float $amount = 1000000): Pembayaran
+    {
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
+        $penghuni = Penghuni::factory()->create([
+            'user_id' => $tenant->id,
+            'kos_id' => $kos->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'active',
+        ]);
+        $tagihan = Tagihan::factory()->create([
+            'penghuni_id' => $penghuni->id,
+            'kamar_id' => $kamar->id,
+            'total' => $amount,
+            'status' => 'paid',
+        ]);
+
+        return Pembayaran::factory()->create([
+            'tagihan_id' => $tagihan->id,
+            'penghuni_id' => $penghuni->id,
+            'amount' => $amount,
+            'rent_amount' => $amount,
+            'payment_date' => now(),
+            'verification_status' => Pembayaran::STATUS_APPROVED,
+        ]);
+    }
+
+    /**
+     * Test 15: Soft delete Kos → riwayat tetap tampil di /owner/laporan.
+     */
+    public function test_soft_deleted_kos_still_appears_in_owner_report()
+    {
+        $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'name' => 'Kos Riwayat Laporan']);
+        $tenant = User::factory()->create(['role' => 'tenant', 'name' => 'Penyewa Riwayat']);
+        $this->createApprovedReportPayment($kos, $tenant);
+
+        $kos->delete();
+
+        $response = $this->actingAs($this->owner)->get(route('owner.laporan.index'));
+
+        $response->assertOk();
+        $response->assertSee('Kos Riwayat Laporan');
+        $response->assertSee('(dihapus)');
+        $response->assertSee('Penyewa Riwayat');
+        $response->assertSee('Rp 1.000.000');
+    }
+
+    /**
+     * Test 16: Filter ?kos_id= kos terhapus tetap menampilkan baris pendapatan.
+     */
+    public function test_owner_report_filter_by_soft_deleted_kos_still_shows_rows()
+    {
+        $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'name' => 'Kos Filter Terhapus']);
+        $tenant = User::factory()->create(['role' => 'tenant', 'name' => 'Penyewa Filter']);
+        $this->createApprovedReportPayment($kos, $tenant);
+
+        $kos->delete();
+
+        $response = $this->actingAs($this->owner)->get(route('owner.laporan.index', ['kos_id' => $kos->id]));
+
+        $response->assertOk();
+        $response->assertSee('Penyewa Filter');
+        $response->assertSee('Rp 1.000.000');
+    }
+
+    /**
+     * Test 17: Export Excel dengan kos terhapus → tetap 200 dan memuat nama kos.
+     */
+    public function test_owner_report_export_excel_includes_soft_deleted_kos()
+    {
+        $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'name' => 'Kos Export Terhapus']);
+        $tenant = User::factory()->create(['role' => 'tenant', 'name' => 'Penyewa Export']);
+        $this->createApprovedReportPayment($kos, $tenant);
+
+        $kos->delete();
+
+        $response = $this->actingAs($this->owner)->get(route('owner.laporan.export-excel', ['kos_id' => $kos->id]));
+
+        $response->assertOk();
+        $this->assertStringContainsString('Kos Export Terhapus', $response->getContent());
+        $this->assertStringContainsString('Penyewa Export', $response->getContent());
+        $this->assertStringContainsString('Rp 1.000.000', $response->getContent());
+    }
+
+    /**
+     * Test 18: Soft delete user tenant → nama penyewa tetap tampil di laporan.
+     */
+    public function test_soft_deleted_tenant_name_still_appears_in_owner_report()
+    {
+        $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'name' => 'Kos Tenant Terhapus']);
+        $tenant = User::factory()->create(['role' => 'tenant', 'name' => 'Penyewa Sudah Dihapus']);
+        $this->createApprovedReportPayment($kos, $tenant);
+
+        $tenant->delete();
+        $this->assertSoftDeleted('users', ['id' => $tenant->id]);
+
+        $response = $this->actingAs($this->owner)->get(route('owner.laporan.index'));
+
+        $response->assertOk();
+        $response->assertSee('Penyewa Sudah Dihapus');
+        $response->assertSee('Kos Tenant Terhapus');
+    }
+
+    /**
+     * Test 19: Soft delete Kos → total revenue dan grafik revenue dashboard owner tetap utuh.
+     */
+    public function test_owner_dashboard_revenue_includes_soft_deleted_kos()
+    {
+        $kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
+        $tenant = User::factory()->create(['role' => 'tenant']);
+        $this->createApprovedReportPayment($kos, $tenant, 1000000);
+
+        $kos->delete();
+
+        $response = $this->actingAs($this->owner)->get('/dashboard');
+
+        $response->assertOk();
+
+        $stats = $response->viewData('stats');
+        $this->assertEquals(1000000, (float) $stats['total_revenue']);
+
+        // Statistik operasional tetap mengecualikan kos terhapus.
+        $this->assertSame(0, $stats['total_kos']);
+        $this->assertSame(0, $stats['total_kamar']);
+        $this->assertSame(0, $stats['total_penghunis']);
+
+        $chart = $response->viewData('revenueChart');
+        $this->assertSame(1000000, $chart['values'][array_key_last($chart['values'])]);
     }
 }

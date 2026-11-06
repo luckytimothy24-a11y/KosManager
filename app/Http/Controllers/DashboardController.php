@@ -117,7 +117,7 @@ class DashboardController extends Controller
                 ->whereHas('kos', fn ($q) => $q->where('owner_id', $user->id))->count(),
             'pending_payments' => Pembayaran::where('verification_status', 'pending')->whereHas('penghuni.kos', fn ($q) => $q->where('owner_id', $user->id))->count(),
             'total_penghunis' => Penghuni::whereHas('kos', fn ($q) => $q->where('owner_id', $user->id))->where('status', 'active')->count(),
-            'total_revenue' => Pembayaran::where('verification_status', 'approved')->whereHas('penghuni.kos', fn ($q) => $q->where('owner_id', $user->id))->sum('amount'),
+            'total_revenue' => Pembayaran::where('verification_status', 'approved')->whereHas('penghuni.kos', fn ($q) => $q->withTrashed()->where('owner_id', $user->id))->sum('amount'),
             'tagihan_outstanding' => Tagihan::payable()->whereHas('kamar.kos', fn ($q) => $q->where('owner_id', $user->id))->count(),
             'tagihan_overdue' => Tagihan::where('status', 'overdue')->whereHas('kamar.kos', fn ($q) => $q->where('owner_id', $user->id))->count(),
             'pending_damage_reports' => DamageReport::where('status', DamageReport::STATUS_PENDING)
@@ -127,7 +127,7 @@ class DashboardController extends Controller
 
         $monthExpr = self::monthKeyExpr('payment_date');
         $ownerMonthlyRevenue = Pembayaran::where('verification_status', 'approved')
-            ->whereHas('penghuni.kos', fn ($q) => $q->where('owner_id', $user->id))
+            ->whereHas('penghuni.kos', fn ($q) => $q->withTrashed()->where('owner_id', $user->id))
             ->whereBetween('payment_date', [now()->subMonths(5)->startOfMonth(), now()->endOfMonth()])
             ->selectRaw("{$monthExpr} as month, SUM(amount) as total")
             ->groupBy('month')

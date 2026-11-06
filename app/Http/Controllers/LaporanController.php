@@ -25,7 +25,11 @@ class LaporanController extends Controller
         $user = $request->user();
         abort_unless($user->isSuperAdmin() || $user->isAdmin() || $user->isOwner(), 403, 'Anda tidak memiliki akses ke laporan kos.');
 
-        $kosList = $user->isSuperAdmin() ? Kos::all() : ($user->isAdmin() ? $user->assignedKos : Kos::where('owner_id', $user->id)->get());
+        $kosList = $user->isSuperAdmin()
+            ? Kos::withTrashed()->get()
+            : ($user->isAdmin()
+                ? $user->assignedKos()->withTrashed()->get()
+                : Kos::withTrashed()->where('owner_id', $user->id)->get());
 
         $start = $request->start_date;
         $end = $request->end_date;
@@ -66,7 +70,7 @@ class LaporanController extends Controller
         }
 
         $sections = $this->gabunganSections($request);
-        $kosName = $kosId ? Kos::find($kosId)?->name : null;
+        $kosName = $kosId ? Kos::withTrashed()->find($kosId)?->name : null;
 
         $pdf = Pdf::loadView('exports.pdf.gabungan', [
             'sections' => $sections,
@@ -96,7 +100,7 @@ class LaporanController extends Controller
         }
 
         $sections = $this->gabunganSections($request);
-        $kosName = $kosId ? Kos::find($kosId)?->name : null;
+        $kosName = $kosId ? Kos::withTrashed()->find($kosId)?->name : null;
 
         $handle = fopen('php://temp', 'r+');
         fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
@@ -208,10 +212,10 @@ class LaporanController extends Controller
             return null;
         }
         if ($user->isAdmin()) {
-            return $user->assignedKos()->pluck('kos.id')->all();
+            return $user->assignedKos()->withTrashed()->pluck('kos.id')->all();
         }
 
-        return Kos::where('owner_id', $user->id)->pluck('id')->all();
+        return Kos::withTrashed()->where('owner_id', $user->id)->pluck('id')->all();
     }
 
     private function getHeaders(string $type): array
@@ -256,7 +260,13 @@ class LaporanController extends Controller
 
     private function pendapatanData(?string $start, ?string $end, ?int $kosId, ?array $kosIds): array
     {
-        $query = Pembayaran::with(['penghuni.user', 'penghuni.kos', 'booking.kos', 'booking.user', 'tagihan.kamar.kos'])->where('verification_status', 'approved');
+        $query = Pembayaran::with([
+            'penghuni.user' => fn ($q) => $q->withTrashed(),
+            'penghuni.kos' => fn ($q) => $q->withTrashed(),
+            'booking.kos' => fn ($q) => $q->withTrashed(),
+            'booking.user' => fn ($q) => $q->withTrashed(),
+            'tagihan.kamar.kos' => fn ($q) => $q->withTrashed(),
+        ])->where('verification_status', 'approved');
         $statsQuery = Pembayaran::where('verification_status', 'approved');
         if ($start) {
             $query->whereDate('payment_date', '>=', $start);
@@ -268,10 +278,10 @@ class LaporanController extends Controller
         }
         if ($kosId) {
             $query->where(function ($q) use ($kosId) {
-                $q->whereHas('penghuni.kos', fn ($qq) => $qq->where('id', $kosId))->orWhereHas('booking.kos', fn ($qq) => $qq->where('id', $kosId));
+                $q->whereHas('penghuni.kos', fn ($qq) => $qq->withTrashed()->where('id', $kosId))->orWhereHas('booking.kos', fn ($qq) => $qq->withTrashed()->where('id', $kosId));
             });
             $statsQuery->where(function ($q) use ($kosId) {
-                $q->whereHas('penghuni.kos', fn ($qq) => $qq->where('id', $kosId))->orWhereHas('booking.kos', fn ($qq) => $qq->where('id', $kosId));
+                $q->whereHas('penghuni.kos', fn ($qq) => $qq->withTrashed()->where('id', $kosId))->orWhereHas('booking.kos', fn ($qq) => $qq->withTrashed()->where('id', $kosId));
             });
         } elseif ($kosIds !== null) {
             $query->where(function ($q) use ($kosIds) {
@@ -289,7 +299,11 @@ class LaporanController extends Controller
 
     private function penghuniData(?int $kosId, ?array $kosIds): array
     {
-        $query = Penghuni::with(['user', 'kos', 'kamar']);
+        $query = Penghuni::with([
+            'user' => fn ($q) => $q->withTrashed(),
+            'kos' => fn ($q) => $q->withTrashed(),
+            'kamar',
+        ]);
         $statsQuery = Penghuni::query();
         if ($kosId) {
             $query->where('kos_id', $kosId);
@@ -306,7 +320,11 @@ class LaporanController extends Controller
 
     private function bookingData(?string $start, ?string $end, ?int $kosId, ?array $kosIds): array
     {
-        $query = Booking::with(['user', 'kos', 'kamar']);
+        $query = Booking::with([
+            'user' => fn ($q) => $q->withTrashed(),
+            'kos' => fn ($q) => $q->withTrashed(),
+            'kamar',
+        ]);
         $statsQuery = Booking::query();
         if ($start) {
             $query->whereDate('booking_date', '>=', $start);
@@ -331,7 +349,7 @@ class LaporanController extends Controller
 
     private function kamarData(?int $kosId, ?array $kosIds): array
     {
-        $query = Kamar::with('kos');
+        $query = Kamar::with(['kos' => fn ($q) => $q->withTrashed()]);
         $statsQuery = Kamar::query();
         if ($kosId) {
             $query->where('kos_id', $kosId);
@@ -348,7 +366,10 @@ class LaporanController extends Controller
 
     private function tagihanData(?string $start, ?string $end, ?int $kosId, ?array $kosIds): array
     {
-        $query = Tagihan::with(['penghuni.user', 'kamar.kos']);
+        $query = Tagihan::with([
+            'penghuni.user' => fn ($q) => $q->withTrashed(),
+            'kamar.kos' => fn ($q) => $q->withTrashed(),
+        ]);
         $statsQuery = Tagihan::query();
         if ($start) {
             $query->whereDate('due_date', '>=', $start);
@@ -359,8 +380,8 @@ class LaporanController extends Controller
             $statsQuery->whereDate('due_date', '<=', $end);
         }
         if ($kosId) {
-            $query->whereHas('kamar.kos', fn ($q) => $q->where('id', $kosId));
-            $statsQuery->whereHas('kamar.kos', fn ($q) => $q->where('id', $kosId));
+            $query->whereHas('kamar.kos', fn ($q) => $q->withTrashed()->where('id', $kosId));
+            $statsQuery->whereHas('kamar.kos', fn ($q) => $q->withTrashed()->where('id', $kosId));
         } elseif ($kosIds !== null) {
             $query->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds));
             $statsQuery->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds));

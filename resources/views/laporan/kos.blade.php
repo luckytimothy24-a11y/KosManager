@@ -47,7 +47,7 @@
                             class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated dark:text-slate-50 text-sm focus:border-orange-500 focus:ring-orange-500 py-2.5">
                         <option value="">Semua Kos</option>
                         @foreach($kosList as $k)
-                            <option value="{{ $k->id }}" {{ (string) request('kos_id') === (string) $k->id ? 'selected' : '' }}>{{ $k->name }}</option>
+                            <option value="{{ $k->id }}" {{ (string) request('kos_id') === (string) $k->id ? 'selected' : '' }}>{{ $k->name }}@if($k->trashed()) (dihapus)@endif</option>
                         @endforeach
                     </select>
                 </div>
