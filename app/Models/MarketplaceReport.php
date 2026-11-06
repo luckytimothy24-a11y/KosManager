@@ -20,7 +20,7 @@ class MarketplaceReport extends Model
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(MarketplaceItem::class, 'item_id');
+        return $this->belongsTo(MarketplaceItem::class, 'item_id')->withTrashed();
     }
 
     public function reporter(): BelongsTo

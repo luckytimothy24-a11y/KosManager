@@ -24,12 +24,14 @@ class MarketplaceTransaction extends Model
     ];
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     public function item(): BelongsTo
     {
-        return $this->belongsTo(MarketplaceItem::class, 'item_id');
+        return $this->belongsTo(MarketplaceItem::class, 'item_id')->withTrashed();
     }
 
     public function buyer(): BelongsTo

@@ -64,12 +64,12 @@ class Payout extends Model
 
     public function kos()
     {
-        return $this->belongsTo(Kos::class);
+        return $this->belongsTo(Kos::class)->withTrashed();
     }
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id')->withTrashed();
     }
 
     public function propertyOwner()
@@ -128,5 +128,13 @@ class Payout extends Model
     public static function transferableStatuses(): array
     {
         return [self::STATUS_PENDING, self::STATUS_REJECTED];
+    }
+
+    protected static function booted(): void
+    {
+        // Ledger: immutable, cannot be deleted
+        static::deleting(function (Payout $payout) {
+            throw new \RuntimeException('Payout adalah record ledger yang tidak dapat dihapus.');
+        });
     }
 }

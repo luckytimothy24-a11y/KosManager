@@ -89,6 +89,22 @@ class Kos extends Model
         return $this->hasMany(AdvertisingCampaign::class);
     }
 
+    public function payouts()
+    {
+        return $this->hasMany(Payout::class);
+    }
+
+    public function managementAgreements()
+    {
+        return $this->hasMany(ManagementAgreement::class);
+    }
+
+    public function pembayarans()
+    {
+        // pembayarans don't have kos_id; go through penghuni
+        return $this->hasManyThrough(Pembayaran::class, Penghuni::class, 'kos_id', 'penghuni_id', 'id', 'id');
+    }
+
     public function photos()
     {
         return $this->hasMany(KosPhoto::class)->orderBy('position');
@@ -142,6 +158,18 @@ class Kos extends Model
     protected static function booted(): void
     {
         static::forceDeleting(function (Kos $kos) {
+            // Guard: prevent force delete if there's monetization history
+            if ($kos->payouts()->exists() ||
+                $kos->managementAgreements()->exists() ||
+                $kos->advertisingCampaigns()->exists() ||
+                $kos->pembayarans()->exists() ||
+                $kos->kamar()->exists() ||
+                $kos->bookings()->exists() ||
+                $kos->penghunis()->exists()) {
+                throw new \RuntimeException('Kos memiliki riwayat payout, komisi, iklan, atau pembayaran. Nonaktifkan kos sebagai gantinya.');
+            }
+
+            // Clean up gallery files
             $paths = $kos->photos()->pluck('path')->all();
             foreach ($paths as $path) {
                 try {

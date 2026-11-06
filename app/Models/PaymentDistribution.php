@@ -92,4 +92,12 @@ class PaymentDistribution extends Model
     {
         return [self::STATUS_PENDING, self::STATUS_READY, self::STATUS_PROCESSED];
     }
+
+    protected static function booted(): void
+    {
+        // Ledger: immutable, cannot be deleted
+        static::deleting(function (PaymentDistribution $distribution) {
+            throw new \RuntimeException('Distribusi pembayaran adalah record ledger yang tidak dapat dihapus.');
+        });
+    }
 }

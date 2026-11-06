@@ -80,6 +80,22 @@ class Pembayaran extends Model
     }
 
     /**
+     * Distribution record (booking payment → owner).
+     */
+    public function paymentDistribution()
+    {
+        return $this->hasOne(PaymentDistribution::class, 'pembayaran_id');
+    }
+
+    /**
+     * Item payout yang mengaitkan pembayaran ini ke payout.
+     */
+    public function payoutItems()
+    {
+        return $this->hasMany(PayoutItem::class, 'pembayaran_id');
+    }
+
+    /**
      * Pembayaran terkait booking (deposit/sewa booking sebelum check-in).
      */
     public function isBookingPayment(): bool
@@ -120,5 +136,16 @@ class Pembayaran extends Model
     public function isFromGateway(): bool
     {
         return $this->gateway_provider !== null;
+    }
+
+    protected static function booted(): void
+    {
+        static::forceDeleting(function (Pembayaran $pembayaran) {
+            // Guard: prevent force delete if payment has distribution or payout items
+            if ($pembayaran->paymentDistribution()->exists() ||
+                $pembayaran->payoutItems()->exists()) {
+                throw new \RuntimeException('Pembayaran memiliki distribusi atau item payout. Tidak dapat dihapus permanen.');
+            }
+        });
     }
 }

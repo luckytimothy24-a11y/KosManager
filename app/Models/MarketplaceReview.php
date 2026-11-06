@@ -27,6 +27,11 @@ class MarketplaceReview extends Model
         return $this->belongsTo(MarketplaceTransaction::class, 'transaction_id');
     }
 
+    public function item(): BelongsTo
+    {
+        return $this->transaction?->item() ?? $this->belongsTo(MarketplaceItem::class, 'item_id')->withTrashed();
+    }
+
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewer_id');
@@ -39,10 +44,6 @@ class MarketplaceReview extends Model
 
     /**
      * Check if a reviewer has already reviewed this transaction
-     *
-     * @param int $transactionId
-     * @param int $reviewerId
-     * @return bool
      */
     public static function existsForTransactionAndReviewer(int $transactionId, int $reviewerId): bool
     {

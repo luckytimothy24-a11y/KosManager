@@ -94,12 +94,12 @@ class AdvertisingCampaign extends Model
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id')->withTrashed();
     }
 
     public function kos()
     {
-        return $this->belongsTo(Kos::class);
+        return $this->belongsTo(Kos::class)->withTrashed();
     }
 
     public function package()
@@ -166,6 +166,16 @@ class AdvertisingCampaign extends Model
         return $this->kos && $this->kos->exists
             ? $this->kos->name
             : 'Kos';
+    }
+
+    protected static function booted(): void
+    {
+        // Prevent force delete if campaign has orders or events (revenue data)
+        static::forceDeleting(function (AdvertisingCampaign $campaign) {
+            if ($campaign->orders()->exists() || $campaign->events()->exists()) {
+                throw new \RuntimeException('Kampanye iklan memiliki order atau event. Nonaktifkan sebagai gantinya.');
+            }
+        });
     }
 
     public function displayHeadline(): string

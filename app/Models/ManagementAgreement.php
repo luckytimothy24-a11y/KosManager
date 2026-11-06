@@ -51,4 +51,12 @@ class ManagementAgreement extends Model
             ->orderByDesc('effective_from')
             ->first();
     }
+
+    protected static function booted(): void
+    {
+        // Commission history: cannot be deleted
+        static::deleting(function (ManagementAgreement $agreement) {
+            throw new \RuntimeException('Perjanjian komisi adalah record yang tidak dapat dihapus.');
+        });
+    }
 }

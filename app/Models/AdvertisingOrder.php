@@ -38,12 +38,12 @@ class AdvertisingOrder extends Model
 
     public function campaign()
     {
-        return $this->belongsTo(AdvertisingCampaign::class, 'campaign_id');
+        return $this->belongsTo(AdvertisingCampaign::class, 'campaign_id')->withTrashed();
     }
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id')->withTrashed();
     }
 
     public function paidBy()
@@ -64,5 +64,13 @@ class AdvertisingOrder extends Model
     public function isRefunded(): bool
     {
         return $this->status === self::STATUS_REFUNDED;
+    }
+
+    protected static function booted(): void
+    {
+        // Revenue record: cannot be deleted
+        static::deleting(function (AdvertisingOrder $order) {
+            throw new \RuntimeException('Order iklan adalah record revenue yang tidak dapat dihapus.');
+        });
     }
 }

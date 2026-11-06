@@ -406,6 +406,17 @@ class KosController extends Controller
                 ->with('error', 'Kos tidak dapat dihapus karena masih memiliki tagihan yang belum lunas.');
         }
 
+        // Guard: prevent delete if kos has monetization history
+        $hasMonetization = $kos->payouts()->exists()
+            || $kos->managementAgreements()->exists()
+            || $kos->advertisingCampaigns()->exists()
+            || $kos->pembayarans()->exists();
+
+        if ($hasMonetization) {
+            return redirect()->route("$prefix.kos.index")
+                ->with('error', 'Kos memiliki riwayat payout, komisi, atau kampanye iklan. Nonaktifkan kos sebagai gantinya.');
+        }
+
         $hasHistory = $kos->kamar()->exists()
             || $kos->penghunis()->exists()
             || $kos->bookings()->exists();

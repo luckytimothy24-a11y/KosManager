@@ -145,4 +145,20 @@ class User extends Authenticatable
     {
         return $this->favorites()->where('kos_id', $kosId)->exists();
     }
+
+    protected static function booted(): void
+    {
+        static::forceDeleting(function (User $user) {
+            // Guard: prevent force delete if user has monetization history
+            if ($user->ownedKos()->withTrashed()->exists() ||
+                $user->payouts()->exists() ||
+                $user->paymentDistributions()->exists() ||
+                $user->advertisingCampaigns()->exists() ||
+                $user->advertisingOrders()->exists() ||
+                $user->bookings()->exists() ||
+                $user->penghunis()->exists()) {
+                throw new \RuntimeException('User memiliki riwayat kos, payout, komisi, iklan, booking, atau penghuni. Nonaktifkan akun sebagai gantinya.');
+            }
+        });
+    }
 }

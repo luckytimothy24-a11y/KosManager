@@ -29,17 +29,25 @@ class MarketplaceItem extends Model
     ];
 
     public const STATUS_AVAILABLE = 'available';
+
     public const STATUS_RESERVED = 'reserved';
+
     public const STATUS_SOLD = 'sold';
 
     public const CONDITION_NEW = 'baru';
+
     public const CONDITION_USED = 'bekas';
+
     public const CONDITION_SLIGHTLY_DAMAGED = 'rusak_ringan';
 
     public const CATEGORY_ELECTRONICS = 'elektronik';
+
     public const CATEGORY_FURNITURE = 'furniture';
+
     public const CATEGORY_CLOTHING = 'pakaian';
+
     public const CATEGORY_BOOKS = 'buku';
+
     public const CATEGORY_OTHER = 'lainnya';
 
     public function user(): BelongsTo
@@ -65,5 +73,15 @@ class MarketplaceItem extends Model
     public function isSold(): bool
     {
         return $this->status === self::STATUS_SOLD;
+    }
+
+    protected static function booted(): void
+    {
+        // Prevent force delete if item has transactions, reviews, or reports
+        static::forceDeleting(function (MarketplaceItem $item) {
+            if ($item->transactions()->exists()) {
+                throw new \RuntimeException('Item memiliki riwayat transaksi. Tidak dapat dihapus permanen.');
+            }
+        });
     }
 }

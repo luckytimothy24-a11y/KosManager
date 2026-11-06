@@ -32,7 +32,7 @@ class PropertyOwnerPayoutController extends Controller
         $query = Payout::with(['kos', 'propertyOwner', 'propertyOwnerBankAccount', 'verifier']);
 
         if ($user->isOwner()) {
-            $query->whereHas('kos', fn ($q) => $q->where('owner_id', $user->id));
+            $query->whereHas('kos', fn ($q) => $q->withTrashed()->where('owner_id', $user->id));
         }
 
         if ($request->filled('status')) {

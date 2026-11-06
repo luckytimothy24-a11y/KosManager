@@ -15,21 +15,21 @@ class SettlementReportService
 {
     public function forOwner(User $owner): array
     {
-        $kosIds = Kos::where('owner_id', $owner->id)->pluck('id');
+        $kosIds = Kos::withTrashed()->where('owner_id', $owner->id)->pluck('id');
         if ($kosIds->isEmpty()) {
             return $this->emptyReport();
         }
 
         $received = (float) Pembayaran::where('verification_status', Pembayaran::STATUS_APPROVED)
             ->where(function ($q) use ($kosIds) {
-                $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereIn('id', $kosIds))
-                    ->orWhereHas('booking.kos', fn ($qq) => $qq->whereIn('id', $kosIds));
+                $q->whereHas('penghuni.kos', fn ($qq) => $qq->withTrashed()->whereIn('id', $kosIds))
+                    ->orWhereHas('booking.kos', fn ($qq) => $qq->withTrashed()->whereIn('id', $kosIds));
             })->sum(DB::raw('COALESCE(rent_amount, amount)'));
 
         $penaltyExcluded = (float) Pembayaran::where('verification_status', Pembayaran::STATUS_APPROVED)
             ->where(function ($q) use ($kosIds) {
-                $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereIn('id', $kosIds))
-                    ->orWhereHas('booking.kos', fn ($qq) => $qq->whereIn('id', $kosIds));
+                $q->whereHas('penghuni.kos', fn ($qq) => $qq->withTrashed()->whereIn('id', $kosIds))
+                    ->orWhereHas('booking.kos', fn ($qq) => $qq->withTrashed()->whereIn('id', $kosIds));
             })->sum(DB::raw('COALESCE(penalty_amount, 0)'));
 
         $payoutIds = Payout::whereIn('kos_id', $kosIds)->pluck('id');
@@ -46,8 +46,8 @@ class SettlementReportService
         $orphanAdjustments = (float) PayoutAdjustment::whereNull('payout_id')
             ->whereHas('pembayaran', function ($q) use ($kosIds) {
                 $q->where(function ($qq) use ($kosIds) {
-                    $qq->whereHas('penghuni.kos', fn ($x) => $x->whereIn('id', $kosIds))
-                        ->orWhereHas('booking.kos', fn ($x) => $x->whereIn('id', $kosIds));
+                    $qq->whereHas('penghuni.kos', fn ($x) => $x->withTrashed()->whereIn('id', $kosIds))
+                        ->orWhereHas('booking.kos', fn ($x) => $x->withTrashed()->whereIn('id', $kosIds));
                 });
             })->selectRaw('COALESCE(SUM(commission_delta - amount),0) as net')->value('net');
         $adjustmentsNet += $orphanAdjustments;
@@ -56,11 +56,11 @@ class SettlementReportService
         $orphanRows = PayoutAdjustment::whereNull('payout_id')
             ->whereHas('pembayaran', function ($q) use ($kosIds) {
                 $q->where(function ($qq) use ($kosIds) {
-                    $qq->whereHas('penghuni.kos', fn ($x) => $x->whereIn('id', $kosIds))
-                        ->orWhereHas('booking.kos', fn ($x) => $x->whereIn('id', $kosIds));
+                    $qq->whereHas('penghuni.kos', fn ($x) => $x->withTrashed()->whereIn('id', $kosIds))
+                        ->orWhereHas('booking.kos', fn ($x) => $x->withTrashed()->whereIn('id', $kosIds));
                 });
             })
-            ->with(['pembayaran.penghuni.kos', 'pembayaran.booking.kos'])
+            ->with(['pembayaran.penghuni.kos' => fn ($q) => $q->withTrashed(), 'pembayaran.booking.kos' => fn ($q) => $q->withTrashed()])
             ->get();
         foreach ($orphanRows as $adj) {
             $pembayaran = $adj->pembayaran;
@@ -95,14 +95,14 @@ class SettlementReportService
         $creditBalance = max(0, -$remainingRaw);
 
         $perKos = [];
-        foreach (Kos::whereIn('id', $kosIds)->get() as $kos) {
+        foreach (Kos::withTrashed()->whereIn('id', $kosIds)->get() as $kos) {
             $kosPayoutIds = Payout::where('kos_id', $kos->id)->pluck('id');
             $kosNet = (float) PayoutItem::whereIn('payout_id', $kosPayoutIds)->sum('net_amount');
             $kosCommission = (float) PayoutItem::whereIn('payout_id', $kosPayoutIds)->sum('commission_amount');
             $kosReceived = (float) Pembayaran::where('verification_status', Pembayaran::STATUS_APPROVED)
                 ->where(function ($q) use ($kos) {
-                    $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereKey($kos->id))
-                        ->orWhereHas('booking.kos', fn ($qq) => $qq->whereKey($kos->id));
+                    $q->whereHas('penghuni.kos', fn ($qq) => $qq->withTrashed()->whereKey($kos->id))
+                        ->orWhereHas('booking.kos', fn ($qq) => $qq->withTrashed()->whereKey($kos->id));
                 })->sum(DB::raw('COALESCE(rent_amount, amount)'));
             $settlementForKos = app(SettlementService::class)->resolveSettlementItems($kos, '2000-01-01', now()->format('Y-m-d'));
             $kosAdjustmentsNet = 0.0;
