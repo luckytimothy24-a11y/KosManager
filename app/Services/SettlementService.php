@@ -45,7 +45,8 @@ class SettlementService
 
         $pembayarans = Pembayaran::with(['tagihan', 'booking.kos'])
             ->where('verification_status', Pembayaran::STATUS_APPROVED)
-            ->whereBetween('payment_date', [$periodStart, $periodEnd])
+            ->whereDate('payment_date', '>=', $periodStart)
+            ->whereDate('payment_date', '<=', $periodEnd)
             ->where(function ($q) use ($kosId) {
                 $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereKey($kosId))
                     ->orWhereHas('booking.kos', fn ($qq) => $qq->whereKey($kosId));

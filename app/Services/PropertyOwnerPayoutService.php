@@ -37,7 +37,8 @@ class PropertyOwnerPayoutService
 
         return (float) Pembayaran::query()
             ->where('verification_status', Pembayaran::STATUS_APPROVED)
-            ->whereBetween('payment_date', [$periodStart, $periodEnd])
+            ->whereDate('payment_date', '>=', $periodStart)
+            ->whereDate('payment_date', '<=', $periodEnd)
             ->where(function ($q) use ($kosId) {
                 $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereKey($kosId))
                     ->orWhereHas('booking.kos', fn ($qq) => $qq->whereKey($kosId));
@@ -143,8 +144,8 @@ class PropertyOwnerPayoutService
             $payout = DB::transaction(function () use ($actor, $kos, $periodStart, $periodEnd, $propertyOwnerId) {
                 Kos::whereKey($kos->id)->lockForUpdate()->first();
                 $duplicate = Payout::where('kos_id', $kos->id)
-                    ->where('period_start', $periodStart)
-                    ->where('period_end', $periodEnd)
+                    ->whereDate('period_start', $periodStart)
+                    ->whereDate('period_end', $periodEnd)
                     ->exists();
                 if ($duplicate) {
                     throw new \RuntimeException('duplicate_payout');
@@ -160,7 +161,8 @@ class PropertyOwnerPayoutService
                 $penaltyExcluded = $settlement['penalty_excluded_total'];
                 $commissionTotal = $settlement['commission_total'];
                 $net = $settlement['net_total'];
-                $platformFee = 0.0;
+                $platformFeeService = app(PlatformFeeService::class);
+                $platformFee = $platformFeeService->calculate($net);
                 $amount = round($net - $platformFee, 2);
                 if ($amount <= 0 || $gross <= 0) {
                     throw new \RuntimeException('no_eligible_income');

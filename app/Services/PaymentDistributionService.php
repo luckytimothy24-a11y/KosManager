@@ -68,8 +68,9 @@ class PaymentDistributionService
                 return ['ok' => false, 'error' => 'invalid_amount'];
             }
 
-            // TIDAK ada business rule platform fee existing → fee = 0
-            $platformFee = 0.0;
+            // Hitung platform fee dari config (PlatformFeeService)
+            $platformFeeService = app(PlatformFeeService::class);
+            $platformFee = $platformFeeService->calculate($gross);
             $ownerAmount = round($gross - $platformFee, 2);
 
             $distribution = PaymentDistribution::create([

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\PaymentDistributionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -95,6 +96,20 @@ class Booking extends Model
                 throw new \RuntimeException(
                     "Transisi status booking tidak valid: {$from} -> {$to}."
                 );
+            }
+        });
+
+        // Auto-trigger markReadyForBooking ketika booking approved
+        static::updated(function (self $booking) {
+            if ($booking->wasChanged('status') && $booking->status === self::STATUS_APPROVED) {
+                try {
+                    app(PaymentDistributionService::class)->markReadyForBooking($booking);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to mark payment distribution ready for booking', [
+                        'booking_id' => $booking->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         });
     }
@@ -203,6 +218,11 @@ class Booking extends Model
         return $this->hasOne(Pembayaran::class)
             ->where('verification_status', Pembayaran::STATUS_APPROVED)
             ->latestOfMany();
+    }
+
+    public function paymentDistribution()
+    {
+        return $this->hasOne(PaymentDistribution::class);
     }
 
     /**

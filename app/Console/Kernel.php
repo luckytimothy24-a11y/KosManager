@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('booking:expire-old')->dailyAt('00:15')->withoutOverlapping();
         $schedule->command('kontrak:expire-old')->dailyAt('00:25')->withoutOverlapping();
         $schedule->command('tagihan:auto-generate')->dailyAt('01:00')->withoutOverlapping();
+        $schedule->command('payout:create-monthly')->monthlyOn(1, '02:00')->withoutOverlapping();
         $schedule->command('tagihan:remind-due-soon')->dailyAt('07:00')->withoutOverlapping();
         $schedule->command('tagihan:remind-overdue-escalation')->dailyAt('08:00')->withoutOverlapping();
         $schedule->command('advertising:process-campaigns')->hourly()->withoutOverlapping();
