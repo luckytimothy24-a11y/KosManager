@@ -35,7 +35,7 @@ class AdminKosKamarCapabilityTest extends TestCase
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->foreignAdmin = User::factory()->create(['role' => 'admin']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->assignedKos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $this->foreignKos = Kos::factory()->create(['owner_id' => $this->owner->id]);
@@ -216,7 +216,7 @@ class AdminKosKamarCapabilityTest extends TestCase
 
     public function test_admin_assigned_kamar_can_add_tenant(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->admin)->post(route('admin.kamar.add-penghuni', $this->assignedKamar), [
             'user_id' => $tenant->id,
@@ -236,7 +236,7 @@ class AdminKosKamarCapabilityTest extends TestCase
 
     public function test_admin_foreign_kamar_cannot_add_tenant(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->admin)->post(route('admin.kamar.add-penghuni', $this->foreignKamar), [
             'user_id' => $tenant->id,

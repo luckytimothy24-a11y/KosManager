@@ -36,7 +36,7 @@ class KamarDeletionProtectionTest extends TestCase
             'status' => 'occupied',
         ], $kamarAttributes));
 
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $this->kos->id,
@@ -100,7 +100,7 @@ class KamarDeletionProtectionTest extends TestCase
     public function test_kamar_with_cancelled_booking_history_cannot_be_deleted(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         Booking::factory()->create([
             'user_id' => $tenant->id,

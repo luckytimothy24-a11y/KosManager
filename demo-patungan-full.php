@@ -35,7 +35,7 @@ foreach ($names as $i => $name) {
     $email = strtolower(str_replace(' ', '.', $name)).'.demo'.($kos->id).'@example.com';
     $user = User::where('email', $email)->first();
     if (! $user) {
-        $user = User::factory()->create(['name' => $name, 'email' => $email, 'role' => 'tenant']);
+        $user = User::factory()->create(['name' => $name, 'email' => $email, 'role' => 'pencari']);
         echo "Created tenant {$user->id} {$name} {$email}\n";
     } else {
         echo "Reuse tenant {$user->id} {$name}\n";

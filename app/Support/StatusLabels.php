@@ -183,7 +183,7 @@ class StatusLabels
             'super_admin' => 'Super Admin',
             'admin' => 'Admin',
             'owner' => 'Owner',
-            'tenant' => 'Tenant',
+            'pencari' => 'pencari',
             null, '' => '-',
             default => ucfirst(str_replace('_', ' ', $role)),
         };
@@ -198,7 +198,7 @@ class StatusLabels
             'super_admin' => 'bg-purple-100 text-purple-800 dark:bg-purple-500/10 dark:text-purple-300',
             'admin' => 'bg-blue-100 text-blue-800 dark:bg-blue-500/10 dark:text-blue-300',
             'owner' => 'bg-primary-100 text-primary-800 dark:bg-primary-500/10 dark:text-primary-300',
-            'tenant' => 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300',
+            'pencari' => 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300',
             default => 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100',
         };
     }

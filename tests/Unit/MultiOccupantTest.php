@@ -64,7 +64,7 @@ class MultiOccupantTest extends TestCase
 
     public function test_booking_service_rejects_occupants_exceeding_capacity(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 2, 'billing_mode' => 'shared', 'status' => 'available']);
         Penghuni::factory()->create(['kamar_id' => $kamar->id, 'status' => 'active']);
@@ -89,7 +89,7 @@ class MultiOccupantTest extends TestCase
 
     public function test_booking_service_allows_occupants_within_capacity(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 1, 'billing_mode' => 'personal', 'status' => 'available']);
 
@@ -112,7 +112,7 @@ class MultiOccupantTest extends TestCase
 
     public function test_personal_billing_rejects_more_than_one_occupant(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 1, 'billing_mode' => 'personal', 'status' => 'available']);
 

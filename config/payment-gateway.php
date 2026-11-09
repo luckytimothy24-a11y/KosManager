@@ -62,6 +62,15 @@ return [
             'reference_prefix' => 'VA-',
             'lifetime_hours' => 24,
         ],
+        'midtrans' => [
+            'driver' => \App\Services\PaymentGateway\MidtransSnapGateway::class,
+            'payment_method' => 'midtrans_snap',
+            'payment_label' => 'Midtrans Snap (VA/QRIS)',
+            'server_key' => env('MIDTRANS_SERVER_KEY'),
+            'client_key' => env('MIDTRANS_CLIENT_KEY'),
+            'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+            'lifetime_hours' => 24,
+        ],
     ],
 
 ];

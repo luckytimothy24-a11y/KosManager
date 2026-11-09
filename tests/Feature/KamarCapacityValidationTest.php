@@ -23,7 +23,7 @@ class KamarCapacityValidationTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
     }
 
@@ -255,9 +255,9 @@ class KamarCapacityValidationTest extends TestCase
             'monthly_price' => 1000000,
         ]);
 
-        $u1 = User::factory()->create(['role' => 'tenant']);
-        $u2 = User::factory()->create(['role' => 'tenant']);
-        $u3 = User::factory()->create(['role' => 'tenant']);
+        $u1 = User::factory()->create(['role' => 'pencari']);
+        $u2 = User::factory()->create(['role' => 'pencari']);
+        $u3 = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), [
             'user_id' => $u1->id, 'rental_type' => 'monthly', 'rental_price' => 1000000,

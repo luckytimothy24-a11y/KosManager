@@ -34,7 +34,7 @@ class NotificationLink
     private static function fallbackRoute(string $type, User $user): ?string
     {
         $prefix = match (true) {
-            $user->isTenant() => 'tenant',
+            $user->isTenant() => 'pencari',
             $user->isOwner() || $user->isSuperAdmin() => 'owner',
             $user->isAdmin() => 'admin',
             default => null,
@@ -50,15 +50,15 @@ class NotificationLink
             NotificationType::BILLING => "{$prefix}.tagihan.index",
             NotificationType::KONTRAK => "{$prefix}.kontrak.index",
             NotificationType::MESSAGE => "{$prefix}.messages.index",
-            NotificationType::CHECKIN => $prefix === 'tenant' ? 'tenant.checkin.index' : "{$prefix}.checkin.index",
-            NotificationType::CHECKOUT => $prefix === 'tenant' ? 'dashboard' : "{$prefix}.checkout.index",
+            NotificationType::CHECKIN => $prefix === 'pencari' ? 'tenant.checkin.index' : "{$prefix}.checkin.index",
+            NotificationType::CHECKOUT => $prefix === 'pencari' ? 'dashboard' : "{$prefix}.checkout.index",
             NotificationType::DAMAGE_REPORT => "{$prefix}.damage-reports.index",
             NotificationType::ADVERTISING => match ($prefix) {
-                'tenant' => null,
+                'pencari' => null,
                 'admin' => 'admin.advertising.index',
                 default => 'owner.advertising.dashboard',
             },
-            NotificationType::IDENTITY => $prefix === 'tenant' ? 'tenant.checkin.index' : "{$prefix}.checkin.index",
+            NotificationType::IDENTITY => $prefix === 'pencari' ? 'tenant.checkin.index' : "{$prefix}.checkin.index",
             default => null,
         };
     }

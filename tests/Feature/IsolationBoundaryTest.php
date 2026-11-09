@@ -27,7 +27,7 @@ class IsolationBoundaryTest extends TestCase
 
     private function makeStay(User $owner, ?User $tenant = null): array
     {
-        $tenant ??= User::factory()->create(['role' => 'tenant']);
+        $tenant ??= User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([
@@ -68,7 +68,7 @@ class IsolationBoundaryTest extends TestCase
         [$tenantA, $kosA, $kamarA, $penghuniA] = $this->makeStay($owner);
         $tagihanA = $this->makeTagihan($penghuniA, $kosA, $kamarA);
 
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
 
         $show = $this->actingAs($tenantB)->get(route('tenant.tagihan.show', $tagihanA));
         $show->assertForbidden();
@@ -85,7 +85,7 @@ class IsolationBoundaryTest extends TestCase
         $bookingA = $this->makeBooking($tenantA, $kosA, $kamarA);
         $bookingA->update(['status' => 'approved']);
 
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($tenantB)->post(route('tenant.booking.cancel', $bookingA));
 
@@ -131,7 +131,7 @@ class IsolationBoundaryTest extends TestCase
             'proof_file' => 'bukti-pembayaran/secret-proof.pdf',
         ]);
 
-        $stranger = User::factory()->create(['role' => 'tenant']);
+        $stranger = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($stranger)
             ->get(route('tenant.pembayaran.show', $pembayaranA))
@@ -163,7 +163,7 @@ class IsolationBoundaryTest extends TestCase
 
     public function test_tenant_cannot_access_any_admin_surface(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $urls = [
             route('admin.kamar.index'),

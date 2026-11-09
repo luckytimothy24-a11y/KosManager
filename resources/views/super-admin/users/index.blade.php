@@ -22,7 +22,7 @@
                 </div>
                 <select name="role" aria-label="Filter role" class="field-input sm:w-52">
                     <option value="">Semua Role</option>
-                    @foreach(['super_admin' => 'Super Admin', 'admin' => 'Admin', 'owner' => 'Owner', 'tenant' => 'Tenant'] as $r => $rLabel)
+                    @foreach(['super_admin' => 'Super Admin', 'admin' => 'Admin', 'owner' => 'Owner', 'pencari' => 'pencari'] as $r => $rLabel)
                         <option value="{{ $r }}" {{ request('role') === $r ? 'selected' : '' }}>{{ $rLabel }}</option>
                     @endforeach
                 </select>

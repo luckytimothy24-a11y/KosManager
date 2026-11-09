@@ -19,7 +19,7 @@ class CheckOutBillCheckTest extends TestCase
     private function createPendingCheckout(): array
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([
@@ -92,7 +92,7 @@ class CheckOutBillCheckTest extends TestCase
     public function test_checkout_request_persists_condition_and_notes(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([

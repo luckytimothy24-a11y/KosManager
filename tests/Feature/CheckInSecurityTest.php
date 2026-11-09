@@ -40,8 +40,8 @@ class CheckInSecurityTest extends TestCase
 
         $this->ownerA = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
-        $this->tenantA = User::factory()->create(['role' => 'tenant']);
-        $this->tenantB = User::factory()->create(['role' => 'tenant']);
+        $this->tenantA = User::factory()->create(['role' => 'pencari']);
+        $this->tenantB = User::factory()->create(['role' => 'pencari']);
 
         $this->kosA = Kos::factory()->create(['owner_id' => $this->ownerA->id]);
         $this->kosB = Kos::factory()->create(['owner_id' => $this->ownerB->id]);

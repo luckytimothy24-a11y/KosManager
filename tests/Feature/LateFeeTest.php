@@ -34,7 +34,7 @@ class LateFeeTest extends TestCase
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->otherOwner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $this->kamar = Kamar::factory()->create([
             'kos_id' => $this->kos->id,
@@ -160,7 +160,7 @@ class LateFeeTest extends TestCase
         $kontraks = collect();
 
         for ($i = 0; $i < 3; $i++) {
-            $user = User::factory()->create(['role' => 'tenant']);
+            $user = User::factory()->create(['role' => 'pencari']);
             $penghuni = Penghuni::factory()->create([
                 'user_id' => $user->id,
                 'kos_id' => $this->kos->id,
@@ -257,7 +257,7 @@ class LateFeeTest extends TestCase
     {
         $otherKos = Kos::factory()->create(['owner_id' => $this->otherOwner->id]);
         $otherKamar = Kamar::factory()->create(['kos_id' => $otherKos->id]);
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
         $otherPenghuni = Penghuni::factory()->create([
             'user_id' => $otherTenant->id,
             'kos_id' => $otherKos->id,

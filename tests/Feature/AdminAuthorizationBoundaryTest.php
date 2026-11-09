@@ -285,7 +285,7 @@ class AdminAuthorizationBoundaryTest extends TestCase
         $this->assertSame('super_admin', UserRole::SUPER_ADMIN->value);
         $this->assertSame('admin', UserRole::ADMIN->value);
         $this->assertSame('owner', UserRole::OWNER->value);
-        $this->assertSame('tenant', UserRole::TENANT->value);
+        $this->assertSame('pencari', UserRole::PENCARI->value);
     }
 
     public function test_user_role_enum_has_system_level_method(): void

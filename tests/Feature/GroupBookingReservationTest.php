@@ -23,7 +23,7 @@ class GroupBookingReservationTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenantA = User::factory()->create(['role' => 'tenant']);
+        $this->tenantA = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
     }
 
@@ -100,7 +100,7 @@ class GroupBookingReservationTest extends TestCase
             'requested_occupants' => 1,
         ], $this->tenantA->id);
         $this->assertTrue($r1['ok']);
-        $t2 = User::factory()->create(['role' => 'tenant']);
+        $t2 = User::factory()->create(['role' => 'pencari']);
         $r2 = $svc->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(5)->format('Y-m-d'),

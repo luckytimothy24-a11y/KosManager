@@ -37,7 +37,7 @@ class TransferBankPaymentTest extends TestCase
         Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active', 'payment_info' => 'Transfer ke BCA 1234567890 a.n. Kos Manager']);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'available', 'monthly_price' => 800000]);
         $this->penghuni = Penghuni::factory()->create([

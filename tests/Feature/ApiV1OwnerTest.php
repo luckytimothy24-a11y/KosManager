@@ -41,7 +41,7 @@ class ApiV1OwnerTest extends TestCase
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->otherOwner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
 
@@ -62,7 +62,7 @@ class ApiV1OwnerTest extends TestCase
     public function test_owner_routes_reject_non_owner_roles(): void
     {
         $roles = [
-            'tenant' => $this->tenant,
+            'pencari' => $this->tenant,
             'admin' => $this->admin,
             'super_admin' => $this->superAdmin,
         ];
@@ -242,7 +242,7 @@ class ApiV1OwnerTest extends TestCase
     {
         $foreignKos = $this->otherKos;
         $foreignRoom = Kamar::factory()->create(['kos_id' => $foreignKos->id, 'status' => 'occupied']);
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
 
         Penghuni::factory()->create([
             'user_id' => $foreignTenant->id,

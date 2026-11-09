@@ -1,4 +1,4 @@
-﻿@php
+@php
     $user = Auth::user();
     $currentRoute = request()->route()->getName() ?? '';
     $sidebarData = $sidebarBadges ?? [];
@@ -28,7 +28,7 @@
         $user->hasRole('super_admin') => 'Super Admin',
         $user->isOwner() => 'Owner',
         $user->isAdmin() => 'Admin Kos',
-        default => 'Tenant',
+        default => 'pencari',
     };
 
     // Extract frequently used badge values with defaults
@@ -42,7 +42,7 @@
     $pendingCheckouts = $sidebarData['pendingCheckouts'] ?? 0;
 @endphp
 
- {{-- Sidebar: light = putih premium, dark = slate-950 â€” berlaku untuk SEMUA role --}}
+ {{-- Sidebar: light = putih premium, dark = slate-950 — berlaku untuk SEMUA role --}}
 <aside id="main-sidebar"
     class="fixed top-0 left-0 z-40 w-64 h-dvh flex flex-col border-r transition-all duration-300 lg:translate-x-0 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100"
     :class="{
@@ -59,7 +59,7 @@
         </div>
         <div class="min-w-0" :class="{ 'lg:hidden': sidebarCollapsed }">
             <span class="text-[13px] font-black tracking-tight text-slate-900 dark:text-white leading-none">KosManager</span>
-            <p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 leading-none mt-1">{{ $roleLabel }} Â· Panel</p>
+            <p class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 leading-none mt-1">{{ $roleLabel }} · Panel</p>
         </div>
         <button type="button" @click="sidebarOpen = false"
                 class="lg:hidden absolute right-2.5 top-2.5 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-slate-200 text-slate-600 shadow-sm transition hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
@@ -329,7 +329,7 @@
             </span>
             <span :class="{ 'lg:hidden': sidebarCollapsed }">Pengaturan</span>
         </a>
-        <p class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500" :class="{ 'lg:hidden': sidebarCollapsed }">Â© {{ date('Y') }} KosManager</p>
+        <p class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500" :class="{ 'lg:hidden': sidebarCollapsed }">© {{ date('Y') }} KosManager</p>
     </div>
 </aside>
 

@@ -33,7 +33,7 @@ class IdempotencyNotesTest extends TestCase
         parent::setUp();
         Storage::fake('private');
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $po = PropertyOwner::factory()->create();
         PropertyOwnerBankAccount::factory()->create(['property_owner_id' => $po->id]);
         $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active', 'property_owner_id' => $po->id]);

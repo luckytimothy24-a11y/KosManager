@@ -60,7 +60,7 @@ class SchedulerResilienceTest extends TestCase
         Mail::fake();
 
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([
@@ -161,7 +161,7 @@ class SchedulerResilienceTest extends TestCase
         Mail::fake();
 
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([
@@ -197,7 +197,7 @@ class SchedulerResilienceTest extends TestCase
 
         $owner = User::factory()->create(['role' => 'owner']);
         $admin = User::factory()->create(['role' => 'admin']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([

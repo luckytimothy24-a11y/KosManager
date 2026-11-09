@@ -36,7 +36,7 @@
 
     @php
         $authUser = auth()->user();
-        $isTenant = $authUser?->hasRole('tenant') ?? false;
+        $isTenant = $authUser?->hasRole('pencari') ?? false;
     @endphp
 
     {{-- ============================== NAVBAR ============================== --}}

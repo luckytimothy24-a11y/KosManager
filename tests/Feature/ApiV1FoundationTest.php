@@ -74,7 +74,7 @@ class ApiV1FoundationTest extends TestCase
 
     public function test_inactive_user_with_valid_token_gets_403_json_not_500(): void
     {
-        $user = $this->makeUser(['role' => 'tenant']);
+        $user = $this->makeUser(['role' => 'pencari']);
         $token = $user->createToken('api')->plainTextToken;
 
         $user->update(['is_active' => false]);
@@ -141,7 +141,7 @@ class ApiV1FoundationTest extends TestCase
 
     public function test_throttle_counts_all_login_attempts_and_keeps_authenticated_routes_working(): void
     {
-        $user = $this->makeUser(['role' => 'tenant']);
+        $user = $this->makeUser(['role' => 'pencari']);
         $token = $user->createToken('test')->plainTextToken;
 
         foreach (['salah-1', 'salah-2', 'salah-3'] as $wrong) {

@@ -20,7 +20,7 @@ class SeekerLoginTest extends TestCase
         ])->assertRedirect(route('dashboard'));
 
         $this->assertAuthenticated();
-        $this->assertSame('tenant', auth()->user()->refresh()->role);
+        $this->assertSame('pencari', auth()->user()->refresh()->role);
 
         $this->post(route('logout'))->assertRedirect('/');
 
@@ -61,7 +61,8 @@ class SeekerLoginTest extends TestCase
         $this->post(route('login'), [
             'email' => 'pencari@example.com',
             'password' => 'salah',
-        ])->assertSessionHasErrors('email');
+        ])->assertStatus(302)
+            ->assertSessionHas('error', 'Terlalu banyak percobaan login. Silakan tunggu 15 menit sebelum mencoba lagi.');
 
         $this->assertGuest();
     }

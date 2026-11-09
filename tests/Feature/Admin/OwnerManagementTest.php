@@ -92,7 +92,7 @@ class OwnerManagementTest extends TestCase
 
     public function test_unauthorized_roles_rejected(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->makeOwner();
         $this->actingAs($tenant)->get(route('admin.owners.index'))->assertStatus(403);
         $this->actingAs($owner)->get(route('admin.owners.index'))->assertStatus(403);
@@ -102,7 +102,7 @@ class OwnerManagementTest extends TestCase
         $kos = Kos::factory()->create(['owner_id' => $targetOwner->id]);
         $admin->assignedKos()->attach($kos->id);
 
-        $tenant2 = User::factory()->create(['role' => 'tenant']);
+        $tenant2 = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($tenant2)->get(route('admin.owners.show', $targetOwner))->assertStatus(403);
     }
 

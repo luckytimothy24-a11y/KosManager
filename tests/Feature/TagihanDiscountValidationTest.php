@@ -29,7 +29,7 @@ class TagihanDiscountValidationTest extends TestCase
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id]);
         $penghuni = Penghuni::factory()->create([
-            'user_id' => User::factory()->create(['role' => 'tenant'])->id,
+            'user_id' => User::factory()->create(['role' => 'pencari'])->id,
             'kos_id' => $this->kos->id,
             'kamar_id' => $kamar->id,
             'status' => 'active',

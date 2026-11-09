@@ -14,7 +14,7 @@ class PhaseDLocationDiscoveryTest extends TestCase
 
     protected function tenant(): User
     {
-        return User::factory()->create(['role' => 'tenant']);
+        return User::factory()->create(['role' => 'pencari']);
     }
 
     protected function kos(string $address, string $status = 'active', ?int $ownerId = null): Kos

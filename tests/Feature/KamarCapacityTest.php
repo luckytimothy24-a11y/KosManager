@@ -103,9 +103,9 @@ class KamarCapacityTest extends TestCase
     public function test_owner_can_add_penghuni_until_capacity_full(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 2, 'status' => 'available']);
-        $first = User::factory()->create(['role' => 'tenant']);
-        $second = User::factory()->create(['role' => 'tenant']);
-        $third = User::factory()->create(['role' => 'tenant']);
+        $first = User::factory()->create(['role' => 'pencari']);
+        $second = User::factory()->create(['role' => 'pencari']);
+        $third = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($first))
             ->assertRedirect(route('owner.kamar.show', $kamar));
@@ -121,7 +121,7 @@ class KamarCapacityTest extends TestCase
     public function test_add_penghuni_creates_penghuni_and_active_kontrak(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 1, 'status' => 'available']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($tenant));
 
@@ -144,7 +144,7 @@ class KamarCapacityTest extends TestCase
     public function test_cannot_add_same_tenant_twice(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 2]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($tenant))
             ->assertRedirect(route('owner.kamar.show', $kamar));
@@ -168,7 +168,7 @@ class KamarCapacityTest extends TestCase
     public function test_non_authorized_owner_cannot_add_penghuni(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->otherOwner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($tenant));
 
@@ -178,8 +178,8 @@ class KamarCapacityTest extends TestCase
     public function test_checkin_rejected_when_kamar_at_full_capacity(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 1, 'status' => 'booked']);
-        $bookingTenant = User::factory()->create(['role' => 'tenant']);
-        $existing = User::factory()->create(['role' => 'tenant']);
+        $bookingTenant = User::factory()->create(['role' => 'pencari']);
+        $existing = User::factory()->create(['role' => 'pencari']);
         Penghuni::factory()->create([
             'user_id' => $existing->id,
             'kos_id' => $this->kos->id,

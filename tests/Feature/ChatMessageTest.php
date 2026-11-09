@@ -34,7 +34,7 @@ class ChatMessageTest extends TestCase
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->otherOwner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'occupied']);
         $this->penghuni = Penghuni::factory()->create([
@@ -125,7 +125,7 @@ class ChatMessageTest extends TestCase
             'message' => 'Nanti kami perbaiki.',
         ]);
 
-        $response->assertRedirect(route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]));
+        $response->assertRedirect(route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $this->kos->id]));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kos->id,
             'sender_id' => $this->owner->id,
@@ -140,7 +140,7 @@ class ChatMessageTest extends TestCase
 
     public function test_owner_cannot_reply_to_unrelated_tenant(): void
     {
-        $stranger = User::factory()->create(['role' => 'tenant']);
+        $stranger = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->owner)->post(route('owner.messages.reply', $stranger), [
             'message' => 'Halo',
@@ -233,12 +233,12 @@ class ChatMessageTest extends TestCase
         $responseB->assertSee($ownerB->name);
 
         // Owner A tidak melihat pesan ke owner B
-        $this->actingAs($this->owner)->get(route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]))
+        $this->actingAs($this->owner)->get(route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $this->kos->id]))
             ->assertOk()
             ->assertSee('Pesan untuk owner A')
             ->assertDontSee('Pesan untuk owner B');
 
-        $this->actingAs($ownerB)->get(route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $kosB->id]))
+        $this->actingAs($ownerB)->get(route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $kosB->id]))
             ->assertOk()
             ->assertSee('Pesan untuk owner B')
             ->assertDontSee('Pesan untuk owner A');

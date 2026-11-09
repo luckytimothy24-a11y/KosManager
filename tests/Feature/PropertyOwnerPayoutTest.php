@@ -70,7 +70,7 @@ class PropertyOwnerPayoutTest extends TestCase
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->kos = Kos::factory()->create([
             'owner_id' => $this->owner->id,

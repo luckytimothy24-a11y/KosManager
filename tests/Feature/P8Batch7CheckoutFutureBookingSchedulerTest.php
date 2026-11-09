@@ -22,7 +22,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
     private function createActiveStay(string $kamarStatus = 'occupied'): array
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create([
             'kos_id' => $kos->id,
@@ -66,7 +66,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
         [$owner, $tenantA, $kos, $kamar, $penghuni, $kontrak] = $this->createActiveStay();
 
         // Tenant B has an approved future reservation for the same room.
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         Booking::factory()->create([
             'user_id' => $tenantB->id,
             'kos_id' => $kos->id,
@@ -182,7 +182,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
     public function test_tenant_cannot_request_checkout_for_another_tenants_penghuni(): void
     {
         [$owner, $tenant, $kos, $kamar, $penghuni, $kontrak] = $this->createActiveStay();
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($otherTenant)->post(route('tenant.checkout.request', $penghuni));
         $response->assertStatus(403);
@@ -218,7 +218,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
     public function test_future_booking_succeeds(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create([
             'kos_id' => $kos->id,
@@ -330,7 +330,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'end_date' => '2026-10-20',
         ]);
 
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         $response = $this->actingAs($tenantB)->post(route('tenant.booking.store'), [
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
@@ -393,7 +393,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
         Mail::fake();
 
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([
@@ -410,7 +410,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'end_date' => today()->subDay(),
         ]);
 
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         Booking::factory()->create([
             'user_id' => $tenantB->id,
             'kos_id' => $kos->id,
@@ -455,7 +455,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'end_date' => today()->subDay(),
         ]);
 
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         Booking::factory()->create([
             'user_id' => $tenantB->id,
             'kos_id' => $kos->id,

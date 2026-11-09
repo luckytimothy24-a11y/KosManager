@@ -18,7 +18,7 @@ class BillingMiddlewareTest extends TestCase
     public function tenant_without_overdue_invoices_can_access_tenant_routes()
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         // Create kos and kamar
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
@@ -40,7 +40,7 @@ class BillingMiddlewareTest extends TestCase
     public function tenant_with_overdue_invoices_gets_blocked_by_billing_middleware()
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         // Create kos and kamar
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
@@ -74,7 +74,7 @@ class BillingMiddlewareTest extends TestCase
     public function tenant_can_access_dashboard_without_billing_block()
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($tenant)->get('/dashboard')->assertOk();
     }
@@ -83,7 +83,7 @@ class BillingMiddlewareTest extends TestCase
     public function tenant_can_access_tagihan_page_without_overdue()
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);

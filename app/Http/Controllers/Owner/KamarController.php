@@ -106,7 +106,7 @@ class KamarController extends Controller
         $kamar->load(['kos', 'fasilitas', 'penghunis.user', 'penghunis.kontraks', 'bookings']);
 
         $tenantCandidates = request()->user()->isSuperAdmin() || request()->user()->isOwner() || request()->user()->isAdmin()
-            ? User::where('role', 'tenant')
+            ? User::where('role', 'pencari')
                 ->whereDoesntHave('penghunis', fn ($q) => $q->where('kamar_id', $kamar->id)->where('status', 'active'))
                 ->orderBy('name')
                 ->get()

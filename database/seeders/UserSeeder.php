@@ -54,15 +54,28 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Tenant',
-            'email' => 'tenant@example.com',
+            'name' => 'Pencari Kos',
+            'email' => 'pencari@example.com',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
-            'role' => 'tenant',
+            'role' => 'pencari',
             'phone' => '081234567893',
-            'address' => 'Jl. Tenant No. 4',
+            'address' => 'Jl. Pencari No. 4',
             'is_active' => true,
         ]);
+
+        $owner = User::where('email', 'owner@example.com')->first();
+        if ($owner) {
+            \App\Models\OwnerProfile::firstOrCreate(
+                ['user_id' => $owner->id],
+                [
+                    'bank_name' => 'BCA',
+                    'bank_account_number' => '1234567890',
+                    'bank_account_holder' => $owner->name,
+                    'verification_status' => 'verified',
+                ]
+            );
+        }
 
         User::factory()->count(2)->create([
             'role' => 'owner',
@@ -70,7 +83,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::factory()->count(5)->create([
-            'role' => 'tenant',
+            'role' => 'pencari',
             'is_active' => true,
         ]);
     }

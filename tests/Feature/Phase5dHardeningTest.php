@@ -41,8 +41,8 @@ class Phase5dHardeningTest extends TestCase
         $this->ownerA = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
-        $tenantA = User::factory()->create(['role' => 'tenant']);
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantA = User::factory()->create(['role' => 'pencari']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         $poA = PropertyOwner::factory()->create();
         PropertyOwnerBankAccount::factory()->create(['property_owner_id' => $poA->id]);
         $poB = PropertyOwner::factory()->create();

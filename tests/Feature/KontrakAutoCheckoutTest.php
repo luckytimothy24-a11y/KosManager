@@ -21,7 +21,7 @@ class KontrakAutoCheckoutTest extends TestCase
     private function createActiveStay(): array
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([

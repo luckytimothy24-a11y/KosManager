@@ -15,7 +15,7 @@ class SecurityTest extends TestCase
 
     public function test_tenant_cannot_access_owner_routes(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $routes = [
             route('owner.kos.index'),
@@ -75,7 +75,7 @@ class SecurityTest extends TestCase
 
     public function test_role_middleware_blocks_wrong_role(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $response = $this->actingAs($tenant)->get(route('owner.kos.index'));
         $response->assertStatus(403);
     }

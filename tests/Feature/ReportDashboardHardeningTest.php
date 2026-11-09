@@ -23,7 +23,7 @@ class ReportDashboardHardeningTest extends TestCase
         $user = User::factory()->create(['role' => 'super_admin']);
 
         $admin = User::factory()->create(['role' => 'admin']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
@@ -81,7 +81,7 @@ class ReportDashboardHardeningTest extends TestCase
     {
         $ownerA = User::factory()->create(['role' => 'owner']);
         $ownerB = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $kosA = Kos::factory()->create(['owner_id' => $ownerA->id]);
         $kosB = Kos::factory()->create(['owner_id' => $ownerB->id]);
@@ -144,7 +144,7 @@ class ReportDashboardHardeningTest extends TestCase
 
     public function test_tenant_dashboard_renders_with_eager_loaded_relations(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
@@ -169,7 +169,7 @@ class ReportDashboardHardeningTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
@@ -225,7 +225,7 @@ class ReportDashboardHardeningTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         Booking::factory()->create([
             'user_id' => $tenant->id,
@@ -267,7 +267,7 @@ class ReportDashboardHardeningTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,

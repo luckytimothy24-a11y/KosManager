@@ -75,7 +75,7 @@ class LayoutComposer
     {
         $user = auth()->user();
         if (! $user) {
-            return ['roleAccent' => 'from-primary-600 to-primary-700', 'roleLabel' => 'Tenant', 'isTenant' => false, 'isActive' => fn ($r) => false, 'currentRoute' => '', 'tenantGroups' => $this->tenantGroups()];
+            return ['roleAccent' => 'from-primary-600 to-primary-700', 'roleLabel' => 'pencari', 'isTenant' => false, 'isActive' => fn ($r) => false, 'currentRoute' => '', 'tenantGroups' => $this->tenantGroups()];
         }
         $currentRoute = optional(request()->route())->getName() ?? '';
         $isActive = function ($route) use ($currentRoute) {
@@ -95,7 +95,7 @@ class LayoutComposer
             $user->hasRole('super_admin') => 'Super Admin',
             $user->isOwner() => 'Owner',
             $user->isAdmin() => 'Admin Kos',
-            default => 'Tenant',
+            default => 'pencari',
         };
 
         return [

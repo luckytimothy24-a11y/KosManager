@@ -14,7 +14,7 @@ class TenantGoogleMapsDirectionsTest extends TestCase
 
     protected function tenant(): User
     {
-        return User::factory()->create(['role' => 'tenant']);
+        return User::factory()->create(['role' => 'pencari']);
     }
 
     protected function makeKos(array $overrides = []): Kos

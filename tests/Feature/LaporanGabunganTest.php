@@ -25,7 +25,7 @@ class LaporanGabunganTest extends TestCase
 
     private function seedOwnershipData(User $ownerA, Kos $kosA, Kos $kosB): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kamarA = Kamar::factory()->create(['kos_id' => $kosA->id]);
         $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id]);
         $penghuniA = Penghuni::factory()->create(['user_id' => $tenant->id, 'kos_id' => $kosA->id, 'kamar_id' => $kamarA->id]);
@@ -161,7 +161,7 @@ class LaporanGabunganTest extends TestCase
 
     public function test_tenant_cannot_access_laporan(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($tenant)->get('/admin/laporan')->assertForbidden();
         $this->actingAs($tenant)->get('/super-admin/laporan')->assertForbidden();
     }

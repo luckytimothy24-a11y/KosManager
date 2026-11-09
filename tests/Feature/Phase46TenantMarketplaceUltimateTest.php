@@ -24,7 +24,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
     private function kosWithAvailableRoom(string $name): Kos
@@ -264,7 +264,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
 
     public function test_booking_success_isolated_per_tenant(): void
     {
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
         $booking = Booking::factory()->create([
@@ -380,7 +380,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
 
     public function test_sidebar_collapse_control_is_available_for_all_roles(): void
     {
-        foreach (['tenant', 'owner', 'admin', 'super_admin'] as $role) {
+        foreach (['pencari', 'owner', 'admin', 'super_admin'] as $role) {
             $user = User::factory()->create(['role' => $role]);
 
             $response = $this->actingAs($user)->get(route('dashboard'));

@@ -28,7 +28,7 @@ class ReadinessSmokeTest extends TestCase
         $this->assertFalse($user->isOwner());
         $this->assertFalse($user->isTenant());
         $this->assertTrue($user->hasRole('super_admin'));
-        $this->assertTrue($user->hasRole('super_admin', 'admin', 'owner', 'tenant'));
+        $this->assertTrue($user->hasRole('super_admin', 'admin', 'owner', 'pencari'));
     }
 
     public function test_admin_is_recognized(): void
@@ -57,12 +57,12 @@ class ReadinessSmokeTest extends TestCase
 
     public function test_tenant_is_recognized(): void
     {
-        $user = $this->makeUser(['role' => 'tenant']);
+        $user = $this->makeUser(['role' => 'pencari']);
 
         $user->refresh();
 
         $this->assertTrue($user->isTenant());
-        $this->assertTrue($user->hasRole('tenant'));
+        $this->assertTrue($user->hasRole('pencari'));
         $this->assertFalse($user->isOwner());
         $this->assertFalse($user->isAdmin());
     }
@@ -110,7 +110,7 @@ class ReadinessSmokeTest extends TestCase
 
     public function test_tenant_accesses_tenant_routes(): void
     {
-        $user = $this->makeUser(['role' => 'tenant']);
+        $user = $this->makeUser(['role' => 'pencari']);
         $token = $user->createToken('test')->plainTextToken;
 
         $response = $this->withToken($token)->getJson('/api/v1/me');
@@ -119,7 +119,7 @@ class ReadinessSmokeTest extends TestCase
 
     public function test_tenant_cannot_access_owner_resources(): void
     {
-        $user = $this->makeUser(['role' => 'tenant']);
+        $user = $this->makeUser(['role' => 'pencari']);
         $other = $this->makeUser(['role' => 'owner']);
         $token = $user->createToken('test')->plainTextToken;
         $otherToken = $other->createToken('test')->plainTextToken;

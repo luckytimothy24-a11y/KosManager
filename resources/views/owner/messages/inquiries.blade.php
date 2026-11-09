@@ -43,7 +43,7 @@
                         @foreach($threads as $t)
                             <li>
                                 <x-chat-list-item
-                                    :href="route('owner.messages.show', array_filter(['tenant' => $t['tenant_id'], 'kos' => $t['kos_id'] ?? null]))"
+                                    :href="route('owner.messages.show', array_filter(['pencari' => $t['tenant_id'], 'kos' => $t['kos_id'] ?? null]))"
                                     :name="$t['tenant_name']"
                                     :context="$t['kos_name']"
                                     :snippet="\Illuminate\Support\Str::limit($t['last_message'] ?? '', 48)"

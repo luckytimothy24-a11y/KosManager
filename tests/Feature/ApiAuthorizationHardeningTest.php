@@ -51,8 +51,8 @@ class ApiAuthorizationHardeningTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = $this->makeKos($owner);
         $kamar = $this->makeKamar($kos);
-        $tenantA = User::factory()->create(['role' => 'tenant']);
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantA = User::factory()->create(['role' => 'pencari']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
 
         $booking = Booking::factory()->create([
             'user_id' => $tenantA->id,
@@ -71,8 +71,8 @@ class ApiAuthorizationHardeningTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = $this->makeKos($owner);
         $kamar = $this->makeKamar($kos);
-        $tenantA = User::factory()->create(['role' => 'tenant']);
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantA = User::factory()->create(['role' => 'pencari']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
 
         $booking = Booking::factory()->create([
             'user_id' => $tenantA->id,
@@ -94,7 +94,7 @@ class ApiAuthorizationHardeningTest extends TestCase
         $ownerB = User::factory()->create(['role' => 'owner']);
         $kosB = $this->makeKos($ownerB);
         $kamarB = $this->makeKamar($kosB);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $bookingB = Booking::factory()->create([
             'user_id' => $tenant->id,
@@ -118,7 +118,7 @@ class ApiAuthorizationHardeningTest extends TestCase
         $kosAssigned = $this->makeKos($owner);
         $kosOther = $this->makeKos($owner);
         $kamarOther = $this->makeKamar($kosOther);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $admin = User::factory()->create(['role' => 'admin']);
         $admin->assignedKos()->attach($kosAssigned->id);
 
@@ -139,7 +139,7 @@ class ApiAuthorizationHardeningTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = $this->makeKos($owner);
         $kamar = $this->makeKamar($kos);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->withToken($this->token($tenant))->postJson('/api/v1/bookings', [
             'kos_id' => $kos->id,
@@ -169,7 +169,7 @@ class ApiAuthorizationHardeningTest extends TestCase
         $ownerB = User::factory()->create(['role' => 'owner']);
         $kosB = $this->makeKos($ownerB);
         $kamarB = $this->makeKamar($kosB);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,

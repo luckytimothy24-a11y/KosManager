@@ -18,7 +18,7 @@ class BookingUncheckedInExpireTest extends TestCase
     private function createApprovedStay(string $kamarStatus = 'booked', array $bookingAttributes = []): array
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => $kamarStatus]);
 
@@ -76,7 +76,7 @@ class BookingUncheckedInExpireTest extends TestCase
             'start_date' => today()->subDays(30),
         ]);
 
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
 
         Booking::factory()->create([
             'user_id' => $tenantB->id,

@@ -47,7 +47,7 @@ class OwnerParamRoutes2Test extends TestCase
     {
         $a = $this->makeUser('owner');
         $b = $this->makeUser('owner');
-        $tenant = $this->makeUser('tenant');
+        $tenant = $this->makeUser('pencari');
 
         $kos     = Kos::factory()->create(['owner_id' => $a->id]);
         $kamar   = Kamar::factory()->create(['kos_id' => $kos->id]);

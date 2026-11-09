@@ -42,7 +42,7 @@ class ShowcaseFeasibilityTest extends TestCase
     public function test_showcase_kos_visible_in_marketplace(): void
     {
         $this->seedShowcase();
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($tenant)->get(route('tenant.kos.index'));
         $response->assertOk();
@@ -71,9 +71,9 @@ class ShowcaseFeasibilityTest extends TestCase
             'requested_occupants' => 1,
         ];
 
-        $t1 = User::factory()->create(['role' => 'tenant']);
-        $t2 = User::factory()->create(['role' => 'tenant']);
-        $t3 = User::factory()->create(['role' => 'tenant']);
+        $t1 = User::factory()->create(['role' => 'pencari']);
+        $t2 = User::factory()->create(['role' => 'pencari']);
+        $t3 = User::factory()->create(['role' => 'pencari']);
 
         $this->assertTrue($service->create($payload(), $t1->id)['ok']);
         $this->assertTrue($service->create($payload(), $t2->id)['ok']);
@@ -155,7 +155,7 @@ class ShowcaseFeasibilityTest extends TestCase
         // lalu tambah 10 kos + 20 kamar lagi. Query tidak boleh tumbuh
         // proporsional (+<10) karena seluruh relasi di-eager-load dan
         // badge sidebar di-memo per request.
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::where('email', 'owner@example.com')->first();
         $topUp = function (int $n) use ($owner) {
             foreach (range(1, $n) as $i) {

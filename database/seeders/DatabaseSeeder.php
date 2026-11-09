@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
     {
         $seeders = [
             UserSeeder::class,
+            KosHubSettingsSeeder::class,
             FasilitasSeeder::class,
             TopikSeeder::class,
             KosSeeder::class,

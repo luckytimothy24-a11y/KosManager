@@ -15,7 +15,7 @@ class BookingLogicTest extends TestCase
 
     public function test_booking_code_is_generated(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
 

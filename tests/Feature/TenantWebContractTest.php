@@ -35,8 +35,8 @@ class TenantWebContractTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
-        $this->otherTenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
+        $this->otherTenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
 
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'occupied']);
@@ -114,7 +114,7 @@ class TenantWebContractTest extends TestCase
 
     public function test_tenant_with_no_contracts_sees_empty_state(): void
     {
-        $fresh = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('x')]);
+        $fresh = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('x')]);
 
         $response = $this->actingAs($fresh)->get(route('tenant.kontrak.index'));
 

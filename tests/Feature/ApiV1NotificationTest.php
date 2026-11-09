@@ -27,8 +27,8 @@ class ApiV1NotificationTest extends TestCase
     {
         parent::setUp();
 
-        $this->tenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
-        $this->otherTenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
+        $this->otherTenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $this->owner = User::factory()->create(['role' => 'owner']);
     }
 
@@ -102,7 +102,7 @@ class ApiV1NotificationTest extends TestCase
 
     public function test_index_returns_empty_collection_with_200(): void
     {
-        $fresh = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('x')]);
+        $fresh = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('x')]);
 
         $response = $this->withToken($this->token($fresh))->getJson('/api/v1/notifications');
 

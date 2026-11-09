@@ -24,7 +24,7 @@ class PhaseETenantMarketplaceTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
     private function kos(string $name = 'Kos E', string $address = 'Jl. E No. 1'): Kos
@@ -119,8 +119,8 @@ class PhaseETenantMarketplaceTest extends TestCase
 
     public function test_favorite_tenant_isolation(): void
     {
-        $tenantA = User::factory()->create(['role' => 'tenant']);
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantA = User::factory()->create(['role' => 'pencari']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         $kos = $this->kos('Kos Isolasi');
         $this->kamar($kos, 'available');
 

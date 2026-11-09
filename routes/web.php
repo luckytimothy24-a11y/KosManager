@@ -363,7 +363,7 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 });
 
 // Tenant Routes
-Route::middleware(['auth', 'role:tenant', 'billing'])->prefix('tenant')->name('tenant.')->group(function () {
+Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('tenant.')->group(function () {
     Route::get('kos', [TenantKosController::class, 'index'])->name('kos.index');
     Route::get('kos/{kos}', [TenantKosController::class, 'show'])->name('kos.show');
 
@@ -441,7 +441,7 @@ Route::middleware(['auth', 'role:tenant', 'billing'])->prefix('tenant')->name('t
 
 // Tanya Owner — pencari kos (tenant login, tanpa perlu menghuni).
 // Sengaja di luar grup 'billing' agar tenant overdue tetap dapat bertanya (pre-sales).
-Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->group(function () {
+Route::middleware(['auth', 'role:pencari'])->prefix('tenant')->name('tenant.')->group(function () {
     Route::get('kos/{kos}/tanya', [TenantMessageController::class, 'ask'])->name('kos.ask');
     Route::post('kos/{kos}/tanya', [TenantMessageController::class, 'askStore'])->middleware('throttle:5,60')->name('kos.ask.store');
     Route::get('inquiries', [TenantMessageController::class, 'inquiries'])->name('inquiries.index');

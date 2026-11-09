@@ -41,7 +41,7 @@ class BookingCancellationRequestTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create([
             'kos_id' => $this->kos->id,

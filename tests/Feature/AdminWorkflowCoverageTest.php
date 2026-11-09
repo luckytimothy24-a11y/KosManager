@@ -40,7 +40,7 @@ class AdminWorkflowCoverageTest extends TestCase
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->admin = User::factory()->create(['role' => 'admin']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->assignedKos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $this->foreignKos = Kos::factory()->create(['owner_id' => $this->owner->id]);
@@ -127,10 +127,10 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_penghuni_index_excludes_foreign_kos(): void
     {
-        $assignedTenant = User::factory()->create(['role' => 'tenant']);
+        $assignedTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniAssigned] = $this->makeStay($this->assignedKos, $this->assignedKamar, $assignedTenant);
 
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniForeign] = $this->makeStay($this->foreignKos, $this->foreignKamar, $foreignTenant);
 
         $response = $this->actingAs($this->admin)->get(route('admin.penghuni.index'));
@@ -149,7 +149,7 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_foreign_penghuni_denied_show(): void
     {
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniForeign] = $this->makeStay($this->foreignKos, $this->foreignKamar, $foreignTenant);
 
         $response = $this->actingAs($this->admin)->get(route('admin.penghuni.show', $penghuniForeign));
@@ -169,10 +169,10 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_kontrak_index_excludes_foreign_kos(): void
     {
-        $assignedTenant = User::factory()->create(['role' => 'tenant']);
+        $assignedTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniA, $kontrakA] = $this->makeStay($this->assignedKos, $this->assignedKamar, $assignedTenant);
 
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniB, $kontrakB] = $this->makeStay($this->foreignKos, $this->foreignKamar, $foreignTenant);
 
         $response = $this->actingAs($this->admin)->get(route('admin.kontrak.index'));
@@ -191,7 +191,7 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_foreign_kontrak_denied_show(): void
     {
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniB, $kontrakB] = $this->makeStay($this->foreignKos, $this->foreignKamar, $foreignTenant);
 
         $response = $this->actingAs($this->admin)->get(route('admin.kontrak.show', $kontrakB));
@@ -306,7 +306,7 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_foreign_kos_cannot_create_tagihan(): void
     {
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniB, $kontrakB] = $this->makeStay($this->foreignKos, $this->foreignKamar, $foreignTenant);
 
         $response = $this->actingAs($this->admin)->post(route('admin.tagihan.store'), [
@@ -347,7 +347,7 @@ class AdminWorkflowCoverageTest extends TestCase
 
     public function test_admin_foreign_pembayaran_denied_show(): void
     {
-        $foreignTenant = User::factory()->create(['role' => 'tenant']);
+        $foreignTenant = User::factory()->create(['role' => 'pencari']);
         [$penghuniB, $kontrakB] = $this->makeStay($this->foreignKos, $this->foreignKamar, $foreignTenant);
 
         $tagihanB = Tagihan::factory()->create([

@@ -29,7 +29,7 @@ class AdvertisingKosPromoTest extends TestCase
 
     public function test_marketplace_renders_labeled_featured_and_sponsored_kos_promotions(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
 
         $featuredKos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active', 'name' => 'Kos Melati Promo']);
@@ -60,7 +60,7 @@ class AdvertisingKosPromoTest extends TestCase
 
     public function test_marketplace_kos_promotions_respect_price_filter(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
 
         $expensive = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active', 'name' => 'Kos Premium Promo']);
@@ -79,7 +79,7 @@ class AdvertisingKosPromoTest extends TestCase
 
     public function test_marketplace_kos_promotions_exclude_non_active_campaigns(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
 
         $suspendedKos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active', 'name' => 'Kos NonLive']);
@@ -113,7 +113,7 @@ class AdvertisingKosPromoTest extends TestCase
 
     public function test_homepage_kos_promotions_display_on_tenant_dashboard(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
 
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active', 'name' => 'Kos Beranda Promo']);
@@ -144,7 +144,7 @@ class AdvertisingKosPromoTest extends TestCase
 
     public function test_kos_promotion_click_tracks_and_redirects_to_kos_detail(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
 
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);

@@ -171,7 +171,7 @@ class TagihanController extends Controller
                 \Log::warning('Tagihan shared notification/audit failed: '.$e->getMessage());
             }
 
-            $prefix = $user->isTenant() ? 'tenant' : ($user->isAdmin() ? 'admin' : 'owner');
+            $prefix = $user->isTenant() ? 'pencari' : ($user->isAdmin() ? 'admin' : 'owner');
 
             return redirect()->route("$prefix.tagihan.index")->with('success', 'Tagihan shared berhasil dibuat untuk '.count($created).' penghuni.');
         }
@@ -270,7 +270,7 @@ class TagihanController extends Controller
             \Log::warning('Tagihan notification/audit failed: '.$e->getMessage());
         }
 
-        $prefix = $user->isTenant() ? 'tenant' : ($user->isAdmin() ? 'admin' : 'owner');
+        $prefix = $user->isTenant() ? 'pencari' : ($user->isAdmin() ? 'admin' : 'owner');
 
         return redirect()->route("$prefix.tagihan.index")->with('success', 'Tagihan berhasil dibuat.');
     }

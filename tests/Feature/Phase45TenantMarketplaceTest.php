@@ -30,7 +30,7 @@ class Phase45TenantMarketplaceTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->kos = Kos::factory()->create([
             'owner_id' => $this->owner->id,
@@ -266,7 +266,7 @@ class Phase45TenantMarketplaceTest extends TestCase
     /** Tenant payment isolation - cannot see other tenant proofs */
     public function test_tenant_cannot_see_other_tenant_payment(): void
     {
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
         $otherTenantKamar = Kamar::factory()->create([
             'kos_id' => $this->kos->id,
             'status' => 'available',
@@ -290,7 +290,7 @@ class Phase45TenantMarketplaceTest extends TestCase
     /** Tenant booking isolation - cannot see other tenant booking */
     public function test_tenant_cannot_see_other_tenant_booking(): void
     {
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
         $otherKamar = Kamar::factory()->create([
             'kos_id' => $this->kos->id,
             'status' => 'booked',

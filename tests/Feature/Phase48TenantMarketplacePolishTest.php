@@ -22,7 +22,7 @@ class Phase48TenantMarketplacePolishTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
     private function cardKos(string $name): Kos

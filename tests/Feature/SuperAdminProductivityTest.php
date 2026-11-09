@@ -21,7 +21,7 @@ class SuperAdminProductivityTest extends TestCase
     public function test_super_admin_can_toggle_user_active(): void
     {
         $sa = $this->superAdmin();
-        $tenant = User::factory()->create(['role' => 'tenant', 'is_active' => true]);
+        $tenant = User::factory()->create(['role' => 'pencari', 'is_active' => true]);
 
         $this->actingAs($sa)->post(route('super-admin.users.toggle-active', $tenant))
             ->assertRedirect();
@@ -45,7 +45,7 @@ class SuperAdminProductivityTest extends TestCase
     {
         $sa = $this->superAdmin();
         $admin = User::factory()->create(['role' => 'admin']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($admin)->post(route('super-admin.users.toggle-active', $tenant))
             ->assertForbidden();
@@ -58,7 +58,7 @@ class SuperAdminProductivityTest extends TestCase
     public function test_reset_password_changes_hash_and_shows_once(): void
     {
         $sa = $this->superAdmin();
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $oldHash = $tenant->password;
 
         $response = $this->actingAs($sa)->post(route('super-admin.users.reset-password', $tenant));
@@ -79,10 +79,10 @@ class SuperAdminProductivityTest extends TestCase
     public function test_export_csv_respects_filters(): void
     {
         $sa = $this->superAdmin();
-        User::factory()->create(['role' => 'tenant', 'name' => 'Tenant Export']);
+        User::factory()->create(['role' => 'pencari', 'name' => 'Tenant Export']);
         User::factory()->create(['role' => 'owner', 'name' => 'Owner Export']);
 
-        $response = $this->actingAs($sa)->get(route('super-admin.users.export', ['role' => 'tenant']));
+        $response = $this->actingAs($sa)->get(route('super-admin.users.export', ['role' => 'pencari']));
         $response->assertOk();
         $content = $response->streamedContent();
         $this->assertStringContainsString('Tenant Export', $content);
@@ -119,7 +119,7 @@ class SuperAdminProductivityTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         $admin = User::factory()->create(['role' => 'admin']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($owner)->get(route('super-admin.system-health.index'))->assertForbidden();
         $this->actingAs($admin)->get(route('super-admin.system-health.index'))->assertForbidden();

@@ -64,7 +64,7 @@ class DashboardSmokeTest extends TestCase
 
     public function test_tenant_dashboard_without_room_renders(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
@@ -74,7 +74,7 @@ class DashboardSmokeTest extends TestCase
 
     public function test_tenant_dashboard_with_active_room_renders(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         Penghuni::factory()->create([
             'user_id' => $user->id,
             'status' => 'active',
@@ -90,7 +90,7 @@ class DashboardSmokeTest extends TestCase
 
     public function test_tenant_dashboard_shows_pending_checkout_state(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $user->id,
             'status' => 'active',
@@ -111,7 +111,7 @@ class DashboardSmokeTest extends TestCase
 
     public function test_tenant_dashboard_attention_card_shows_actual_pending_tagihan_count(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([

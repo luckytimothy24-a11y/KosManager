@@ -91,7 +91,7 @@ class AdvertisingModeratorThirdPartyTest extends TestCase
     public function test_owner_and_tenant_cannot_access_moderator_creation_routes(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($owner)->get(route('super-admin.advertising.campaigns.create'))->assertForbidden();
         $this->actingAs($owner)->get(route('admin.advertising.create'))->assertForbidden();

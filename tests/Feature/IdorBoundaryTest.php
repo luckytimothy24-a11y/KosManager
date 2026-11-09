@@ -39,15 +39,15 @@ class IdorBoundaryTest extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
-        $this->tenantB = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
+        $this->tenantB = User::factory()->create(['role' => 'pencari']);
     }
 
     private function makeStay(User $owner): array
     {
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active',
         ]);
@@ -179,7 +179,7 @@ class IdorBoundaryTest extends TestCase
         $kontrakA = Kontrak::factory()->create(['kos_id' => $kosA->id, 'penghuni_id' => $penghuniA->id]);
 
         [$_, $kosB] = $this->makeStay($this->ownerB);
-        $penghuniB = Penghuni::factory()->create(['kos_id' => $kosB->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
+        $penghuniB = Penghuni::factory()->create(['kos_id' => $kosB->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id]);
         $kontrakB = Kontrak::factory()->create(['kos_id' => $kosB->id, 'penghuni_id' => $penghuniB->id]);
 
         $this->actingAs($this->owner)->get(route('owner.kontrak.show', $kontrakA))->assertOk();
@@ -246,13 +246,13 @@ class IdorBoundaryTest extends TestCase
     public function test_owner_can_only_verify_payment_for_own_kos(): void
     {
         [$_, $kosA] = $this->makeStay($this->owner);
-        $penghuniA = Penghuni::factory()->create(['kos_id' => $kosA->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
+        $penghuniA = Penghuni::factory()->create(['kos_id' => $kosA->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id]);
         $kamarA = Kamar::factory()->create(['kos_id' => $kosA->id]);
         $tagihanA = Tagihan::factory()->create(['kamar_id' => $kamarA->id, 'penghuni_id' => $penghuniA->id, 'total' => 1000000]);
         $pembayaranA = Pembayaran::factory()->create(['tagihan_id' => $tagihanA->id, 'penghuni_id' => $penghuniA->id, 'amount' => 1000000, 'verification_status' => 'pending']);
 
         [$_, $kosB] = $this->makeStay($this->ownerB);
-        $penghuniB = Penghuni::factory()->create(['kos_id' => $kosB->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
+        $penghuniB = Penghuni::factory()->create(['kos_id' => $kosB->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id]);
         $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id]);
         $tagihanB = Tagihan::factory()->create(['kamar_id' => $kamarB->id, 'penghuni_id' => $penghuniB->id, 'total' => 1000000]);
         $pembayaranB = Pembayaran::factory()->create(['tagihan_id' => $tagihanB->id, 'penghuni_id' => $penghuniB->id, 'amount' => 1000000, 'verification_status' => 'pending']);
@@ -266,8 +266,8 @@ class IdorBoundaryTest extends TestCase
     {
         [$_, $kosA] = $this->makeStay($this->owner);
         [$_, $kosB] = $this->makeStay($this->ownerB);
-        $penghuniA = Penghuni::factory()->create(['kos_id' => $kosA->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
-        $penghuniB = Penghuni::factory()->create(['kos_id' => $kosB->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
+        $penghuniA = Penghuni::factory()->create(['kos_id' => $kosA->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id]);
+        $penghuniB = Penghuni::factory()->create(['kos_id' => $kosB->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id]);
         $kamarA = Kamar::factory()->create(['kos_id' => $kosA->id]);
         $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id]);
         $tagihanA = Tagihan::factory()->create(['kamar_id' => $kamarA->id, 'penghuni_id' => $penghuniA->id, 'total' => 1000000]);
@@ -286,7 +286,7 @@ class IdorBoundaryTest extends TestCase
     {
         [, $kos] = $this->makeStay($this->owner);
         $reportA = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => $this->tenant->id]);
-        $reportB = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id]);
+        $reportB = DamageReport::factory()->create(['kos_id' => $kos->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id]);
 
         // DamageReportPolicy::view denies access to other tenant's report
         // Verify policy denies via direct policy check
@@ -311,7 +311,7 @@ class IdorBoundaryTest extends TestCase
 
     public function test_user_cannot_access_message_of_another_user(): void
     {
-        $sender = User::factory()->create(['role' => 'tenant']);
+        $sender = User::factory()->create(['role' => 'pencari']);
         $receiver = User::factory()->create(['role' => 'owner']);
         $message = Message::factory()->create(['sender_id' => $sender->id, 'receiver_id' => $receiver->id]);
 

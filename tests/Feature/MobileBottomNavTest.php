@@ -23,7 +23,7 @@ class MobileBottomNavTest extends TestCase
 
     public function test_tenant_bottom_nav_contains_tenant_menu(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->assertBottomNavVisible($tenant);
 

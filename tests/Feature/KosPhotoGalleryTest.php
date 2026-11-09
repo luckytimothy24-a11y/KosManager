@@ -36,7 +36,7 @@ class KosPhotoGalleryTest extends TestCase
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->otherOwner = User::factory()->create(['role' => 'owner']);
         $this->admin = User::factory()->create(['role' => 'admin']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
     }
 

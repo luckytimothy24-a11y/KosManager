@@ -22,7 +22,7 @@ class TenantCapabilityFollowUpTest extends TestCase
     {
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant ??= User::factory()->create(['role' => 'tenant']);
+        $tenant ??= User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
@@ -67,7 +67,7 @@ class TenantCapabilityFollowUpTest extends TestCase
         $otherOwner = User::factory()->create(['role' => 'owner']);
         $otherKos = Kos::factory()->create(['owner_id' => $otherOwner->id, 'status' => 'active']);
         $otherKamar = Kamar::factory()->create(['kos_id' => $otherKos->id]);
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
         $otherReport = DamageReport::factory()->create([
             'kos_id' => $otherKos->id,
             'kamar_id' => $otherKamar->id,
@@ -136,7 +136,7 @@ class TenantCapabilityFollowUpTest extends TestCase
         $report->setRelation('kos', null);
 
         $this->assertTrue(Gate::forUser($tenant)->allows('view', $report));
-        $stranger = User::factory()->create(['role' => 'tenant']);
+        $stranger = User::factory()->create(['role' => 'pencari']);
         $this->assertFalse(Gate::forUser($stranger)->allows('view', $report));
     }
 
@@ -198,7 +198,7 @@ class TenantCapabilityFollowUpTest extends TestCase
         $this->assertStringContainsString('/tenant/messages', $response->headers->get('Location'));
 
         // Tenant tanpa hunian aktif tidak bisa mengirim.
-        $loner = User::factory()->create(['role' => 'tenant']);
+        $loner = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($loner)->post(route('tenant.messages.store'), [
             'message' => 'Halo.',
         ])->assertForbidden();
@@ -244,7 +244,7 @@ class TenantCapabilityFollowUpTest extends TestCase
 
     public function test_tenant_can_only_update_own_profile_without_escalation(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($tenant)->patch(route('profile.update'), [
             'name' => 'Nama Baru',
@@ -254,7 +254,7 @@ class TenantCapabilityFollowUpTest extends TestCase
 
         $tenant->refresh();
         $this->assertSame('Nama Baru', $tenant->name);
-        $this->assertSame('tenant', $tenant->role);
+        $this->assertSame('pencari', $tenant->role);
     }
 
     // ========== P1.5 PEMBAYARAN ==========

@@ -27,7 +27,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($seeker)->get(route('tenant.kos.ask', $kos))->assertOk();
     }
@@ -36,7 +36,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($seeker)->get(route('tenant.kos.ask', $kos));
         $response->assertOk();
@@ -49,7 +49,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($seeker)->post(route('tenant.kos.ask.store', $kos), [
             'message' => 'Apakah ada kamar kosong bulan depan?',
@@ -73,7 +73,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'inactive']);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($seeker)->get(route('tenant.kos.ask', $kos))->assertNotFound();
         $this->actingAs($seeker)->post(route('tenant.kos.ask.store', $kos), [
@@ -85,7 +85,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
             'sender_id' => $seeker->id,
@@ -105,7 +105,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos, $kamar] = $this->makeKos($owner);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         Penghuni::factory()->create([
             'user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active',
         ]);
@@ -125,7 +125,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
             'sender_id' => $seeker->id,
@@ -144,7 +144,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
             'sender_id' => $seeker->id,
@@ -156,7 +156,7 @@ class TenantInquiryTest extends TestCase
             'message' => 'Ada, silakan booking.',
         ]);
 
-        $response->assertRedirect(route('owner.messages.show', ['tenant' => $seeker, 'kos' => $kos->id]));
+        $response->assertRedirect(route('owner.messages.show', ['pencari' => $seeker, 'kos' => $kos->id]));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $kos->id,
             'sender_id' => $owner->id,
@@ -169,8 +169,8 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seekerA = User::factory()->create(['role' => 'tenant']);
-        $seekerB = User::factory()->create(['role' => 'tenant']);
+        $seekerA = User::factory()->create(['role' => 'pencari']);
+        $seekerB = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id, 'sender_id' => $seekerA->id, 'receiver_id' => $owner->id, 'message' => 'Tanya A rahasia',
         ]);
@@ -188,7 +188,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         for ($i = 0; $i < 5; $i++) {
             $this->actingAs($seeker)->post(route('tenant.kos.ask.store', $kos), [
@@ -205,7 +205,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
             'sender_id' => $seeker->id,
@@ -234,8 +234,8 @@ class TenantInquiryTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos, $kamar] = $this->makeKos($owner);
         $kosB = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
-        $seekerA = User::factory()->create(['role' => 'tenant']);
-        $seekerB = User::factory()->create(['role' => 'tenant']);
+        $seekerA = User::factory()->create(['role' => 'pencari']);
+        $seekerB = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id, 'sender_id' => $seekerA->id, 'receiver_id' => $owner->id, 'message' => 'Rahasia A',
         ]);
@@ -260,7 +260,7 @@ class TenantInquiryTest extends TestCase
         $responseB->assertDontSee('Rahasia A');
 
         // Tanpa pesan sama sekali → 404.
-        $loner = User::factory()->create(['role' => 'tenant']);
+        $loner = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($loner)->get(route('tenant.inquiries.show', $kos))->assertNotFound();
     }
 
@@ -268,7 +268,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos, $kamar] = $this->makeKos($owner);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         Penghuni::factory()->create([
             'user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active',
         ]);
@@ -288,7 +288,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         // Topik dari form tersimpan dan berlabel di thread.
         $this->actingAs($seeker)->post(route('tenant.kos.ask.store', $kos), [
@@ -323,7 +323,7 @@ class TenantInquiryTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$kos, $kamar] = $this->makeKos($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $seeker->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active',
         ]);

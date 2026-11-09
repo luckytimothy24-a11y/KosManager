@@ -22,7 +22,7 @@ class SecurityHardeningTest extends TestCase
     {
         $ownerA = User::factory()->create(['role' => 'owner']);
         $ownerB = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $ownerA->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $penghuni = Penghuni::factory()->create([
@@ -85,7 +85,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_tenant_cannot_submit_payment_for_paid_tagihan(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([
@@ -114,7 +114,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_booking_rejects_range_contained_in_existing_booking(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
 
@@ -141,7 +141,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_booking_rejects_mismatched_kos_and_kamar(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kosA = Kos::factory()->create(['status' => 'active']);
         $kosB = Kos::factory()->create(['status' => 'active']);
         $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id]);
@@ -160,7 +160,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_cancelling_approved_booking_frees_the_kamar(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'booked']);
         $booking = Booking::factory()->create([
@@ -179,7 +179,7 @@ class SecurityHardeningTest extends TestCase
     public function test_rejected_payment_resets_tagihan_and_cannot_be_verified_afterwards(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([
@@ -213,7 +213,7 @@ class SecurityHardeningTest extends TestCase
     public function test_admin_without_assignment_cannot_view_other_kos_booking(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
         $booking = Booking::factory()->create([
             'user_id' => $tenant->id,
@@ -250,7 +250,7 @@ class SecurityHardeningTest extends TestCase
 
     public function test_inactive_user_mid_session_cannot_access(): void
     {
-        $user = User::factory()->create(['is_active' => true, 'role' => 'tenant']);
+        $user = User::factory()->create(['is_active' => true, 'role' => 'pencari']);
 
         $this->actingAs($user);
 

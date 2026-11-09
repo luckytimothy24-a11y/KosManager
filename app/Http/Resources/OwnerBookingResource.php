@@ -21,7 +21,7 @@ class OwnerBookingResource extends JsonResource
         return [
             'id' => $this->id,
             'booking_code' => $this->booking_code,
-            'tenant' => [
+            'pencari' => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
             ],

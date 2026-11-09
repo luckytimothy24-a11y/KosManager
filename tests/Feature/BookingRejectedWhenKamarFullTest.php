@@ -21,7 +21,7 @@ class BookingRejectedWhenKamarFullTest extends TestCase
     public function test_booking_rejected_when_kamar_full(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create([
             'kos_id' => $kos->id,
@@ -32,7 +32,7 @@ class BookingRejectedWhenKamarFullTest extends TestCase
             'daily_price' => 100000,
         ]);
 
-        $occupantUser = User::factory()->create(['role' => 'tenant']);
+        $occupantUser = User::factory()->create(['role' => 'pencari']);
         Penghuni::factory()->create([
             'user_id' => $occupantUser->id,
             'kos_id' => $kos->id,

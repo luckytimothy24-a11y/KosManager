@@ -38,7 +38,7 @@ class PembayaranTest extends TestCase
         Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id]);
         $this->penghuni = Penghuni::factory()->create([

@@ -33,7 +33,7 @@ class NotificationSystemTest extends TestCase
 
     public function test_user_can_open_own_notifications_inbox(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $this->notification($user);
         $this->notification($user);
         Notification::factory()->create(['user_id' => $user->id, 'is_read' => true]);
@@ -168,7 +168,7 @@ class NotificationSystemTest extends TestCase
 
     public function test_reminder_command_does_not_duplicate_notifications(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
@@ -203,7 +203,7 @@ class NotificationSystemTest extends TestCase
     public function test_booking_store_notifies_tenant_and_owner(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
 
@@ -229,7 +229,7 @@ class NotificationSystemTest extends TestCase
     public function test_cash_payment_submitted_notifies_owner(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([
@@ -264,7 +264,7 @@ class NotificationSystemTest extends TestCase
     public function test_webhook_verified_payment_notifies_tenant(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([

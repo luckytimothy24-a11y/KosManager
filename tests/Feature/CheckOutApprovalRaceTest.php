@@ -30,7 +30,7 @@ class CheckOutApprovalRaceTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $this->kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
         $this->penghuni = Penghuni::factory()->create([

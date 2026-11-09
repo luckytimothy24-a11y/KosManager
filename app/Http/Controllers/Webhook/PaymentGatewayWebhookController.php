@@ -102,6 +102,6 @@ class PaymentGatewayWebhookController extends Controller
             \Log::warning('Payment webhook verification notification/audit failed: '.$e->getMessage());
         }
 
-        return response()->json(['message' => 'Pembayaran diverifikasi otomatis.'], 200);
+        return response()->json(['message' => 'Pembayaran berhasil diverifikasi.'], 200);
     }
 }

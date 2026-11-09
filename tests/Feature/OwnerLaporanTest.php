@@ -48,7 +48,7 @@ class OwnerLaporanTest extends TestCase
         [$ownerA, $kosA] = $this->createOwnerWithKos('KOSMILIK-A');
         [, $kosB] = $this->createOwnerWithKos('KOSMILIK-B');
 
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kamarA = Kamar::factory()->create(['kos_id' => $kosA->id]);
         $kamarB = Kamar::factory()->create(['kos_id' => $kosB->id]);
 
@@ -101,7 +101,7 @@ class OwnerLaporanTest extends TestCase
 
     public function test_tenant_cannot_access_owner_laporan(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($tenant)->get('/owner/laporan')->assertForbidden();
     }

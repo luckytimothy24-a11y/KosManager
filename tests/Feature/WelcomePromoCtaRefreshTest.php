@@ -97,7 +97,7 @@ class WelcomePromoCtaRefreshTest extends TestCase
 
     public function test_tenant_sees_marketplace_cta_in_mid_band(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $this->makePartnerAd('shopee', 'Shopee');
 
         $html = $this->actingAs($tenant)->get(route('welcome'))->getContent();

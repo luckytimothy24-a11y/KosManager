@@ -36,7 +36,7 @@ class PhaseGBookingExperienceTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'available']);
     }
@@ -114,7 +114,7 @@ class PhaseGBookingExperienceTest extends TestCase
 
     public function test_tenant_cannot_cancel_someone_elses_booking(): void
     {
-        $other = User::factory()->create(['role' => 'tenant']);
+        $other = User::factory()->create(['role' => 'pencari']);
         $booking = Booking::factory()->create([
             'user_id' => $other->id,
             'kos_id' => $this->kos->id,
@@ -173,7 +173,7 @@ class PhaseGBookingExperienceTest extends TestCase
 
     public function test_tenant_cannot_view_another_tenants_booking_detail(): void
     {
-        $other = User::factory()->create(['role' => 'tenant']);
+        $other = User::factory()->create(['role' => 'pencari']);
         $booking = Booking::factory()->create([
             'user_id' => $other->id,
             'kos_id' => $this->kos->id,
@@ -188,7 +188,7 @@ class PhaseGBookingExperienceTest extends TestCase
 
     public function test_tenant_index_only_lists_own_bookings(): void
     {
-        $other = User::factory()->create(['role' => 'tenant']);
+        $other = User::factory()->create(['role' => 'pencari']);
         $mine = $this->makeBooking('approved');
         $theirs = Booking::factory()->create([
             'user_id' => $other->id,

@@ -32,7 +32,7 @@ class P8Batch2DuplicateTagihanTest extends TestCase
         $kos = Kos::factory()->create(['owner_id' => $this->owner->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([
-            'user_id' => User::factory()->create(['role' => 'tenant'])->id,
+            'user_id' => User::factory()->create(['role' => 'pencari'])->id,
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
             'status' => 'active',

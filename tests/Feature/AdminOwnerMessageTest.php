@@ -39,7 +39,7 @@ class AdminOwnerMessageTest extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->ownerA = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->kosA = Kos::factory()->create(['owner_id' => $this->ownerA->id, 'name' => 'KOS-AMSG-A', 'status' => 'active']);
         $this->kosB = Kos::factory()->create(['owner_id' => $this->ownerB->id, 'name' => 'KOS-AMSG-B', 'status' => 'active']);

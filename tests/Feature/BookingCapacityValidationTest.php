@@ -15,7 +15,7 @@ class BookingCapacityValidationTest extends TestCase
 
     public function test_booking_request_rejects_occupants_exceeding_capacity(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 2, 'billing_mode' => 'shared', 'status' => 'available']);
         Penghuni::factory()->create(['kamar_id' => $kamar->id, 'status' => 'active']);
@@ -39,7 +39,7 @@ class BookingCapacityValidationTest extends TestCase
 
     public function test_booking_request_allows_occupants_within_capacity(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'capacity' => 4, 'billing_mode' => 'shared', 'status' => 'available']);
 
@@ -61,7 +61,7 @@ class BookingCapacityValidationTest extends TestCase
 
     public function test_booking_request_rejects_zero_occupants(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
 

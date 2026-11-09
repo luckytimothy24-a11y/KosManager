@@ -91,7 +91,7 @@ class KamarManagementTest extends TestCase
     public function test_owner_cannot_delete_kamar_with_active_booking(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         Booking::factory()->create([
             'user_id' => $tenant->id,

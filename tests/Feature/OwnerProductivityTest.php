@@ -22,7 +22,7 @@ class OwnerProductivityTest extends TestCase
     {
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
@@ -110,7 +110,7 @@ class OwnerProductivityTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$p] = $this->makePendingPayment($owner);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($tenant)->post(route('owner.pembayaran.bulk-verify'), [
             'ids' => [$p->id],
@@ -174,7 +174,7 @@ class OwnerProductivityTest extends TestCase
             ->assertCreated();
 
         // Tenant lain / unrelated ditolak.
-        $stranger = User::factory()->create(['role' => 'tenant']);
+        $stranger = User::factory()->create(['role' => 'pencari']);
         $this->postJson(route('api.v1.owner.messages.reply', $stranger), ['message' => 'x'])
             ->assertForbidden();
 
@@ -235,7 +235,7 @@ class OwnerProductivityTest extends TestCase
         $this->actingAs($ownerB)->getJson(route('owner.messages.latest', $tenant))->assertForbidden();
 
         // Tenant tanpa hunian → 403.
-        $loner = User::factory()->create(['role' => 'tenant']);
+        $loner = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($loner)->getJson(route('tenant.messages.latest'))->assertForbidden();
 
         // Halaman thread memuat skrip polling + pil.

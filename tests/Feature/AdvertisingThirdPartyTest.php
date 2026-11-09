@@ -95,7 +95,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_partner_ads_display_on_homepage_marketplace_and_detail(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = $this->marketplacePackage();
 
@@ -149,7 +149,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_third_party_click_redirects_to_destination_and_tracks(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = $this->marketplacePackage();
         $campaign = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([
@@ -174,7 +174,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_duplicate_click_in_same_session_is_deduplicated(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = $this->marketplacePackage();
         $campaign = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([
@@ -195,7 +195,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_third_party_click_does_not_attribute_conversion_on_booking(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = $this->marketplacePackage();
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
@@ -227,7 +227,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_third_party_click_falls_back_when_destination_invalid(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = $this->marketplacePackage();
         $campaign = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([
@@ -303,7 +303,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_marketplace_search_sort_filter_pagination_unchanged_by_ads(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
 
         $cheap = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active', 'name' => 'Kos Kampus']);
@@ -342,7 +342,7 @@ class AdvertisingThirdPartyTest extends TestCase
 
     public function test_impressions_for_third_party_are_deduplicated(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = $this->marketplacePackage();
         $campaign = AdvertisingCampaign::factory()->active()->thirdParty('marketplace')->create([

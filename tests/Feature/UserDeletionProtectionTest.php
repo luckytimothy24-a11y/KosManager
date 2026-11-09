@@ -25,7 +25,7 @@ class UserDeletionProtectionTest extends TestCase
 
     public function test_super_admin_cannot_delete_user_with_payment_history(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'status' => 'active',
@@ -54,7 +54,7 @@ class UserDeletionProtectionTest extends TestCase
 
     public function test_super_admin_cannot_delete_user_with_booking_history(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         Booking::factory()->create([
             'user_id' => $tenant->id,
@@ -72,7 +72,7 @@ class UserDeletionProtectionTest extends TestCase
 
     public function test_childless_user_is_soft_deleted_not_hard_deleted(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->superAdmin)->delete(route('super-admin.users.destroy', $tenant));
 
@@ -83,7 +83,7 @@ class UserDeletionProtectionTest extends TestCase
 
     public function test_profile_self_delete_of_tenant_with_history_preserves_financial_records(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'status' => 'inactive',
@@ -115,7 +115,7 @@ class UserDeletionProtectionTest extends TestCase
     public function test_soft_deleted_user_cannot_login(): void
     {
         $tenant = User::factory()->create([
-            'role' => 'tenant',
+            'role' => 'pencari',
             'password' => bcrypt('password'),
         ]);
         $tenant->delete();

@@ -28,7 +28,7 @@ class UserController extends Controller
                         $qq->where('role', 'owner')
                             ->whereHas('ownedKos', fn ($oq) => $oq->whereIn('id', $kosIds));
                     })->orWhere(function ($qq) use ($kosIds) {
-                        $qq->where('role', 'tenant')
+                        $qq->where('role', 'pencari')
                             ->whereHas('penghunis', fn ($pq) => $pq->whereIn('kos_id', $kosIds));
                     })->orWhere(function ($qq) use ($kosIds) {
                         $qq->where('role', 'admin')

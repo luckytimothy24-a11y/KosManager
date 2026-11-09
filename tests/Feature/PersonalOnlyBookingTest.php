@@ -30,7 +30,7 @@ class PersonalOnlyBookingTest extends TestCase
     {
         parent::setUp();
 
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create([

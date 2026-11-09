@@ -15,7 +15,7 @@ class Phase33BookingCopyTest extends TestCase
 
     public function test_booking_form_shows_human_readable_occupant_label(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 3, 'billing_mode' => 'shared', 'monthly_price' => 1000000]);
@@ -37,7 +37,7 @@ class Phase33BookingCopyTest extends TestCase
 
     public function test_booking_show_displays_human_copy(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 3, 'billing_mode' => 'shared', 'monthly_price' => 1000000]);
@@ -53,7 +53,7 @@ class Phase33BookingCopyTest extends TestCase
 
     public function test_personal_booking_still_works(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 1, 'billing_mode' => 'personal', 'monthly_price' => 1000000, 'daily_price' => 50000, 'weekly_price' => 300000]);

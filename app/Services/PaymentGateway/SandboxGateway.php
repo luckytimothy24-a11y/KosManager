@@ -58,4 +58,15 @@ class SandboxGateway implements PaymentGatewayContract
 
         return hash_equals(hash_hmac('sha256', $encoded, $secret), $signature);
     }
+
+    /**
+     * Generate signature untuk testing (HMAC-SHA256 dari JSON payload).
+     */
+    public function generateSignature(array $payload): string
+    {
+        $secret = config('payment-gateway.signature_key', '');
+        $encoded = json_encode($payload);
+
+        return hash_hmac('sha256', $encoded ?: '', $secret);
+    }
 }

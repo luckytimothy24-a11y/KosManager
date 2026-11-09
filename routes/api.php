@@ -45,7 +45,7 @@ Route::prefix('v1')->group(function () {
         Route::put('/me', [MeController::class, 'update'])->name('api.v1.me.update');
     });
 
-    Route::middleware(['auth:sanctum', 'active', 'role:tenant'])->group(function () {
+    Route::middleware(['auth:sanctum', 'active', 'role:pencari'])->group(function () {
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('api.v1.favorites.index');
         Route::post('/favorites/{kos}/toggle', [FavoriteController::class, 'toggle'])->name('api.v1.favorites.toggle');
 

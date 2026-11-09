@@ -23,7 +23,7 @@ class ReadinessRouteSweepTest extends TestCase
         $rows = ['role,uri,status,error'];
         $problems = [];
 
-        foreach (['guest', 'tenant', 'owner', 'admin', 'super_admin'] as $role) {
+        foreach (['guest', 'pencari', 'owner', 'admin', 'super_admin'] as $role) {
             $user = null;
             if ($role !== 'guest') {
                 $user = User::factory()->create();
@@ -42,7 +42,7 @@ class ReadinessRouteSweepTest extends TestCase
                     $err = $e ? str_replace(["\r", "\n", ','], ' ', get_class($e) . ': ' . $e->getMessage()) : 'unknown';
                     $problems[] = "500 [$role] $url $err";
                 }
-                if ($role === 'tenant' && $status === 200 && preg_match('#^/(owner|admin|super)#', $url)) {
+                if ($role === 'pencari' && $status === 200 && preg_match('#^/(owner|admin|super)#', $url)) {
                     $problems[] = "AKSES SILANG [tenant] $url";
                 }
                 if ($role === 'guest' && $status === 200 && preg_match('#^/(dashboard|owner|admin|tenant|profile)#', $url)) {

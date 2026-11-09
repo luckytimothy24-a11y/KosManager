@@ -114,7 +114,7 @@ class AdvertisingAuditTest extends TestCase
 
     public function test_marketplace_sponsored_kos_respects_price_filter(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $expensive = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         Kamar::factory()->create(['kos_id' => $expensive->id, 'status' => 'available', 'monthly_price' => 1500000]);
@@ -132,7 +132,7 @@ class AdvertisingAuditTest extends TestCase
 
     public function test_expired_campaign_click_is_not_tracked(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $camp = AdvertisingCampaign::factory()->expired()->create([
@@ -151,7 +151,7 @@ class AdvertisingAuditTest extends TestCase
 
     public function test_suspended_and_rejected_campaigns_not_clickable_as_active(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
 
         foreach (['suspended', 'rejected'] as $status) {
@@ -173,7 +173,7 @@ class AdvertisingAuditTest extends TestCase
 
     public function test_organic_booking_does_not_produce_conversion_event(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
@@ -247,7 +247,7 @@ class AdvertisingAuditTest extends TestCase
 
     public function test_marketplace_only_promotes_partner_campaign_in_its_time_window(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
         $package = AdvertisingPackage::factory()->create(['price' => 50000, 'placement' => 'marketplace']);
 
@@ -270,7 +270,7 @@ class AdvertisingAuditTest extends TestCase
 
     public function test_tenant_dashboard_and_marketplace_render_partner_promoted_ui(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = $this->setupOwner();
 
         $package = AdvertisingPackage::factory()->create(['price' => 100000, 'placement' => 'homepage']);

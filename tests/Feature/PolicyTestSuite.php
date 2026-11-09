@@ -39,8 +39,8 @@ class PolicyTestSuite extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
-        $this->tenantB = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
+        $this->tenantB = User::factory()->create(['role' => 'pencari']);
     }
 
     private function createKos(User $owner, string $status = 'active'): Kos
@@ -64,20 +64,20 @@ class PolicyTestSuite extends TestCase
 
     public function test_super_admin_can_view_any_user(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($this->superAdmin)->get(route('super-admin.users.show', $user))->assertOk();
     }
 
     public function test_admin_cannot_view_user_detail(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($this->admin)->get(route('super-admin.users.show', $user))->assertForbidden();
     }
 
     public function test_owner_can_only_see_own_profile(): void
     {
         $user = User::factory()->create(['role' => 'owner']);
-        $other = User::factory()->create(['role' => 'tenant']);
+        $other = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($owner)->get(route('super-admin.users.show', $other))->assertForbidden();
         $this->actingAs($owner)->get(route('super-admin.users.show', $owner))->assertOk();
     }
@@ -85,7 +85,7 @@ class PolicyTestSuite extends TestCase
     public function test_admin_cannot_create_user(): void
     {
         $this->actingAs($this->admin)->post(route('super-admin.users.store'), [
-            'name' => 'New', 'email' => 'new@test.com', 'role' => 'tenant', 'password' => 'pass123',
+            'name' => 'New', 'email' => 'new@test.com', 'role' => 'pencari', 'password' => 'pass123',
         ])->assertForbidden();
     }
 
@@ -97,7 +97,7 @@ class PolicyTestSuite extends TestCase
 
     public function test_super_admin_can_manage_roles(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($this->superAdmin)->put(route('super-admin.users.update', $user), [
             'name' => 'Updated', 'email' => $user->email, 'role' => 'owner', 'is_active' => true,
         ])->assertRedirect();
@@ -105,7 +105,7 @@ class PolicyTestSuite extends TestCase
 
     public function test_admin_cannot_manage_roles(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($this->admin)->put(route('super-admin.users.update', $user), [
             'name' => 'Updated', 'email' => $user->email, 'role' => 'owner', 'is_active' => true,
         ])->assertForbidden();
@@ -379,7 +379,7 @@ class PolicyTestSuite extends TestCase
 
     public function test_user_can_only_see_own_messages(): void
     {
-        $sender = User::factory()->create(['role' => 'tenant']);
+        $sender = User::factory()->create(['role' => 'pencari']);
         $receiver = User::factory()->create(['role' => 'owner']);
         $message = Message::factory()->create(['sender_id' => $sender->id, 'receiver_id' => $receiver->id]);
 

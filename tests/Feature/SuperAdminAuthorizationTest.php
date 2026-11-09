@@ -29,7 +29,7 @@ class SuperAdminAuthorizationTest extends TestCase
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
         $this->admin = User::factory()->create(['role' => 'admin', 'is_active' => true]);
         $this->owner = User::factory()->create(['role' => 'owner', 'is_active' => true]);
-        $this->tenant = User::factory()->create(['role' => 'tenant', 'is_active' => true]);
+        $this->tenant = User::factory()->create(['role' => 'pencari', 'is_active' => true]);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->admin->assignedKos()->attach($this->kos->id);
     }

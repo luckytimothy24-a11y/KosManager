@@ -31,7 +31,7 @@ class GroupBookingInvitationTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->primary = User::factory()->create(['role' => 'tenant', 'email' => 'primary@example.com']);
+        $this->primary = User::factory()->create(['role' => 'pencari', 'email' => 'primary@example.com']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create([
             'kos_id' => $this->kos->id, 'status' => 'available', 'capacity' => 1,
@@ -78,7 +78,7 @@ class GroupBookingInvitationTest extends TestCase
     public function test_non_primary_cannot_invite(): void
     {
         $b = $this->book();
-        $other = User::factory()->create(['role' => 'tenant', 'email' => 'other@example.com']);
+        $other = User::factory()->create(['role' => 'pencari', 'email' => 'other@example.com']);
         $res = $this->actingAs($other)->postJson(route('tenant.booking.invite', $b), ['email' => 'friend@example.com']);
         $res->assertStatus(403);
     }

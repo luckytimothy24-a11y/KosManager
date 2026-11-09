@@ -44,8 +44,8 @@ class ApiV1BillingTest extends TestCase
         Storage::fake('private');
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
-        $this->otherTenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
+        $this->otherTenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
 
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'occupied']);
@@ -171,7 +171,7 @@ class ApiV1BillingTest extends TestCase
 
     public function test_index_returns_empty_collection_with_200(): void
     {
-        $fresh = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('x')]);
+        $fresh = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('x')]);
 
         $response = $this->withToken($this->token($fresh))->getJson('/api/v1/tagihan');
 

@@ -37,7 +37,7 @@
                 <div>
                     <label for="role" class="field-label">Role <span class="text-red-500">*</span></label>
                     <select id="role" name="role" required class="field-input">
-                        @foreach(['super_admin' => 'Super Admin', 'admin' => 'Admin', 'owner' => 'Owner', 'tenant' => 'Tenant'] as $r => $rLabel)
+                        @foreach(['super_admin' => 'Super Admin', 'admin' => 'Admin', 'owner' => 'Owner', 'pencari' => 'pencari'] as $r => $rLabel)
                             <option value="{{ $r }}" {{ old('role', $user->role) === $r ? 'selected' : '' }}>{{ $rLabel }}</option>
                         @endforeach
                     </select>

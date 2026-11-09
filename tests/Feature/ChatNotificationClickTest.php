@@ -30,7 +30,7 @@ class ChatNotificationClickTest extends TestCase
         Mail::fake();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'occupied']);
         Penghuni::factory()->create([
@@ -52,7 +52,7 @@ class ChatNotificationClickTest extends TestCase
 
         $notification = Notification::where('user_id', $this->owner->id)->latest()->first();
         $this->assertEquals(
-            route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]),
+            route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $this->kos->id]),
             $notification->data['url'] ?? null
         );
     }
@@ -94,7 +94,7 @@ class ChatNotificationClickTest extends TestCase
         $response->assertOk();
         $response->assertSee('Buka');
         $response->assertSee(
-            route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id])
+            route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $this->kos->id])
         );
     }
 

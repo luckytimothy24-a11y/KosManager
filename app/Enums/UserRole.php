@@ -15,7 +15,7 @@ enum UserRole: string
     case SUPER_ADMIN = 'super_admin';
     case ADMIN = 'admin';
     case OWNER = 'owner';
-    case TENANT = 'tenant';
+    case PENCARI = 'pencari';
 
     /**
      * All valid role values, e.g. for `Rule::in(UserRole::values())`.
@@ -33,7 +33,7 @@ enum UserRole: string
             self::SUPER_ADMIN => 'Super Admin',
             self::ADMIN => 'Admin Kos',
             self::OWNER => 'Owner',
-            self::TENANT => 'Tenant',
+            self::PENCARI => 'Pencari Kos',
         };
     }
 

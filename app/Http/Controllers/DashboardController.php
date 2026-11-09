@@ -33,7 +33,7 @@ class DashboardController extends Controller
             'super_admin' => $this->superAdmin($user),
             'admin' => $this->admin($user),
             'owner' => $this->owner($user),
-            'tenant' => $this->tenant($user),
+            'pencari' => $this->tenant($user),
             default => redirect()->route('login'),
         };
     }
@@ -43,7 +43,7 @@ class DashboardController extends Controller
         $stats = [
             'total_users' => User::count(),
             'total_owners' => User::where('role', 'owner')->count(),
-            'total_tenants' => User::where('role', 'tenant')->count(),
+            'total_tenants' => User::where('role', 'pencari')->count(),
             'total_kos' => Kos::count(),
             'total_kamar' => Kamar::count(),
             'total_kamar_available' => Kamar::where('status', 'available')->count(),

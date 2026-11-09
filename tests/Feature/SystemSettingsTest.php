@@ -24,7 +24,7 @@ class SystemSettingsTest extends TestCase
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
     // ========== SUPER ADMIN ACCESS ==========

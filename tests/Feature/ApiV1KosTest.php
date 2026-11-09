@@ -209,7 +209,7 @@ class ApiV1KosTest extends TestCase
 
         $this->assertArrayNotHasKey('owner', $data);
         $this->assertArrayNotHasKey('owner_id', $data);
-        $this->assertArrayNotHasKey('tenant', $data);
+        $this->assertArrayNotHasKey('pencari', $data);
         $this->assertArrayNotHasKey('payment', $data);
         $this->assertArrayNotHasKey('payment_info', $data);
         $this->assertArrayNotHasKey('rules', $data);
@@ -305,7 +305,7 @@ class ApiV1KosTest extends TestCase
         $this->assertArrayNotHasKey('daily_price', $item);
         $this->assertArrayNotHasKey('area', $item);
         $this->assertArrayNotHasKey('description', $item);
-        $this->assertArrayNotHasKey('tenant', $item);
+        $this->assertArrayNotHasKey('pencari', $item);
         $this->assertArrayNotHasKey('penghuni', $item);
         $this->assertArrayNotHasKey('phone', $item);
         $this->assertArrayNotHasKey('kontrak', $item);

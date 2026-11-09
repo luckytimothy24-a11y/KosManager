@@ -71,7 +71,7 @@ class KamarCapacityThreeTest extends TestCase
     public function test_one_of_three(): void
     {
         $kamar = $this->sharedKamar(3);
-        $u1 = User::factory()->create(['role' => 'tenant']);
+        $u1 = User::factory()->create(['role' => 'pencari']);
         $this->addPenghuni($kamar, $u1);
         $kamar->refresh();
         $this->assertSame(1, $kamar->occupancy());
@@ -83,8 +83,8 @@ class KamarCapacityThreeTest extends TestCase
     public function test_two_of_three(): void
     {
         $kamar = $this->sharedKamar(3);
-        $u1 = User::factory()->create(['role' => 'tenant']);
-        $u2 = User::factory()->create(['role' => 'tenant']);
+        $u1 = User::factory()->create(['role' => 'pencari']);
+        $u2 = User::factory()->create(['role' => 'pencari']);
         $this->addPenghuni($kamar, $u1);
         $this->addPenghuni($kamar, $u2);
         $kamar->refresh();
@@ -98,7 +98,7 @@ class KamarCapacityThreeTest extends TestCase
     {
         $kamar = $this->sharedKamar(3);
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $this->addPenghuni($kamar, $u);
         }
         $kamar->refresh();
@@ -113,10 +113,10 @@ class KamarCapacityThreeTest extends TestCase
     {
         $kamar = $this->sharedKamar(3);
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $this->addPenghuni($kamar, $u);
         }
-        $fourth = User::factory()->create(['role' => 'tenant']);
+        $fourth = User::factory()->create(['role' => 'pencari']);
         $response = $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), [
             'user_id' => $fourth->id,
             'rental_type' => 'monthly',
@@ -135,7 +135,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar = $this->sharedKamar(3);
         $users = [];
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $users[] = $u;
             $this->addPenghuni($kamar, $u);
         }
@@ -158,7 +158,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar = $this->sharedKamar(3);
         $users = [];
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $users[] = $u;
             $this->addPenghuni($kamar, $u);
         }
@@ -168,7 +168,7 @@ class KamarCapacityThreeTest extends TestCase
         $checkOut = CheckOut::where('penghuni_id', $penghuni->id)->first();
         $this->actingAs($this->owner)->post(route('owner.checkout.approve', $checkOut));
         // Add replacement
-        $replacement = User::factory()->create(['role' => 'tenant']);
+        $replacement = User::factory()->create(['role' => 'pencari']);
         $this->addPenghuni($kamar, $replacement);
         $kamar->refresh();
         $this->assertSame(3, $kamar->occupancy());
@@ -185,7 +185,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar = $this->sharedKamar(3, 1200000);
         $kontraks = [];
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             $kontraks[] = Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -207,7 +207,7 @@ class KamarCapacityThreeTest extends TestCase
     {
         $kamar = $this->sharedKamar(3, 1000000);
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -230,7 +230,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar = $this->sharedKamar(3, 1200000);
         $kontraks = [];
         foreach ([400000, 400000, 400000] as $share) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             $kontraks[] = Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -249,7 +249,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar = $this->sharedKamar(3, 1200000);
         // Pre-create 2 with custom 400k each
         foreach ([400000, 400000] as $share) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -258,7 +258,7 @@ class KamarCapacityThreeTest extends TestCase
         }
         $kamar->update(['status' => 'occupied']);
         // Try to add third with 300k => total 1.1M <1.2M, should be rejected when room becomes full with all custom
-        $third = User::factory()->create(['role' => 'tenant']);
+        $third = User::factory()->create(['role' => 'pencari']);
         $response = $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), [
             'user_id' => $third->id,
             'rental_type' => 'monthly',
@@ -276,7 +276,7 @@ class KamarCapacityThreeTest extends TestCase
     {
         $kamar = $this->sharedKamar(3, 1200000);
         foreach ([500000, 400000, 300000] as $share) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -298,7 +298,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar = $this->sharedKamar(3, 1200000);
         // Pre-occupy 2
         foreach (range(1, 2) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -309,7 +309,7 @@ class KamarCapacityThreeTest extends TestCase
         $kamar->refresh();
         $this->assertSame(2, $kamar->occupancy());
         // Third booking should succeed
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $svc = app(BookingService::class);
         $result = $svc->create([
             'kamar_id' => $kamar->id,
@@ -325,7 +325,7 @@ class KamarCapacityThreeTest extends TestCase
     {
         $kamar = $this->sharedKamar(3, 1200000);
         foreach (range(1, 3) as $i) {
-            $u = User::factory()->create(['role' => 'tenant']);
+            $u = User::factory()->create(['role' => 'pencari']);
             $p = Penghuni::factory()->create(['user_id' => $u->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
             Kontrak::factory()->create([
                 'penghuni_id' => $p->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,
@@ -333,7 +333,7 @@ class KamarCapacityThreeTest extends TestCase
             ]);
         }
         $kamar->update(['status' => 'occupied']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $svc = app(BookingService::class);
         $result = $svc->create([
             'kamar_id' => $kamar->id,

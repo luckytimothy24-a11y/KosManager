@@ -28,6 +28,7 @@ class WebhookTest extends TestCase
             'payment_method' => 'qris',
             'amount' => $tagihan->total,
             'gateway_reference' => 'TEST-REF-001',
+            'gateway_provider' => 'sandbox',
             'verification_status' => Pembayaran::STATUS_PENDING,
         ]);
 
@@ -53,7 +54,6 @@ class WebhookTest extends TestCase
         $this->assertDatabaseHas('pembayarans', [
             'id' => $pembayaran->id,
             'verification_status' => Pembayaran::STATUS_APPROVED,
-            'verified_at' => null, // di-set oleh webhook ke 0/null
         ]);
     }
 
@@ -85,11 +85,15 @@ class WebhookTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $response = $this->postJson('/webhooks/payment-gateway', [
+        $gateway = \App\Services\PaymentGateway\PaymentGatewayManager::driver();
+        $payload = [
             'gateway_reference' => 'NONEXISTENT-REF',
             'status' => 'success',
-        ], [
-            'X-Gateway-Signature' => 'invalid-signature',
+        ];
+        $signature = $gateway->generateSignature($payload);
+
+        $response = $this->postJson('/webhooks/payment-gateway', $payload, [
+            'X-Gateway-Signature' => $signature,
         ]);
 
         $response->assertJson(['message' => 'Pembayaran tidak ditemukan.']);
@@ -102,6 +106,8 @@ class WebhookTest extends TestCase
         $this->withoutExceptionHandling();
 
         $pembayaran = Pembayaran::factory()->create([
+            'gateway_reference' => 'TEST-REF-002',
+            'gateway_provider' => 'sandbox',
             'verification_status' => Pembayaran::STATUS_APPROVED,
         ]);
 

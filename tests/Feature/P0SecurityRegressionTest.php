@@ -45,7 +45,7 @@ class P0SecurityRegressionTest extends TestCase
         $this->adminAssigned = User::factory()->create(['role' => 'admin']);
         $this->adminUnassigned = User::factory()->create(['role' => 'admin']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->kosA = Kos::factory()->create(['owner_id' => $this->ownerA->id, 'status' => 'active']);
         $this->kosB = Kos::factory()->create(['owner_id' => $this->ownerB->id, 'status' => 'active']);
         $this->kamarA = Kamar::factory()->create(['kos_id' => $this->kosA->id, 'status' => 'booked', 'capacity' => 2, 'billing_mode' => 'personal']);

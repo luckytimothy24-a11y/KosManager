@@ -17,7 +17,7 @@ class ApiV1FavoriteTest extends TestCase
     private function makeUser(array $overrides = []): User
     {
         return User::factory()->create(array_merge([
-            'role' => 'tenant',
+            'role' => 'pencari',
             'password' => Hash::make('secret123'),
         ], $overrides));
     }

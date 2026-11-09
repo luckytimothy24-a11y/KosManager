@@ -15,7 +15,7 @@ class ContractController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:tenant');
+        $this->middleware('role:pencari');
     }
 
     public function index(Request $request): AnonymousResourceCollection

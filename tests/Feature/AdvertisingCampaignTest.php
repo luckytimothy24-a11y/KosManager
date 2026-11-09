@@ -293,7 +293,7 @@ class AdvertisingCampaignTest extends TestCase
 
     public function test_role_middleware_blocks_tenant_from_owner_advertising(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($tenant)->get(route('owner.advertising.index'))->assertForbidden();
     }
 
@@ -305,7 +305,7 @@ class AdvertisingCampaignTest extends TestCase
 
     public function test_marketplace_promotes_only_live_active_partner_campaign(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $package = $this->package(50000, ['placement' => 'marketplace']);
 
@@ -341,7 +341,7 @@ class AdvertisingCampaignTest extends TestCase
 
     public function test_click_tracking_records_click_and_redirects(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $package = $this->package();
@@ -364,7 +364,7 @@ class AdvertisingCampaignTest extends TestCase
 
     public function test_impressions_are_deduplicated(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $package = $this->package();
@@ -384,7 +384,7 @@ class AdvertisingCampaignTest extends TestCase
 
     public function test_conversion_is_attributed_after_real_booking_following_ad_click(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);

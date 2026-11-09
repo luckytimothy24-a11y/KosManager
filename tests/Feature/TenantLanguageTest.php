@@ -15,7 +15,7 @@ class TenantLanguageTest extends TestCase
 
     public function test_booking_validation_errors_are_indonesian(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($tenant)->post(route('tenant.booking.store'), []);
 
@@ -37,7 +37,7 @@ class TenantLanguageTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $booking = Booking::factory()->create([
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
@@ -56,7 +56,7 @@ class TenantLanguageTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         foreach ([route('tenant.kos.index'), route('tenant.kos.show', $kos)] as $url) {
             $content = $this->actingAs($tenant)->get($url)->assertOk()->getContent();
@@ -93,7 +93,7 @@ class TenantLanguageTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($seeker)->post(route('tenant.kos.ask.store', $kos), [
             'message' => '',

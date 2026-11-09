@@ -18,7 +18,7 @@ class PendapatanAccessTest extends TestCase
 
     private function makeStay(Kos $kos, ?User $tenant = null): array
     {
-        $tenant ??= User::factory()->create(['role' => 'tenant']);
+        $tenant ??= User::factory()->create(['role' => 'pencari']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
@@ -87,7 +87,7 @@ class PendapatanAccessTest extends TestCase
 
     public function test_tenant_cannot_access_pendapatan(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($tenant)->get('/owner/laporan')->assertForbidden();
         $this->actingAs($tenant)->get('/admin/laporan')->assertForbidden();
         $this->actingAs($tenant)->get('/super-admin/laporan')->assertForbidden();

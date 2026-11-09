@@ -41,7 +41,7 @@ class OwnerBankAccountTenantDisplayTest extends TestCase
         parent::setUp();
         Storage::fake('private');
 
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
         $this->ownerC = User::factory()->create(['role' => 'owner']);

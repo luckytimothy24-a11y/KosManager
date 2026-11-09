@@ -44,7 +44,7 @@ class AdminRoleLaporanScopeTest extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->ownerA = User::factory()->create(['role' => 'owner']);
         $this->ownerB = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->kosA = Kos::factory()->create(['owner_id' => $this->ownerA->id, 'name' => 'KOS-SCOPE-A', 'status' => 'active']);
         $this->kosB = Kos::factory()->create(['owner_id' => $this->ownerB->id, 'name' => 'KOS-SCOPE-B', 'status' => 'active']);
@@ -55,7 +55,7 @@ class AdminRoleLaporanScopeTest extends TestCase
     private function seedKosData(Kos $kos, string $marker): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'room_number' => $marker.'-01']);
-        $tenant = User::factory()->create(['role' => 'tenant', 'email' => strtolower($marker).'@example.test']);
+        $tenant = User::factory()->create(['role' => 'pencari', 'email' => strtolower($marker).'@example.test']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
@@ -257,7 +257,7 @@ class AdminRoleLaporanScopeTest extends TestCase
 
     public function test_admin_can_confirm_assigned_pending_booking(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kamar = Kamar::factory()->create(['kos_id' => $this->kosA->id, 'status' => 'booked', 'monthly_price' => 1000000]);
         $booking = Booking::factory()->create([
             'user_id' => $tenant->id,

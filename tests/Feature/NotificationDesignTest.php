@@ -103,7 +103,7 @@ class NotificationDesignTest extends TestCase
 
     public function test_dropdown_empty_state(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($tenant)->get(route('dashboard'));
         $response->assertOk();

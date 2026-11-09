@@ -19,7 +19,7 @@ class KosManagementTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
     public function test_owner_can_view_kos_list(): void

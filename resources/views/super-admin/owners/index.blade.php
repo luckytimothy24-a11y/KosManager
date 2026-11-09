@@ -41,7 +41,7 @@
                         'Telepon' => $owner->phone ?? '-',
                         'Kos' => $owner->owned_kos_count ?? 0,
                         'Kamar' => $owner->ownedKos->sum('kamar_count') ?? 0,
-                        'Tenant' => $owner->penghunis_count ?? 0,
+                        'pencari' => $owner->penghunis_count ?? 0,
                     ]">
                     <x-slot name="badge">
                         <x-status-badge :status="$owner->is_active ? 'active' : 'inactive'" context="penghuni" :label="$owner->is_active ? 'Aktif' : 'Nonaktif'" />

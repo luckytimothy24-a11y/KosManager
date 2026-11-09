@@ -40,7 +40,7 @@ class AdjustmentTest extends TestCase
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $po = PropertyOwner::factory()->create();
         PropertyOwnerBankAccount::factory()->create(['property_owner_id' => $po->id]);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active', 'property_owner_id' => $po->id]);
@@ -80,7 +80,7 @@ class AdjustmentTest extends TestCase
         $kos2 = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active', 'property_owner_id' => $this->kos->property_owner_id]);
         // need separate flow: create fixed agreement on new kos
         $kamar2 = Kamar::factory()->create(['kos_id' => $kos2->id]);
-        $tenant2 = User::factory()->create(['role' => 'tenant']);
+        $tenant2 = User::factory()->create(['role' => 'pencari']);
         $penghuni2 = Penghuni::factory()->create(['user_id' => $tenant2->id, 'kos_id' => $kos2->id, 'kamar_id' => $kamar2->id, 'status' => 'active']);
         $kontrak2 = Kontrak::factory()->create(['penghuni_id' => $penghuni2->id, 'kos_id' => $kos2->id, 'kamar_id' => $kamar2->id, 'status' => 'active']);
         $tagihan2 = Tagihan::factory()->create(['penghuni_id' => $penghuni2->id, 'kontrak_id' => $kontrak2->id, 'kamar_id' => $kamar2->id, 'subtotal' => 2000000, 'penalty' => 0, 'total' => 2000000]);
@@ -136,7 +136,7 @@ class AdjustmentTest extends TestCase
         $svc = app(PropertyOwnerPayoutService::class);
         $kos2 = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active', 'property_owner_id' => $this->kos->property_owner_id]);
         $kamar2 = Kamar::factory()->create(['kos_id' => $kos2->id]);
-        $tenant2 = User::factory()->create(['role' => 'tenant']);
+        $tenant2 = User::factory()->create(['role' => 'pencari']);
         $penghuni2 = Penghuni::factory()->create(['user_id' => $tenant2->id, 'kos_id' => $kos2->id, 'kamar_id' => $kamar2->id, 'status' => 'active']);
         $kontrak2 = Kontrak::factory()->create(['penghuni_id' => $penghuni2->id, 'kos_id' => $kos2->id, 'kamar_id' => $kamar2->id, 'status' => 'active']);
         $tagihan2 = Tagihan::factory()->create(['penghuni_id' => $penghuni2->id, 'kontrak_id' => $kontrak2->id, 'kamar_id' => $kamar2->id, 'subtotal' => 5000000, 'penalty' => 500000, 'total' => 5500000]);
@@ -154,7 +154,7 @@ class AdjustmentTest extends TestCase
         $svc = app(PropertyOwnerPayoutService::class);
         $kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active', 'property_owner_id' => $this->kos->property_owner_id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create(['user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
         $kontrak = Kontrak::factory()->create(['penghuni_id' => $penghuni->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
         $tagihan = Tagihan::factory()->create(['penghuni_id' => $penghuni->id, 'kontrak_id' => $kontrak->id, 'kamar_id' => $kamar->id, 'subtotal' => 5000000, 'penalty' => 0, 'total' => 5000000]);

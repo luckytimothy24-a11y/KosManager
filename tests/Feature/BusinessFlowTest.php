@@ -30,7 +30,7 @@ class BusinessFlowTest extends TestCase
         Storage::fake('public');
 
         $owner = User::factory()->create(['role' => 'owner']);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create([
             'kos_id' => $kos->id,
@@ -152,7 +152,7 @@ class BusinessFlowTest extends TestCase
     {
         Mail::fake();
 
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         Notification::create([
             'user_id' => $tenant->id,
             'type' => 'billing',

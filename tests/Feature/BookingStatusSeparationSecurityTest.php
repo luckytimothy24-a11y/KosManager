@@ -30,7 +30,7 @@ class BookingStatusSeparationSecurityTest extends TestCase
 
     private function tenant(): User
     {
-        return User::factory()->create(['role' => 'tenant']);
+        return User::factory()->create(['role' => 'pencari']);
     }
 
     private function owner(): User

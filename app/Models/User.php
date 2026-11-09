@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(Kos::class, 'owner_id');
     }
 
+    public function ownerProfile()
+    {
+        return $this->hasOne(OwnerProfile::class, 'user_id');
+    }
+
     public function bankAccount()
     {
         return $this->hasOne(OwnerBankAccount::class, 'owner_id');

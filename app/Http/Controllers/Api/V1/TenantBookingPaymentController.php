@@ -22,7 +22,7 @@ class TenantBookingPaymentController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-        $this->middleware('role:tenant');
+        $this->middleware('role:pencari');
     }
 
     public function store(Booking $booking, StoreBookingPaymentRequest $request, PaymentService $paymentService): JsonResponse

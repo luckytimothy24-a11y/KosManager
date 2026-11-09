@@ -21,9 +21,17 @@ trait HasRole
         return $this->role === UserRole::OWNER->value;
     }
 
+    public function isPencari(): bool
+    {
+        return $this->role === UserRole::PENCARI->value;
+    }
+
+    /**
+     * Backward-compatible alias for existing code paths.
+     */
     public function isTenant(): bool
     {
-        return $this->role === UserRole::TENANT->value;
+        return $this->isPencari();
     }
 
     public function hasRole(string ...$roles): bool

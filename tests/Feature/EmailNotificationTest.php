@@ -30,7 +30,7 @@ class EmailNotificationTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         NotificationService::billCreated($user->id, 'TB-001', '31/12/2026');
 
@@ -45,7 +45,7 @@ class EmailNotificationTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         NotificationService::checkoutApproved($user->id, '101');
 

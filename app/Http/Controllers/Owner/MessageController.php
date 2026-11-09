@@ -165,7 +165,7 @@ class MessageController extends Controller
             \Log::warning('Admin message read audit failed: '.$e->getMessage());
         }
 
-        return view('admin.messages.show', compact('tenant', 'messages', 'kosName'));
+        return view('admin.messages.show', compact('pencari', 'messages', 'kosName'));
     }
 
     /**
@@ -271,7 +271,7 @@ class MessageController extends Controller
             ->get();
         $conversations = self::conversationList($allMessages, $owner);
 
-        return view('owner.messages.show', compact('tenant', 'messages', 'kosName', 'context', 'conversations', 'kosId'));
+        return view('owner.messages.show', compact('pencari', 'messages', 'kosName', 'context', 'conversations', 'kosId'));
     }
 
     /**
@@ -340,7 +340,7 @@ class MessageController extends Controller
         }
 
         return redirect()
-            ->route('owner.messages.show', ['tenant' => $tenant, 'kos' => $kosId])
+            ->route('owner.messages.show', ['pencari' => $tenant, 'kos' => $kosId])
             ->with('success', 'Balasan berhasil dikirim.');
     }
 

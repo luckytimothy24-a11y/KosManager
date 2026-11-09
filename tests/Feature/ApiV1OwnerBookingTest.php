@@ -45,8 +45,8 @@ class ApiV1OwnerBookingTest extends TestCase
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->otherOwner = User::factory()->create(['role' => 'owner']);
-        $this->tenantA = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
-        $this->tenantB = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenantA = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
+        $this->tenantB = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
 
@@ -79,7 +79,7 @@ class ApiV1OwnerBookingTest extends TestCase
         $existing = $this->booking($this->tenantA, $this->room);
 
         foreach ([
-            'tenant' => $this->tenantA,
+            'pencari' => $this->tenantA,
             'admin' => $this->admin,
             'super_admin' => $this->superAdmin,
         ] as $label => $user) {
@@ -101,7 +101,7 @@ class ApiV1OwnerBookingTest extends TestCase
             ->assertHeader('content-type', 'application/json')
             ->assertJsonStructure([
                 'data' => [[
-                    'id', 'booking_code', 'tenant', 'kos', 'kamar', 'status',
+                    'id', 'booking_code', 'pencari', 'kos', 'kamar', 'status',
                 ]],
             ])
             ->assertJsonCount(1, 'data')
@@ -174,7 +174,7 @@ class ApiV1OwnerBookingTest extends TestCase
             ->assertHeader('content-type', 'application/json')
             ->assertJsonStructure([
                 'data' => [
-                    'id', 'booking_code', 'tenant', 'kos', 'kamar',
+                    'id', 'booking_code', 'pencari', 'kos', 'kamar',
                     'booking_date', 'start_date', 'end_date', 'rental_type', 'price', 'status', 'notes',
                 ],
             ])

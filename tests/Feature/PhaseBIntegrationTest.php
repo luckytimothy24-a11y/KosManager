@@ -36,9 +36,9 @@ class PhaseBIntegrationTest extends TestCase
         parent::setUp();
         $this->shared = new SharedBillingService;
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenantA = User::factory()->create(['role' => 'tenant']);
-        $this->tenantB = User::factory()->create(['role' => 'tenant']);
-        $this->tenantC = User::factory()->create(['role' => 'tenant']);
+        $this->tenantA = User::factory()->create(['role' => 'pencari']);
+        $this->tenantB = User::factory()->create(['role' => 'pencari']);
+        $this->tenantC = User::factory()->create(['role' => 'pencari']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
     }
 
@@ -277,7 +277,7 @@ class PhaseBIntegrationTest extends TestCase
         ]);
         $kontraks = [];
         foreach (range(1, $count) as $i) {
-            $user = User::factory()->create(['role' => 'tenant']);
+            $user = User::factory()->create(['role' => 'pencari']);
             $penghuni = Penghuni::factory()->create([
                 'user_id' => $user->id,
                 'kos_id' => $this->kos->id,
@@ -539,7 +539,7 @@ class PhaseBIntegrationTest extends TestCase
         ]);
         $this->assertDatabaseCount('tagihans', 2);
         // Add new occupant after cycle 1
-        $newUser = User::factory()->create(['role' => 'tenant']);
+        $newUser = User::factory()->create(['role' => 'pencari']);
         $newPenghuni = Penghuni::factory()->create(['user_id' => $newUser->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id, 'status' => 'active']);
         $newKontrak = Kontrak::factory()->create([
             'penghuni_id' => $newPenghuni->id, 'kos_id' => $this->kos->id, 'kamar_id' => $kamar->id,

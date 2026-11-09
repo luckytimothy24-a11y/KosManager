@@ -55,8 +55,8 @@ class ApiV1OwnerContractTest extends TestCase
 
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->otherOwner = User::factory()->create(['role' => 'owner']);
-        $this->tenantA = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
-        $this->tenantB = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenantA = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
+        $this->tenantB = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
 
@@ -114,7 +114,7 @@ class ApiV1OwnerContractTest extends TestCase
     public function test_owner_contract_routes_reject_non_owner_roles(): void
     {
         foreach ([
-            'tenant' => $this->tenantA,
+            'pencari' => $this->tenantA,
             'admin' => $this->admin,
             'super_admin' => $this->superAdmin,
         ] as $label => $user) {

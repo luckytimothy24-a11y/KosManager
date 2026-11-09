@@ -33,8 +33,8 @@ class DemoDataSeeder extends Seeder
 
     private function seedExtraTenants(): void
     {
-        $tenants = User::where('role', 'tenant')
-            ->where('email', '!=', 'tenant@example.com')
+        $tenants = User::where('role', 'pencari')
+            ->where('email', '!=', 'pencari@example.com')
             ->get();
 
         $kosList = Kos::where('status', 'active')->get();
@@ -45,7 +45,7 @@ class DemoDataSeeder extends Seeder
         $fakerNames = ['Budi Santoso', 'Rina Wulandari', 'Ahmad Fauzi', 'Dewi Lestari', 'Rizky Pratama'];
         foreach ($tenants as $i => $tenant) {
             $name = $fakerNames[$i] ?? 'Tenant '.($i + 1);
-            if ($tenant->name === $name || str_starts_with($tenant->name, 'Tenant')) {
+            if ($tenant->name === $name || str_starts_with($tenant->name, 'pencari')) {
                 $tenant->update(['name' => $name]);
             }
         }
@@ -192,7 +192,7 @@ class DemoDataSeeder extends Seeder
     private function seedBookingVariety(): void
     {
         $owner = User::where('email', 'owner@example.com')->first();
-        $tenants = User::where('role', 'tenant')->get();
+        $tenants = User::where('role', 'pencari')->get();
         $kos = Kos::where('owner_id', $owner->id)->first();
 
         if (! $kos || $tenants->isEmpty()) {
@@ -206,7 +206,7 @@ class DemoDataSeeder extends Seeder
 
         if ($pendingRoom) {
             $tenant2 = $tenants->first(function ($t) {
-                return $t->email !== 'tenant@example.com';
+                return $t->email !== 'pencari@example.com';
             }) ?? $tenants->first();
 
             Booking::create([
@@ -311,7 +311,7 @@ class DemoDataSeeder extends Seeder
     private function seedMessages(): void
     {
         $owner = User::where('email', 'owner@example.com')->first();
-        $tenant = User::where('email', 'tenant@example.com')->first();
+        $tenant = User::where('email', 'pencari@example.com')->first();
 
         if (! $owner || ! $tenant) {
             return;

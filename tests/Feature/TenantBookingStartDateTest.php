@@ -30,7 +30,7 @@ class TenantBookingStartDateTest extends TestCase
     {
         parent::setUp();
 
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $this->kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create([
@@ -334,7 +334,7 @@ class TenantBookingStartDateTest extends TestCase
         // Existing approved booking 20 Okt – 30 Okt
         $existingStart = Carbon::today()->addDays(20);
         Booking::factory()->create([
-            'user_id' => User::factory()->create(['role' => 'tenant'])->id,
+            'user_id' => User::factory()->create(['role' => 'pencari'])->id,
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
             'status' => 'approved',
@@ -369,7 +369,7 @@ class TenantBookingStartDateTest extends TestCase
 
     public function test_tenant_cannot_change_other_tenant_booking_start_date(): void
     {
-        $other = User::factory()->create(['role' => 'tenant']);
+        $other = User::factory()->create(['role' => 'pencari']);
         $otherBooking = Booking::factory()->create([
             'user_id' => $other->id,
             'kos_id' => $this->kos->id,

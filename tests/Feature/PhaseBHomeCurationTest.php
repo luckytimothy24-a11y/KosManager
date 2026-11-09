@@ -27,7 +27,7 @@ class PhaseBHomeCurationTest extends TestCase
         parent::setUp();
 
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant']);
+        $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
     private function activeKos(string $name, int $price = 1000000, ?Carbon $createdAt = null): Kos

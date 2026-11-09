@@ -252,7 +252,7 @@ class PartnerAdRedesignTest extends TestCase
 
     public function test_dashboard_marketplace_detail_render_premium_sections(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
 
         $homepage = $this->livePartnerCampaign('shopee', 'homepage', [
             'headline' => 'Lengkapi kebutuhan kos tanpa bikin kantong boncos.',
@@ -286,7 +286,7 @@ class PartnerAdRedesignTest extends TestCase
 
     public function test_clicking_rendered_ad_records_event_and_redirects_to_destination(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $ad = $this->livePartnerCampaign('dana', 'marketplace', [
             'destination_url' => 'https://destination.example/dana',
         ]);
@@ -313,7 +313,7 @@ class PartnerAdRedesignTest extends TestCase
 
     public function test_dashboard_promo_carousel_has_alpine_root_scope(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $this->livePartnerCampaign('shopee', 'homepage', [
             'headline' => 'Lengkapi kebutuhan kos tanpa bikin kantong boncos.',
         ]);
@@ -342,7 +342,7 @@ class PartnerAdRedesignTest extends TestCase
 
     public function test_marketplace_facility_accordion_xdata_uses_quoted_json_values(): void
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         Fasilitas::factory()->create(['name' => 'AC']);
         Fasilitas::factory()->create(['name' => 'Shower']);
 

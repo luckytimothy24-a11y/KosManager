@@ -129,12 +129,12 @@ class SuperAdminGovernanceTest extends TestCase
 
     public function test_user_update_creates_audit_log(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->superAdmin)->put(route('super-admin.users.update', $user), [
             'name' => 'Updated Tenant',
             'email' => $user->email,
-            'role' => 'tenant',
+            'role' => 'pencari',
             'is_active' => '1',
         ]);
 
@@ -147,7 +147,7 @@ class SuperAdminGovernanceTest extends TestCase
 
     public function test_user_destroy_creates_audit_log(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->superAdmin)->delete(route('super-admin.users.destroy', $user));
 
@@ -201,12 +201,12 @@ class SuperAdminGovernanceTest extends TestCase
 
     public function test_admin_mutation_audit_logs_are_in_chain(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->superAdmin)->post(route('super-admin.users.store'), [
             'name' => 'Chain Test User',
             'email' => 'chain@test.com',
-            'role' => 'tenant',
+            'role' => 'pencari',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
@@ -214,7 +214,7 @@ class SuperAdminGovernanceTest extends TestCase
         $this->actingAs($this->superAdmin)->put(route('super-admin.users.update', $user), [
             'name' => 'Updated',
             'email' => $user->email,
-            'role' => 'tenant',
+            'role' => 'pencari',
             'is_active' => '1',
         ]);
 

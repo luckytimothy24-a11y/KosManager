@@ -48,8 +48,8 @@ class SettlementPerKosOrphanTest extends TestCase
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
         $this->superAdmin = User::factory()->create(['role' => 'super_admin']);
-        $tenantA = User::factory()->create(['role' => 'tenant']);
-        $tenantB = User::factory()->create(['role' => 'tenant']);
+        $tenantA = User::factory()->create(['role' => 'pencari']);
+        $tenantB = User::factory()->create(['role' => 'pencari']);
         $this->poA = PropertyOwner::factory()->create();
         PropertyOwnerBankAccount::factory()->create(['property_owner_id' => $this->poA->id]);
         $this->poB = PropertyOwner::factory()->create();
@@ -132,7 +132,7 @@ class SettlementPerKosOrphanTest extends TestCase
     public function test_orphan_booking_path_mapped_correctly(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kosA->id]);
-        $booking = Booking::factory()->create(['kos_id' => $this->kosA->id, 'kamar_id' => $kamar->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id, 'status' => 'pending']);
+        $booking = Booking::factory()->create(['kos_id' => $this->kosA->id, 'kamar_id' => $kamar->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id, 'status' => 'pending']);
         $payBooking = Pembayaran::factory()->create([
             'booking_id' => $booking->id, 'tagihan_id' => null, 'penghuni_id' => null,
             'amount' => 1200000, 'rent_amount' => 1200000, 'penalty_amount' => 0,
@@ -158,7 +158,7 @@ class SettlementPerKosOrphanTest extends TestCase
     public function test_orphan_priority_penghuni_over_booking(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kosA->id]);
-        $booking = Booking::factory()->create(['kos_id' => $this->kosB->id, 'kamar_id' => $kamar->id, 'user_id' => User::factory()->create(['role' => 'tenant'])->id, 'status' => 'pending']);
+        $booking = Booking::factory()->create(['kos_id' => $this->kosB->id, 'kamar_id' => $kamar->id, 'user_id' => User::factory()->create(['role' => 'pencari'])->id, 'status' => 'pending']);
         $payBoth = Pembayaran::factory()->create([
             'booking_id' => $booking->id, 'penghuni_id' => $this->penghuniA->id, 'tagihan_id' => $this->tagihanA->id,
             'amount' => 1000000, 'rent_amount' => 1000000, 'penalty_amount' => 0,
@@ -202,7 +202,7 @@ class SettlementPerKosOrphanTest extends TestCase
         PropertyOwnerBankAccount::factory()->create(['property_owner_id' => $poOther->id]);
         $kosOther = Kos::factory()->create(['owner_id' => $otherOwner->id, 'property_owner_id' => $poOther->id, 'status' => 'active']);
         $kamarOther = Kamar::factory()->create(['kos_id' => $kosOther->id]);
-        $tenantOther = User::factory()->create(['role' => 'tenant']);
+        $tenantOther = User::factory()->create(['role' => 'pencari']);
         $penghuniOther = Penghuni::factory()->create(['user_id' => $tenantOther->id, 'kos_id' => $kosOther->id, 'kamar_id' => $kamarOther->id, 'status' => 'active']);
         $kontrakOther = Kontrak::factory()->create(['penghuni_id' => $penghuniOther->id, 'kos_id' => $kosOther->id, 'kamar_id' => $kamarOther->id, 'status' => 'active']);
         $tagihanOther = Tagihan::factory()->create(['penghuni_id' => $penghuniOther->id, 'kontrak_id' => $kontrakOther->id, 'kamar_id' => $kamarOther->id]);

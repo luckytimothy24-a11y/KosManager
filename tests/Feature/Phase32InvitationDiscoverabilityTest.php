@@ -27,7 +27,7 @@ class Phase32InvitationDiscoverabilityTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->primary = User::factory()->create(['role' => 'tenant', 'email' => 'primary@example.com']);
+        $this->primary = User::factory()->create(['role' => 'pencari', 'email' => 'primary@example.com']);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'available', 'capacity' => 1, 'billing_mode' => 'personal', 'monthly_price' => 1200000, 'daily_price' => 50000, 'weekly_price' => 350000]);
     }
@@ -59,13 +59,13 @@ class Phase32InvitationDiscoverabilityTest extends TestCase
 
     public function test_invalid_token_rejected(): void
     {
-        $u = User::factory()->create(['role' => 'tenant']);
+        $u = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($u)->get(route('tenant.invitations.show', str_repeat('a', 64)))->assertStatus(404);
     }
 
     public function test_tenant_sees_empty_invitations_when_none(): void
     {
-        $u = User::factory()->create(['role' => 'tenant']);
+        $u = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($u)->get(route('tenant.invitations.index'))->assertOk()->assertSee('Belum Ada Undangan');
     }
 

@@ -17,7 +17,7 @@ class TenantRoomDetailTest extends TestCase
 
     private function createTenant(): User
     {
-        return User::factory()->create(['role' => 'tenant']);
+        return User::factory()->create(['role' => 'pencari']);
     }
 
     private function createOwner(): User

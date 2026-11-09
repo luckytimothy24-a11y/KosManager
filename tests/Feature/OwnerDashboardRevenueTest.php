@@ -34,7 +34,7 @@ class OwnerDashboardRevenueTest extends TestCase
      */
     private function buildTenantInKos(User $owner, Kos $kos): Penghuni
     {
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'occupied']);
 
         return Penghuni::factory()->create([

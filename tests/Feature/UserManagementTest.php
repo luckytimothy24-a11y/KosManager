@@ -36,7 +36,7 @@ class UserManagementTest extends TestCase
         $response = $this->actingAs($this->superAdmin)->post(route('super-admin.users.store'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'role' => 'tenant',
+            'role' => 'pencari',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
@@ -45,18 +45,18 @@ class UserManagementTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'role' => 'tenant',
+            'role' => 'pencari',
         ]);
     }
 
     public function test_super_admin_can_update_user(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->superAdmin)->put(route('super-admin.users.update', $user), [
             'name' => 'Updated Name',
             'email' => $user->email,
-            'role' => 'tenant',
+            'role' => 'pencari',
             'is_active' => false,
         ]);
 
@@ -69,7 +69,7 @@ class UserManagementTest extends TestCase
 
     public function test_super_admin_can_delete_user(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
 
         $response = $this->actingAs($this->superAdmin)->delete(route('super-admin.users.destroy', $user));
         $response->assertRedirect(route('super-admin.users.index'));

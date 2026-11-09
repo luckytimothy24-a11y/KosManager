@@ -31,7 +31,7 @@ class ApiV1BookingTest extends TestCase
     {
         parent::setUp();
         $this->owner = User::factory()->create(['role' => 'owner']);
-        $this->tenant = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $this->tenant = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $this->kos = Kos::factory()->create(['owner_id' => $this->owner->id, 'status' => 'active']);
         $this->kamar = Kamar::factory()->create([
             'kos_id' => $this->kos->id,
@@ -104,7 +104,7 @@ class ApiV1BookingTest extends TestCase
 
     public function test_index_returns_only_own_bookings(): void
     {
-        $other = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $other = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $own = $this->makeBooking();
         $otherBooking = $this->makeBooking(['user_id' => $other->id]);
 
@@ -183,7 +183,7 @@ class ApiV1BookingTest extends TestCase
 
     public function test_show_denies_other_tenant_booking(): void
     {
-        $other = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $other = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $booking = $this->makeBooking(['user_id' => $other->id]);
 
         $this->withToken($this->token($this->tenant))->getJson("/api/v1/bookings/{$booking->id}")
@@ -400,7 +400,7 @@ class ApiV1BookingTest extends TestCase
 
     public function test_cancel_denies_other_tenant_booking(): void
     {
-        $other = User::factory()->create(['role' => 'tenant', 'password' => Hash::make('secret123')]);
+        $other = User::factory()->create(['role' => 'pencari', 'password' => Hash::make('secret123')]);
         $booking = $this->makeBooking(['user_id' => $other->id, 'status' => 'approved']);
 
         $this->withToken($this->token($this->tenant))->postJson("/api/v1/bookings/{$booking->id}/cancel")

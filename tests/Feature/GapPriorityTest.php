@@ -21,7 +21,7 @@ class GapPriorityTest extends TestCase
     {
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant = User::factory()->create(['role' => 'tenant']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'active',
         ]);
@@ -35,7 +35,7 @@ class GapPriorityTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$tenant, $kos] = $this->makeStay($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         $msg = Message::factory()->create([
             'kos_id' => $kos->id, 'sender_id' => $seeker->id, 'receiver_id' => $owner->id,
             'message' => 'Typo', 'category' => 'kamar',
@@ -53,7 +53,7 @@ class GapPriorityTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$tenant, $kos] = $this->makeStay($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         $msg = Message::factory()->create([
             'kos_id' => $kos->id, 'sender_id' => $seeker->id, 'receiver_id' => $owner->id, 'message' => 'Lama',
         ]);
@@ -69,12 +69,12 @@ class GapPriorityTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$tenant, $kos] = $this->makeStay($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         $msg = Message::factory()->create([
             'kos_id' => $kos->id, 'sender_id' => $seeker->id, 'receiver_id' => $owner->id, 'message' => 'X',
         ]);
 
-        $other = User::factory()->create(['role' => 'tenant']);
+        $other = User::factory()->create(['role' => 'pencari']);
         $this->actingAs($other)->put(route('tenant.inquiries.update', $msg), ['message' => 'Y'])
             ->assertForbidden();
     }
@@ -83,7 +83,7 @@ class GapPriorityTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         [$tenant, $kos] = $this->makeStay($owner);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         $msg = Message::factory()->create([
             'kos_id' => $kos->id, 'sender_id' => $seeker->id, 'receiver_id' => $owner->id, 'message' => 'T',
         ]);
@@ -157,7 +157,7 @@ class GapPriorityTest extends TestCase
 
     public function test_any_role_can_update_profile_via_api(): void
     {
-        foreach (['tenant', 'owner', 'admin'] as $role) {
+        foreach (['pencari', 'owner', 'admin'] as $role) {
             $user = User::factory()->create(['role' => $role, 'phone' => 'lama']);
             Sanctum::actingAs($user);
 
@@ -172,7 +172,7 @@ class GapPriorityTest extends TestCase
     public function test_tenant_profile_ignores_identity_number(): void
     {
         $user = User::factory()->create([
-            'role' => 'tenant',
+            'role' => 'pencari',
             'identity_number' => '3201010101010001',
         ]);
         Sanctum::actingAs($user);
@@ -185,7 +185,7 @@ class GapPriorityTest extends TestCase
 
     public function test_profile_update_rejects_invalid_data(): void
     {
-        $user = User::factory()->create(['role' => 'tenant']);
+        $user = User::factory()->create(['role' => 'pencari']);
         Sanctum::actingAs($user);
 
         $this->putJson(route('api.v1.me.update'), ['phone' => str_repeat('1', 21)])

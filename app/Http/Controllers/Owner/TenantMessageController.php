@@ -175,7 +175,7 @@ class TenantMessageController extends Controller
             (int) $owner->id,
             $user->name,
             $kos->name,
-            route('owner.messages.show', ['tenant' => $user, 'kos' => $kos->id])
+            route('owner.messages.show', ['pencari' => $user, 'kos' => $kos->id])
         );
 
         return redirect()->route('tenant.inquiries.index')
@@ -394,7 +394,7 @@ class TenantMessageController extends Controller
             (int) $owner->id,
             $user->name,
             $kos->name,
-            route('owner.messages.show', ['tenant' => $user, 'kos' => $kos->id])
+            route('owner.messages.show', ['pencari' => $user, 'kos' => $kos->id])
         );
 
         return redirect()->route('tenant.messages.index', ['kos' => $kos->id])

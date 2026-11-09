@@ -22,7 +22,7 @@ class TenantSelfServiceTest extends TestCase
     {
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
-        $tenant ??= User::factory()->create(['role' => 'tenant']);
+        $tenant ??= User::factory()->create(['role' => 'pencari']);
         $penghuni = Penghuni::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
@@ -180,7 +180,7 @@ class TenantSelfServiceTest extends TestCase
             'kos_id' => $kos->id, 'kamar_id' => $kamar->id,
             'user_id' => $tenant->id, 'status' => 'approved',
         ]);
-        $otherTenant = User::factory()->create(['role' => 'tenant']);
+        $otherTenant = User::factory()->create(['role' => 'pencari']);
         $foreign = DamageReport::factory()->create([
             'kos_id' => $kos->id, 'kamar_id' => $kamar->id,
             'user_id' => $otherTenant->id, 'status' => 'pending',
@@ -218,7 +218,7 @@ class TenantSelfServiceTest extends TestCase
     {
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
-        $seeker = User::factory()->create(['role' => 'tenant']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
         Sanctum::actingAs($seeker);
 
         $this->postJson(route('api.v1.kos.inquiry.store', $kos), ['message' => 'Ada kamar kosong?'])

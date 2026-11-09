@@ -15,7 +15,7 @@ class PhaseFTenantMediaTest extends TestCase
 
     protected function createTenant(): User
     {
-        return User::factory()->create(['role' => 'tenant']);
+        return User::factory()->create(['role' => 'pencari']);
     }
 
     protected function createKos(array $attributes = []): Kos

@@ -31,7 +31,7 @@
                     @forelse($messages as $msg)
                         @php $isOwner = (int) $msg->sender_id !== (int) $tenant->id; @endphp
                         <div>
-                            <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 {{ $isOwner ? 'text-right' : '' }}">{{ $msg->sender->name ?? ($isOwner ? 'Owner' : 'Tenant') }}</p>
+                            <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 {{ $isOwner ? 'text-right' : '' }}">{{ $msg->sender->name ?? ($isOwner ? 'Owner' : 'pencari') }}</p>
                             <x-chat-bubble
                                 :mine="$isOwner"
                                 :message="$msg->message"
