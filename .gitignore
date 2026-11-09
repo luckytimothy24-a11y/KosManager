@@ -49,3 +49,6 @@ yarn-error.log
 /test_kos.php
 /test_login.php
 *.orig
+
+base.log
+test-output.txt

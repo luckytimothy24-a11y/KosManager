@@ -156,7 +156,7 @@ class TenantInquiryTest extends TestCase
             'message' => 'Ada, silakan booking.',
         ]);
 
-        $response->assertRedirect(route('owner.messages.show', ['pencari' => $seeker, 'kos' => $kos->id]));
+        $response->assertRedirect(route('owner.messages.show', ['tenant' => $seeker, 'kos' => $kos->id]));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $kos->id,
             'sender_id' => $owner->id,

@@ -52,7 +52,7 @@ class ChatNotificationClickTest extends TestCase
 
         $notification = Notification::where('user_id', $this->owner->id)->latest()->first();
         $this->assertEquals(
-            route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $this->kos->id]),
+            route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id]),
             $notification->data['url'] ?? null
         );
     }
@@ -94,7 +94,7 @@ class ChatNotificationClickTest extends TestCase
         $response->assertOk();
         $response->assertSee('Buka');
         $response->assertSee(
-            route('owner.messages.show', ['pencari' => $this->tenant, 'kos' => $this->kos->id])
+            route('owner.messages.show', ['tenant' => $this->tenant, 'kos' => $this->kos->id])
         );
     }
 

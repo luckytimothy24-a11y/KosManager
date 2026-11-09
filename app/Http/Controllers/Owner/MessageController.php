@@ -340,7 +340,7 @@ class MessageController extends Controller
         }
 
         return redirect()
-            ->route('owner.messages.show', ['pencari' => $tenant, 'kos' => $kosId])
+            ->route('owner.messages.show', ['tenant' => $tenant, 'kos' => $kosId])
             ->with('success', 'Balasan berhasil dikirim.');
     }
 

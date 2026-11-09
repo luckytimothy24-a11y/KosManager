@@ -25,7 +25,7 @@
                     @foreach(($conversations ?? collect()) as $c)
                         <li>
                             <x-chat-list-item
-                                :href="route($prefix.'.messages.show', array_filter(['pencari' => $c['tenant_id'], 'kos' => $c['kos_id'] ?? null]))"
+                                :href="route($prefix.'.messages.show', array_filter(['tenant' => $c['tenant_id'], 'kos' => $c['kos_id'] ?? null]))"
                                 :name="$c['tenant_name']"
                                 :context="$c['kos_name']"
                                 :snippet="\Illuminate\Support\Str::limit($c['last_message'] ?? '', 48)"
@@ -84,7 +84,7 @@
 
                 @include('components.chat-poll-script')
                 {{-- Messages --}}
-                <div x-data="chatPoll('{{ route($prefix.'.messages.latest', array_filter(['pencari' => $tenant, 'kos' => $kosId ?? null])) }}', {{ $messages->max('id') ?? 0 }}, 'chat-draft-owner-{{ $tenant->id }}-{{ $kosId ?? 0 }}')" x-init="start()">
+                <div x-data="chatPoll('{{ route($prefix.'.messages.latest', array_filter(['tenant' => $tenant, 'kos' => $kosId ?? null])) }}', {{ $messages->max('id') ?? 0 }}, 'chat-draft-owner-{{ $tenant->id }}-{{ $kosId ?? 0 }}')" x-init="start()">
                     <div class="px-4 sm:px-5 pt-3" x-show="fresh > 0" x-cloak>
                         <button type="button" @click="reload()"
                                 class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-sky-500 hover:bg-sky-600 text-white px-4 py-2.5 text-xs font-bold transition shadow-sm shadow-sky-500/30">
@@ -143,7 +143,7 @@
                 </div>
 
                 {{-- Reply form --}}
-                <form method="POST" action="{{ route($prefix.'.messages.reply', array_filter(['pencari' => $tenant, 'kos' => $kosId ?? null])) }}"
+                <form method="POST" action="{{ route($prefix.'.messages.reply', array_filter(['tenant' => $tenant, 'kos' => $kosId ?? null])) }}"
                       class="border-t border-slate-100 px-4 sm:px-5 py-4 dark:border-white/10 bg-white dark:bg-surface-elevated"
                       x-data="{ submitting: false, message: '', applyQuick(text) { this.message = text; this.$refs.messageBox.focus(); } }" x-on:submit="submitting = true">
                     @csrf
