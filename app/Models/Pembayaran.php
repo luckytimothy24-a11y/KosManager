@@ -121,6 +121,56 @@ class Pembayaran extends Model
     }
 
     /**
+     * Cek apakah refund masih bisa di-approve (status requested).
+     */
+    public function isRefundApprovable(): bool
+    {
+        return $this->refund_status === self::REFUND_REQUESTED;
+    }
+
+    /**
+     * Cek apakah refund sudah di-approve tapi belum completed.
+     */
+    public function isRefundApproved(): bool
+    {
+        return $this->refund_status === self::REFUND_APPROVED;
+    }
+
+    /**
+     * Cek apakah refund ditolak.
+     */
+    public function isRefundRejected(): bool
+    {
+        return $this->refund_status === self::REFUND_REJECTED;
+    }
+
+    /**
+     * Cek apakah refund completed.
+     */
+    public function isRefundCompleted(): bool
+    {
+        return $this->refund_status === self::REFUND_COMPLETED;
+    }
+
+    /**
+     * Valid transisi status refund.
+     * - requested → approved | rejected
+     * - approved → completed TIDAK diizinkan pada Phase 4.0A
+     *   (menunggu mekanisme bukti transfer di fase berikutnya)
+     * - completed dan rejected adalah terminal
+     */
+    public function isValidRefundTransition(string $targetStatus): bool
+    {
+        $current = $this->refund_status;
+
+        if ($current === self::REFUND_REQUESTED) {
+            return in_array($targetStatus, [self::REFUND_APPROVED, self::REFUND_REJECTED]);
+        }
+
+        return false;
+    }
+
+    /**
      * Nominal yang diharapkan server (bukan request client).
      */
     public function expectedAmount(): float

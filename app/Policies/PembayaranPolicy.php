@@ -74,6 +74,65 @@ class PembayaranPolicy
         return false;
     }
 
+    /**
+     * Bolehkah user mengapprove refund ini.
+     * - SuperAdmin: selalu boleh.
+     * - Owner: harus pemilik kos terkait pembayaran.
+     * - Admin: boleh jika boleh akses kos.
+     */
+    public function approveRefund(User $user, Pembayaran $pembayaran): bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isOwner()) {
+            $kosOwnerId = $pembayaran->penghuni?->kamar?->kos?->owner_id
+                ?? $pembayaran->penghuni?->kos?->owner_id
+                ?? $pembayaran->booking?->kos?->owner_id;
+
+            return $kosOwnerId !== null && (int) $kosOwnerId === (int) $user->id;
+        }
+
+        if ($user->isAdmin()) {
+            $kosId = $pembayaran->penghuni?->kos_id;
+
+            return $kosId !== null && $user->canAccessKos((int) $kosId);
+        }
+
+        return false;
+    }
+
+    /**
+     * Bolehkah user menolak refund ini.
+     * - SuperAdmin: selalu boleh.
+     * - Owner: harus pemilik kos terkait pembayaran.
+     * - Admin: boleh jika boleh akses kos.
+     * - Hanya refund status 'requested' yang dapat ditolak.
+     */
+    public function rejectRefund(User $user, Pembayaran $pembayaran): bool
+    {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($user->isOwner()) {
+            $kosOwnerId = $pembayaran->penghuni?->kamar?->kos?->owner_id
+                ?? $pembayaran->penghuni?->kos?->owner_id
+                ?? $pembayaran->booking?->kos?->owner_id;
+
+            return $kosOwnerId !== null && (int) $kosOwnerId === (int) $user->id;
+        }
+
+        if ($user->isAdmin()) {
+            $kosId = $pembayaran->penghuni?->kos_id;
+
+            return $kosId !== null && $user->canAccessKos((int) $kosId);
+        }
+
+        return false;
+    }
+
     private function bookingScope(User $user, $booking): bool
     {
         if (! $booking) {
