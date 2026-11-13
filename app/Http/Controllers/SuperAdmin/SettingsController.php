@@ -19,8 +19,6 @@ class SettingsController extends Controller
         'late_fee_amount' => ['type' => 'integer', 'default' => 50000, 'group' => 'booking'],
         'commission.default_percent' => ['type' => 'json', 'default' => null, 'group' => 'commission'],
         'commission.default_fixed' => ['type' => 'json', 'default' => null, 'group' => 'commission'],
-        'commission_rate' => ['type' => 'integer', 'default' => 5, 'group' => 'commission'],
-        'service_fee_pencari' => ['type' => 'integer', 'default' => 10000, 'group' => 'commission'],
         'advertising_default_placement' => ['type' => 'string', 'default' => 'marketplace', 'group' => 'advertising'],
         'maintenance_mode' => ['type' => 'boolean', 'default' => false, 'group' => 'maintenance'],
         'maintenance_message' => ['type' => 'string', 'default' => '', 'group' => 'maintenance'],
@@ -124,8 +122,6 @@ class SettingsController extends Controller
             'late_fee_amount' => 'Nominal Denda Keterlambatan',
             'commission.default_percent' => 'Komisi Default (%)',
             'commission.default_fixed' => 'Komisi Default Fixed (Rp)',
-            'commission_rate' => 'Persentase Komisi Platform (%)',
-            'service_fee_pencari' => 'Biaya Layanan Pencari (Rp)',
         ];
 
         return $labels[$key] ?? $key;

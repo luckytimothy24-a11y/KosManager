@@ -8,10 +8,8 @@ use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kos;
-use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\User;
-use App\Models\WalletTransaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -57,7 +55,7 @@ class P0SecurityRegressionTest extends TestCase
 
     private function confirmedBooking(Kos $kos, Kamar $kamar, User $tenant, User $confirmer): Booking
     {
-        $booking = Booking::factory()->create([
+        return Booking::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
@@ -70,26 +68,6 @@ class P0SecurityRegressionTest extends TestCase
             'identity_confirmed_by' => $confirmer->id,
             'end_date' => now()->addDays(5)->toDateString(),
         ]);
-
-        $pembayaran = Pembayaran::factory()->create([
-            'booking_id' => $booking->id,
-            'penghuni_id' => null,
-            'tagihan_id' => null,
-            'amount' => $booking->price,
-            'payment_method' => 'qris',
-            'verification_status' => Pembayaran::STATUS_APPROVED,
-        ]);
-
-        WalletTransaction::create([
-            'owner_id' => $kos->owner_id,
-            'booking_id' => $booking->id,
-            'pembayaran_id' => $pembayaran->id,
-            'type' => 'escrow_in',
-            'amount' => (int) $booking->price,
-            'status' => 'pending',
-        ]);
-
-        return $booking;
     }
 
     private function penghuniInKos(Kos $kos, Kamar $kamar, User $user): Penghuni

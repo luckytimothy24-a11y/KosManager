@@ -9,7 +9,6 @@ use App\Models\CheckIn;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Penghuni;
-use App\Models\WalletTransaction;
 use App\Services\AuditLogService;
 use App\Services\BillingService;
 use App\Services\NotificationService;
@@ -151,11 +150,6 @@ class CheckInController extends Controller
                 $locked = $this->lockBooking($booking);
                 $this->validateBookingPrerequisites($locked, $request->user());
 
-                $hasPayment = $locked->hasApprovedPaymentInExpectedAmount();
-                $pendingCount = WalletTransaction::where('booking_id', $locked->id)->where('type', 'escrow_in')->where('status', 'pending')->count();
-                abort_unless($hasPayment, 400, 'Pembayaran booking belum diverifikasi.');
-                abort_unless($pendingCount === 1, 400, 'Escrow booking tidak valid.');
-
                 $kamar = $this->lockAndValidateKamar($locked);
 
                 $penghuni = $this->createPenghuni($locked, $kamar);
@@ -167,10 +161,7 @@ class CheckInController extends Controller
 
                 $this->createCheckInRecord($penghuni, $kamar, $request);
 
-                $settlement = app(\App\Services\EscrowService::class)->settleEscrow($locked);
-                abort_unless(($settlement['ok'] ?? false), 400, 'Settlement escrow gagal.');
-
-                // Booking completed SETELAH check-in dan settlement sukses.
+                // Booking completed SETELAH check-in sukses.
                 $this->completeBooking($locked);
 
                 // Update kamar status occupancy-aware

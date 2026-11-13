@@ -144,7 +144,6 @@ class PembayaranController extends Controller
                 // Booking payment → catat distribution (pending; ready setelah booking confirm).
                 if ($locked->booking_id) {
                     app(PaymentDistributionService::class)->recordFromApprovedPayment($locked);
-                    app(\App\Services\EscrowService::class)->holdEscrow($locked);
                 }
 
                 return true;
@@ -224,7 +223,6 @@ class PembayaranController extends Controller
             // Booking payment → catat distribution (status pending; ready setelah booking confirm).
             if ($locked->booking_id) {
                 app(PaymentDistributionService::class)->recordFromApprovedPayment($locked);
-                app(\App\Services\EscrowService::class)->holdEscrow($locked);
             }
         });
 

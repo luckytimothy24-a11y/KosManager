@@ -12,7 +12,6 @@ use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
-use App\Models\WalletTransaction;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -76,18 +75,6 @@ class BusinessFlowTest extends TestCase
         $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
         // Payment/approve booking TIDAK mengaktifkan tenant
         $this->assertDatabaseMissing('penghunis', ['user_id' => $tenant->id, 'status' => 'active']);
-
-        // 1a2. Escrow WIP: check-in mewajibkan 1 entri escrow pending.
-        // (lihat commit deferred(escrow); alur bayar-sebelum-approve belum
-        // menghasilkan entri escrow otomatis.)
-        WalletTransaction::create([
-            'owner_id' => $owner->id,
-            'booking_id' => $booking->id,
-            'pembayaran_id' => $payResult['pembayaran']->id,
-            'type' => 'escrow_in',
-            'amount' => (int) $payResult['pembayaran']->amount,
-            'status' => 'pending',
-        ]);
 
         // 1b. Tenant submit identity -> pending, then owner confirms (new flow: tenant cannot self-confirm)
         $this->actingAs($tenant)->post(route('tenant.checkin.identity.confirm', $booking), [

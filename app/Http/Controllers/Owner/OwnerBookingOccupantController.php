@@ -9,7 +9,6 @@ use App\Models\CheckIn;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Penghuni;
-use App\Models\WalletTransaction;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use App\Support\NotificationType;
@@ -140,16 +139,6 @@ class OwnerBookingOccupantController extends Controller
         abort_unless($occupant->status === BookingOccupant::STATUS_ACCEPTED, 400, 'Occupant belum accepted.');
         abort_unless($occupant->identityConfirmed(), 400, 'Identitas belum dikonfirmasi.');
         abort_unless($occupant->penghuni_id === null, 400, 'Occupant sudah check-in.');
-
-        $booking = $occupant->booking;
-        abort_unless($booking->hasApprovedPaymentInExpectedAmount(), 400, 'Pembayaran booking belum diverifikasi.');
-
-        $pendingEscrowCount = WalletTransaction::where('booking_id', $booking->id)
-            ->where('type', 'escrow_in')
-            ->where('status', 'pending')
-            ->count();
-
-        abort_unless($pendingEscrowCount === 1, 400, 'Escrow booking tidak valid.');
 
         $data = $request->validate([
             'notes' => ['nullable', 'string', 'max:1000'],
