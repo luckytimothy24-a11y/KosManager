@@ -31,20 +31,23 @@ class AdminMessageController extends Controller
 
         $threads = Message::with(['sender', 'receiver', 'kos'])
             ->whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->latest()
+            ->latest('id')
             ->limit(50)
             ->get()
             ->groupBy(function (Message $m) {
-                $ownerId = (int) ($m->kos->owner_id ?? 0);
+                $ownerId = (int) ($m->owner_id ?? $m->kos->owner_id ?? 0);
                 $otherId = (int) $m->sender_id === $ownerId ? (int) $m->receiver_id : (int) $m->sender_id;
 
                 return (int) $m->kos_id.'_'.$otherId;
             })
             ->map(function ($group) {
                 $latest = $group->first();
+                $ownerId = (int) ($latest->owner_id ?? $latest->kos->owner_id ?? 0);
 
                 return [
-                    'tenant_id' => (int) ($latest->sender_id === (int) ($latest->kos->owner_id ?? 0)
+                    'tenant_id' => (int) ($latest->sender_id === $ownerId
                         ? $latest->receiver_id : $latest->sender_id),
                     'kos_id' => (int) $latest->kos_id,
                     'kos_name' => $latest->kos?->name,
@@ -67,6 +70,7 @@ class AdminMessageController extends Controller
         $kosIds = $this->scopedKosIds($request);
 
         $linked = Message::whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($tenant) {
                 $q->where('sender_id', $tenant->id)->orWhere('receiver_id', $tenant->id);
             })
@@ -78,10 +82,12 @@ class AdminMessageController extends Controller
 
         $messages = Message::with('sender')
             ->whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($tenant) {
                 $q->where('sender_id', $tenant->id)->orWhere('receiver_id', $tenant->id);
             })
             ->latest()
+            ->latest('id')
             ->get()
             ->reverse()
             ->values();

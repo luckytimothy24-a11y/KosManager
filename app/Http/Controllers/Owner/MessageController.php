@@ -20,21 +20,19 @@ class MessageController extends Controller
     public function index()
     {
         $owner = auth()->user();
-        $kosIds = Kos::where('owner_id', $owner->id)->pluck('id');
 
+        // Identitas owner percakapan berasal dari kolom messages.owner_id —
+        // tidak lagi diturunkan dari kos.owner_id saat ini.
         $messages = Message::with('sender', 'receiver', 'kos')
-            ->whereIn('kos_id', $kosIds)
-            ->where(function ($q) use ($owner) {
-                $q->where('sender_id', $owner->id)->orWhere('receiver_id', $owner->id);
-            })
+            ->forOwner((int) $owner->id)
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate(25);
 
-        $totalUnread = Message::whereIn('kos_id', $kosIds)
-            ->where(function ($q) use ($owner) {
-                $q->where('sender_id', $owner->id)->orWhere('receiver_id', $owner->id);
-            })
-            ->whereNull('read_at')
+        // Hanya pesan masuk yang belum dibaca — balasan owner sendiri tidak
+        // boleh dihitung sebagai unread.
+        $totalUnread = Message::forOwner((int) $owner->id)
+            ->unread((int) $owner->id)
             ->count();
 
         $conversations = self::conversationList($messages, $owner);
@@ -43,16 +41,22 @@ class MessageController extends Controller
     }
 
     /**
-     * Daftar ringkas percakapan per (kos_id, tenant_id).
+     * Daftar ringkas percakapan per (kos_id, lawan bicara).
      */
     public static function conversationList($messages, User $owner)
     {
         return $messages
-            ->groupBy(fn (Message $m) => ((int) $m->kos_id).'_'.($m->sender_id === (int) $owner->id ? (int) $m->receiver_id : (int) $m->sender_id))
+            ->groupBy(function (Message $m) use ($owner) {
+                $conversationOwnerId = (int) ($m->owner_id ?? $owner->id);
+                $otherId = (int) $m->sender_id === $conversationOwnerId ? (int) $m->receiver_id : (int) $m->sender_id;
+
+                return ((int) $m->kos_id).'_'.$otherId;
+            })
             ->map(function ($group) use ($owner) {
                 $latest = $group->first();
                 $kosId = (int) $latest->kos_id;
-                $otherId = $latest->sender_id === (int) $owner->id ? (int) $latest->receiver_id : (int) $latest->sender_id;
+                $conversationOwnerId = (int) ($latest->owner_id ?? $owner->id);
+                $otherId = (int) $latest->sender_id === $conversationOwnerId ? (int) $latest->receiver_id : (int) $latest->sender_id;
 
                 return [
                     'tenant_id' => $otherId,
@@ -61,7 +65,7 @@ class MessageController extends Controller
                     'kos_name' => $latest->kos?->name ?? '-',
                     'last_message' => $latest->message,
                     'last_at' => $latest->created_at,
-                    'unread' => $group->filter(fn (Message $m) => $m->read_at === null)->count(),
+                    'unread' => $group->filter(fn (Message $m) => $m->read_at === null && (int) $m->receiver_id === (int) $owner->id)->count(),
                 ];
             })
             ->filter(fn (array $c) => $c['tenant_id'] > 0)
@@ -83,23 +87,26 @@ class MessageController extends Controller
 
         $messages = Message::with('sender', 'receiver', 'kos')
             ->whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate(25);
 
         $totalUnread = Message::whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->whereNull('read_at')
             ->count();
 
         $conversations = $messages
             ->groupBy(function (Message $m) {
-                $ownerId = (int) ($m->kos->owner_id ?? 0);
+                $ownerId = (int) ($m->owner_id ?? 0);
                 $otherId = (int) $m->sender_id === $ownerId ? (int) $m->receiver_id : (int) $m->sender_id;
 
                 return (int) $m->kos_id.'_'.$otherId;
             })
             ->map(function ($group) {
                 $latest = $group->first();
-                $ownerId = (int) ($latest->kos->owner_id ?? 0);
+                $ownerId = (int) ($latest->owner_id ?? 0);
                 $otherId = (int) $latest->sender_id === $ownerId ? (int) $latest->receiver_id : (int) $latest->sender_id;
                 $otherName = $otherId === (int) $latest->sender_id
                     ? ($latest->sender->name ?? '-')
@@ -135,6 +142,7 @@ class MessageController extends Controller
             : $admin->assignedKos()->pluck('kos.id');
 
         $linked = Message::whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($tenant) {
                 $q->where('sender_id', $tenant->id)->orWhere('receiver_id', $tenant->id);
             })
@@ -143,10 +151,12 @@ class MessageController extends Controller
 
         $messages = Message::with('sender', 'kos')
             ->whereIn('kos_id', $kosIds)
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($tenant) {
                 $q->where('sender_id', $tenant->id)->orWhere('receiver_id', $tenant->id);
             })
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get()
             ->reverse()
             ->values();
@@ -182,10 +192,11 @@ class MessageController extends Controller
             ->all();
 
         $threads = Message::with('sender', 'kos')
-            ->whereIn('kos_id', $kosIds)
+            ->forOwner((int) $owner->id)
             ->where('sender_id', '!=', $owner->id)
             ->whereNotIn('sender_id', $activeTenantIds)
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get()
             ->groupBy(fn (Message $m) => (int) $m->kos_id.'_'.(int) $m->sender_id)
             ->map(function ($group) {
@@ -217,7 +228,7 @@ class MessageController extends Controller
     public function show(Request $request, User $tenant)
     {
         $owner = auth()->user();
-        $kosIds = Kos::where('owner_id', $owner->id)->pluck('id');
+        $kosIds = $this->conversationKosIds($owner);
 
         $this->assertTenantLinked($tenant, $kosIds);
 
@@ -225,17 +236,18 @@ class MessageController extends Controller
         abort_unless($kosId, 403, 'Percakapan tidak ditemukan.');
 
         $messages = Message::with('sender', 'kos')
-            ->whereIn('kos_id', $kosIds)
+            ->forOwner((int) $owner->id)
             ->between((int) $owner->id, (int) $tenant->id)
             ->where('kos_id', $kosId)
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get()
             ->reverse()
             ->values();
 
         abort_unless($messages->isNotEmpty(), 404);
 
-        Message::whereIn('kos_id', $kosIds)
+        Message::forOwner((int) $owner->id)
             ->between((int) $owner->id, (int) $tenant->id)
             ->where('kos_id', $kosId)
             ->unread((int) $owner->id)
@@ -262,11 +274,9 @@ class MessageController extends Controller
         $context = compact('kos', 'penghuni', 'kamar', 'category', 'latestTagihan');
 
         $allMessages = Message::with('sender', 'receiver', 'kos')
-            ->whereIn('kos_id', $kosIds)
-            ->where(function ($q) use ($owner) {
-                $q->where('sender_id', $owner->id)->orWhere('receiver_id', $owner->id);
-            })
+            ->forOwner((int) $owner->id)
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->limit(50)
             ->get();
         $conversations = self::conversationList($allMessages, $owner);
@@ -280,7 +290,7 @@ class MessageController extends Controller
     public function latest(Request $request, User $tenant)
     {
         $owner = $request->user();
-        $kosIds = Kos::where('owner_id', $owner->id)->pluck('id');
+        $kosIds = $this->conversationKosIds($owner);
 
         $this->assertTenantLinked($tenant, $kosIds);
 
@@ -288,7 +298,7 @@ class MessageController extends Controller
         abort_unless($kosId, 403, 'Percakapan tidak ditemukan.');
 
         $since = (int) $request->input('since', 0);
-        $base = Message::whereIn('kos_id', $kosIds)
+        $base = Message::forOwner((int) $owner->id)
             ->between((int) $owner->id, (int) $tenant->id)
             ->where('kos_id', $kosId);
 
@@ -304,7 +314,7 @@ class MessageController extends Controller
     public function reply(Request $request, User $tenant)
     {
         $owner = $request->user();
-        $kosIds = Kos::where('owner_id', $owner->id)->pluck('id');
+        $kosIds = $this->conversationKosIds($owner);
 
         $this->assertTenantLinked($tenant, $kosIds);
 
@@ -318,6 +328,7 @@ class MessageController extends Controller
 
         Message::create([
             'kos_id' => (int) $kosId,
+            'owner_id' => $owner->id,
             'sender_id' => $owner->id,
             'receiver_id' => $tenant->id,
             'message' => $validated['message'],
@@ -345,8 +356,21 @@ class MessageController extends Controller
     }
 
     /**
-     * Tenant hanya dianggap terkait bila pernah bertukar pesan di salah satu
-     * kos milik owner saat ini.
+     * Daftar kos yang memiliki percakapan atas nama owner ini.
+     * Sumbernya kolom messages.owner_id, bukan kos.owner_id saat ini.
+     */
+    private function conversationKosIds(User $owner)
+    {
+        return Message::forOwner((int) $owner->id)
+            ->distinct()
+            ->pluck('kos_id')
+            ->filter()
+            ->values();
+    }
+
+    /**
+     * Tenant hanya dianggap terkait bila pernah bertukar pesan dalam
+     * percakapan milik owner ini (kolom messages.owner_id).
      */
     private function assertTenantLinked(User $tenant, $kosIds): void
     {
@@ -354,7 +378,7 @@ class MessageController extends Controller
             abort(403, 'Tenant tidak terkait dengan kos Anda.');
         }
 
-        $linked = Message::whereIn('kos_id', $kosIds)
+        $linked = Message::forOwner((int) auth()->id())
             ->between((int) $tenant->id, (int) auth()->id())
             ->exists();
 
@@ -363,14 +387,15 @@ class MessageController extends Controller
 
     /**
      * Pilih kos thread: query ?kos= > penghuni aktif tenant di kos owner >
-     * thread terbaru. Selalu di-scoped ke kos milik owner.
+     * thread terbaru. Selalu di-scoped ke percakapan milik owner ini.
      */
     private function resolveKosId(Request $request, User $owner, User $tenant, $kosIds): ?int
     {
         $requested = $request->query('kos') ?: $request->input('kos');
 
         if ($requested && $kosIds->contains((int) $requested)) {
-            $exists = Message::where('kos_id', (int) $requested)
+            $exists = Message::forOwner((int) $owner->id)
+                ->where('kos_id', (int) $requested)
                 ->between((int) $owner->id, (int) $tenant->id)
                 ->exists();
 
@@ -385,7 +410,8 @@ class MessageController extends Controller
             ->first();
 
         if ($penghuni) {
-            $exists = Message::where('kos_id', (int) $penghuni->kos_id)
+            $exists = Message::forOwner((int) $owner->id)
+                ->where('kos_id', (int) $penghuni->kos_id)
                 ->between((int) $owner->id, (int) $tenant->id)
                 ->exists();
 
@@ -394,9 +420,10 @@ class MessageController extends Controller
             }
         }
 
-        $latestKosId = Message::whereIn('kos_id', $kosIds)
+        $latestKosId = Message::forOwner((int) $owner->id)
             ->between((int) $owner->id, (int) $tenant->id)
             ->latest('created_at')
+            ->latest('id')
             ->value('kos_id');
 
         return $latestKosId ? (int) $latestKosId : null;

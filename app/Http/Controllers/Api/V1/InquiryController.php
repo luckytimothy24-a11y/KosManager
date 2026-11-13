@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Kos;
 use App\Models\Message;
+use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,11 +25,13 @@ class InquiryController extends Controller
     {
         $user = $request->user();
 
-        $threads = Message::with(['kos.owner'])
+        $threads = Message::with(['kos.owner', 'owner'])
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($user) {
                 $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id);
             })
             ->latest()
+            ->latest('id')
             ->get()
             ->groupBy('kos_id')
             ->map(function ($group) use ($user) {
@@ -37,7 +40,7 @@ class InquiryController extends Controller
                 return [
                     'kos_id' => (int) $latest->kos_id,
                     'kos_name' => $latest->kos?->name,
-                    'owner_name' => $latest->kos?->owner?->name,
+                    'owner_name' => $latest->owner?->name ?? $latest->kos?->owner?->name,
                     'last_message' => $latest->message,
                     'last_at' => $latest->created_at,
                     'unread' => $group->filter(fn ($m) => (int) $m->receiver_id === (int) $user->id && $m->read_at === null)->count(),
@@ -58,13 +61,18 @@ class InquiryController extends Controller
         $user = $request->user();
 
         abort_unless($kos->status === 'active', 404);
-        $owner = $kos->owner;
+
+        // Owner percakapan diambil dari pesan terakhir (messages.owner_id).
+        $owner = $this->conversationOwner($kos, (int) $user->id);
+
         abort_unless($owner && $owner->isOwner(), 403, 'Unauthorized.');
 
         $messages = Message::with('sender')
             ->forKos((int) $kos->id)
+            ->forOwner((int) $owner->id)
             ->between((int) $user->id, (int) $owner->id)
             ->latest()
+            ->latest('id')
             ->get()
             ->reverse()
             ->values();
@@ -72,6 +80,7 @@ class InquiryController extends Controller
         abort_unless($messages->isNotEmpty(), 404);
 
         Message::forKos((int) $kos->id)
+            ->forOwner((int) $owner->id)
             ->between((int) $user->id, (int) $owner->id)
             ->unread((int) $user->id)
             ->update(['read_at' => now()]);
@@ -101,6 +110,7 @@ class InquiryController extends Controller
         ]);
 
         $replied = Message::where('kos_id', $message->kos_id)
+            ->where('owner_id', $message->owner_id)
             ->where('sender_id', $message->receiver_id)
             ->where('id', '>', $message->id)
             ->exists();
@@ -127,7 +137,10 @@ class InquiryController extends Controller
         $user = $request->user();
 
         abort_unless($kos->status === 'active', 404);
-        $owner = $kos->owner;
+
+        // Lanjutkan thread dengan owner percakapan (messages.owner_id),
+        // bukan pemilik kos saat ini yang mungkin sudah berpindah.
+        $owner = $this->conversationOwner($kos, (int) $user->id);
         abort_unless($owner && $owner->isOwner(), 403, 'Unauthorized.');
         abort_if((int) $owner->id === (int) $user->id, 403, 'Unauthorized.');
 
@@ -138,6 +151,7 @@ class InquiryController extends Controller
 
         $message = Message::create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $user->id,
             'receiver_id' => $owner->id,
             'category' => $validated['category'] ?? null,
@@ -155,5 +169,22 @@ class InquiryController extends Controller
             'data' => ['id' => $message->id],
             'message' => 'Pertanyaan berhasil dikirim.',
         ], 201);
+    }
+
+    /**
+     * Owner percakapan untuk pasangan (tenant, kos): kolom `messages.owner_id`
+     * diutamakan; `kos.owner_id` hanya fallback untuk thread baru.
+     */
+    private function conversationOwner(Kos $kos, int $userId): ?User
+    {
+        $threadOwner = Message::forKos((int) $kos->id)
+            ->whereNotNull('owner_id')
+            ->where(function ($q) use ($userId) {
+                $q->where('sender_id', $userId)->orWhere('receiver_id', $userId);
+            })
+            ->latest('id')
+            ->first()?->owner;
+
+        return $threadOwner ?? $kos->owner;
     }
 }

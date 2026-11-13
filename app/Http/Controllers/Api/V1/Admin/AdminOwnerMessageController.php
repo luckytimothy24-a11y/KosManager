@@ -51,6 +51,7 @@ class AdminOwnerMessageController extends Controller
 
         $messages = Message::with('sender')
             ->where('kos_id', $kos->id)
+            ->where('owner_id', $owner->id)
             ->between((int) $admin->id, (int) $owner->id)
             ->orderBy('id')
             ->get()
@@ -78,6 +79,7 @@ class AdminOwnerMessageController extends Controller
 
         $message = Message::create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $admin->id,
             'receiver_id' => $owner->id,
             'category' => $validated['category'] ?? null,

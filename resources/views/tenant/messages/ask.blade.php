@@ -7,10 +7,10 @@
         <x-alert />
 
         <div class="card-surface p-5 flex items-center gap-4">
-            <span class="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 flex items-center justify-center text-lg font-bold uppercase shrink-0">{{ mb_substr($kos->owner?->name ?? '?', 0, 1) }}</span>
+            <span class="w-12 h-12 rounded-2xl bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 flex items-center justify-center text-lg font-bold uppercase shrink-0">{{ mb_substr($owner?->name ?? '?', 0, 1) }}</span>
             <div class="min-w-0">
                 <p class="text-sm font-bold text-slate-900 dark:text-slate-50 truncate">{{ $kos->name }}</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 truncate">Pemilik: {{ $kos->owner?->name ?? '-' }}</p>
+                <p class="text-xs text-slate-400 dark:text-slate-500 truncate">Pemilik: {{ $owner?->name ?? '-' }}</p>
             </div>
         </div>
 

@@ -22,6 +22,7 @@ class Message extends Model
 
     protected $fillable = [
         'kos_id',
+        'owner_id',
         'sender_id',
         'receiver_id',
         'category',
@@ -36,6 +37,15 @@ class Message extends Model
     public function kos()
     {
         return $this->belongsTo(Kos::class);
+    }
+
+    /**
+     * Owner yang menjadi lawan bicara pada percakapan ini.
+     * Disimpan per pesan agar tidak bergantung pada `kos.owner_id` saat ini.
+     */
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
     public function sender()
@@ -61,6 +71,11 @@ class Message extends Model
     public function scopeForKos(Builder $query, int $kosId): Builder
     {
         return $query->where('kos_id', $kosId);
+    }
+
+    public function scopeForOwner(Builder $query, int $ownerId): Builder
+    {
+        return $query->where('owner_id', $ownerId);
     }
 
     public function scopeUnread(Builder $query, int $userId): Builder
