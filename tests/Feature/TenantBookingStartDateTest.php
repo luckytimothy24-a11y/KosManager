@@ -106,7 +106,7 @@ class TenantBookingStartDateTest extends TestCase
         $this->assertStringNotContainsString('name="start_date" type="hidden"', $response->getContent());
         // Anti flash hitam: background eksplisit pada date input
         $response->assertSee('bg-white', false);
-        $response->assertSee('dark:bg-slate-700', false);
+        $response->assertSee('dark:bg-surface-elevated', false);
     }
 
     public function test_date_inputs_have_explicit_background_for_picker(): void
@@ -120,7 +120,7 @@ class TenantBookingStartDateTest extends TestCase
         // Kedua input date punya bg eksplisit (anti flash)
         $this->assertSame(2, substr_count($content, 'id="start-date"') + substr_count($content, 'id="end-date"'));
         $this->assertStringContainsString('id="start-date"', $content);
-        $this->assertStringContainsString('bg-white dark:bg-slate-700', $content);
+        $this->assertStringContainsString('bg-white dark:bg-surface-elevated', $content);
     }
 
     public function test_app_css_has_color_scheme_for_date_inputs(): void

@@ -104,11 +104,12 @@ class PaymentGatewayTest extends TestCase
         $this->assertSame('e_wallet', $driver->paymentMethod());
     }
 
-    public function test_fake_driver_resolution_throws(): void
+    public function test_unregistered_driver_resolution_throws(): void
     {
-        config(['payment-gateway.default' => 'midtrans']);
+        config(['payment-gateway.default' => 'fake']);
 
         $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('tidak terdaftar');
         PaymentGatewayManager::driver();
     }
 

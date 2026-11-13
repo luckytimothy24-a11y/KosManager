@@ -101,7 +101,7 @@ class ApiV1OwnerBookingTest extends TestCase
             ->assertHeader('content-type', 'application/json')
             ->assertJsonStructure([
                 'data' => [[
-                    'id', 'booking_code', 'pencari', 'kos', 'kamar', 'status',
+                    'id', 'booking_code', 'tenant', 'kos', 'kamar', 'status',
                 ]],
             ])
             ->assertJsonCount(1, 'data')
@@ -174,7 +174,7 @@ class ApiV1OwnerBookingTest extends TestCase
             ->assertHeader('content-type', 'application/json')
             ->assertJsonStructure([
                 'data' => [
-                    'id', 'booking_code', 'pencari', 'kos', 'kamar',
+                    'id', 'booking_code', 'tenant', 'kos', 'kamar',
                     'booking_date', 'start_date', 'end_date', 'rental_type', 'price', 'status', 'notes',
                 ],
             ])

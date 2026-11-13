@@ -8,11 +8,23 @@ use App\Models\Kontrak;
 use App\Models\Penghuni;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
+/**
+ * Kontrak perilaku transisi status kamar:
+ * - ada penghuni aktif  -> occupied
+ * - tanpa penghuni tapi ada booking approved aktif -> booked
+ * - tanpa keduanya      -> available
+ * - maintenance tidak pernah ditimpa
+ */
 class KamarStatusTransitionTest extends TestCase
 {
     use RefreshDatabase;
+
+    private User $owner;
+
+    private User $tenant;
 
     protected function setUp(): void
     {
@@ -21,9 +33,9 @@ class KamarStatusTransitionTest extends TestCase
         $this->tenant = User::factory()->create(['role' => 'pencari']);
     }
 
-    public function test_checkin_kamar_occupied_penghuni_aktif_satu(): void
+    private function kamarDenganPenghuniAktif(string $status = 'occupied'): array
     {
-        $kamar = Kamar::factory()->create();
+        $kamar = Kamar::factory()->create(['status' => $status]);
 
         $penghuni = Penghuni::create([
             'user_id' => $this->tenant->id,
@@ -32,72 +44,48 @@ class KamarStatusTransitionTest extends TestCase
             'status' => 'active',
         ]);
 
-        $freshOccupancy = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
+        return [$kamar, $penghuni];
+    }
 
-        if ($freshOccupancy >= (int) $kamar->capacity) {
-            $kamar->update(['status' => 'occupied']);
-        } elseif ($freshOccupancy === 0) {
-            $kamar->update(['status' => 'booked']);
-        } else {
-            $kamar->update(['status' => 'available']);
-        }
+    public function test_checkin_kamar_occupied_penghuni_aktif_satu(): void
+    {
+        [$kamar] = $this->kamarDenganPenghuniAktif('available');
 
-        $this->assertEquals('occupied', $kamar->status);
-        $this->assertEquals(1, Penghuni::where('kamar_id', $kamar->id)
+        $kamar->syncStatus();
+
+        $this->assertSame('occupied', $kamar->fresh()->status);
+        $this->assertSame(1, Penghuni::where('kamar_id', $kamar->id)
             ->where('status', 'active')
             ->count());
-
-        $penghuni->delete();
     }
 
     public function test_checkin_bug_terjadi_jika_booked_after_checkin(): void
     {
-        $kamar = Kamar::factory()->create();
+        [$kamar] = $this->kamarDenganPenghuniAktif('booked');
 
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar->kos_id,
-            'kamar_id' => $kamar->id,
-            'status' => 'active',
-        ]);
+        $kamar->syncStatus();
 
-        $freshOccupancy = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
-
-        if ($freshOccupancy >= (int) $kamar->capacity) {
-            $kamar->update(['status' => 'occupied']);
-        } elseif ($freshOccupancy === 0) {
-            $kamar->update(['status' => 'booked']);
-        } else {
-            $kamar->update(['status' => 'available']);
-        }
-
-        $this->assertEquals('occupied', $kamar->status,
+        $this->assertSame('occupied', $kamar->fresh()->status,
             'BUG REGRESI: check-in dengan 1 tenant capacity 1 HARUS "occupied", bukan "booked"');
-
-        $penghuni->delete();
     }
 
     public function test_expireoldkontrak_status_transition_dengan_booking(): void
     {
-        $kamar = Kamar::factory()->create();
+        Mail::fake();
+
+        [$kamar, $penghuni] = $this->kamarDenganPenghuniAktif('occupied');
 
         Kontrak::create([
-            'kamar_id' => $kamar->id,
-            'billing_mode' => 'personal',
-            'status' => 'expired',
-            'start_date' => now()->subMonths(1),
-            'end_date' => now()->subDays(1),
-        ]);
-
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
+            'contract_number' => 'KT-EXPIRE-1',
+            'penghuni_id' => $penghuni->id,
             'kos_id' => $kamar->kos_id,
             'kamar_id' => $kamar->id,
+            'rental_type' => 'monthly',
+            'rental_price' => $kamar->monthly_price,
+            'billing_mode' => 'personal',
             'status' => 'active',
+            'start_date' => now()->subMonths(2),
+            'end_date' => now()->subDay(),
         ]);
 
         Booking::factory()->create([
@@ -110,73 +98,36 @@ class KamarStatusTransitionTest extends TestCase
             'billing_mode' => 'personal',
         ]);
 
-        $remainingOccupancy = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
+        $this->artisan('kontrak:expire-old')->assertSuccessful();
 
-        if ($remainingOccupancy > 0) {
-            $kamar->update(['status' => 'occupied']);
-        } elseif ($kamar->status === 'occupied') {
-            $stillReserved = Booking::where('kamar_id', $kamar->id)
-                ->where('status', 'approved')
-                ->whereDate('end_date', '>=', today())
-                ->exists();
-            $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
-        }
-
-        $this->assertEquals('booked', $kamar->status,
-            'ExpireOldKontraks: setelah kontrak expired + penghuni dinon-aktif + booking approved → "booked"');
-
-        $penghuni->delete();
+        $this->assertSame('inactive', $penghuni->fresh()->status);
+        $this->assertSame('booked', $kamar->fresh()->status,
+            'ExpireOldKontraks: penghuni dinon-aktif + booking approved -> "booked"');
     }
 
     public function test_expireoldbookings_status_transition(): void
     {
-        $kamar = Kamar::factory()->create();
-
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar->kos_id,
-            'kamar_id' => $kamar->id,
-            'status' => 'active',
-        ]);
+        [$kamar] = $this->kamarDenganPenghuniAktif('occupied');
 
         Booking::factory()->create([
             'kamar_id' => $kamar->id,
             'user_id' => $this->tenant->id,
-            'status' => 'expired',
+            'status' => 'approved',
             'start_date' => now()->subMonths(1),
-            'end_date' => now()->subDays(1),
+            'end_date' => now()->subDay(),
             'rental_type' => 'monthly',
             'billing_mode' => 'personal',
         ]);
 
-        $remaining = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
+        $this->artisan('booking:expire-old')->assertSuccessful();
 
-        if ($remaining > 0) {
-            $kamar->update(['status' => 'occupied']);
-        } else {
-            $kamar->update(['status' => 'available']);
-        }
-
-        $this->assertEquals('occupied', $kamar->status,
-            'ExpireOldBookings: masih ada penghuni aktif setelah booking expired → "occupied"');
-
-        $penghuni->delete();
+        $this->assertSame('occupied', $kamar->fresh()->status,
+            'ExpireOldBookings: masih ada penghuni aktif -> "occupied"');
     }
 
     public function test_bookingstatusservice_status_transition(): void
     {
-        $kamar = Kamar::factory()->create();
-
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar->kos_id,
-            'kamar_id' => $kamar->id,
-            'status' => 'active',
-        ]);
+        $kamar = Kamar::factory()->create(['status' => 'available']);
 
         Booking::factory()->create([
             'kamar_id' => $kamar->id,
@@ -188,61 +139,15 @@ class KamarStatusTransitionTest extends TestCase
             'billing_mode' => 'personal',
         ]);
 
-        $occupancy = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
+        $kamar->syncStatus();
 
-        if ($occupancy > 0) {
-            $kamar->update(['status' => 'occupied']);
-            $penghuni->delete();
-
-            return;
-        }
-
-        $kamar2 = Kamar::factory()->create();
-
-        $penghuni2 = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar2->kos_id,
-            'kamar_id' => $kamar2->id,
-            'status' => 'active',
-        ]);
-        $penghuni2->save();
-
-        // Booking approved tanpa penghuni aktif
-        Booking::factory()->create([
-            'kamar_id' => $kamar2->id,
-            'user_id' => $this->tenant->id,
-            'status' => 'approved',
-            'start_date' => now()->addDay(),
-            'end_date' => now()->addMonths(3),
-            'rental_type' => 'monthly',
-            'billing_mode' => 'personal',
-        ]);
-
-        $stillReserved = Booking::where('kamar_id', $kamar2->id)
-            ->whereIn('status', ['approved'])
-            ->whereDate('end_date', '>=', today())
-            ->exists();
-
-        $kamar2->update(['status' => $stillReserved ? 'booked' : 'available']);
-
-        $this->assertEquals('booked', $kamar2->status,
-            'BookingStatusService: occupancy=0 tapi ada booking approved → "booked"');
-
-        $penghuni2->delete();
+        $this->assertSame('booked', $kamar->fresh()->status,
+            'BookingStatusService: occupancy=0 tapi ada booking approved -> "booked"');
     }
 
     public function test_checkout_via_checkoutcontroller(): void
     {
-        $kamar = Kamar::factory()->create();
-
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar->kos_id,
-            'kamar_id' => $kamar->id,
-            'status' => 'active',
-        ]);
+        [$kamar, $penghuni] = $this->kamarDenganPenghuniAktif('occupied');
 
         Booking::factory()->create([
             'kamar_id' => $kamar->id,
@@ -254,74 +159,29 @@ class KamarStatusTransitionTest extends TestCase
             'billing_mode' => 'personal',
         ]);
 
-        $remainingOccupancy = Penghuni::where('kamar_id', $kamar->id)
-            ->where('status', 'active')
-            ->count();
+        // Simulasi CheckOutController: penghuni dinon-aktifkan lalu syncStatus.
+        $penghuni->update(['status' => 'inactive']);
+        $kamar->syncStatus();
 
-        if ($remainingOccupancy > 0) {
-            $kamar->update(['status' => 'occupied']);
-        } else {
-            $stillReserved = Booking::where('kamar_id', $kamar->id)
-                ->where('status', 'approved')
-                ->whereDate('end_date', '>=', today())
-                ->exists();
-            $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
-        }
-
-        $this->assertEquals('booked', $kamar->status,
-            'Check-out (CheckOutController): remaining=0 + booking approved → "booked"');
-
-        $penghuni->delete();
+        $this->assertSame('booked', $kamar->fresh()->status,
+            'Check-out (CheckOutController): remaining=0 + booking approved -> "booked"');
     }
 
     public function test_owneractioncontroller_checkout_only_occupancy(): void
     {
-        $kamar = Kamar::factory()->create();
+        [$kamar, $penghuni] = $this->kamarDenganPenghuniAktif('occupied');
 
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar->kos_id,
-            'kamar_id' => $kamar->id,
-            'status' => 'active',
-        ]);
+        // Tanpa booking approved: check-out melepas kamar menjadi available.
+        $penghuni->update(['status' => 'inactive']);
+        $kamar->syncStatus();
 
-        Booking::factory()->create([
-            'kamar_id' => $kamar->id,
-            'user_id' => $this->tenant->id,
-            'status' => 'approved',
-            'start_date' => now()->addDay(),
-            'end_date' => now()->addMonths(3),
-            'rental_type' => 'monthly',
-            'billing_mode' => 'personal',
-        ]);
-
-        // Cek booking approved dengan end_date >= hari ini → status menjadi "booked"
-        $stillReserved = Booking::where('kamar_id', $kamar->id)
-            ->where('status', 'approved')
-            ->whereDate('end_date', '>=', today())
-            ->exists();
-
-        $kamar->update(['status' => $stillReserved ? 'booked' : 'available']);
-
-        $this->assertEquals('booked', $kamar->status,
-            'OwnerActionController check-out: ada booking approved dengan end_date >= hari ini → "booked"');
-
-        $penghuni->delete();
+        $this->assertSame('available', $kamar->fresh()->status,
+            'OwnerActionController check-out: tidak ada penghuni & booking -> "available"');
     }
 
     public function test_maintenance_status_does_not_change_after_checkout(): void
     {
-        $kamar = Kamar::factory()->create();
-
-        $penghuni = Penghuni::create([
-            'user_id' => $this->tenant->id,
-            'kos_id' => $kamar->kos_id,
-            'kamar_id' => $kamar->id,
-            'status' => 'active',
-        ]);
-
-        // Set kamar status menjadi maintenance
-        $kamar->update(['status' => 'maintenance']);
+        [$kamar, $penghuni] = $this->kamarDenganPenghuniAktif('maintenance');
 
         Booking::factory()->create([
             'kamar_id' => $kamar->id,
@@ -333,13 +193,10 @@ class KamarStatusTransitionTest extends TestCase
             'billing_mode' => 'personal',
         ]);
 
-        // Simulasi check-out: penghuni dinon-aktifkan, tapi kamar status harus tetap maintenance
         $penghuni->update(['status' => 'inactive']);
+        $kamar->syncStatus();
 
-        // Kamar maintenance tetap maintenance, tidak berubah menjadi occupied/available/booked
-        $this->assertEquals('maintenance', $kamar->status,
-            'Kamar status maintenance tidak berubah setelah check-out penghuni dinon-aktif');
-
-        $penghuni->delete();
+        $this->assertSame('maintenance', $kamar->fresh()->status,
+            'Kamar maintenance tidak berubah setelah check-out penghuni');
     }
 }

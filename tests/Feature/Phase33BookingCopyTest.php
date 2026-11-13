@@ -9,45 +9,62 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * Copy halaman booking mengikuti kebijakan satu kamar = satu penghuni.
+ * Patungan/multi-occupant sudah dihapus dari produk.
+ */
 class Phase33BookingCopyTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_booking_form_shows_human_readable_occupant_label(): void
+    public function test_booking_form_shows_single_occupant_copy(): void
     {
         $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
-        Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 3, 'billing_mode' => 'shared', 'monthly_price' => 1000000]);
+        Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 1, 'billing_mode' => 'personal', 'monthly_price' => 1000000]);
+
         $res = $this->actingAs($tenant)->get(route('tenant.booking.create', ['kos_id' => $kos->id]));
+
         $res->assertOk();
-        $res->assertSee('Berapa orang yang akan tinggal?');
-        $res->assertSee('Kamar bisa diisi bersama');
-        $res->assertSee('Pembayaran kamar');
-        $res->assertSee('Saya tanggung sendiri');
-        $res->assertSee('Dibagi dengan penghuni lain');
-        $res->assertSee('Biaya kamar akan dibagi sesuai jumlah penghuni.');
-        $res->assertSee('Total harga kamar');
-        // Ensure visible help for multi-occupant exists (hidden but in HTML)
-        $res->assertSee('Setelah booking dibuat, kamu dapat mengundang penghuni lain untuk bergabung.');
-        // Backend values still present as input values (not as visible headings)
+        $res->assertSee('Jumlah Penghuni');
+        $res->assertSee('satu penghuni');
+        $res->assertSee('Patungan tidak lagi didukung.');
+        $res->assertSee('Pembayaran');
+        $res->assertSee('Biaya sewa');
+        $res->assertSee('DP dibayar saat booking');
+        // Nilai backend tetap dikirim sebagai hidden input.
         $this->assertStringContainsString('name="requested_occupants"', $res->getContent());
         $this->assertStringContainsString('name="billing_mode"', $res->getContent());
+        $this->assertStringContainsString('value="personal"', $res->getContent());
     }
 
-    public function test_booking_show_displays_human_copy(): void
+    public function test_booking_show_displays_single_occupant_copy(): void
     {
         $tenant = User::factory()->create(['role' => 'pencari']);
         $owner = User::factory()->create(['role' => 'owner']);
         $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
-        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 3, 'billing_mode' => 'shared', 'monthly_price' => 1000000]);
-        $booking = Booking::factory()->create(['user_id' => $tenant->id, 'kos_id' => $kos->id, 'kamar_id' => $kamar->id, 'status' => 'approved', 'requested_occupants' => 2, 'billing_mode' => 'shared', 'start_date' => now()->addDays(1), 'end_date' => now()->addMonths(1), 'rental_type' => 'monthly', 'price' => 1000000]);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available', 'capacity' => 1, 'billing_mode' => 'personal', 'monthly_price' => 1000000]);
+        $booking = Booking::factory()->create([
+            'user_id' => $tenant->id,
+            'kos_id' => $kos->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'approved',
+            'requested_occupants' => 1,
+            'billing_mode' => 'personal',
+            'start_date' => now()->addDays(1),
+            'end_date' => now()->addMonths(1),
+            'rental_type' => 'monthly',
+            'price' => 1000000,
+        ]);
+
         $res = $this->actingAs($tenant)->get(route('tenant.booking.show', $booking));
+
         $res->assertOk();
-        $res->assertSee('Jumlah penghuni');
-        $res->assertSee('2 orang');
+        $res->assertSee('Penghuni');
+        $res->assertSee('1 orang (satu kamar untuk satu penghuni)');
         $res->assertSee('Pembayaran');
-        $res->assertSee('Dibagi dengan penghuni lain');
+        $res->assertSee('Tagihan pribadi');
         $res->assertSee('Harga sewa');
     }
 

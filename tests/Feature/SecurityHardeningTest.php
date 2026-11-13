@@ -133,6 +133,9 @@ class SecurityHardeningTest extends TestCase
             'start_date' => now()->addDays(5)->toDateString(),
             'end_date' => now()->addDays(10)->toDateString(),
             'rental_type' => 'daily',
+            'identity_number' => '3201234567890001',
+            'phone' => '08123456789',
+            'address' => 'Jl. Test No 1',
         ]);
 
         $response->assertSessionHasErrors('kamar_id');
@@ -158,7 +161,7 @@ class SecurityHardeningTest extends TestCase
         $this->assertDatabaseCount('bookings', 0);
     }
 
-    public function test_cancelling_approved_booking_frees_the_kamar(): void
+    public function test_cancelling_approved_booking_creates_request_and_keeps_reservation(): void
     {
         $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create();
@@ -172,8 +175,14 @@ class SecurityHardeningTest extends TestCase
 
         $this->actingAs($tenant)->post("/tenant/booking/{$booking->id}/cancel")->assertRedirect();
 
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
-        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'available']);
+        // Pembatalan butuh approval owner; booking & reservasi belum dilepas.
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'status' => 'booked']);
+        $this->assertDatabaseHas('booking_cancellation_requests', [
+            'booking_id' => $booking->id,
+            'requested_by' => $tenant->id,
+            'status' => 'pending',
+        ]);
     }
 
     public function test_rejected_payment_resets_tagihan_and_cannot_be_verified_afterwards(): void

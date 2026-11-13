@@ -27,7 +27,8 @@ class P8Batch2OverdueIdempotencyTest extends TestCase
         $this->artisan('tagihan:mark-overdue')->assertSuccessful();
 
         $this->assertDatabaseHas('tagihans', ['id' => $tagihan->id, 'status' => 'overdue']);
-        Mail::assertQueued(KosManagerMail::class, 1);
+        // Dua email: tenant + owner kos.
+        Mail::assertQueued(KosManagerMail::class, 2);
     }
 
     public function test_due_date_today_is_not_marked_overdue(): void
@@ -132,8 +133,8 @@ class P8Batch2OverdueIdempotencyTest extends TestCase
         $this->artisan('tagihan:mark-overdue')->assertSuccessful();
 
         $this->assertDatabaseHas('tagihans', ['id' => $tagihan->id, 'status' => 'overdue']);
-        // Hanya satu notifikasi (bukan dua).
-        Mail::assertQueued(KosManagerMail::class, 1);
+        // Hanya satu notifikasi per penerima (tenant + owner), bukan dua kali.
+        Mail::assertQueued(KosManagerMail::class, 2);
     }
 
     public function test_concurrent_style_transition_sends_single_notification(): void

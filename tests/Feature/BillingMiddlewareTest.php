@@ -67,7 +67,7 @@ class BillingMiddlewareTest extends TestCase
         $response = $this->actingAs($tenant)->get('/tenant/kos');
         // Should either be redirected with error or show 403
         $response->assertStatus(302) // redirect
-            ->assertSessionHas('error', 'Anda memiliki tagihan yang belum dibayar');
+            ->assertSessionHas('error', 'Anda memiliki tagihan yang belum dibayar. Silakan lunasi terlebih dahulu.');
     }
 
     /** @test */

@@ -31,7 +31,7 @@ class BookingStateRaceTest extends TestCase
         $this->kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'status' => 'available']);
     }
 
-    public function test_double_cancel_frees_kamar_once_and_second_attempt_is_blocked(): void
+    public function test_double_cancel_request_creates_single_pending_request(): void
     {
         $this->kamar->update(['status' => 'booked']);
 
@@ -46,15 +46,19 @@ class BookingStateRaceTest extends TestCase
         $first->assertRedirect();
         $first->assertSessionHas('success');
 
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
-        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'available']);
+        // Booking belum dibatalkan: menunggu approval owner. Reservasi tetap dipegang.
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'booked']);
+        $this->assertDatabaseCount('booking_cancellation_requests', 1);
 
         $second = $this->actingAs($this->tenant)->post(route('tenant.booking.cancel', $booking));
 
-        $second->assertStatus(403);
+        $second->assertRedirect();
+        $second->assertSessionHas('error');
 
-        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'cancelled']);
-        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'available']);
+        $this->assertDatabaseHas('bookings', ['id' => $booking->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('kamar', ['id' => $this->kamar->id, 'status' => 'booked']);
+        $this->assertDatabaseCount('booking_cancellation_requests', 1);
     }
 
     public function test_completed_booking_cannot_be_cancelled_by_tenant(): void

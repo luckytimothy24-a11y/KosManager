@@ -58,12 +58,17 @@ class KamarCapacityTest extends TestCase
         ], $overrides);
     }
 
-    public function test_kamar_can_be_created_with_capacity(): void
+    public function test_kamar_is_created_with_capacity_one(): void
     {
-        $response = $this->actingAs($this->owner)->post(route('owner.kamar.store'), $this->validPayload(['capacity' => 3]));
+        $response = $this->actingAs($this->owner)->post(route('owner.kamar.store'), $this->validPayload());
 
         $response->assertRedirect(route('owner.kamar.index'));
-        $this->assertDatabaseHas('kamar', ['kos_id' => $this->kos->id, 'room_number' => '101', 'capacity' => 3]);
+        $this->assertDatabaseHas('kamar', [
+            'kos_id' => $this->kos->id,
+            'room_number' => '101',
+            'capacity' => 1,
+            'billing_mode' => 'personal',
+        ]);
     }
 
     public function test_kamar_defaults_capacity_to_one(): void
@@ -80,14 +85,20 @@ class KamarCapacityTest extends TestCase
         $response->assertSessionHasErrors('capacity');
     }
 
-    public function test_kamar_capacity_must_not_exceed_maximum(): void
+    public function test_kamar_capacity_above_one_is_rejected(): void
     {
-        $response = $this->actingAs($this->owner)->post(route('owner.kamar.store'), $this->validPayload(['capacity' => 21]));
+        foreach ([2, 21] as $capacity) {
+            $response = $this->actingAs($this->owner)->post(route('owner.kamar.store'), $this->validPayload([
+                'room_number' => 'R-'.$capacity,
+                'capacity' => $capacity,
+            ]));
 
-        $response->assertSessionHasErrors('capacity');
+            $response->assertSessionHasErrors('capacity');
+            $this->assertDatabaseMissing('kamar', ['room_number' => 'R-'.$capacity]);
+        }
     }
 
-    public function test_kamar_can_be_updated_with_capacity(): void
+    public function test_kamar_capacity_cannot_be_updated_above_one(): void
     {
         $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 1]);
 
@@ -96,26 +107,23 @@ class KamarCapacityTest extends TestCase
             'capacity' => 4,
         ]));
 
-        $response->assertRedirect(route('owner.kamar.index'));
-        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'capacity' => 4]);
+        $response->assertSessionHasErrors('capacity');
+        $this->assertDatabaseHas('kamar', ['id' => $kamar->id, 'capacity' => 1]);
     }
 
-    public function test_owner_can_add_penghuni_until_capacity_full(): void
+    public function test_owner_can_add_only_one_penghuni(): void
     {
-        $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 2, 'status' => 'available']);
+        $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 1, 'status' => 'available']);
         $first = User::factory()->create(['role' => 'pencari']);
         $second = User::factory()->create(['role' => 'pencari']);
-        $third = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($first))
             ->assertRedirect(route('owner.kamar.show', $kamar));
-        $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($second))
-            ->assertRedirect(route('owner.kamar.show', $kamar));
 
-        $response = $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($third));
+        $response = $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($second));
 
         $response->assertStatus(400);
-        $this->assertDatabaseCount('penghunis', 2);
+        $this->assertDatabaseCount('penghunis', 1);
     }
 
     public function test_add_penghuni_creates_penghuni_and_active_kontrak(): void
@@ -143,7 +151,7 @@ class KamarCapacityTest extends TestCase
 
     public function test_cannot_add_same_tenant_twice(): void
     {
-        $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 2]);
+        $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 1]);
         $tenant = User::factory()->create(['role' => 'pencari']);
 
         $this->actingAs($this->owner)->post(route('owner.kamar.add-penghuni', $kamar), $this->addPenghuniPayload($tenant))
@@ -211,12 +219,13 @@ class KamarCapacityTest extends TestCase
 
     public function test_owner_can_view_capacity_on_kamar_show(): void
     {
-        $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 3]);
+        $kamar = Kamar::factory()->create(['kos_id' => $this->kos->id, 'capacity' => 1]);
 
         $response = $this->actingAs($this->owner)->get(route('owner.kamar.show', $kamar));
 
         $response->assertOk();
-        $response->assertSee('Kapasitas');
-        $response->assertSee('0 / 3');
+        $response->assertSee('Kapasitas maksimal');
+        $response->assertSee('1 Orang');
+        $response->assertSee('0 Penghuni');
     }
 }

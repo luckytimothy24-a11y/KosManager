@@ -87,7 +87,7 @@ class PhaseBIntegrationTest extends TestCase
         $this->assertEquals('billing_mode_not_allowed', $result['error']);
     }
 
-    public function test_booking_shared_room_shared_pass(): void
+    public function test_booking_shared_room_shared_rejected(): void
     {
         $kamar = $this->kamar(['billing_mode' => 'shared']);
         $svc = app(BookingService::class);
@@ -98,8 +98,8 @@ class PhaseBIntegrationTest extends TestCase
             'rental_type' => 'monthly',
             'billing_mode' => 'shared',
         ], $this->tenantA->id);
-        $this->assertTrue($result['ok']);
-        $this->assertEquals('shared', $result['booking']->billing_mode);
+        $this->assertFalse($result['ok']);
+        $this->assertEquals('billing_mode_not_allowed', $result['error']);
     }
 
     public function test_booking_shared_room_personal_pass(): void

@@ -288,23 +288,26 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
     {
         [$owner, $tenant, $kos, $kamar, $penghuni, $kontrak] = $this->createActiveStay('available');
 
-        // Existing approved future booking 2026-10-10 .. 2026-10-20.
+        // Existing approved future booking: hari ini +10 .. +20.
+        $existingStart = today()->addDays(10);
+        $existingEnd = today()->addDays(20);
         Booking::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
             'status' => 'approved',
-            'start_date' => '2026-10-10',
-            'end_date' => '2026-10-20',
+            'start_date' => $existingStart,
+            'end_date' => $existingEnd,
         ]);
         $kamar->update(['status' => 'booked']);
 
-        // Requested 2026-10-15 .. 2026-10-25 overlaps -> REJECT.
+        // Requested +15 .. +25 overlaps -> REJECT.
+        $requestedStart = today()->addDays(15);
         $response = $this->actingAs($tenant)->post(route('tenant.booking.store'), [
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
-            'start_date' => '2026-10-15',
-            'end_date' => '2026-10-25',
+            'start_date' => $requestedStart->toDateString(),
+            'end_date' => today()->addDays(25)->toDateString(),
             'rental_type' => 'monthly',
             'identity_number' => '3201234567890001',
             'phone' => '08123456789',
@@ -313,7 +316,7 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
 
         $response->assertSessionHasErrors('kamar_id');
         $this->assertFalse(Booking::where('user_id', $tenant->id)
-            ->where('start_date', '2026-10-15')
+            ->whereDate('start_date', $requestedStart)
             ->exists());
     }
 
@@ -326,16 +329,16 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
             'status' => 'approved',
-            'start_date' => '2026-10-10',
-            'end_date' => '2026-10-20',
+            'start_date' => today()->addDays(10),
+            'end_date' => today()->addDays(20),
         ]);
 
         $tenantB = User::factory()->create(['role' => 'pencari']);
         $response = $this->actingAs($tenantB)->post(route('tenant.booking.store'), [
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
-            'start_date' => '2026-11-01',
-            'end_date' => '2026-11-20',
+            'start_date' => today()->addDays(30)->toDateString(),
+            'end_date' => today()->addDays(50)->toDateString(),
             'rental_type' => 'monthly',
             'identity_number' => '3201234567890002',
             'phone' => '08123456789',
@@ -445,7 +448,12 @@ class P8Batch7CheckoutFutureBookingSchedulerTest extends TestCase
     {
         Mail::fake();
 
-        [$owner, $tenant, $kos, $kamar, $penghuni, $kontrak] = $this->createActiveStay('booked');
+        // Kamar sudah direservasi (booked) tanpa penghuni aktif.
+        $owner = User::factory()->create(['role' => 'owner']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
+        $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'booked']);
+
         $staleBooking = Booking::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,

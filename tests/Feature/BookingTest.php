@@ -175,7 +175,7 @@ class BookingTest extends TestCase
         $response->assertSessionHasErrors('requested_occupants');
     }
 
-    public function test_booking_shared_allows_multiple_occupants(): void
+    public function test_booking_shared_is_rejected(): void
     {
         // Patungan/multi DIHAPUS — shared booking ditolak
         $kamar = Kamar::factory()->create([
