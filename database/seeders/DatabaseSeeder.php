@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
 
         if (! app()->environment('production')) {
             array_splice($seeders, 4, 0, [PartnerSeeder::class, AdvertisingSeeder::class]);
-            array_splice($seeders, -1, 0, [DemoDataSeeder::class, ShowcaseSeeder::class]);
+            array_splice($seeders, -1, 0, [DemoDataSeeder::class, ShowcaseSeeder::class, MarketplaceDemoSeeder::class]);
         }
 
         return $seeders;

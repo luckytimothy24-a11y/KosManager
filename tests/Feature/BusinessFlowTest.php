@@ -31,7 +31,7 @@ class BusinessFlowTest extends TestCase
 
         $owner = User::factory()->create(['role' => 'owner']);
         $tenant = User::factory()->create(['role' => 'pencari']);
-        $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
+        $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active', 'auto_billing_enabled' => false]);
         $kamar = Kamar::factory()->create([
             'kos_id' => $kos->id,
             'status' => 'available',
