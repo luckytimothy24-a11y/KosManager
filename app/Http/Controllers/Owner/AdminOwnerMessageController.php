@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 /**
  * Komunikasi operasional Admin ↔ Owner atas kos assigned.
  *
- * REUSE tabel `messages` existing (kos_id, sender_id, receiver_id, message, read_at).
+ * REUSE tabel `messages` existing (kos_id, owner_id, sender_id, receiver_id, message, read_at).
  * Admin ≠ Owner Management — hanya contact + chat operasional.
  * Scope: admin hanya melihat/kirim ke owner dari assignedKos().
  */
@@ -39,6 +39,7 @@ class AdminOwnerMessageController extends Controller
             ->map(function (Kos $kos) use ($admin) {
                 $owner = $kos->owner;
                 $unread = Message::where('kos_id', $kos->id)
+                    ->where('owner_id', $owner->id)
                     ->where('receiver_id', $admin->id)
                     ->where('sender_id', $owner->id)
                     ->whereNull('read_at')
@@ -67,14 +68,17 @@ class AdminOwnerMessageController extends Controller
 
         $messages = Message::with('sender', 'receiver')
             ->where('kos_id', $kos->id)
+            ->where('owner_id', $owner->id)
             ->between((int) $admin->id, (int) $owner->id)
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get()
             ->reverse()
             ->values();
 
         // Tandai pesan masuk dari owner sebagai dibaca.
         Message::where('kos_id', $kos->id)
+            ->where('owner_id', $owner->id)
             ->where('sender_id', $owner->id)
             ->where('receiver_id', $admin->id)
             ->whereNull('read_at')
@@ -99,6 +103,7 @@ class AdminOwnerMessageController extends Controller
 
         Message::create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $admin->id,
             'receiver_id' => $owner->id,
             'category' => $validated['category'] ?? null,

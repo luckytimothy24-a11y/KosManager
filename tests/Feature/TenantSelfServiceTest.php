@@ -7,6 +7,7 @@ use App\Models\DamageReport;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
+use App\Models\Message;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
@@ -224,6 +225,14 @@ class TenantSelfServiceTest extends TestCase
         $this->postJson(route('api.v1.kos.inquiry.store', $kos), ['message' => 'Ada kamar kosong?'])
             ->assertCreated();
 
+        $this->assertDatabaseHas('messages', [
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seeker->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Ada kamar kosong?',
+        ]);
+
         $this->getJson(route('api.v1.inquiries.index'))
             ->assertOk()
             ->assertJsonPath('data.0.kos_id', $kos->id);
@@ -231,6 +240,39 @@ class TenantSelfServiceTest extends TestCase
         $this->getJson(route('api.v1.inquiries.show', $kos))
             ->assertOk()
             ->assertJsonPath('data.0.message', 'Ada kamar kosong?');
+    }
+
+    public function test_api_inquiry_reply_after_ownership_transfer_stays_with_conversation_owner(): void
+    {
+        $owner = User::factory()->create(['role' => 'owner']);
+        $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
+        $seeker = User::factory()->create(['role' => 'pencari']);
+        Message::factory()->create([
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seeker->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Pertanyaan sebelum owner berganti',
+        ]);
+
+        $newOwner = User::factory()->create(['role' => 'owner']);
+        $kos->update(['owner_id' => $newOwner->id]);
+
+        Sanctum::actingAs($seeker);
+        $this->postJson(route('api.v1.kos.inquiry.store', $kos), ['message' => 'Lanjutan ke owner lama'])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('messages', [
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seeker->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Lanjutan ke owner lama',
+        ]);
+        $this->assertDatabaseMissing('messages', [
+            'kos_id' => $kos->id,
+            'owner_id' => $newOwner->id,
+        ]);
     }
 
     public function test_api_damage_flow_with_isolation(): void

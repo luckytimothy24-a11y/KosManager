@@ -22,7 +22,7 @@
                                 <x-chat-list-item
                                     :href="route('tenant.inquiries.show', $thread['kos'])"
                                     :name="$thread['kos']->name"
-                                    :context="$thread['kos']->owner?->name"
+                                    :context="$thread['owner']?->name ?? $thread['kos']->owner?->name"
                                     :snippet="\Illuminate\Support\Str::limit($thread['last_message'] ?? '', 48)"
                                     :time="$thread['last_at']?->diffForHumans()"
                                     :unread="$thread['unread']" />

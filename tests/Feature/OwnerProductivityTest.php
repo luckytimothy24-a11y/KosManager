@@ -161,6 +161,7 @@ class OwnerProductivityTest extends TestCase
         ]);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Halo.',
@@ -172,6 +173,14 @@ class OwnerProductivityTest extends TestCase
 
         $this->postJson(route('api.v1.owner.messages.reply', $tenant), ['message' => 'Halo juga.'])
             ->assertCreated();
+
+        $this->assertDatabaseHas('messages', [
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $owner->id,
+            'receiver_id' => $tenant->id,
+            'message' => 'Halo juga.',
+        ]);
 
         // Tenant lain / unrelated ditolak.
         $stranger = User::factory()->create(['role' => 'pencari']);
@@ -204,6 +213,7 @@ class OwnerProductivityTest extends TestCase
         [$tenant, $kos] = $this->makeStay($owner);
         $m1 = Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Satu.',
@@ -214,6 +224,7 @@ class OwnerProductivityTest extends TestCase
 
         $m2 = Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Dua.',
@@ -241,6 +252,7 @@ class OwnerProductivityTest extends TestCase
         // Halaman thread memuat skrip polling + pil.
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Halo.',

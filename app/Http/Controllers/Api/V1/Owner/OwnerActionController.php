@@ -305,13 +305,19 @@ class OwnerActionController extends Controller
     public function replyMessage(Request $request, User $tenant): JsonResponse
     {
         $owner = $request->user();
-        $kosIds = Kos::where('owner_id', $owner->id)->pluck('id');
+
+        // Kos thread berasal dari percakapan milik owner ini (messages.owner_id).
+        $kosIds = Message::forOwner((int) $owner->id)
+            ->distinct()
+            ->pluck('kos_id')
+            ->filter()
+            ->values();
 
         if ($kosIds->isEmpty()) {
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $linked = Message::whereIn('kos_id', $kosIds)
+        $linked = Message::forOwner((int) $owner->id)
             ->between((int) $tenant->id, (int) $owner->id)
             ->exists();
 
@@ -329,12 +335,14 @@ class OwnerActionController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        if (! $kosId || ! Message::where('kos_id', (int) $kosId)
+        if (! $kosId || ! Message::forOwner((int) $owner->id)
+            ->where('kos_id', (int) $kosId)
             ->between((int) $owner->id, (int) $tenant->id)
             ->exists()) {
-            $kosId = Message::whereIn('kos_id', $kosIds)
+            $kosId = Message::forOwner((int) $owner->id)
                 ->between((int) $owner->id, (int) $tenant->id)
                 ->latest('created_at')
+                ->latest('id')
                 ->value('kos_id');
         }
 
@@ -344,6 +352,7 @@ class OwnerActionController extends Controller
 
         $message = Message::create([
             'kos_id' => (int) $kosId,
+            'owner_id' => $owner->id,
             'sender_id' => $owner->id,
             'receiver_id' => $tenant->id,
             'message' => $validated['message'],

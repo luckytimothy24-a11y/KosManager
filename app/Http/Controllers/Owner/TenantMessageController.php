@@ -7,6 +7,7 @@ use App\Http\Requests\StoreMessageRequest;
 use App\Models\Kos;
 use App\Models\Message;
 use App\Models\Penghuni;
+use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
@@ -25,9 +26,10 @@ class TenantMessageController extends Controller
             ->with(['kos.owner', 'kamar'])
             ->get();
 
-        $messagedKosIds = Message::where(function ($q) use ($user) {
-            $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id);
-        })->pluck('kos_id')->unique()->filter();
+        $messagedKosIds = Message::whereNotNull('owner_id')
+            ->where(function ($q) use ($user) {
+                $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id);
+            })->pluck('kos_id')->unique()->filter();
 
         $kosIds = $penghunis->pluck('kos_id')->merge($messagedKosIds)->unique()->filter()->values();
 
@@ -40,8 +42,9 @@ class TenantMessageController extends Controller
         if ($kosIds->isNotEmpty()) {
             $kosList = Kos::with('owner')->whereIn('id', $kosIds)->get()->keyBy('id');
 
-            $messagesByKos = Message::with('sender')
+            $messagesByKos = Message::with(['sender', 'owner'])
                 ->whereIn('kos_id', $kosIds)
+                ->whereNotNull('owner_id')
                 ->where(function ($q) use ($user) {
                     $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id);
                 })
@@ -51,12 +54,20 @@ class TenantMessageController extends Controller
 
             foreach ($kosIds as $kosId) {
                 $kosItem = $kosList->get($kosId);
-                if (! $kosItem || ! $kosItem->owner) {
+                if (! $kosItem) {
                     continue;
                 }
 
                 $group = ($messagesByKos->get($kosId) ?? collect())
-                    ->filter(fn (Message $m) => $this->involvesUserAndOwner($m, $user->id, (int) $kosItem->owner->id));
+                    ->filter(fn (Message $m) => $this->involvesUserAndOwner($m, $user->id, (int) ($m->owner_id ?? 0)));
+
+                // Owner percakapan berasal dari kolom messages.owner_id.
+                // Fallback ke pemilik kos hanya untuk hunian aktif tanpa pesan.
+                $threadOwner = $group->last()?->owner ?? $kosItem->owner;
+
+                if (! $threadOwner) {
+                    continue;
+                }
 
                 $isActiveStay = $penghunis->contains('kos_id', $kosItem->id);
                 if ($group->isEmpty() && ! $isActiveStay) {
@@ -67,7 +78,7 @@ class TenantMessageController extends Controller
 
                 $threads->push([
                     'kos' => $kosItem,
-                    'owner' => $kosItem->owner,
+                    'owner' => $threadOwner,
                     'kos_id' => (int) $kosItem->id,
                     'last_message' => $latest?->message,
                     'last_at' => $latest?->created_at,
@@ -103,6 +114,8 @@ class TenantMessageController extends Controller
                     ->values();
 
                 Message::where('receiver_id', $user->id)
+                    ->forKos((int) $kos->id)
+                    ->forOwner((int) $owner->id)
                     ->whereNull('read_at')
                     ->update(['read_at' => now()]);
             }
@@ -115,7 +128,12 @@ class TenantMessageController extends Controller
                 $kos = $preKos;
                 $owner = $preKos->owner;
                 $penghuni = $penghunis->firstWhere('kos_id', $kos->id);
-                $messages = Message::with('sender')->forKos((int) $kos->id)->between((int) $user->id, (int) $owner->id)->orderBy('id')->get();
+                $messages = Message::with('sender')
+                    ->forKos((int) $kos->id)
+                    ->forOwner((int) $owner->id)
+                    ->between((int) $user->id, (int) $owner->id)
+                    ->orderBy('id')
+                    ->get();
             }
         }
 
@@ -142,7 +160,9 @@ class TenantMessageController extends Controller
     {
         abort_unless($kos->status === 'active', 404);
 
-        $owner = $kos->owner;
+        // Tampilkan owner percakapan (messages.owner_id) agar konsisten dengan
+        // tujuan pengiriman askStore setelah kepemilikan kos berpindah.
+        $owner = $this->conversationOwner($kos, (int) auth()->id());
         abort_unless($owner && $owner->isOwner(), 403, 'Owner kos tidak ditemukan.');
 
         return view('tenant.messages.ask', compact('kos', 'owner'));
@@ -158,12 +178,13 @@ class TenantMessageController extends Controller
 
         abort_unless($kos->status === 'active', 404);
 
-        $owner = $kos->owner;
+        $owner = $this->conversationOwner($kos, (int) $user->id);
         abort_unless($owner && $owner->isOwner(), 403, 'Owner kos tidak ditemukan.');
         abort_if((int) $owner->id === (int) $user->id, 403);
 
         Message::create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $user->id,
             'receiver_id' => $owner->id,
             'category' => $request->filled('category') ? $request->category : null,
@@ -189,11 +210,13 @@ class TenantMessageController extends Controller
     {
         $user = auth()->user();
 
-        $threads = Message::with(['kos.owner'])
+        $threads = Message::with(['kos', 'owner'])
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($user) {
                 $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id);
             })
             ->latest()
+            ->latest('id')
             ->get()
             ->groupBy('kos_id')
             ->map(function ($group) use ($user) {
@@ -205,6 +228,7 @@ class TenantMessageController extends Controller
 
                 return [
                     'kos' => $kos,
+                    'owner' => $latest->owner ?? $kos?->owner,
                     'other_id' => $otherId,
                     'last_message' => $latest->message,
                     'last_at' => $latest->created_at,
@@ -218,6 +242,7 @@ class TenantMessageController extends Controller
         $kosIds = $threads->map(fn ($t) => (int) $t['kos']->id)->all();
         if (! empty($kosIds)) {
             Message::whereIn('kos_id', $kosIds)
+                ->whereNotNull('owner_id')
                 ->unread((int) $user->id)
                 ->update(['read_at' => now()]);
         }
@@ -235,13 +260,18 @@ class TenantMessageController extends Controller
 
         abort_unless($kos->status === 'active', 404);
 
-        $owner = $kos->owner;
+        // Owner thread diambil dari pesan terakhir (messages.owner_id) agar
+        // percakapan lama tetap terbuka meski kepemilikan kos sudah berpindah.
+        $owner = $this->conversationOwner($kos, (int) $user->id);
+
         abort_unless($owner && $owner->isOwner(), 403, 'Owner kos tidak ditemukan.');
 
         $messages = Message::with('sender')
             ->forKos((int) $kos->id)
+            ->forOwner((int) $owner->id)
             ->between((int) $user->id, (int) $owner->id)
             ->latest()
+            ->latest('id')
             ->get()
             ->reverse()
             ->values();
@@ -249,11 +279,13 @@ class TenantMessageController extends Controller
         abort_unless($messages->isNotEmpty(), 404);
 
         Message::forKos((int) $kos->id)
+            ->forOwner((int) $owner->id)
             ->between((int) $user->id, (int) $owner->id)
             ->unread((int) $user->id)
             ->update(['read_at' => now()]);
 
         $ownerReplyIds = Message::forKos((int) $kos->id)
+            ->forOwner((int) $owner->id)
             ->where('sender_id', (int) $owner->id)
             ->pluck('id');
         $editableIds = $messages
@@ -262,11 +294,13 @@ class TenantMessageController extends Controller
             ->map(fn ($m) => $m->id)
             ->all();
 
-        $threads = Message::with(['kos.owner'])
+        $threads = Message::with(['kos', 'owner'])
+            ->whereNotNull('owner_id')
             ->where(function ($q) use ($user) {
                 $q->where('sender_id', $user->id)->orWhere('receiver_id', $user->id);
             })
             ->latest()
+            ->latest('id')
             ->get()
             ->groupBy('kos_id')
             ->map(function ($group) use ($user) {
@@ -275,6 +309,7 @@ class TenantMessageController extends Controller
 
                 return [
                     'kos' => $kosItem,
+                    'owner' => $latest->owner ?? $kosItem?->owner,
                     'last_message' => $latest->message,
                     'last_at' => $latest->created_at,
                     'unread' => $group->filter(fn ($m) => (int) $m->receiver_id === (int) $user->id && $m->read_at === null)->count(),
@@ -297,9 +332,13 @@ class TenantMessageController extends Controller
 
         if ($kosId) {
             $kos = Kos::whereKey($kosId)->with('owner')->first();
-            abort_unless($kos && $kos->status === 'active' && $kos->owner && $kos->owner->isOwner(), 403);
+            abort_unless($kos && $kos->status === 'active', 403);
 
-            $owner = $kos->owner;
+            // Owner percakapan diambil dari pesan terakhir (kolom owner_id).
+            // Fallback ke pemilik kos untuk thread yang belum punya pesan.
+            $owner = $this->conversationOwner($kos, (int) $user->id);
+            abort_unless($owner && $owner->isOwner(), 403);
+
             abort_unless($this->canChatWithKos($user, $kos, $owner), 403);
         } else {
             $penghuni = Penghuni::where('user_id', $user->id)
@@ -311,12 +350,14 @@ class TenantMessageController extends Controller
             $kos = Kos::whereKey($penghuni->kos_id)->with('owner')->first();
             abort_unless($kos && $kos->status === 'active', 403);
 
-            $owner = $kos->owner;
+            // Fallback BC tanpa ?kos=: tetap utamakan owner percakapan.
+            $owner = $this->conversationOwner($kos, (int) $user->id);
             abort_unless($owner && $owner->isOwner(), 403);
         }
 
         $since = (int) request()->input('since', 0);
         $base = Message::forKos((int) $kos->id)
+            ->forOwner((int) $owner->id)
             ->between((int) $user->id, (int) $owner->id);
 
         return response()->json([
@@ -343,6 +384,7 @@ class TenantMessageController extends Controller
         ]);
 
         $replied = Message::where('kos_id', $message->kos_id)
+            ->where('owner_id', $message->owner_id)
             ->where('sender_id', $message->receiver_id)
             ->where('id', '>', $message->id)
             ->exists();
@@ -366,7 +408,9 @@ class TenantMessageController extends Controller
             $kos = Kos::whereKey($kosId)->with('owner')->first();
             abort_unless($kos && $kos->status === 'active', 403, 'Kos tidak ditemukan.');
 
-            $owner = $kos->owner;
+            // Lanjutkan thread dengan owner percakapan (messages.owner_id),
+            // bukan pemilik kos saat ini yang mungkin sudah berpindah.
+            $owner = $this->conversationOwner($kos, (int) $user->id);
             abort_unless($owner && $owner->isOwner(), 403, 'Owner kos tidak ditemukan.');
             abort_unless($this->canChatWithKos($user, $kos, $owner), 403, 'Anda tidak memiliki akses chat ke kos ini.');
         } else {
@@ -377,12 +421,13 @@ class TenantMessageController extends Controller
             $kos = Kos::whereKey($penghuni->kos_id)->with('owner')->first();
             abort_unless($kos && $kos->status === 'active', 403, 'Kos tidak ditemukan.');
 
-            $owner = $kos->owner;
+            $owner = $this->conversationOwner($kos, (int) $user->id);
             abort_unless($owner && $owner->isOwner(), 403, 'Owner kos tidak ditemukan.');
         }
 
         Message::create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $user->id,
             'receiver_id' => $owner->id,
             'category' => $request->filled('category') ? $request->category : null,
@@ -399,6 +444,25 @@ class TenantMessageController extends Controller
 
         return redirect()->route('tenant.messages.index', ['kos' => $kos->id])
             ->with('success', 'Pesan berhasil dikirim. Owner akan menanggapi melalui halaman chat.');
+    }
+
+    /**
+     * Owner percakapan untuk pasangan (tenant, kos). Sumber kebenaran adalah
+     * kolom `messages.owner_id`; `kos.owner_id` hanya fallback saat thread
+     * belum pernah ada. Dengan begitu chat tetap milik owner percakapan
+     * meskipun kepemilikan kos sudah berpindah tangan.
+     */
+    private function conversationOwner(Kos $kos, int $userId): ?User
+    {
+        $threadOwner = Message::forKos((int) $kos->id)
+            ->whereNotNull('owner_id')
+            ->where(function ($q) use ($userId) {
+                $q->where('sender_id', $userId)->orWhere('receiver_id', $userId);
+            })
+            ->latest('id')
+            ->first()?->owner;
+
+        return $threadOwner ?? $kos->owner;
     }
 
     private function involvesUserAndOwner(Message $message, int $userId, int $ownerId): bool
@@ -424,6 +488,7 @@ class TenantMessageController extends Controller
         }
 
         if (Message::where('kos_id', $kos->id)
+            ->forOwner((int) $owner->id)
             ->between((int) $user->id, (int) $owner->id)
             ->exists()) {
             return true;

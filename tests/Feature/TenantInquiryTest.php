@@ -59,6 +59,7 @@ class TenantInquiryTest extends TestCase
         $response->assertRedirect(route('tenant.inquiries.index'));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $seeker->id,
             'receiver_id' => $owner->id,
             'message' => 'Apakah ada kamar kosong bulan depan?',
@@ -88,6 +89,7 @@ class TenantInquiryTest extends TestCase
         $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $seeker->id,
             'receiver_id' => $owner->id,
             'message' => 'Berapa harga termurah?',
@@ -111,6 +113,7 @@ class TenantInquiryTest extends TestCase
         ]);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'AC rusak',
@@ -128,6 +131,7 @@ class TenantInquiryTest extends TestCase
         $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $seeker->id,
             'receiver_id' => $owner->id,
             'message' => 'Rahasia calon penghuni',
@@ -140,6 +144,63 @@ class TenantInquiryTest extends TestCase
         $this->actingAs($ownerB)->get(route('owner.messages.show', $seeker))->assertForbidden();
     }
 
+    public function test_inquiry_thread_survives_kos_ownership_transfer(): void
+    {
+        $owner = User::factory()->create(['role' => 'owner']);
+        [$kos] = $this->makeKos($owner);
+        $seeker = User::factory()->create(['role' => 'pencari']);
+        Message::factory()->create([
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seeker->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Pertanyaan ke owner lama',
+        ]);
+
+        // Kepemilikan kos berpindah: thread lama tetap milik owner percakapan.
+        $newOwner = User::factory()->create(['role' => 'owner']);
+        $kos->update(['owner_id' => $newOwner->id]);
+
+        $this->actingAs($seeker)
+            ->get(route('tenant.inquiries.show', $kos))
+            ->assertOk()
+            ->assertSee('Pertanyaan ke owner lama');
+    }
+
+    public function test_inquiry_reply_after_ownership_transfer_stays_with_conversation_owner(): void
+    {
+        $owner = User::factory()->create(['role' => 'owner']);
+        [$kos] = $this->makeKos($owner);
+        $seeker = User::factory()->create(['role' => 'pencari']);
+        Message::factory()->create([
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seeker->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Pertanyaan ke owner lama',
+        ]);
+
+        $newOwner = User::factory()->create(['role' => 'owner']);
+        $kos->update(['owner_id' => $newOwner->id]);
+
+        // Balasan lanjutan lewat form "Tanya Owner" tetap ke owner percakapan.
+        $this->actingAs($seeker)->post(route('tenant.kos.ask.store', $kos), [
+            'message' => 'Lanjutan untuk owner lama',
+        ])->assertRedirect(route('tenant.inquiries.index'));
+
+        $this->assertDatabaseHas('messages', [
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seeker->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Lanjutan untuk owner lama',
+        ]);
+        $this->assertDatabaseMissing('messages', [
+            'kos_id' => $kos->id,
+            'owner_id' => $newOwner->id,
+        ]);
+    }
+
     public function test_owner_can_reply_to_seeker(): void
     {
         $owner = User::factory()->create(['role' => 'owner']);
@@ -147,6 +208,7 @@ class TenantInquiryTest extends TestCase
         $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $seeker->id,
             'receiver_id' => $owner->id,
             'message' => 'Ada kamar kosong?',
@@ -159,6 +221,7 @@ class TenantInquiryTest extends TestCase
         $response->assertRedirect(route('owner.messages.show', ['tenant' => $seeker, 'kos' => $kos->id]));
         $this->assertDatabaseHas('messages', [
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $owner->id,
             'receiver_id' => $seeker->id,
             'message' => 'Ada, silakan booking.',
@@ -172,10 +235,18 @@ class TenantInquiryTest extends TestCase
         $seekerA = User::factory()->create(['role' => 'pencari']);
         $seekerB = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
-            'kos_id' => $kos->id, 'sender_id' => $seekerA->id, 'receiver_id' => $owner->id, 'message' => 'Tanya A rahasia',
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seekerA->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Tanya A rahasia',
         ]);
         Message::factory()->create([
-            'kos_id' => $kos->id, 'sender_id' => $seekerB->id, 'receiver_id' => $owner->id, 'message' => 'Tanya B',
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seekerB->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Tanya B',
         ]);
 
         $response = $this->actingAs($seekerA)->get(route('tenant.inquiries.index'));
@@ -208,12 +279,14 @@ class TenantInquiryTest extends TestCase
         $seeker = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $seeker->id,
             'receiver_id' => $owner->id,
             'message' => 'Ada kamar kosong?',
         ]);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $owner->id,
             'receiver_id' => $seeker->id,
             'message' => 'Ada, silakan booking.',
@@ -237,13 +310,25 @@ class TenantInquiryTest extends TestCase
         $seekerA = User::factory()->create(['role' => 'pencari']);
         $seekerB = User::factory()->create(['role' => 'pencari']);
         Message::factory()->create([
-            'kos_id' => $kos->id, 'sender_id' => $seekerA->id, 'receiver_id' => $owner->id, 'message' => 'Rahasia A',
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seekerA->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Rahasia A',
         ]);
         Message::factory()->create([
-            'kos_id' => $kosB->id, 'sender_id' => $seekerA->id, 'receiver_id' => $owner->id, 'message' => 'Tanya kos B',
+            'kos_id' => $kosB->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seekerA->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Tanya kos B',
         ]);
         Message::factory()->create([
-            'kos_id' => $kos->id, 'sender_id' => $seekerB->id, 'receiver_id' => $owner->id, 'message' => 'Rahasia B',
+            'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
+            'sender_id' => $seekerB->id,
+            'receiver_id' => $owner->id,
+            'message' => 'Rahasia B',
         ]);
 
         // Thread kos A milik seeker A: panel hanya berisi pesan kos A,
@@ -274,6 +359,7 @@ class TenantInquiryTest extends TestCase
         ]);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Halo owner',
@@ -302,6 +388,7 @@ class TenantInquiryTest extends TestCase
 
         $this->assertDatabaseHas('messages', [
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $seeker->id,
             'category' => 'kamar',
         ]);

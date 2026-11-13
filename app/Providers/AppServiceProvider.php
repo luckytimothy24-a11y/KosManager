@@ -106,7 +106,7 @@ class AppServiceProvider extends ServiceProvider
                         try {
                             $ownerKosIds = Kos::where('owner_id', $user->id)->pluck('id');
                             $activeIds = Penghuni::whereIn('kos_id', $ownerKosIds)->where('status', 'active')->pluck('user_id')->all();
-                            $badges['unreadInquiries'] = Message::whereIn('kos_id', $ownerKosIds)->where('receiver_id', $user->id)->whereNull('read_at')->where('sender_id', '!=', $user->id)->whereNotIn('sender_id', $activeIds)->count();
+                            $badges['unreadInquiries'] = Message::forOwner((int) $user->id)->where('receiver_id', $user->id)->whereNull('read_at')->where('sender_id', '!=', $user->id)->whereNotIn('sender_id', $activeIds)->count();
                         } catch (\Throwable $e) {
                             $badges['unreadInquiries'] = 0;
                         }

@@ -126,6 +126,7 @@ class MarketplaceController extends Controller
 
         \App\Models\Message::create([
             'kos_id' => $kosId,
+            'owner_id' => null, // Chat marketplace antar-tenant, bukan percakapan owner.
             'sender_id' => auth()->id(),
             'receiver_id' => $item->user_id,
             'message' => $validated['message'],

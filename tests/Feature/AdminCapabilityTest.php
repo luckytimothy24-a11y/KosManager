@@ -49,6 +49,7 @@ class AdminCapabilityTest extends TestCase
         $admin = $this->makeAdminFor($kos);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Butuh bantuan sengketa.',
@@ -74,6 +75,7 @@ class AdminCapabilityTest extends TestCase
         $admin = $this->makeAdminFor($kos);
         Message::factory()->create([
             'kos_id' => $kosB->id,
+            'owner_id' => $ownerB->id,
             'sender_id' => $tenantB->id,
             'receiver_id' => $ownerB->id,
             'message' => 'Rahasia kos B.',
@@ -187,6 +189,7 @@ class AdminCapabilityTest extends TestCase
         $admin = $this->makeAdminFor($kos);
         Message::factory()->create([
             'kos_id' => $kos->id,
+            'owner_id' => $owner->id,
             'sender_id' => $tenant->id,
             'receiver_id' => $owner->id,
             'message' => 'Minta audit.',

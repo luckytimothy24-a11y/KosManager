@@ -80,6 +80,7 @@ class AdminOwnerMessageTest extends TestCase
 
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->admin->id,
             'receiver_id' => $this->ownerA->id,
             'message' => 'Pembayaran booking #123 sudah diverifikasi.',
@@ -108,6 +109,7 @@ class AdminOwnerMessageTest extends TestCase
     {
         Message::factory()->create([
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->admin->id,
             'receiver_id' => $this->ownerA->id,
             'message' => 'Mohon konfirmasi booking.',
@@ -122,6 +124,7 @@ class AdminOwnerMessageTest extends TestCase
 
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->ownerA->id,
             'receiver_id' => $this->admin->id,
             'message' => 'Baik, saya konfirmasi sekarang.',
@@ -136,12 +139,14 @@ class AdminOwnerMessageTest extends TestCase
     {
         Message::factory()->create([
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->admin->id,
             'receiver_id' => $this->ownerA->id,
             'message' => 'Status pembayaran booking.',
         ]);
         Message::factory()->create([
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->ownerA->id,
             'receiver_id' => $this->admin->id,
             'message' => 'Siap konfirmasi.',
@@ -230,6 +235,7 @@ class AdminOwnerMessageTest extends TestCase
 
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->admin->id,
             'receiver_id' => $this->ownerA->id,
             'message' => 'API pesan operasional',
@@ -300,6 +306,7 @@ class AdminOwnerMessageTest extends TestCase
 
         $this->assertDatabaseHas('messages', [
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->tenant->id,
             'receiver_id' => $this->ownerA->id,
             'message' => 'AC rusak',
@@ -323,6 +330,8 @@ class AdminOwnerMessageTest extends TestCase
         ])->assertRedirect();
 
         $this->assertDatabaseHas('messages', [
+            'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->tenant->id,
             'receiver_id' => $this->ownerA->id,
         ]);
@@ -332,6 +341,7 @@ class AdminOwnerMessageTest extends TestCase
     {
         Message::factory()->create([
             'kos_id' => $this->kosA->id,
+            'owner_id' => $this->ownerA->id,
             'sender_id' => $this->admin->id,
             'receiver_id' => $this->ownerA->id,
             'message' => 'Admin operasional',

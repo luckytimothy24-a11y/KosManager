@@ -28,7 +28,10 @@ window.chatPoll = function (pollUrl, latestId, draftKey) {
         pollError: '',
         async poll() {
             try {
-                const res = await fetch(this.pollUrl + '?since=' + this.latestId, {
+                const url = new URL(this.pollUrl, window.location.origin);
+                url.searchParams.set('since', this.latestId);
+
+                const res = await fetch(url.toString(), {
                     headers: { 'Accept': 'application/json' },
                 });
                 if (!res.ok) {
