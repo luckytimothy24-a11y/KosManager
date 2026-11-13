@@ -22,7 +22,10 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Contracts\PayoutService::class,
+            \App\Services\ManualPayoutService::class
+        );
     }
 
     public function boot(): void

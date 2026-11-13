@@ -7,9 +7,11 @@ use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
+use App\Models\WalletTransaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,6 +49,24 @@ class CheckInOutTest extends TestCase
             'identity_data_submitted_at' => now(),
             'identity_confirmed_at' => now(),
             'identity_confirmed_by' => $this->owner->id,
+        ]);
+
+        $pembayaran = Pembayaran::factory()->create([
+            'booking_id' => $booking->id,
+            'penghuni_id' => null,
+            'tagihan_id' => null,
+            'amount' => $booking->price,
+            'payment_method' => 'qris',
+            'verification_status' => Pembayaran::STATUS_APPROVED,
+        ]);
+
+        WalletTransaction::create([
+            'owner_id' => $this->owner->id,
+            'booking_id' => $booking->id,
+            'pembayaran_id' => $pembayaran->id,
+            'type' => 'escrow_in',
+            'amount' => (int) $booking->price,
+            'status' => 'pending',
         ]);
 
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
@@ -104,6 +124,24 @@ class CheckInOutTest extends TestCase
             'identity_data_submitted_at' => now(),
             'identity_confirmed_at' => now(),
             'identity_confirmed_by' => $admin->id,
+        ]);
+
+        $pembayaran = Pembayaran::factory()->create([
+            'booking_id' => $booking->id,
+            'penghuni_id' => null,
+            'tagihan_id' => null,
+            'amount' => $booking->price,
+            'payment_method' => 'qris',
+            'verification_status' => Pembayaran::STATUS_APPROVED,
+        ]);
+
+        WalletTransaction::create([
+            'owner_id' => $this->owner->id,
+            'booking_id' => $booking->id,
+            'pembayaran_id' => $pembayaran->id,
+            'type' => 'escrow_in',
+            'amount' => (int) $booking->price,
+            'status' => 'pending',
         ]);
 
         $response = $this->actingAs($admin)->post(route('admin.checkin.process', $booking), [
@@ -224,8 +262,27 @@ class CheckInOutTest extends TestCase
             'identity_confirmed_by' => $this->owner->id,
             'start_date' => $start,
             'end_date' => $end,
+            'rental_type' => 'monthly',
             'down_payment_amount' => 100000,
         ]);
+          $pembayaran = Pembayaran::factory()->create([
+              'booking_id' => $booking->id,
+              'penghuni_id' => null,
+              'tagihan_id' => null,
+              'amount' => 100000,
+              'payment_method' => 'qris',
+              'verification_status' => Pembayaran::STATUS_APPROVED,
+          ]);
+
+          WalletTransaction::create([
+              'owner_id' => $this->owner->id,
+              'booking_id' => $booking->id,
+              'pembayaran_id' => $pembayaran->id,
+              'type' => 'escrow_in',
+              'amount' => 100000,
+              'status' => 'pending',
+          ]);
+
 
         $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
             'notes' => 'Check-in lancar',

@@ -7,6 +7,7 @@ use App\Models\Pembayaran;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
+use App\Services\EscrowService;
 use App\Services\PaymentDistributionService;
 use App\Services\PaymentGateway\PaymentGatewayManager;
 use Illuminate\Http\JsonResponse;
@@ -83,6 +84,8 @@ class PaymentGatewayWebhookController extends Controller
             // Booking payment → catat distribution (pending; ready setelah booking confirm).
             if ($locked->booking_id) {
                 app(PaymentDistributionService::class)->recordFromApprovedPayment($locked);
+                // Escrow: dana ditahan, belum masuk saldo owner.
+                app(EscrowService::class)->holdEscrow($locked);
             }
         });
 
