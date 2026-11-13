@@ -41,6 +41,9 @@ class ProfileUpdateRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:1000'],
             'identity_number' => ['nullable', 'string', 'max:50'],
+            // Defense-in-depth: role & status akun tidak boleh diubah lewat profil.
+            'role' => ['prohibited'],
+            'is_active' => ['prohibited'],
         ];
     }
 }
