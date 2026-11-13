@@ -20,6 +20,15 @@ class ProfileUpdateRequest extends FormRequest
     }
 
     /**
+     * Kegagalan validasi (mis. field role/is_active prohibited) selalu
+     * kembali ke halaman profil, bukan ke URL referer yang mungkin kosong.
+     */
+    protected function getRedirectUrl(): string
+    {
+        return route('profile.edit');
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
@@ -32,8 +41,6 @@ class ProfileUpdateRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:1000'],
             'identity_number' => ['nullable', 'string', 'max:50'],
-            'role' => ['prohibited'],
-            'is_active' => ['prohibited'],
         ];
     }
 }

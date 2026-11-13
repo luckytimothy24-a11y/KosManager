@@ -85,9 +85,9 @@
         {{-- Owned Kos --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
             <h3 class="font-bold text-slate-900 dark:text-slate-50 mb-3">Kos Dimiliki</h3>
-            @if($ownedKos->count() > 0)
+            @if($user->ownedKos->count() > 0)
                 <div class="space-y-2">
-                    @foreach($ownedKos as $kos)
+                    @foreach($user->ownedKos as $kos)
                         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-surface-elevated/40">
                             <span class="text-sm text-slate-900 dark:text-slate-50">{{ $kos->name }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400">{{ $kos->city ?? '-' }}</span>
@@ -102,9 +102,9 @@
         {{-- Bookings --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
             <h3 class="font-bold text-slate-900 dark:text-slate-50 mb-3">Booking</h3>
-            @if($bookings->count() > 0)
+            @if($user->bookings->count() > 0)
                 <div class="space-y-2">
-                    @foreach($bookings as $booking)
+                    @foreach($user->bookings as $booking)
                         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-surface-elevated/40">
                             <span class="text-sm text-slate-900 dark:text-slate-50">{{ $booking->booking_code }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400">{{ $booking->status }}</span>
@@ -119,9 +119,9 @@
         {{-- Penghuni --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
             <h3 class="font-bold text-slate-900 dark:text-slate-50 mb-3">Penghuni</h3>
-            @if($penghunis->count() > 0)
+            @if($user->penghunis->count() > 0)
                 <div class="space-y-2">
-                    @foreach($penghunis as $penghuni)
+                    @foreach($user->penghunis as $penghuni)
                         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-surface-elevated/40">
                             <span class="text-sm text-slate-900 dark:text-slate-50">{{ $penghuni->user?->name ?? 'N/A' }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400">{{ $penghuni->status }}</span>

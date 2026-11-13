@@ -14,7 +14,7 @@ class DamageReportFactory extends Factory
         return [
             'user_id' => 1,
             'kos_id' => 1,
-            'kamar_id' => 1,
+            'kamar_id' => null,
             'category' => 'general',
             'description' => 'Damage report description',
             'photos' => null,

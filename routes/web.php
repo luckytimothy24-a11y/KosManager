@@ -302,7 +302,7 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::resource('kamar', KamarController::class);
     Route::post('kamar/{kamar}/penghuni', [KamarController::class, 'addPenghuni'])->name('kamar.add-penghuni');
 
-    Route::resource('fasilitas', App\Http\Controllers\Admin\FasilitasController::class);
+    Route::resource('fasilitas', App\Http\Controllers\Admin\FasilitasController::class)->parameter('fasilitas', 'fasilitas');
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
