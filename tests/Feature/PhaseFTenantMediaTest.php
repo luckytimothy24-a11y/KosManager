@@ -127,7 +127,9 @@ class PhaseFTenantMediaTest extends TestCase
         $response->assertSee('1 foto', false);
         // Tidak boleh ada indikasi lebih dari satu foto / galeri.
         $response->assertDontSee('galeri');
-        $response->assertDontSee('1/3');
+        // Counter viewer "1 / 3" tidak boleh muncul; jangan cek substring "1/3"
+        // karena bentrok dengan utility class CSS `w-1/3`.
+        $response->assertDontSee('1 / 3');
     }
 
     // ── No photo (fallback) ────────────────────────────────────

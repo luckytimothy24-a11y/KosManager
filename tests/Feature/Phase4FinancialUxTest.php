@@ -92,15 +92,15 @@ class Phase4FinancialUxTest extends TestCase
         $response = $this->actingAs($this->owner)->get(route('dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Tagihan Belum Bayar');
-        $response->assertSee('Tagihan Terlambat');
+        $response->assertSee('Belum Bayar');
+        $response->assertSee('Terlambat');
 
         $html = $response->getContent();
 
         // 1 tagihan utama unpaid + 2 unpaid + 1 overdue = 4 outstanding.
-        $this->assertSame('4', $this->statValue($html, 'Tagihan Belum Bayar'));
+        $this->assertSame('4', $this->statValue($html, 'Belum Bayar'));
         // Hanya 1 overdue.
-        $this->assertSame('1', $this->statValue($html, 'Tagihan Terlambat'));
+        $this->assertSame('1', $this->statValue($html, 'Terlambat'));
     }
 
     public function test_owner_dashboard_financial_stats_respect_owner_scope(): void
@@ -125,9 +125,9 @@ class Phase4FinancialUxTest extends TestCase
         $html = $response->getContent();
 
         // Data milik owner lain tidak boleh masuk statistik owner saat ini.
-        $this->assertSame('0', $this->statValue($html, 'Tagihan Terlambat'));
+        $this->assertSame('0', $this->statValue($html, 'Terlambat'));
         // Outstanding milik owner saat ini: hanya tagihan utama (unpaid) = 1.
-        $this->assertSame('1', $this->statValue($html, 'Tagihan Belum Bayar'));
+        $this->assertSame('1', $this->statValue($html, 'Belum Bayar'));
     }
 
     private function statValue(string $html, string $label): ?string

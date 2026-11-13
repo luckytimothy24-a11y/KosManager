@@ -54,7 +54,7 @@ class PendapatanAccessTest extends TestCase
         $owner = User::factory()->create(['role' => 'owner']);
         Kos::factory()->create(['owner_id' => $owner->id]);
 
-        $this->actingAs($owner)->get('/owner/pendapatan')->assertOk()->assertSee('Pendapatan');
+        $this->actingAs($owner)->get('/owner/laporan')->assertOk()->assertSee('Pendapatan');
     }
 
     public function test_owner_only_sees_own_revenue(): void
@@ -68,7 +68,7 @@ class PendapatanAccessTest extends TestCase
         $this->approvedPayment($pA, $tA, 100000);
         $this->approvedPayment($pB, $tB, 200000);
 
-        $res = $this->actingAs($ownerA)->get('/owner/pendapatan');
+        $res = $this->actingAs($ownerA)->get('/owner/laporan');
         $res->assertOk();
         $res->assertSee('Rp 100.000', false);
         $res->assertDontSee('Rp 200.000', false);
@@ -81,8 +81,8 @@ class PendapatanAccessTest extends TestCase
         Kos::factory()->create(['owner_id' => $ownerA->id]);
         $kosB = Kos::factory()->create(['owner_id' => $ownerB->id]);
 
-        $this->actingAs($ownerA)->get("/owner/pendapatan?kos_id={$kosB->id}")->assertForbidden();
-        $this->actingAs($ownerA)->get("/owner/laporan/export-excel/gabungan?kos_id={$kosB->id}")->assertForbidden();
+        $this->actingAs($ownerA)->get("/owner/laporan?kos_id={$kosB->id}")->assertForbidden();
+        $this->actingAs($ownerA)->get("/owner/laporan/export-excel?kos_id={$kosB->id}")->assertForbidden();
     }
 
     public function test_tenant_cannot_access_pendapatan(): void
@@ -108,7 +108,7 @@ class PendapatanAccessTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
         $admin->assignedKos()->attach($kosA->id);
 
-        $res = $this->actingAs($admin)->get('/admin/laporan/export-excel/gabungan');
+        $res = $this->actingAs($admin)->get('/admin/laporan/export-excel');
         $res->assertOk();
         $res->assertSee('Rp 100.000', false);
         $res->assertDontSee('Rp 200.000', false);
@@ -122,7 +122,7 @@ class PendapatanAccessTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
         $admin->assignedKos()->attach($kosA->id);
 
-        $this->actingAs($admin)->get("/admin/laporan/export-excel/gabungan?kos_id={$kosB->id}")->assertForbidden();
+        $this->actingAs($admin)->get("/admin/laporan/export-excel?kos_id={$kosB->id}")->assertForbidden();
     }
 
     public function test_admin_without_assignment_sees_zero_not_global(): void
@@ -134,10 +134,10 @@ class PendapatanAccessTest extends TestCase
 
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $res = $this->actingAs($admin)->get('/admin/laporan/export-excel/gabungan');
+        $res = $this->actingAs($admin)->get('/admin/laporan/export-excel');
         $res->assertOk();
         $res->assertSee('Rp 0', false);
-        $res->assertSee('Belum ada data');
+        $res->assertSee('Tidak ada data');
         $res->assertDontSee('Rp 500.000', false);
     }
 
@@ -190,7 +190,7 @@ class PendapatanAccessTest extends TestCase
 
         $super = User::factory()->create(['role' => 'super_admin']);
 
-        $res = $this->actingAs($super)->get('/super-admin/laporan/export-excel/gabungan');
+        $res = $this->actingAs($super)->get('/super-admin/laporan/export-excel');
         $res->assertOk();
         $res->assertSee('Rp 300.000', false);
     }
@@ -204,7 +204,7 @@ class PendapatanAccessTest extends TestCase
         Pembayaran::factory()->create(['tagihan_id' => $t->id, 'penghuni_id' => $p->id, 'amount' => 88888, 'verification_status' => 'rejected', 'payment_date' => now()]);
         $this->approvedPayment($p, $t, 100000);
 
-        $res = $this->actingAs($owner)->get('/owner/laporan/export-excel/gabungan');
+        $res = $this->actingAs($owner)->get('/owner/laporan/export-excel');
         $res->assertOk();
         $res->assertSee('Rp 100.000', false);
         $res->assertDontSee('Rp 99.999', false);

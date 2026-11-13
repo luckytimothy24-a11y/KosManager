@@ -142,15 +142,17 @@ class PhaseDLocationDiscoveryTest extends TestCase
         $response->assertSee('Kos tidak ditemukan di lokasi ini');
     }
 
-    public function test_location_filter_is_exact_match(): void
+    public function test_location_filter_supports_exact_and_partial_address(): void
     {
-        $this->kos('Jl. Sudirman No. 10');
+        $exact = $this->kos('Jl. Sudirman No. 10');
         $partial = $this->kos('Jl. Sudirman No. 100');
 
         $response = $this->actingAs($this->tenant())->get('/tenant/kos?loc='.rawurlencode('Jl. Sudirman No. 10'));
 
         $response->assertOk();
-        $response->assertDontSee($partial->name);
+        // Exact match tampil, dan fallback fuzzy ikut menemukan alamat yang mengandung teks.
+        $response->assertSee($exact->name);
+        $response->assertSee($partial->name);
     }
 
     // ── Query persistence ──────────────────────────────────────
