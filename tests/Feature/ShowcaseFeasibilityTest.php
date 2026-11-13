@@ -3,12 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Kamar;
-use App\Models\Kontrak;
 use App\Models\Kos;
-use App\Models\Penghuni;
 use App\Models\User;
 use App\Services\BookingService;
-use App\Services\SharedBillingService;
 use Database\Seeders\ShowcaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -54,66 +51,52 @@ class ShowcaseFeasibilityTest extends TestCase
         $filtered->assertSee('Kost Eksekutif Malioboro');
     }
 
-    public function test_shared_room_booking_respects_capacity(): void
+    public function test_shared_booking_on_single_occupancy_room_is_rejected(): void
     {
         $this->seedShowcase();
         $kamar = Kamar::where('room_number', 'S-03')->firstOrFail();
-        $this->assertSame(2, (int) $kamar->capacity);
-        $this->assertTrue($kamar->isShared());
+        $this->assertSame(1, (int) $kamar->capacity);
+        $this->assertFalse($kamar->isShared());
 
         $service = new BookingService;
-        $payload = fn () => [
+        $tenant = User::factory()->create(['role' => 'pencari']);
+
+        $shared = $service->create([
             'kamar_id' => $kamar->id,
             'start_date' => now()->addDays(2)->toDateString(),
             'end_date' => now()->addMonths(2)->toDateString(),
             'rental_type' => 'monthly',
             'billing_mode' => 'shared',
             'requested_occupants' => 1,
-        ];
+        ], $tenant->id);
 
-        $t1 = User::factory()->create(['role' => 'pencari']);
-        $t2 = User::factory()->create(['role' => 'pencari']);
-        $t3 = User::factory()->create(['role' => 'pencari']);
+        $this->assertFalse($shared['ok']);
+        $this->assertSame('billing_mode_not_allowed', $shared['error']);
 
-        $this->assertTrue($service->create($payload(), $t1->id)['ok']);
-        $this->assertTrue($service->create($payload(), $t2->id)['ok']);
+        $multi = $service->create([
+            'kamar_id' => $kamar->id,
+            'start_date' => now()->addDays(2)->toDateString(),
+            'end_date' => now()->addMonths(2)->toDateString(),
+            'rental_type' => 'monthly',
+            'billing_mode' => 'personal',
+            'requested_occupants' => 2,
+        ], $tenant->id);
 
-        $third = $service->create($payload(), $t3->id);
-        $this->assertFalse($third['ok']);
-        $this->assertSame('kamar_penuh', $third['error']);
+        $this->assertFalse($multi['ok']);
+        $this->assertSame('personal_multi_rejected', $multi['error']);
     }
 
-    public function test_shared_room_tagihan_split_per_occupant(): void
+    public function test_showcase_rooms_are_personal_single_occupancy(): void
     {
         $this->seedShowcase();
+
+        $this->assertSame(0, Kamar::where('capacity', '>', 1)->count());
+        $this->assertSame(0, Kamar::where('billing_mode', 'shared')->count());
+        $this->assertSame(0, Kamar::whereIn('room_type', ['Sharing', 'Family'])->count());
+
         $kamar = Kamar::where('room_number', 'B-02')->firstOrFail();
-        $this->assertSame(3, (int) $kamar->capacity);
-
-        foreach (range(1, 3) as $i) {
-            $penghuni = Penghuni::factory()->create([
-                'kos_id' => $kamar->kos_id,
-                'kamar_id' => $kamar->id,
-                'status' => 'active',
-            ]);
-            Kontrak::factory()->create([
-                'penghuni_id' => $penghuni->id,
-                'kos_id' => $kamar->kos_id,
-                'kamar_id' => $kamar->id,
-                'rental_price' => 600000,
-                'rental_type' => 'monthly',
-                'billing_mode' => null,
-                'status' => 'active',
-            ]);
-        }
-
-        $tagihans = (new SharedBillingService)->createSharedTagihans(
-            $kamar, 'rent', '2026-10-01', '2026-10-31', '2026-11-05',
-        );
-
-        $this->assertCount(3, $tagihans);
-        foreach ($tagihans as $tagihan) {
-            $this->assertEquals(200000.0, (float) $tagihan->subtotal);
-        }
+        $this->assertSame(1, (int) $kamar->capacity);
+        $this->assertSame('personal', $kamar->billing_mode);
     }
 
     public function test_showcase_photos_resolve_to_real_files(): void
@@ -146,9 +129,9 @@ class ShowcaseFeasibilityTest extends TestCase
     public function test_capacity_guards_and_no_n_plus_one(): void
     {
         $this->seedShowcase();
-        $family = Kamar::where('room_number', 'B-04')->firstOrFail();
-        $this->assertSame(4, (int) $family->capacity);
-        $this->assertFalse($family->isFull());
+        $room = Kamar::where('room_number', 'B-04')->firstOrFail();
+        $this->assertSame(1, (int) $room->capacity);
+        $this->assertFalse($room->isFull());
 
         // N+1 dibuktikan via delta pada regime section penuh: top-up dulu
         // hingga 13 kos (section discovery/budget sudah maksimal/bounded),

@@ -11,10 +11,10 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Data showcase multi-penghuni untuk demo & uji kelayakan (DEV ONLY).
+ * Data showcase untuk demo & uji kelayakan (DEV ONLY).
  *
- * - 3 kos baru (idempotent berdasarkan nama), ±14 kamar detail.
- * - Kamar sharing kapasitas 2–4 dengan billing_mode shared.
+ * - 3 kos baru (idempotent berdasarkan nama), 14 kamar detail.
+ * - Kebijakan produk: 1 kamar = 1 penghuni (personal, capacity 1).
  * - Foto hanya dari public/images/demo/kos/* yang sudah ada di repo,
  *   disalin ke disk public mengikuti pola DemoPhotoSeeder.
  * - Fasilitas diambil dari FasilitasSeeder existing berdasarkan nama.
@@ -27,7 +27,7 @@ class ShowcaseSeeder extends Seeder
         [
             'name' => 'Griya Srikandi Pogung',
             'address' => 'Jl. Pogung Baru No. 27, Pogung Lor, Sinduadi, Sleman',
-            'description' => 'Kost putri eksklusif dengan konsep homey. Menyediakan kamar single dan twin sharing untuk mahasiswi. Lingkungan tenang, pemilik tinggal di lokasi, keamanan 24 jam.',
+            'description' => 'Kost putri eksklusif dengan konsep homey. Menyediakan kamar single nyaman untuk mahasiswi. Lingkungan tenang, pemilik tinggal di lokasi, keamanan 24 jam.',
             'phone' => '081234560001',
             'status' => 'active',
             'cover' => 'kos-fasad-2.jpg',
@@ -37,7 +37,7 @@ class ShowcaseSeeder extends Seeder
         [
             'name' => 'Pondok Bareng Jakal',
             'address' => 'Jl. Kaliurang Km 6, No. 44, Caturtunggal, Depok, Sleman',
-            'description' => 'Kost campuran ramah patungan: tersedia kamar triple sharing dan family room berkapasitas 4 orang dengan tagihan patungan otomatis per penghuni. Cocok untuk kelompok mahasiswa satu jurusan.',
+            'description' => 'Kost campuran yang nyaman dengan kamar single personal. Cocok untuk mahasiswa dan pekerja yang menginginkan privasi dengan lokasi strategis dekat kampus.',
             'phone' => '081234560002',
             'status' => 'active',
             'cover' => 'kos-fasad-3.jpg',
@@ -60,16 +60,16 @@ class ShowcaseSeeder extends Seeder
         'Griya Srikandi Pogung' => [
             ['number' => 'S-01', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 950000, 'weekly' => 250000, 'area' => '12m2', 'floor' => 1, 'photo' => 'kamar-putih-1.jpg', 'facilities' => ['Kipas', 'Kasur']],
             ['number' => 'S-02', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 950000, 'weekly' => 250000, 'area' => '12m2', 'floor' => 1, 'photo' => 'kamar-cozy-1.jpg', 'facilities' => ['Kipas', 'Kasur']],
-            ['number' => 'S-03', 'name' => 'Twin Sharing', 'type' => 'Sharing', 'capacity' => 2, 'monthly' => 750000, 'weekly' => 195000, 'area' => '16m2', 'floor' => 1, 'photo' => 'kamar-kos-1.jpg', 'facilities' => ['AC', 'Kasur']],
-            ['number' => 'S-04', 'name' => 'Twin Sharing', 'type' => 'Sharing', 'capacity' => 2, 'monthly' => 750000, 'weekly' => 195000, 'area' => '16m2', 'floor' => 2, 'photo' => 'kamar-modern-1.jpg', 'facilities' => ['AC', 'Kasur']],
+            ['number' => 'S-03', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 750000, 'weekly' => 195000, 'area' => '16m2', 'floor' => 1, 'photo' => 'kamar-kos-1.jpg', 'facilities' => ['AC', 'Kasur']],
+            ['number' => 'S-04', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 750000, 'weekly' => 195000, 'area' => '16m2', 'floor' => 2, 'photo' => 'kamar-modern-1.jpg', 'facilities' => ['AC', 'Kasur']],
             ['number' => 'S-05', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 900000, 'weekly' => 235000, 'area' => '11m2', 'floor' => 2, 'photo' => 'kamar-atas-1.jpg', 'facilities' => ['Kipas', 'Kasur']],
             ['number' => 'S-06', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 900000, 'weekly' => 235000, 'area' => '11m2', 'floor' => 2, 'photo' => 'kamar-atas-2.jpg', 'facilities' => ['Kipas', 'Kasur']],
         ],
         'Pondok Bareng Jakal' => [
             ['number' => 'B-01', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 800000, 'weekly' => 210000, 'area' => '10m2', 'floor' => 1, 'photo' => 'kamar-putih-1.jpg', 'facilities' => ['Kipas', 'Kasur']],
-            ['number' => 'B-02', 'name' => 'Triple Sharing', 'type' => 'Sharing', 'capacity' => 3, 'monthly' => 600000, 'weekly' => 160000, 'area' => '20m2', 'floor' => 1, 'photo' => 'kamar-cozy-1.jpg', 'facilities' => ['AC', 'Kasur']],
-            ['number' => 'B-03', 'name' => 'Triple Sharing', 'type' => 'Sharing', 'capacity' => 3, 'monthly' => 600000, 'weekly' => 160000, 'area' => '20m2', 'floor' => 2, 'photo' => 'kamar-modern-1.jpg', 'facilities' => ['AC', 'Kasur']],
-            ['number' => 'B-04', 'name' => 'Family Room', 'type' => 'Family', 'capacity' => 4, 'monthly' => 1800000, 'weekly' => 470000, 'area' => '30m2', 'floor' => 2, 'photo' => 'kamar-mewah-1.jpg', 'facilities' => ['AC', 'Kasur']],
+            ['number' => 'B-02', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 600000, 'weekly' => 160000, 'area' => '20m2', 'floor' => 1, 'photo' => 'kamar-cozy-1.jpg', 'facilities' => ['AC', 'Kasur']],
+            ['number' => 'B-03', 'name' => 'Standard Single', 'type' => 'Standard', 'capacity' => 1, 'monthly' => 600000, 'weekly' => 160000, 'area' => '20m2', 'floor' => 2, 'photo' => 'kamar-modern-1.jpg', 'facilities' => ['AC', 'Kasur']],
+            ['number' => 'B-04', 'name' => 'Deluxe Room', 'type' => 'Deluxe', 'capacity' => 1, 'monthly' => 1800000, 'weekly' => 470000, 'area' => '30m2', 'floor' => 2, 'photo' => 'kamar-mewah-1.jpg', 'facilities' => ['AC', 'Kasur']],
         ],
         'Kost Eksekutif Malioboro' => [
             ['number' => 'E-01', 'name' => 'Deluxe Single', 'type' => 'Deluxe', 'capacity' => 1, 'monthly' => 2200000, 'weekly' => 570000, 'area' => '18m2', 'floor' => 1, 'photo' => 'kamar-mewah-1.jpg', 'facilities' => ['AC', 'Kasur']],
@@ -82,7 +82,7 @@ class ShowcaseSeeder extends Seeder
     public function run(): void
     {
         if (app()->environment('production')) {
-            throw new \RuntimeException('ShowcaseSeeder dilarang di environment production (data demo multi-penghuni).');
+            throw new \RuntimeException('ShowcaseSeeder dilarang di environment production (data demo).');
         }
 
         $owner = User::where('email', 'owner@example.com')->first()
@@ -143,19 +143,18 @@ class ShowcaseSeeder extends Seeder
                     continue;
                 }
 
-                $isSharing = ($room['type'] === 'Sharing' || ($room['capacity'] ?? 1) > 1);
                 $kamar = Kamar::create([
                     'kos_id' => $kos->id,
                     'room_number' => $room['number'],
                     'room_name' => $room['name'],
                     'room_type' => $room['type'],
-                    'capacity' => $room['capacity'],
+                    'capacity' => 1,
                     'floor' => $room['floor'],
                     'daily_price' => (int) ceil($room['monthly'] / 30),
                     'weekly_price' => $room['weekly'],
                     'monthly_price' => $room['monthly'],
                     'area' => $room['area'],
-                    'billing_mode' => $isSharing ? 'shared' : 'personal',
+                    'billing_mode' => 'personal',
                     'status' => 'available',
                     'photo' => $this->publishPhoto($room['photo'], 'kamar'),
                 ]);

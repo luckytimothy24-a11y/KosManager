@@ -14,6 +14,10 @@ class PenghuniSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $tenant = User::where('email', 'pencari@example.com')->first();
         $approvedBooking = Booking::where('status', 'approved')->first();
 

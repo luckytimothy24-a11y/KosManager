@@ -64,6 +64,10 @@ class DemoPhotoSeeder extends Seeder
 
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $this->ensureStorageDirectories();
 
         $this->seedKosCoverPhotos();

@@ -13,6 +13,10 @@ class TagihanSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $kontraks = Kontrak::where('status', 'active')->get();
 
         foreach ($kontraks as $index => $kontrak) {

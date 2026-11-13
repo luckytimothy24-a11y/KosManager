@@ -12,6 +12,10 @@ class BookingSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $tenant = User::where('email', 'pencari@example.com')->first();
         $kos = Kos::first();
         $kamars = Kamar::where('kos_id', $kos->id)->get();

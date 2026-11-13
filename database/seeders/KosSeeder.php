@@ -11,6 +11,11 @@ class KosSeeder extends Seeder
 {
     public function run(): void
     {
+        // Data demo: jangan pernah membuat kos fiktif di production.
+        if (app()->environment('production')) {
+            return;
+        }
+
         $owner = User::where('email', 'owner@example.com')->first();
 
         $kosData = [

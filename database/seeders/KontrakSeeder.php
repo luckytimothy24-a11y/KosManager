@@ -14,6 +14,10 @@ class KontrakSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $penghunis = Penghuni::where('status', 'active')->get();
 
         foreach ($penghunis as $index => $penghuni) {
