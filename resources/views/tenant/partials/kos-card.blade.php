@@ -96,10 +96,10 @@
             <h3 class="font-semibold not-italic text-[15px] sm:text-base text-slate-900 dark:text-slate-50 leading-snug line-clamp-2 break-words group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">{{ $kos->name }}</h3>
         </a>
 
-        {{-- Location --}}
-        <p class="mt-1.5 text-[13px] text-slate-500 dark:text-slate-500 flex items-start gap-1 line-clamp-1">
-            <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-400"></i>
-            <span>{{ $kos->address }}</span>
+        {{-- Location — line-clamp dipasang di span, bukan container flex --}}
+        <p class="mt-1.5 flex items-start gap-1 text-[13px] leading-relaxed text-slate-500 dark:text-slate-400">
+            <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-400" aria-hidden="true"></i>
+            <span class="min-w-0 line-clamp-2 break-words">{{ $kos->address }}</span>
         </p>
 
         @php
@@ -115,42 +115,39 @@
         @endif
 
         @if($facilityNames->isNotEmpty())
-            <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs leading-relaxed">
-                @foreach($facilityNames->take(3) as $idx => $fname)
-                    @if($idx > 0)
-                        <span class="mx-1 text-slate-300 dark:text-slate-600">·</span>
-                    @endif
+            <div class="mt-2 flex flex-wrap items-center gap-1.5 text-[10px] leading-relaxed">
+                @foreach($facilityNames->take(3) as $fname)
                     @php $isFilteredFac = $activeFilterNames->contains(mb_strtolower($fname)); @endphp
-                    <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] {{ $isFilteredFac ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-300 font-semibold ring-1 ring-primary-200 dark:ring-primary-500/30' : 'bg-slate-50/80 dark:bg-white/[0.04] text-slate-500 dark:text-slate-400 font-medium' }}">
+                    <span class="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] {{ $isFilteredFac ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-300 font-semibold ring-1 ring-primary-200 dark:ring-primary-500/30' : 'bg-slate-50/80 dark:bg-white/[0.04] text-slate-500 dark:text-slate-400 font-medium' }}">
                         @if($isFilteredFac)
-                            <i class="ri-check-line text-[9px]"></i>
+                            <i class="ri-check-line text-[9px]" aria-hidden="true"></i>
                         @endif
                         {{ $fname }}
                     </span>
                 @endforeach
                 @if($facilityNames->count() > 3)
-                    <span class="text-primary-500 font-semibold text-xs"> +{{ $facilityNames->count() - 3 }} fasilitas</span>
+                    <span class="whitespace-nowrap text-[10px] font-semibold text-primary-500">+{{ $facilityNames->count() - 3 }} fasilitas</span>
                 @endif
             </div>
         @endif
 
-        {{-- Price & CTA — bottom aligned --}}
-        <div class="mt-auto pt-3 border-t border-slate-100/80 dark:border-white/[0.08] flex items-end justify-between gap-3">
+        {{-- Price & CTA — wrap agar nominal dan tombol tidak bertabrakan di card sempit --}}
+        <div class="mt-auto flex flex-wrap items-end justify-between gap-x-3 gap-y-2 border-t border-slate-100/80 pt-3 dark:border-white/[0.08]">
             @if(!is_null($kos->harga_mulai))
                 <div class="min-w-0">
-                    <p class="text-meta font-medium uppercase tracking-wide">Mulai dari</p>
-                    <p class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50 leading-none mt-0.5">Rp {{ number_format($kos->harga_mulai, 0, ',', '.') }}<span class="text-meta">/bln</span></p>
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Mulai dari</p>
+                    <p class="mt-0.5 whitespace-nowrap text-base font-bold leading-tight tracking-tight text-slate-900 sm:text-lg dark:text-slate-50">Rp {{ number_format($kos->harga_mulai, 0, ',', '.') }}<span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/bln</span></p>
                 </div>
             @elseif(!is_null($kos->harga_harian_mulai))
                 <div class="min-w-0">
-                    <p class="text-meta font-medium uppercase tracking-wide">Mulai dari</p>
-                    <p class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50 leading-none mt-0.5">Rp {{ number_format($kos->harga_harian_mulai, 0, ',', '.') }}<span class="text-meta">/hr</span></p>
+                    <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Mulai dari</p>
+                    <p class="mt-0.5 whitespace-nowrap text-base font-bold leading-tight tracking-tight text-slate-900 sm:text-lg dark:text-slate-50">Rp {{ number_format($kos->harga_harian_mulai, 0, ',', '.') }}<span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/hr</span></p>
                 </div>
             @else
-                <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
+                <p class="min-w-0 text-xs leading-relaxed text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
             @endif
-            <a href="{{ $adLink() }}" class="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-primary-500 group-hover:text-primary-600 transition-all duration-300">
-                Lihat Detail <i class="ri-arrow-right-line text-[11px] group-hover:translate-x-0.5 transition-transform duration-300"></i>
+            <a href="{{ $adLink() }}" class="ml-auto inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-primary-500 transition-all duration-300 group-hover:text-primary-600">
+                Lihat Detail <i class="ri-arrow-right-line text-[11px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true"></i>
             </a>
         </div>
     </div>
