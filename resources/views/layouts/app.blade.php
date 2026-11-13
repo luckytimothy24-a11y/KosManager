@@ -39,7 +39,7 @@
         ];
         $pageTitle = $titleMap[$routeName] ?? null;
     @endphp
-    <title>{{ $pageTitle ? $pageTitle.' · KosManager' : 'KosManager' }}</title>
+    <title>@hasSection('title')@yield('title') · KosManager@else{{ $pageTitle ? $pageTitle.' · KosManager' : 'KosManager' }}@endif</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
@@ -377,7 +377,11 @@
                          {{ $header }}
                      </div>
                  @endif
-                 {{ $slot }}
+                 @hasSection('content')
+                     @yield('content')
+                 @else
+                     {{ $slot }}
+                 @endif
              </main>
          </div>
          <div x-show="!sidebarOpen">

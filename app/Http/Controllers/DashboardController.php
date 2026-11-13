@@ -96,6 +96,11 @@ class DashboardController extends Controller
                 ->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds))->count(),
             'total_penghunis' => Penghuni::where('status', 'active')
                 ->whereIn('kos_id', $kosIds)->count(),
+            'total_revenue' => Pembayaran::where('verification_status', 'approved')
+                ->where(function ($q) use ($kosIds) {
+                    $q->whereHas('penghuni', fn ($qq) => $qq->whereIn('kos_id', $kosIds))
+                        ->orWhereHas('booking', fn ($qq) => $qq->whereIn('kos_id', $kosIds));
+                })->sum('amount'),
             'pending_damage_reports' => DamageReport::where('status', DamageReport::STATUS_PENDING)
                 ->whereIn('kos_id', $kosIds)->count(),
             'pending_checkouts' => CheckOut::where('status', CheckOut::STATUS_PENDING)

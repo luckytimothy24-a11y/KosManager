@@ -132,6 +132,17 @@
                     </div>
                 </div>
             </div>
+            <div class="metric-card">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <i class="ri-wallet-3-line text-emerald-600 dark:text-emerald-400"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Pendapatan</p>
+                        <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
+                    </div>
+                </div>
+            </div>
             <a href="{{ route('admin.damage-reports.index') }}" class="metric-card hover:border-amber-200 dark:hover:border-amber-500/30 transition">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
