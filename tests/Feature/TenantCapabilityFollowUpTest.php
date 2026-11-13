@@ -245,15 +245,16 @@ class TenantCapabilityFollowUpTest extends TestCase
     public function test_tenant_can_only_update_own_profile_without_escalation(): void
     {
         $tenant = User::factory()->create(['role' => 'pencari']);
+        $originalName = $tenant->name;
 
         $this->actingAs($tenant)->patch(route('profile.update'), [
             'name' => 'Nama Baru',
             'email' => $tenant->email,
             'role' => 'super_admin',
-        ])->assertRedirect(route('profile.edit'));
+        ])->assertSessionHasErrors('role');
 
         $tenant->refresh();
-        $this->assertSame('Nama Baru', $tenant->name);
+        $this->assertSame($originalName, $tenant->name);
         $this->assertSame('pencari', $tenant->role);
     }
 
