@@ -119,13 +119,13 @@
 
                         if (value === maxValue && value > 0) {
                             var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                            grad.addColorStop(0, isDark ? '#b89c84' : '#cdbba8');
-                            grad.addColorStop(1, isDark ? '#8d6d55' : '#a88468');
+                            grad.addColorStop(0, isDark ? '#fb923c' : '#fdba74');
+                            grad.addColorStop(1, isDark ? '#ea580c' : '#f97316');
                             return grad;
                         }
                         var grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                        grad.addColorStop(0, isDark ? '#cdbba8' : '#e0d5c9');
-                        grad.addColorStop(1, isDark ? '#6e5443' : '#8d6d55');
+                        grad.addColorStop(0, isDark ? '#fdba74' : '#fed7aa');
+                        grad.addColorStop(1, isDark ? '#c2410c' : '#ea580c');
                         return grad;
                     },
                     borderRadius: 4,

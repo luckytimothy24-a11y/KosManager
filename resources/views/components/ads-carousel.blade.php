@@ -48,7 +48,7 @@
             'from' => '#4f46e5',
             'to' => '#312e81',
             'accent' => '#c7d2fe',
-            'accentStrong' => '#6e5443',
+            'accentStrong' => '#c2410c',
             'monogram' => 'from-primary-500 to-primary-700',
         ],
     ];

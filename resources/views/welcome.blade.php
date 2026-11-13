@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#a88468">
+    <meta name="theme-color" content="#f97316">
     <meta name="description" content="KosManager — platform modern untuk menemukan kos nyaman tanpa ribet dan mengelola kamar, penghuni, booking, serta pembayaran dalam satu tempat.">
     <title>KosManager — Temukan Kos Nyaman, Tanpa Ribet</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -462,25 +462,25 @@
 
                             <div class="p-5">
                                 <h3 class="font-semibold not-italic text-[15px] sm:text-base text-gray-900 dark:text-slate-50 leading-snug line-clamp-2 break-words group-hover:text-primary-500 dark:group-hover:text-primary-300 transition">{{ $kos->name }}</h3>
-                                <p class="mt-1.5 text-[13px] text-slate-500 dark:text-slate-500 flex items-start gap-1 line-clamp-1">
-                                    <i class="ri-map-pin-2-fill text-primary-500 text-xs mt-0.5 shrink-0"></i>
-                                    <span>{{ $kos->address }}</span>
+                                <p class="mt-1.5 flex items-start gap-1 text-[13px] leading-relaxed text-slate-500 dark:text-slate-400">
+                                    <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-xs text-primary-500" aria-hidden="true"></i>
+                                    <span class="min-w-0 line-clamp-2 break-words">{{ $kos->address }}</span>
                                 </p>
                                 <p class="mt-2.5 text-xs text-gray-500 dark:text-slate-400 leading-relaxed line-clamp-2 min-h-[2rem]">
                                     {{ $kos->description ? \Illuminate\Support\Str::limit($kos->description, 90) : 'Kos aktif di KosManager. Hubungi pemilik untuk informasi lengkap.' }}
                                 </p>
 
-                                <div class="mt-4 pt-3.5 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-3">
+                                <div class="mt-4 flex flex-wrap items-end justify-between gap-x-3 gap-y-2 border-t border-gray-100 pt-3.5 dark:border-white/10">
                                     @if(!is_null($kos->min_price))
-                                        <div>
+                                        <div class="min-w-0">
                                             <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500">Mulai dari</p>
-                                            <p class="text-base font-bold text-gray-900 dark:text-slate-50">Rp {{ number_format($kos->min_price, 0, ',', '.') }}<span class="text-[11px] font-medium text-gray-400 dark:text-slate-500">/bln</span></p>
+                                            <p class="whitespace-nowrap text-base font-bold leading-tight text-gray-900 dark:text-slate-50">Rp {{ number_format($kos->min_price, 0, ',', '.') }}<span class="text-[11px] font-medium text-gray-400 dark:text-slate-500">/bln</span></p>
                                         </div>
                                     @else
-                                        <p class="text-xs text-gray-400 dark:text-slate-500">Harga hubungi pemilik</p>
+                                        <p class="min-w-0 text-xs leading-relaxed text-gray-400 dark:text-slate-500">Harga hubungi pemilik</p>
                                     @endif
                                     @if($detailUrl)
-                                        <span class="shrink-0 inline-flex items-center gap-1 text-xs font-bold text-primary-500 group-hover:gap-2 transition-all">Lihat Detail <i class="ri-arrow-right-line"></i></span>
+                                        <span class="ml-auto inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-bold text-primary-500 transition-all group-hover:gap-2">Lihat Detail <i class="ri-arrow-right-line" aria-hidden="true"></i></span>
                                     @endif
                                 </div>
                             </div>

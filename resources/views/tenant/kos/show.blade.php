@@ -647,16 +647,17 @@
                             </div>
                             <div class="p-4">
                                 <h3 class="font-semibold not-italic text-sm text-slate-900 dark:text-slate-50 leading-snug line-clamp-2 break-words">{{ $sk->name }}</h3>
-                                <p class="text-meta mt-1.5 flex items-start gap-1 line-clamp-1">
-                                    <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500"></i> {{ $sk->address }}
+                                <p class="text-meta mt-1.5 flex items-start gap-1">
+                                    <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500" aria-hidden="true"></i>
+                                    <span class="min-w-0 line-clamp-2 break-words">{{ $sk->address }}</span>
                                 </p>
-                                <div class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-white/[0.08] flex items-center justify-between">
+                                <div class="mt-2.5 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-slate-100 pt-2.5 dark:border-white/[0.08]">
                                     @if(!is_null($sk->harga_mulai))
-                                        <p class="text-xs font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($sk->harga_mulai, 0, ',', '.') }}<span class="text-meta">/bln</span></p>
+                                        <p class="whitespace-nowrap text-xs font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($sk->harga_mulai, 0, ',', '.') }}<span class="text-meta">/bln</span></p>
                                     @else
                                         <p class="text-meta">Hubungi pemilik</p>
                                     @endif
-                                    <span class="text-[11px] font-semibold text-primary-500 flex items-center gap-0.5">Lihat <i class="ri-arrow-right-s-line"></i></span>
+                                    <span class="ml-auto flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[11px] font-semibold text-primary-500">Lihat <i class="ri-arrow-right-s-line" aria-hidden="true"></i></span>
                                 </div>
                             </div>
                         </a>

@@ -129,6 +129,10 @@
                                         @csrf
                                         <input type="hidden" name="redirect_to_target" value="1">
                                     </form>
+                                    <a href="{{ $url }}"
+                                       class="mb-2 lg:mb-0 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary-600 text-white text-xs font-semibold hover:bg-primary-700 transition">
+                                        <i class="ri-external-link-line"></i> Buka
+                                    </a>
                                 @endif
                                 @if(! $n->is_read)
                                     {{-- Tombol ini hanya menandai dibaca, tetap di halaman notifikasi. --}}

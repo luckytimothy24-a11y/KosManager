@@ -66,7 +66,7 @@ class Phase48TenantMarketplacePolishTest extends TestCase
         $response->assertSee('+2 fasilitas');
     }
 
-    public function test_kos_card_shows_marketplace_facility_separator(): void
+    public function test_kos_card_shows_facilities_as_chips_without_separator(): void
     {
         $kos = $this->cardKos('Kos Dot');
         $this->attachKamarFacilities($kos, ['WiFi', 'AC']);
@@ -75,8 +75,10 @@ class Phase48TenantMarketplacePolishTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Kos Dot');
-        // dot separator between facilities
-        $response->assertSee('<span class="mx-1 text-slate-300 dark:text-slate-600">', false);
+        $response->assertSee('WiFi');
+        $response->assertSee('AC');
+        // Chip sudah punya latar sendiri; titik pemisah dihapus agar tidak renggang.
+        $response->assertDontSee('<span class="mx-1 text-slate-300 dark:text-slate-600">', false);
     }
 
     public function test_kos_card_shows_price_and_detail_cta(): void

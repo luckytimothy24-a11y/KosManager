@@ -47,11 +47,15 @@
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
-        if (localStorage.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        (function () {
+            const stored = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (stored === 'dark' || (!stored && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
     </script>
     <style>
         [x-cloak] { display: none !important; }
@@ -66,7 +70,7 @@
         }
     </style>
 </head>
-<body class="font-sans antialiased bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+<body class="font-sans antialiased bg-surface-light dark:bg-surface-dark text-slate-700 dark:text-slate-300">
     <a href="#main-content"
        class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-500 focus:text-white focus:text-sm focus:font-semibold"
        aria-label="Lewati ke konten utama">Lewati ke konten utama</a>
@@ -96,7 +100,7 @@
         <div class="flex-1 min-w-0 flex flex-col min-h-screen transition-all duration-300" :class="{ 'lg:ml-64': !sidebarCollapsed, 'lg:ml-20': sidebarCollapsed }">
 
             {{-- TOPBAR --}}
-            <header class="relative bg-slate-100/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700 sticky top-0 z-30">
+            <header class="relative bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700 sticky top-0 z-30">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-3">
                         <button @click="sidebarOpen = !sidebarOpen"
@@ -126,6 +130,17 @@
                     </div>
 
 <div class="flex items-center gap-2">
+                        {{-- Theme Toggle (Mobile + Desktop accessible in topbar) --}}
+                        <button type="button"
+                                @click="
+                                    document.documentElement.classList.toggle('dark');
+                                    localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                                "
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
+                                aria-label="Ganti mode tampilan">
+                            <i class="ri-moon-line text-xl dark:hidden"></i>
+                            <i class="ri-sun-line text-xl hidden dark:block"></i>
+                        </button>
                         {{-- Mobile Tenant Search (Icon Trigger) --}}
                         @if(auth()->check() && auth()->user()->isTenant())
                             <div class="sm:hidden" x-data="{ searchOpen: false }">

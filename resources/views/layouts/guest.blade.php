@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#a88468">
+    <meta name="theme-color" content="#f97316">
     <title>{{ config('app.name', 'KosManager') }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -35,14 +35,14 @@
     $guestAuthRoutes = ['login', 'register', 'password.request', 'password.email', 'password.reset', 'password.store', 'password.confirm', 'verification.notice', 'verification.verify'];
     $showGuestNav = !in_array($guestRoute, $guestAuthRoutes, true);
 @endphp
-<body class="min-h-screen bg-white font-sans text-slate-700 antialiased dark:bg-slate-950 dark:text-slate-200">
+<body class="min-h-screen bg-surface-light font-sans text-slate-700 antialiased dark:bg-surface-dark dark:text-slate-300">
     <a href="#main-content"
        class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-600 focus:text-white focus:text-sm focus:font-semibold"
        aria-label="Lewati ke konten utama">Lewati ke konten utama</a>
 
     <div class="min-h-screen flex">
         {{-- Panel Branding (kiri, hanya layar besar) --}}
-        <div class="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary-50 to-white p-10 dark:from-slate-950 dark:to-slate-900 lg:flex lg:w-[44%] xl:w-[42%] xl:p-14">
+        <div class="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary-50 to-surface-light p-10 dark:from-slate-950 dark:to-surface-dark lg:flex lg:w-[44%] xl:w-[42%] xl:p-14">
             {{-- Dekorasi subtle --}}
             <div class="absolute -top-32 -right-32 h-[30rem] w-[30rem] rounded-full bg-primary-100/50 blur-3xl dark:bg-primary-500/5"></div>
             <div class="absolute -bottom-40 -left-20 h-[28rem] w-[28rem] rounded-full bg-primary-50/60 blur-3xl dark:bg-primary-500/5"></div>
@@ -85,7 +85,7 @@
         </div>
 
         {{-- Area Form (kanan) --}}
-        <div class="relative flex min-h-screen flex-1 flex-col overflow-hidden bg-white dark:bg-slate-950">
+        <div class="relative flex min-h-screen flex-1 flex-col overflow-hidden bg-surface-light dark:bg-surface-dark">
             {{-- Dekorasi subtle --}}
             <div class="absolute top-0 right-0 h-[40rem] w-[40rem] translate-x-1/2 -translate-y-1/2 rounded-full bg-primary-50/40 blur-3xl dark:bg-primary-500/5"></div>
             <div class="absolute bottom-0 left-0 h-[30rem] w-[30rem] -translate-x-1/2 translate-y-1/2 rounded-full bg-primary-50/30 blur-3xl dark:bg-primary-500/5"></div>

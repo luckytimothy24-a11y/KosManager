@@ -9,15 +9,15 @@
         
         .receipt { max-width: 100%; padding: 20px; }
         
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #a88468; padding-bottom: 15px; }
-        .header h1 { font-size: 16px; color: #a88468; margin-bottom: 2px; letter-spacing: 1px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #f97316; padding-bottom: 15px; }
+        .header h1 { font-size: 16px; color: #f97316; margin-bottom: 2px; letter-spacing: 1px; }
         .header h2 { font-size: 11px; color: #666; font-weight: normal; }
-        .header .brand { font-size: 18px; font-weight: 800; color: #574136; margin-bottom: 4px; }
+        .header .brand { font-size: 18px; font-weight: 800; color: #c2410c; margin-bottom: 4px; }
         
         .receipt-meta { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 10px; color: #666; }
         
         .section { margin-bottom: 15px; }
-        .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #a88468; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 8px; }
+        .section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #f97316; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; margin-bottom: 8px; }
         
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; }
         .info-row { display: flex; justify-content: space-between; padding: 3px 0; }
@@ -28,17 +28,17 @@
         .breakdown td { padding: 4px 0; }
         .breakdown .label { color: #666; }
         .breakdown .amount { text-align: right; font-weight: 600; }
-        .breakdown .total-row { border-top: 2px solid #a88468; font-size: 13px; }
-        .breakdown .total-row td { padding-top: 8px; font-weight: 800; color: #574136; }
+        .breakdown .total-row { border-top: 2px solid #f97316; font-size: 13px; }
+        .breakdown .total-row td { padding-top: 8px; font-weight: 800; color: #c2410c; }
         .breakdown .discount { color: #16a34a; }
         .breakdown .penalty { color: #dc2626; }
         
-        .terbilang { margin-top: 8px; padding: 8px 10px; background: #f8f6f4; border-radius: 4px; font-style: italic; font-size: 10px; color: #666; }
+        .terbilang { margin-top: 8px; padding: 8px 10px; background: #fff7ed; border-radius: 4px; font-style: italic; font-size: 10px; color: #666; }
         
         .verification { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #d1d5db; font-size: 10px; color: #666; }
         
         .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #e5e7eb; text-align: center; font-size: 9px; color: #999; }
-        .footer .line { width: 60px; height: 1px; background: #a88468; margin: 8px auto; }
+        .footer .line { width: 60px; height: 1px; background: #f97316; margin: 8px auto; }
     </style>
 </head>
 <body>

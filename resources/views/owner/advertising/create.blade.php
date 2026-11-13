@@ -300,9 +300,9 @@
                                 </div>
                                 <div class="p-4">
                                     <h3 class="font-bold text-slate-900 dark:text-slate-50 line-clamp-1" x-text="previewKos ? previewKos.name : ''"></h3>
-                                    <p class="mt-1 text-xs text-slate-400 dark:text-slate-500 flex items-start gap-1 line-clamp-1">
-                                        <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500"></i>
-                                        <span x-text="previewKos ? previewKos.address : ''"></span>
+                                    <p class="mt-1 flex items-start gap-1 text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+                                        <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500" aria-hidden="true"></i>
+                                        <span class="min-w-0 line-clamp-2 break-words" x-text="previewKos ? previewKos.address : ''"></span>
                                     </p>
                                     <div class="mt-2.5 flex flex-wrap gap-1.5" x-show="previewKos && previewKos.facility_tags && previewKos.facility_tags.length">
                                         <template x-for="tag in (previewKos ? previewKos.facility_tags : [])" :key="tag">
@@ -311,16 +311,16 @@
                                             </span>
                                         </template>
                                     </div>
-                                    <div class="mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.08] flex items-end justify-between gap-3">
+                                    <div class="mt-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-2 border-t border-slate-100 pt-3 dark:border-white/[0.08]">
                                         <div class="min-w-0">
                                             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mulai dari</p>
                                             <template x-if="previewKos && previewKos.harga_mulai">
-                                                <p class="text-base font-bold text-slate-900 dark:text-slate-50 leading-tight">
+                                                <p class="whitespace-nowrap text-base font-bold leading-tight text-slate-900 dark:text-slate-50">
                                                     Rp <span x-text="previewKos.harga_mulai.toLocaleString('id-ID')"></span><span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/bln</span>
                                                 </p>
                                             </template>
                                             <template x-if="previewKos && !previewKos.harga_mulai && previewKos.harga_harian_mulai">
-                                                <p class="text-base font-bold text-slate-900 dark:text-slate-50 leading-tight">
+                                                <p class="whitespace-nowrap text-base font-bold leading-tight text-slate-900 dark:text-slate-50">
                                                     Rp <span x-text="previewKos.harga_harian_mulai.toLocaleString('id-ID')"></span><span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/hr</span>
                                                 </p>
                                             </template>
@@ -328,8 +328,8 @@
                                                 <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
                                             </template>
                                         </div>
-                                        <span class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold text-white bg-primary-500 px-3.5 py-2 rounded-xl min-h-[44px]">
-                                            Lihat Kos <i class="ri-arrow-right-line"></i>
+                                        <span class="ml-auto inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-primary-500 px-3.5 py-2 text-xs font-bold text-white min-h-[44px]">
+                                            Lihat Kos <i class="ri-arrow-right-line" aria-hidden="true"></i>
                                         </span>
                                     </div>
                                     <p class="mt-3 pt-2 border-t border-slate-100 dark:border-white/[0.08] inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400">

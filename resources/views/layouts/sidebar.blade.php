@@ -44,7 +44,7 @@
 
  {{-- Sidebar: light = putih premium, dark = slate-950 — berlaku untuk SEMUA role --}}
 <aside id="main-sidebar"
-    class="fixed top-0 left-0 z-40 w-64 h-dvh flex flex-col border-r transition-all duration-300 lg:translate-x-0 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100"
+    class="fixed top-0 left-0 z-40 w-64 h-dvh flex flex-col border-r transition-all duration-300 lg:translate-x-0 bg-surface-light dark:bg-surface-dark border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
     :class="{
         'translate-x-0': sidebarOpen,
         '-translate-x-full lg:translate-x-0': !sidebarOpen,
@@ -52,7 +52,7 @@
         'lg:w-64': !sidebarCollapsed
     }">
 
-<div class="flex items-center gap-3 px-5 h-16 border-b shrink-0 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 transition-all"
+<div class="flex items-center gap-3 px-5 h-16 border-b shrink-0 bg-surface-card dark:bg-surface-elevated border-slate-200 dark:border-slate-700 transition-all"
      :class="{ 'lg:px-2 lg:gap-1': sidebarCollapsed }">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br {{ $roleAccent }} flex items-center justify-center shadow-lg shadow-black/5 dark:shadow-black/20 shrink-0">
             <span class="text-white font-black text-xs">K</span>
@@ -85,15 +85,15 @@
         @if(!$user->isTenant())
             <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                      {{ $isActive('dashboard') ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                      {{ $isActive('dashboard') ? 'bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                title="Dashboard"
                aria-label="Dashboard"
                @if($isActive('dashboard')) aria-current="page" @endif>
                 <span class="relative flex items-center justify-center w-5 shrink-0">
                     @if($isActive('dashboard'))
-                        <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-slate-100 rounded-full" :class="{ 'lg:hidden': sidebarCollapsed }"></span>
-                        <span class="dark:hidden absolute -left-3 w-[3px] h-5 bg-slate-900 rounded-full" :class="{ 'lg:hidden': sidebarCollapsed }"></span>
+                        <span class="hidden dark:block absolute -left-3 w-[3px] h-5 bg-primary-400 rounded-full" :class="{ 'lg:hidden': sidebarCollapsed }"></span>
+                        <span class="dark:hidden absolute -left-3 w-[3px] h-5 bg-primary-600 rounded-full" :class="{ 'lg:hidden': sidebarCollapsed }"></span>
                     @endif
                     <i class="ri-dashboard-3-line text-[18px]"></i>
                 </span>
@@ -205,7 +205,7 @@
                     @endphp
                     <a href="{{ route($item['route']) }}"
                        class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                              {{ $active ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                              {{ $active ? 'bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                        :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                        title="{{ $item['label'] }}"
                        aria-label="{{ $item['label'] }}"
@@ -261,7 +261,7 @@
                     @endphp
                     <a href="{{ route($routeName) }}"
                        class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                              {{ $active ? 'bg-slate-800 text-white dark:bg-slate-700 dark:text-slate-100 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                              {{ $active ? 'bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                        :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                        title="{{ $item['label'] }}"
                        aria-label="{{ $item['label'] }}"
@@ -302,7 +302,7 @@
         @endif
     </nav>
 
-    <div class="px-3 py-4 border-t shrink-0 bg-slate-100 dark:bg-slate-800 border-slate-100 dark:border-white/5"
+    <div class="px-3 py-4 border-t shrink-0 bg-surface-card dark:bg-surface-elevated border-slate-100 dark:border-white/5"
          :class="{ 'lg:px-2': sidebarCollapsed }">
     <button type="button" x-data
                 @click="
@@ -312,7 +312,7 @@
                 class="group flex w-full min-h-[44px] items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all"
                 :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                 aria-label="Ganti mode tampilan">
-            <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-100/10 text-slate-600 dark:text-slate-300 transition">
+            <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 transition">
                 <i class="ri-moon-line text-[18px] dark:hidden"></i>
                 <i class="ri-sun-line text-[18px] hidden dark:block"></i>
             </span>
