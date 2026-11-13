@@ -35,7 +35,8 @@ class SchedulerResilienceTest extends TestCase
         $this->artisan('tagihan:mark-overdue')->assertSuccessful();
 
         $this->assertDatabaseHas('tagihans', ['id' => $tagihan->id, 'status' => 'overdue']);
-        Mail::assertQueued(KosManagerMail::class, 1);
+        // Satu email untuk tenant + satu untuk owner, tidak berlipat saat diulang.
+        Mail::assertQueued(KosManagerMail::class, 2);
     }
 
     public function test_expire_booking_command_is_idempotent(): void
@@ -97,7 +98,8 @@ class SchedulerResilienceTest extends TestCase
         $this->artisan('tagihan:remind-due-soon', ['--days' => 3])->assertSuccessful();
         $this->artisan('tagihan:remind-due-soon', ['--days' => 3])->assertSuccessful();
 
-        $this->assertSame(1, Notification::where('type', 'billing')
+        // Satu notifikasi untuk tenant + satu untuk owner.
+        $this->assertSame(2, Notification::where('type', 'billing')
             ->where('title', 'Pengingat Jatuh Tempo')
             ->count());
     }
