@@ -179,8 +179,6 @@
                         ->whereIn('verification_status', ['pending', 'approved', 'rejected'])
                         ->orderByDesc('id')
                         ->first();
-                    $bookingDistribution = \App\Models\PaymentDistribution::where('booking_id', $booking->id)->first();
-                    $ownerBank = \App\Models\OwnerBankAccount::where('owner_id', auth()->id())->first();
                 @endphp
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
                     <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 pb-4 mb-4 border-b border-slate-100 dark:border-white/10">
@@ -220,17 +218,6 @@
                                 <div class="mt-3 rounded-xl border border-blue-100 dark:border-blue-500/20 bg-blue-50/70 dark:bg-blue-500/[0.06] px-4 py-3">
                                     <p class="text-sm font-bold text-blue-800 dark:text-blue-300">Pembayaran terverifikasi</p>
                                     <p class="text-sm text-blue-800 dark:text-blue-300/90">Booking dapat dikonfirmasi. Klik Approve Booking di bawah.</p>
-                                    @if($bookingDistribution)
-                                        <p class="mt-2 text-xs text-blue-700/80 dark:text-blue-300/80">
-                                            Distribusi: <strong>{{ $bookingDistribution->status === 'pending' ? 'Menunggu konfirmasi booking' : 'Siap pencairan' }}</strong>
-                                            · Owner: Rp {{ number_format((float) $bookingDistribution->owner_amount, 0, ',', '.') }}
-                                            @if($ownerBank)
-                                                · {{ $ownerBank->bank_name }} {{ $ownerBank->maskedAccountNumber() }}
-                                            @else
-                                                · <a href="{{ route(($prefix ?? 'owner').'.bank-account.edit') }}" class="underline">Atur rekening</a>
-                                            @endif
-                                        </p>
-                                    @endif
                                 </div>
                             @endif
                         </div>

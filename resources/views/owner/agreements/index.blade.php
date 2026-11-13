@@ -1,7 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
         <x-page-header title="Perjanjian Komisi" description="Kelola komisi per kos untuk Pemilik Kos Asli.">
-            <x-button href="{{ route('owner.payouts.index') }}" type="secondary"><i class="ri-hand-coin-line"></i> Payout</x-button>
         </x-page-header>
     </x-slot>
 

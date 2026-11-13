@@ -129,8 +129,6 @@
                     $groups['Keuangan'] = [
                         $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
                         $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
-                        $navItem('owner.distribution.index', 'Dana Booking Masuk', 'ri-wallet-3-line'),
-                        $navItem('owner.payouts.index', 'Transfer ke Pemilik Kos', 'ri-send-plane-line'),
                     ];
                     $groups['Sistem'] = [
                         $navItem('super-admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
@@ -159,8 +157,6 @@
                     $groups['Keuangan'] = [
                         $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
                         $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
-                        $navItem('owner.distribution.index', 'Dana Booking Masuk', 'ri-wallet-3-line'),
-                        $navItem('owner.payouts.index', 'Transfer ke Pemilik Kos', 'ri-send-plane-line'),
                     ];
                     $groups['Komunikasi'] = [
                         $navItem('owner.messages.index', 'Pesan Tenant', 'ri-customer-service-2-line', $unreadMessages),
@@ -173,6 +169,7 @@
                     $groups['Manajemen'] = [
                         $navItem('admin.kos.index', 'Kelola Kos', 'ri-building-2-line'),
                         $navItem('admin.kamar.index', 'Kelola Kamar', 'ri-door-open-line'),
+                        $navItem('admin.owners.index', 'Pengelola Owner', 'ri-user-settings-line'),
                     ];
                     $groups['Transaksi'] = [
                         $navItem('admin.booking.index', 'Booking', 'ri-calendar-check-line', $bookingPending),

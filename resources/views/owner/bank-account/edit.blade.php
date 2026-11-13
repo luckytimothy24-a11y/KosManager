@@ -1,7 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
         <x-page-header title="Rekening Pembayaran" description="Rekening tujuan pembayaran tenant. Transfer dilakukan langsung dari tenant ke rekening Anda.">
-            <x-button href="{{ route('owner.distribution.index') }}" type="secondary"><i class="ri-wallet-3-line"></i> Distribusi</x-button>
         </x-page-header>
     </x-slot>
 
