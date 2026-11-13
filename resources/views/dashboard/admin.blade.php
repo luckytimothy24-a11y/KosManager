@@ -90,7 +90,7 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div class="metric-card">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-login-box-line text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div class="min-w-0">
@@ -101,7 +101,7 @@
             </div>
             <div class="metric-card">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-logout-box-line text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div class="min-w-0">
@@ -112,7 +112,7 @@
             </div>
             <div class="metric-card">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-checkbox-circle-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div class="min-w-0">
@@ -123,7 +123,7 @@
             </div>
             <div class="metric-card">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-lock-line text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div class="min-w-0">
@@ -134,7 +134,7 @@
             </div>
             <div class="metric-card">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-wallet-3-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div class="min-w-0">
@@ -145,7 +145,7 @@
             </div>
             <a href="{{ route('admin.damage-reports.index') }}" class="metric-card hover:border-amber-200 dark:hover:border-amber-500/30 transition">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-tools-line text-amber-600 dark:text-amber-400"></i>
                     </div>
                     <div class="min-w-0">
@@ -156,7 +156,7 @@
             </a>
             <a href="{{ route('admin.checkout.index') }}" class="metric-card hover:border-purple-200 dark:hover:border-purple-500/30 transition">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-500/10 flex items-center justify-center shrink-0">
                         <i class="ri-logout-box-line text-purple-600 dark:text-purple-400"></i>
                     </div>
                     <div class="min-w-0">

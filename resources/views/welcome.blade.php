@@ -43,7 +43,7 @@
     <header class="bg-white/95 dark:bg-surface-elevated/95 backdrop-blur border-b border-gray-200 dark:border-white/10 sticky top-0 z-50">
         <div class="max-w-[1170px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
             <a href="/" class="flex items-center gap-2 shrink-0" aria-label="KosManager — beranda">
-                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center shadow-sm shadow-primary-500/30">
+                <div class="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center">
                     <span class="text-white font-bold text-xs">K</span>
                 </div>
                 <span class="text-lg font-bold text-gray-800 dark:text-slate-50 tracking-tight">KosManager</span>
@@ -185,9 +185,10 @@
     @endif
 
       {{-- ============================== HERO — primary warm ============================== --}}
-     <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-warn-50/40 dark:from-surface-elevated dark:via-surface-elevated dark:to-primary-900/10">
-         <div class="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-gradient-to-br from-primary-500/12 to-warn-400/10 blur-3xl"></div>
-         <div class="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-gradient-to-br from-primary-400/10 to-primary-600/8 blur-3xl"></div>
+     <section class="relative overflow-hidden bg-slate-50 dark:bg-surface-elevated">
+
+         <div class=" bg-gradient-to-br from-primary-500/12 to-warn-400/10 blur-3xl"></div>
+   
         <div class="max-w-[1170px] mx-auto px-4 sm:px-6 pt-14 pb-12 md:pt-20 md:pb-16 grid lg:grid-cols-2 gap-12 items-center fade-in">
             <div class="text-center lg:text-left">
                 <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-300 bg-primary-50 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20 px-3 py-1.5 rounded-full">
@@ -628,8 +629,8 @@
     {{-- ============================== CTA AKHIR — editorial style ============================== --}}
     <section class="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 editorial-section">
         <div class="pointer-events-none absolute inset-0 hero-pattern"></div>
-        <div class="pointer-events-none absolute -top-32 -right-32 h-80 w-80 rounded-full bg-white/5 blur-3xl"></div>
-        <div class="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-black/10 blur-3xl"></div>
+        <div class=" bg-white/5 blur-3xl"></div>
+        <div class=" bg-black/10 blur-3xl"></div>
         <div class="relative max-w-[1170px] mx-auto px-4 sm:px-6 text-center">
             <div class="mb-4">
                 <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-black/20">
