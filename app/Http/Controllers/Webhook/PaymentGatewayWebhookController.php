@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
+use App\Services\EscrowService;
 use App\Services\NotificationService;
 use App\Services\PaymentDistributionService;
 use App\Services\PaymentGateway\PaymentGatewayManager;
@@ -78,6 +79,12 @@ class PaymentGatewayWebhookController extends Controller
             $tagihan = $locked->tagihan;
             if ($tagihan && $tagihan->status !== Tagihan::STATUS_PAID) {
                 $tagihan->update(['status' => Tagihan::STATUS_PAID]);
+            }
+
+            // H-01: Buat escrow setelah payment diverifikasi.
+            //      Melakukan booking lock dan menciptakan pending escrow yang idempotent.
+            if ($locked->booking_id) {
+                app(EscrowService::class)->holdEscrow($locked);
             }
 
             // Booking payment → catat distribution (pending; ready setelah booking confirm).

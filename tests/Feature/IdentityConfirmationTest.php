@@ -256,6 +256,8 @@ class IdentityConfirmationTest extends TestCase
             'identity_confirmed_at' => now(),
         ]);
 
+        $this->createBookingPaymentWithEscrow($this->booking);
+
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $this->booking));
 
         $response->assertRedirect(route('owner.booking.index'));
@@ -326,6 +328,8 @@ class IdentityConfirmationTest extends TestCase
             'identity_data_submitted_at' => now(),
             'identity_confirmed_at' => now(),
         ]);
+
+        $this->createBookingPaymentWithEscrow($this->booking);
 
         $this->actingAs($this->owner)->post(route('owner.checkin.process', $this->booking));
 

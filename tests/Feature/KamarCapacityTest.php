@@ -206,6 +206,8 @@ class KamarCapacityTest extends TestCase
             'identity_confirmed_at' => now(),
         ]);
 
+        $this->createBookingPaymentWithEscrow($booking);
+
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
             'notes' => 'Check-in lancar',
             'identity_number' => '3201234567890001',

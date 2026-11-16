@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Models\Tagihan;
 use App\Services\AuditLogService;
+use App\Services\EscrowService;
 use App\Services\NotificationService;
 use App\Services\PaymentDistributionService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -141,6 +142,12 @@ class PembayaranController extends Controller
                     $locked->tagihan->update(['status' => Tagihan::STATUS_PAID]);
                 }
 
+                // H-01: Buat escrow setelah payment diverifikasi.
+                //      Melakukan booking lock dan menciptakan pending escrow yang idempotent.
+                if ($locked->booking_id) {
+                    app(EscrowService::class)->holdEscrow($locked);
+                }
+
                 // Booking payment → catat distribution (pending; ready setelah booking confirm).
                 if ($locked->booking_id) {
                     app(PaymentDistributionService::class)->recordFromApprovedPayment($locked);
@@ -218,6 +225,12 @@ class PembayaranController extends Controller
             // Payment approved ≠ booking approved. Booking tetap pending sampai owner confirm.
             if ($locked->tagihan_id) {
                 $locked->tagihan->update(['status' => Tagihan::STATUS_PAID]);
+            }
+
+            // H-01: Buat escrow setelah payment diverifikasi.
+            //      Melakukan booking lock dan menciptakan pending escrow yang idempotent.
+            if ($locked->booking_id) {
+                app(EscrowService::class)->holdEscrow($locked);
             }
 
             // Booking payment → catat distribution (status pending; ready setelah booking confirm).

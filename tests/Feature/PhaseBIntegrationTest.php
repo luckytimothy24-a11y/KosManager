@@ -181,6 +181,9 @@ class PhaseBIntegrationTest extends TestCase
             'phone' => '08123456789',
             'address' => 'Jl Test',
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
+
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), ['notes' => 'ok']);
         $response->assertRedirect();
         $kontrak = Kontrak::where('kamar_id', $kamar->id)->latest()->first();
@@ -207,6 +210,9 @@ class PhaseBIntegrationTest extends TestCase
             'phone' => '08123456789',
             'address' => 'Jl Test',
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
+
         $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), ['notes' => 'ok'])->assertRedirect();
         $kontrak = Kontrak::where('kamar_id', $kamar->id)->latest()->first();
         $this->assertEquals('shared', $kontrak->billing_mode);
@@ -231,6 +237,9 @@ class PhaseBIntegrationTest extends TestCase
             'phone' => '08123456789',
             'address' => 'Jl Test',
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
+
         $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), ['notes' => 'ok'])->assertRedirect();
         $kontrak = Kontrak::where('kamar_id', $kamar->id)->latest()->first();
         $this->assertEquals('personal', $kontrak->billing_mode);
@@ -255,6 +264,9 @@ class PhaseBIntegrationTest extends TestCase
             'phone' => '08123456789',
             'address' => 'Jl Test',
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
+
         $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), ['notes' => 'ok']);
         $kontrak = Kontrak::where('kamar_id', $kamar->id)->latest()->first();
         $kamar->update(['billing_mode' => 'personal']);

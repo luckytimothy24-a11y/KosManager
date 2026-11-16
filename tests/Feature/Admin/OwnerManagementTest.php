@@ -179,18 +179,34 @@ class OwnerManagementTest extends TestCase
     public function test_query_efficient_no_n_plus_one(): void
     {
         $admin = $this->makeAdmin();
-        $owners = User::factory()->count(5)->create(['role' => 'owner']);
-        foreach ($owners as $o) {
-            $k = Kos::factory()->create(['owner_id' => $o->id]);
-            $admin->assignedKos()->attach($k->id);
-        }
+        $firstOwner = $this->makeOwner('Owner 1');
+        $admin->assignedKos()->attach(Kos::factory()->create(['owner_id' => $firstOwner->id])->id);
+
+        $this->actingAs($admin);
 
         \DB::enableQueryLog();
-        $this->actingAs($admin)->get(route('admin.owners.index'))->assertStatus(200);
-        $queries = \DB::getQueryLog();
+        $this->get(route('admin.owners.index'))->assertStatus(200);
+        $queriesForOneOwner = count(\DB::getQueryLog());
+        \DB::flushQueryLog();
+
+        // Menambah owner/kos tidak boleh menambah query per baris. Bandingkan
+        // pertumbuhan query, bukan angka absolut, agar query global (mis. badge
+        // support chat) tidak dianggap sebagai N+1.
+        foreach (range(2, 5) as $i) {
+            $owner = $this->makeOwner("Owner {$i}");
+            $admin->assignedKos()->attach(Kos::factory()->create(['owner_id' => $owner->id])->id);
+        }
+
+        \DB::flushQueryLog();
+        $this->get(route('admin.owners.index'))->assertStatus(200);
+        $queriesForFiveOwners = count(\DB::getQueryLog());
         \DB::disableQueryLog();
 
-        $this->assertLessThan(15, count($queries), 'Too many queries, likely N+1');
+        $this->assertLessThanOrEqual(
+            $queriesForOneOwner + 2,
+            $queriesForFiveOwners,
+            "Query bertambah dari {$queriesForOneOwner} ke {$queriesForFiveOwners} saat owner bertambah, kemungkinan N+1."
+        );
     }
 
     public function test_show_pagination_nine_per_page(): void

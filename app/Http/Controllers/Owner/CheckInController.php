@@ -8,9 +8,12 @@ use App\Models\Booking;
 use App\Models\CheckIn;
 use App\Models\Kamar;
 use App\Models\Kontrak;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
+use App\Models\WalletTransaction;
 use App\Services\AuditLogService;
 use App\Services\BillingService;
+use App\Services\EscrowService;
 use App\Services\NotificationService;
 use App\Support\NotificationType;
 use Illuminate\Http\Request;
@@ -148,7 +151,9 @@ class CheckInController extends Controller
         try {
             $result = \DB::transaction(function () use ($booking, $request) {
                 $locked = $this->lockBooking($booking);
+                abort_unless($locked->status === Booking::STATUS_APPROVED, 400, 'Booking belum disetujui.');
                 $this->validateBookingPrerequisites($locked, $request->user());
+                $this->validatePaymentAndEscrow($locked);
 
                 $kamar = $this->lockAndValidateKamar($locked);
 
@@ -161,7 +166,11 @@ class CheckInController extends Controller
 
                 $this->createCheckInRecord($penghuni, $kamar, $request);
 
-                // Booking completed SETELAH check-in sukses.
+                // H-01: Settlement harus sukses sebelum booking completed.
+                $settlement = app(EscrowService::class)->settleEscrow($locked);
+                abort_unless(($settlement['ok'] ?? false), 400, 'Settlement escrow gagal.');
+
+                // Booking completed SETELAH check-in dan settlement sukses.
                 $this->completeBooking($locked);
 
                 // Update kamar status occupancy-aware
@@ -230,6 +239,38 @@ class CheckInController extends Controller
         if ($authUser->isAdmin() && ! $authUser->canAccessKos((int) $locked->kos_id)) {
             abort(403, 'Bukan kos yang ditugaskan kepada Anda.');
         }
+    }
+
+    /**
+     * H-01: Payment harus approved sesuai nominal server dan tepat satu escrow pending
+     * yang benar-benar terhubung ke payment tersebut.
+     */
+    private function validatePaymentAndEscrow(Booking $locked): void
+    {
+        abort_unless($locked->hasApprovedPaymentInExpectedAmount(), 400, 'Pembayaran booking belum diverifikasi.');
+
+        $escrows = WalletTransaction::where('booking_id', $locked->id)
+            ->where('type', 'escrow_in')
+            ->where('status', 'pending')
+            ->lockForUpdate()
+            ->get();
+
+        abort_unless($escrows->count() === 1, 400, 'Escrow booking tidak valid.');
+
+        $escrow = $escrows->first();
+        $payment = Pembayaran::whereKey($escrow->pembayaran_id)->first();
+        $expected = $locked->expectedBookingPaymentAmount();
+
+        abort_unless(
+            $payment
+            && (int) $payment->booking_id === (int) $locked->id
+            && $payment->verification_status === Pembayaran::STATUS_APPROVED
+            && $expected > 0
+            && round((float) $payment->amount, 2) === round($expected, 2)
+            && round((float) $escrow->amount, 2) === round($expected, 2),
+            400,
+            'Escrow booking tidak sesuai pembayaran.'
+        );
     }
 
     /**

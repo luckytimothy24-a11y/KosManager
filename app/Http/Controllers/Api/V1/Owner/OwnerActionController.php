@@ -12,6 +12,7 @@ use App\Models\Pembayaran;
 use App\Models\Tagihan;
 use App\Models\User;
 use App\Services\AuditLogService;
+use App\Services\EscrowService;
 use App\Services\NotificationService;
 use App\Services\PaymentDistributionService;
 use Illuminate\Http\JsonResponse;
@@ -54,6 +55,12 @@ class OwnerActionController extends Controller
             // Payment approved ≠ booking approved.
             if ($locked->tagihan_id) {
                 $locked->tagihan->update(['status' => Tagihan::STATUS_PAID]);
+            }
+
+            // H-01: Buat escrow setelah payment diverifikasi.
+            //      Melakukan booking lock dan menciptakan pending escrow yang idempotent.
+            if ($locked->booking_id) {
+                app(EscrowService::class)->holdEscrow($locked);
             }
 
             if ($locked->booking_id) {

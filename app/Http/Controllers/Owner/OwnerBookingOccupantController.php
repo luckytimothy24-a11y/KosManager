@@ -8,7 +8,9 @@ use App\Models\BookingOccupant;
 use App\Models\CheckIn;
 use App\Models\Kamar;
 use App\Models\Kontrak;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
+use App\Models\WalletTransaction;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use App\Support\NotificationType;
@@ -149,6 +151,33 @@ class OwnerBookingOccupantController extends Controller
             abort_unless($lockedOccupant && $lockedOccupant->status === BookingOccupant::STATUS_ACCEPTED, 400, 'Occupant tidak valid.');
             abort_unless($lockedOccupant->identity_status === BookingOccupant::IDENTITY_CONFIRMED, 400, 'Identitas belum dikonfirmasi.');
             abort_unless($lockedOccupant->penghuni_id === null, 400, 'Sudah check-in.');
+
+            // H-01: Payment harus approved dan tepat satu escrow pending yang
+            // benar-benar terhubung ke payment tersebut.
+            // Evidence-only: tidak settle dan tidak menyelesaikan booking.
+            abort_unless($booking->hasApprovedPaymentInExpectedAmount(), 400, 'Pembayaran booking belum diverifikasi.');
+
+            $pendingEscrows = WalletTransaction::where('booking_id', $booking->id)
+                ->where('type', 'escrow_in')
+                ->where('status', 'pending')
+                ->get();
+
+            abort_unless($pendingEscrows->count() === 1, 400, 'Escrow booking tidak valid.');
+
+            $escrow = $pendingEscrows->first();
+            $payment = Pembayaran::whereKey($escrow->pembayaran_id)->first();
+            $expected = $booking->expectedBookingPaymentAmount();
+
+            abort_unless(
+                $payment
+                && (int) $payment->booking_id === (int) $booking->id
+                && $payment->verification_status === Pembayaran::STATUS_APPROVED
+                && $expected > 0
+                && round((float) $payment->amount, 2) === round($expected, 2)
+                && round((float) $escrow->amount, 2) === round($expected, 2),
+                400,
+                'Escrow booking tidak sesuai pembayaran.'
+            );
 
             $kamar = Kamar::whereKey($booking->kamar_id)->lockForUpdate()->first();
             abort_unless($kamar && $kamar->status !== 'maintenance', 400, 'Kamar tidak tersedia.');

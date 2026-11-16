@@ -55,7 +55,7 @@ class P0SecurityRegressionTest extends TestCase
 
     private function confirmedBooking(Kos $kos, Kamar $kamar, User $tenant, User $confirmer): Booking
     {
-        return Booking::factory()->create([
+        $booking = Booking::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
@@ -68,6 +68,10 @@ class P0SecurityRegressionTest extends TestCase
             'identity_confirmed_by' => $confirmer->id,
             'end_date' => now()->addDays(5)->toDateString(),
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
+
+        return $booking;
     }
 
     private function penghuniInKos(Kos $kos, Kamar $kamar, User $user): Penghuni

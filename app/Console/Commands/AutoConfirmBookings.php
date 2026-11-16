@@ -40,6 +40,12 @@ class AutoConfirmBookings extends Command
                         return;
                     }
 
+                    // H-01: Booking hanya boleh completed jika payment approved
+                    // sesuai nominal server.
+                    if (! $locked->hasApprovedPaymentInExpectedAmount()) {
+                        return;
+                    }
+
                     if (! $this->hasVerifiedCheckInEvidence($locked)) {
                         return;
                     }

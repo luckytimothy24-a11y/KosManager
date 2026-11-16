@@ -61,7 +61,7 @@ class KosHubPaymentFlowTest extends TestCase
             'penghuni_id' => null,
             'tagihan_id' => null,
             'payment_method' => 'qris',
-            'amount' => 1510000, // sewa + service fee
+            'amount' => 1500000, // sesuai nominal server (harga booking)
             'gateway_reference' => 'TEST-BOOKING-001',
             'gateway_provider' => 'sandbox',
             'verification_status' => Pembayaran::STATUS_PENDING,
@@ -94,7 +94,7 @@ class KosHubPaymentFlowTest extends TestCase
             ->first();
 
         $this->assertNotNull($escrow);
-        $this->assertEquals(1510000, $escrow->amount);
+        $this->assertEquals(1500000, $escrow->amount);
     }
 
     /** @test */
@@ -105,6 +105,7 @@ class KosHubPaymentFlowTest extends TestCase
             'kos_id' => $this->kos->id,
             'kamar_id' => $this->kamar->id,
             'status' => Booking::STATUS_PENDING,
+            'price' => 1500000,
         ]);
 
         $pembayaran = Pembayaran::factory()->create([

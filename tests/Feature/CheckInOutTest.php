@@ -49,6 +49,8 @@ class CheckInOutTest extends TestCase
             'identity_confirmed_by' => $this->owner->id,
         ]);
 
+        $this->createBookingPaymentWithEscrow($booking);
+
         $response = $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
             'identity_number' => '3201234567890001',
             'phone' => '08123456789',
@@ -105,6 +107,8 @@ class CheckInOutTest extends TestCase
             'identity_confirmed_at' => now(),
             'identity_confirmed_by' => $admin->id,
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
 
         $response = $this->actingAs($admin)->post(route('admin.checkin.process', $booking), [
             'identity_number' => '3201234567890002',
@@ -227,6 +231,8 @@ class CheckInOutTest extends TestCase
             'rental_type' => 'monthly',
             'down_payment_amount' => 100000,
         ]);
+
+        $this->createBookingPaymentWithEscrow($booking);
 
         $this->actingAs($this->owner)->post(route('owner.checkin.process', $booking), [
             'notes' => 'Check-in lancar',

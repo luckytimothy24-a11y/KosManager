@@ -16,55 +16,85 @@ class EscrowService
      */
     public function holdEscrow(Pembayaran $pembayaran): ?WalletTransaction
     {
-        if (! $pembayaran->booking_id || ! $pembayaran->booking) {
+        if (! $pembayaran->booking_id) {
             return null;
         }
 
-        $booking = $pembayaran->booking;
-        $ownerId = (int) ($booking->kos->owner_id ?? 0);
-
-        if ($ownerId <= 0) {
-            return null;
-        }
-
-        return DB::transaction(function () use ($pembayaran, $booking, $ownerId) {
-            // Lock booking first to serialize escrow creation with settlement
-            $lockedBooking = Booking::whereKey($booking->id)->lockForUpdate()->first();
+        return DB::transaction(function () use ($pembayaran) {
+            // Lock booking lebih dulu agar escrow creation serial dengan settlement.
+            $lockedBooking = Booking::whereKey($pembayaran->booking_id)->lockForUpdate()->first();
 
             if (! $lockedBooking) {
                 return null;
             }
 
-            // Validasi ulang booking setelah lock
-            if (! in_array($lockedBooking->status, [Booking::STATUS_APPROVED], true)) {
+            // Escrow hanya untuk booking yang masih berjalan.
+            if (in_array($lockedBooking->status, [
+                Booking::STATUS_REJECTED,
+                Booking::STATUS_CANCELLED,
+                Booking::STATUS_EXPIRED,
+                Booking::STATUS_COMPLETED,
+            ], true)) {
                 return null;
             }
 
-            // Idempotent: cek existing
-            $existing = WalletTransaction::where('pembayaran_id', $pembayaran->id)
+            // Re-read payment tanpa lock tambahan. Caller verification sudah
+            // memegang payment lock; lock payment di sini akan membalik lock order.
+            $payment = Pembayaran::whereKey($pembayaran->id)->first();
+
+            if (! $payment || $payment->verification_status !== Pembayaran::STATUS_APPROVED) {
+                return null;
+            }
+
+            if ((int) $payment->booking_id !== (int) $lockedBooking->id) {
+                return null;
+            }
+
+            $expectedAmount = $lockedBooking->expectedBookingPaymentAmount();
+            if ($expectedAmount <= 0
+                || round((float) $payment->amount, 2) !== round($expectedAmount, 2)) {
+                return null;
+            }
+
+            $ownerId = (int) ($lockedBooking->kos->owner_id ?? 0);
+            if ($ownerId <= 0) {
+                return null;
+            }
+
+            $existing = WalletTransaction::where('pembayaran_id', $payment->id)
                 ->where('type', 'escrow_in')
-                ->first();
+                ->lockForUpdate()
+                ->get();
 
-            if ($existing) {
-                return $existing;
+            // Ambigu: lebih dari satu escrow untuk satu payment.
+            // Jangan repair otomatis dan jangan membuat escrow baru.
+            if ($existing->count() > 1) {
+                return null;
             }
 
-            // Validasi kesesuaian payment dengan booking terkunci
-            if ($lockedBooking->id !== $booking->id) {
-                return null;
+            if ($existing->count() === 1) {
+                $escrow = $existing->first();
+
+                if ((int) $escrow->booking_id !== (int) $lockedBooking->id
+                    || round((float) $escrow->amount, 2) !== round((float) $payment->amount, 2)
+                    || $escrow->status !== 'pending') {
+                    return null;
+                }
+
+                return $escrow;
             }
 
             return WalletTransaction::create([
                 'owner_id' => $ownerId,
-                'booking_id' => $booking->id,
-                'pembayaran_id' => $pembayaran->id,
+                'booking_id' => $lockedBooking->id,
+                'pembayaran_id' => $payment->id,
                 'type' => 'escrow_in',
-                'amount' => (int) $pembayaran->amount,
-                'description' => "Escrow pembayaran booking {$booking->booking_code}",
-                'reference_number' => $pembayaran->gateway_reference,
+                'amount' => (int) $payment->amount,
+                'description' => "Escrow pembayaran booking {$lockedBooking->booking_code}",
+                'reference_number' => $payment->gateway_reference,
                 'status' => 'pending',
                 'metadata' => [
-                    'gross_amount' => (int) $pembayaran->amount,
+                    'gross_amount' => (int) $payment->amount,
                     'commission_rate' => (int) (DB::table('settings')->where('key', 'commission_rate')->value('value') ?? 5),
                 ],
             ]);
