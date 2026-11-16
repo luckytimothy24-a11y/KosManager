@@ -182,14 +182,14 @@ class KosHubPaymentFlowTest extends TestCase
         $this->assertEquals(75500, $result['commission']); // 5% of 1,510,000
         $this->assertEquals(1434500, $result['owner_amount']);
 
-        // Verify completed escrow entry
+        // Verify completed escrow entry (gross owner entitlement; komisi dicatat terpisah)
         $completed = WalletTransaction::where('booking_id', $booking->id)
             ->where('type', 'escrow_in')
             ->where('status', 'completed')
             ->first();
 
         $this->assertNotNull($completed);
-        $this->assertEquals(1434500, $completed->amount);
+        $this->assertEquals(1510000, $completed->amount);
 
         // Verify commission entry
         $commission = WalletTransaction::where('booking_id', $booking->id)
@@ -198,6 +198,9 @@ class KosHubPaymentFlowTest extends TestCase
 
         $this->assertNotNull($commission);
         $this->assertEquals(-75500, $commission->amount);
+
+        // Saldo owner = gross - komisi, bukan net - komisi.
+        $this->assertEquals(1434500, $escrowService->getBalance($this->owner->id));
     }
 
     /** @test */

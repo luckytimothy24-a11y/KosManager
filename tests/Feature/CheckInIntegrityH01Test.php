@@ -11,6 +11,7 @@ use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\User;
 use App\Models\WalletTransaction;
+use App\Services\EscrowService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -225,7 +226,8 @@ class CheckInIntegrityH01Test extends TestCase
             ->firstOrFail();
 
         $this->assertSame(-75000, $commission->amount);
-        $this->assertSame(1425000, $ownerEntitlement->amount);
+        $this->assertSame(1500000, $ownerEntitlement->amount);
+        $this->assertSame(1425000, app(EscrowService::class)->getBalance($this->owner->id));
     }
 
     public function test_duplicate_checkin_is_rejected_without_extra_settlement(): void

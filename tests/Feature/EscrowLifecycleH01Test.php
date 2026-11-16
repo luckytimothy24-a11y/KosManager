@@ -250,6 +250,13 @@ class EscrowLifecycleH01Test extends TestCase
             ->where('status', 'completed')
             ->count());
 
+        $ownerEntry = WalletTransaction::where('booking_id', $booking->id)
+            ->where('type', 'escrow_in')
+            ->where('status', 'completed')
+            ->firstOrFail();
+        $this->assertSame(1500000, $ownerEntry->amount);
+        $this->assertSame(1425000, $this->escrowService->getBalance($this->owner->id));
+
         $second = $this->escrowService->settleEscrow($booking);
 
         $this->assertTrue($second['ok']);
@@ -262,6 +269,7 @@ class EscrowLifecycleH01Test extends TestCase
             ->where('type', 'escrow_in')
             ->where('status', 'completed')
             ->count());
+        $this->assertSame(1425000, $this->escrowService->getBalance($this->owner->id));
     }
 
     public function test_settle_escrow_fails_when_no_pending_escrow_exists(): void

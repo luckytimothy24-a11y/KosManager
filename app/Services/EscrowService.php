@@ -223,14 +223,16 @@ class EscrowService
                 ],
             ]);
 
-            // 2. Catat owner entitlement setelah komisi.
+            // 2. Catat owner entitlement GROSS. Komisi di atas menjadi pengurang
+            //    saldo, sehingga getBalance() = gross - komisi = hak bersih owner.
+            //    Jangan mencatat amount net di sini karena komisi akan terhitung dua kali.
             WalletTransaction::create([
                 'owner_id' => $ownerId,
                 'booking_id' => $lockedBooking->id,
                 'pembayaran_id' => $escrow->pembayaran_id,
                 'type' => 'escrow_in',
-                'amount' => $ownerAmount,
-                'description' => "Settlement escrow booking {$lockedBooking->booking_code} (setelah komisi)",
+                'amount' => $grossAmount,
+                'description' => "Settlement escrow booking {$lockedBooking->booking_code} (gross)",
                 'reference_number' => $escrow->reference_number,
                 'status' => 'completed',
                 'metadata' => [

@@ -11,6 +11,7 @@ use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\User;
 use App\Models\WalletTransaction;
+use App\Services\EscrowService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -122,6 +123,7 @@ class AutoConfirmBookingsH01Test extends TestCase
             ->where('type', 'escrow_in')
             ->where('status', 'pending')
             ->count());
+        $this->assertSame(1425000, app(EscrowService::class)->getBalance($this->owner->id));
 
         $settledRows = WalletTransaction::where('booking_id', $booking->id)->count();
 
