@@ -84,7 +84,7 @@
             {{-- Header section --}}
             <div class="mb-6 flex flex-wrap items-end justify-between gap-4 md:mb-8">
                 <div class="max-w-2xl">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm shadow-red-500/25">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
                         <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
                         </svg>
