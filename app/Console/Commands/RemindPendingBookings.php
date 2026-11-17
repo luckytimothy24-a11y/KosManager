@@ -40,6 +40,22 @@ class RemindPendingBookings extends Command
                     "booking-pending-reminder:{$booking->id}:" . today()->toDateString()
                 );
                 $count++;
+
+                // Juga ingatkan owner
+                if ($booking->kos && $booking->kos->owner_id) {
+                    try {
+                        NotificationService::create(
+                            $booking->kos->owner_id,
+                            \App\Support\NotificationType::BOOKING,
+                            'Booking Pending Menunggu Pembayaran',
+                            "Booking {$booking->booking_code} dari {$booking->user->name} menunggu pembayaran. Segera verifikasi atau ingatkan tenant.",
+                            null,
+                            "booking-pending-owner:{$booking->id}:" . today()->toDateString()
+                        );
+                    } catch (\Exception $e) {
+                        \Log::warning("booking:remind-pending owner notification failed for booking {$booking->id}: {$e->getMessage()}");
+                    }
+                }
             } catch (\Exception $e) {
                 \Log::warning("booking:remind-pending notification failed for booking {$booking->id}: {$e->getMessage()}");
             }

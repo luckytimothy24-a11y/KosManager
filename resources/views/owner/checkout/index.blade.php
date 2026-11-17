@@ -73,6 +73,16 @@
                                 <td>
                                     <p class="font-medium text-slate-900 dark:text-slate-50">{{ $co->kamar->room_number }}</p>
                                     <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[10rem]">{{ $co->kamar->kos->name }}</p>
+                                    @if($co->room_condition)
+                                        <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400" title="{{ $co->room_condition }}">
+                                            <i class="ri-file-list-line mr-0.5"></i> {{ Str::limit($co->room_condition, 40) }}
+                                        </p>
+                                    @endif
+                                    @if($co->notes)
+                                        <p class="text-[11px] text-slate-400 dark:text-slate-500" title="{{ $co->notes }}">
+                                            <i class="ri-sticky-note-line mr-0.5"></i> {{ Str::limit($co->notes, 40) }}
+                                        </p>
+                                    @endif
                                 </td>
                                 <td class="hidden sm:table-cell">
                                     <p class="text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ $co->request_date->format('d M Y') }}</p>
