@@ -110,7 +110,7 @@ class Phase46TenantMarketplaceUltimateTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Kos Tersedia');
-        $response->assertSee('TERSEDIA');
+        $response->assertSee('Tersisa');
     }
 
     // ── Phase 8 · Favorites section on dashboard ──

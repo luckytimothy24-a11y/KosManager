@@ -85,7 +85,7 @@
             {{-- Status badge — top right (below favorite) --}}
             <span class="absolute top-3 right-14 z-10 inline-flex items-center gap-1.5 rounded-full text-[10px] font-semibold px-2 py-0.5 shadow-sm backdrop-blur-sm {{ $availableRooms > 0 ? 'bg-white/90 dark:bg-surface-elevated/90 text-green-700 dark:text-green-300' : 'bg-slate-800/90 text-white/90' }}">
                 <span class="w-1.5 h-1.5 rounded-full {{ $availableRooms > 0 ? 'bg-green-500 badge-pulse' : 'bg-slate-400' }}"></span>
-                {{ $availableRooms > 0 ? 'TERSEDIA' : 'PENUH' }}
+                {{ $availableRooms > 0 ? 'Tersisa ' . $availableRooms . ' kamar' : 'Penuh' }}
             </span>
 
             {{-- Favorite toggle — top right --}}
