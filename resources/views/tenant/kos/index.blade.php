@@ -420,7 +420,7 @@
                     <h2 class="text-sm font-bold text-slate-900 dark:text-slate-50">Dari Partner</h2>
                     <span class="text-meta">Iklan Partner</span>
                 </div>
-                <div class="section-tint rounded-2xl p-3 sm:p-4 space-y-2.5">
+                <div class="section-tint rounded-xl p-3 sm:p-4 space-y-2.5">
                     @foreach($marketplaceAds as $ad)
                         @include('tenant.partials.partner-ad', [
                             'ad' => $ad,
