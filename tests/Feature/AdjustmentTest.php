@@ -149,6 +149,26 @@ class AdjustmentTest extends TestCase
         $this->assertSame(100000.0, (float) $adj['adjustment']->commission_delta);
     }
 
+    public function test_refund_cap_ignores_non_refund_adjustments(): void
+    {
+        $svc = app(PropertyOwnerPayoutService::class);
+
+        // Adjustment non-refund (correction) tidak boleh memakan kuota refund.
+        $correction = $svc->createAdjustment(
+            $this->superAdmin,
+            ['pembayaran_id' => $this->pembayaranA->id, 'payout_id' => $this->payout->id, 'type' => 'correction', 'amount' => 1900000, 'reason' => 'koreksi admin besar']
+        );
+        $this->assertTrue($correction['ok']);
+
+        // Refund penuh tetap diizinkan karena kuota refund belum terpakai.
+        $refund = $svc->createAdjustment(
+            $this->superAdmin,
+            ['pembayaran_id' => $this->pembayaranA->id, 'payout_id' => $this->payout->id, 'type' => 'refund', 'amount' => 2000000, 'reason' => 'refund penuh setelah koreksi']
+        );
+        $this->assertTrue($refund['ok']);
+        $this->assertSame(2000000.0, (float) $refund['adjustment']->amount);
+    }
+
     public function test_refund_fallback_rent_amount_when_no_payout_item(): void
     {
         $svc = app(PropertyOwnerPayoutService::class);

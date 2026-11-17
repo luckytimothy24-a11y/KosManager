@@ -522,7 +522,9 @@ class PropertyOwnerPayoutService
                 if ($totalGrossFromItems > 0) {
                     $grossRent = $totalGrossFromItems;
                 }
-                $existingRefunded = (float) PayoutAdjustment::where('pembayaran_id', $pembayaran->id)->sum('amount');
+                $existingRefunded = (float) PayoutAdjustment::where('pembayaran_id', $pembayaran->id)
+                    ->where('type', 'refund')
+                    ->sum('amount');
                 if ($existingRefunded + $amount > $grossRent + 0.005) {
                     throw new \RuntimeException('refund_exceeds_gross');
                 }

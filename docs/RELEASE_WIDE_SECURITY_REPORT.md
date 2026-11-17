@@ -116,13 +116,13 @@ Bukti red → green: sebelum implementasi 3 test gagal; setelah implementasi 5 t
 
 ## 5. TODO C2 — Escrow/refund lanjutan (belum diubah)
 
-Sesuai keputusan, `EscrowService`, alur `approved → completed`, dan `PayoutAdjustment` tidak diubah pada batch ini. Temuan yang harus diselesaikan di C2:
+Sesuai keputusan, `EscrowService`, alur `approved → completed`, dan `PayoutAdjustment` tidak diubah pada batch ini. Status C2 FASE 1 (slice yang sudah selesai):
 
-1. `EscrowService::processRefund()` (`app/Services/EscrowService.php:269`) tidak memiliki pemanggil.
-2. `Pembayaran::REFUND_COMPLETED` (`app/Models/Pembayaran.php:29`) tidak pernah di-set oleh kode aplikasi; hanya dipakai helper model dan test.
-3. `PropertyOwnerPayoutService::createAdjustment()` (`app/Services/PropertyOwnerPayoutService.php:474`) menghitung cap refund dari **semua** `PayoutAdjustment` (`:525-527`), sehingga adjustment non-refund ikut memakan kuota refund.
-4. `EscrowService::processRefund()` melakukan mass update `WalletTransaction` (`app/Services/EscrowService.php:279-282`) yang melewati guard append-only model (`app/Models/WalletTransaction.php:29-41`).
-5. `SettlementService` (`app/Services/SettlementService.php:54-61`) dan `SettlementReportService` (`app/Services/SettlementReportService.php:23-33`, `:102-106`) menghitung pembayaran approved tanpa filter refund/DP non-refundable.
+1. `PropertyOwnerPayoutService::createAdjustment()` cap refund sekarang hanya menjumlahkan adjustment dengan `type = 'refund'` (commit C2 FASE 1a).
+2. `EscrowService::processRefund()` (dead code yang melewati guard append-only) dihapus (commit C2 FASE 1b). Guard append-only `WalletTransaction` diverifikasi oleh test.
+3. `Pembayaran::REFUND_COMPLETED` tetap belum di-set oleh aplikasi; alur `approved → completed` dengan bukti transfer tetap ditunda.
+4. `SettlementService`/`SettlementReportService` tanpa filter refund/DP non-refundable masih tertunda (slice A) sampai sumber kebenaran DP ditetapkan.
+5. Escrow pending pada booking batal yang di-settle ke owner masih tertunda (slice B).
 
 ## 6. Sisa backlog release-wide
 

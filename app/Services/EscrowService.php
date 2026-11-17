@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Pembayaran;
-use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 
@@ -141,6 +140,7 @@ class EscrowService
                     ->get()
                     ->first(function (WalletTransaction $transaction) {
                         $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                         return isset($metadata['settled_from_escrow_id'], $metadata['settlement_entry_role'])
                             && in_array($metadata['settlement_entry_role'], ['commission', 'owner_entitlement'], true);
                     });
@@ -160,18 +160,21 @@ class EscrowService
                 ->get()
                 ->filter(function (WalletTransaction $transaction) use ($sourceEscrowId) {
                     $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                     return (int) ($metadata['settled_from_escrow_id'] ?? 0) === $sourceEscrowId
                         && in_array($metadata['settlement_entry_role'] ?? null, ['commission', 'owner_entitlement'], true);
                 });
 
             $commissionMarker = $markers->first(function (WalletTransaction $transaction) {
                 $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                 return ($metadata['settlement_entry_role'] ?? null) === 'commission'
                     && $transaction->status === 'completed';
             });
 
             $ownerMarker = $markers->first(function (WalletTransaction $transaction) {
                 $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                 return ($metadata['settlement_entry_role'] ?? null) === 'owner_entitlement'
                     && $transaction->type === 'escrow_in'
                     && $transaction->status === 'completed';
@@ -261,38 +264,5 @@ class EscrowService
         return (int) WalletTransaction::where('owner_id', $ownerId)
             ->where('status', 'completed')
             ->sum('amount');
-    }
-
-    /**
-     * Proses refund: batalkan escrow pending dan catat refund entry.
-     */
-    public function processRefund(Booking $booking, int $refundAmount): void
-    {
-        $ownerId = (int) ($booking->kos->owner_id ?? 0);
-
-        if ($ownerId <= 0) {
-            return;
-        }
-
-        DB::transaction(function () use ($booking, $ownerId, $refundAmount) {
-            // Batalkan escrow pending
-            WalletTransaction::where('booking_id', $booking->id)
-                ->where('type', 'escrow_in')
-                ->where('status', 'pending')
-                ->update(['status' => 'cancelled']);
-
-            // Catat refund entry (negatif)
-            WalletTransaction::create([
-                'owner_id' => $ownerId,
-                'booking_id' => $booking->id,
-                'type' => 'refund',
-                'amount' => -$refundAmount,
-                'description' => "Refund booking {$booking->booking_code}",
-                'status' => 'completed',
-                'metadata' => [
-                    'refund_amount' => $refundAmount,
-                ],
-            ]);
-        });
     }
 }
