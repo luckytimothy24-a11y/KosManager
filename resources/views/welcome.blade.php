@@ -187,7 +187,7 @@
       {{-- ============================== HERO — primary warm ============================== --}}
      <section class="relative overflow-hidden bg-slate-50 dark:bg-surface-elevated">
 
-         <div class=" bg-gradient-to-br from-primary-500/12 to-warn-400/10 blur-3xl"></div>
+         
    
         <div class="max-w-[1170px] mx-auto px-4 sm:px-6 pt-14 pb-12 md:pt-20 md:pb-16 grid lg:grid-cols-2 gap-12 items-center fade-in">
             <div class="text-center lg:text-left">
@@ -280,7 +280,7 @@
 
                         {{-- Property card — real looking --}}
                         <div class="rounded-xl border border-slate-100 dark:border-white/10 overflow-hidden">
-                            <div class="relative h-24 bg-gradient-to-br from-primary-100 via-primary-50 to-emerald-50 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700">
+                            <div class="relative h-24 bg-primary-50 dark:bg-slate-700">
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <div class="grid grid-cols-3 gap-1 opacity-30">
                                         <div class="w-16 h-12 rounded bg-white/60"></div>
@@ -391,7 +391,7 @@
             <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
                 <div>
                     <div class="mb-2">
-                        <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-red-500/25">
+                        <span class="inline-flex items-center gap-1.5 bg-red-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
                             <i class="ri-star-fill text-[9px]"></i> Kos Populer
                         </span>
                     </div>
@@ -438,7 +438,7 @@
                                     <img src="{{ asset('storage/'.$kos->photo) }}" alt="Foto {{ $kos->name }}"
                                          class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                                 @else
-                                    <div class="absolute inset-0 bg-gradient-to-br from-slate-100 via-primary-50 to-blue-100 dark:from-slate-700 dark:via-slate-700 dark:to-slate-700">
+                                    <div class="absolute inset-0 bg-slate-100 dark:bg-slate-700">
                                         <span class="absolute inset-0 flex items-center justify-center text-[7rem] leading-none font-bold uppercase text-primary-900/[0.06] dark:text-slate-50/5 select-none" aria-hidden="true">{{ mb_substr($kos->name, 0, 1) }}</span>
                                         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-primary-100/70 dark:bg-surface-elevated/60"></div>
                                         <div class="absolute -left-10 bottom-[-2.5rem] w-36 h-36 rounded-full bg-blue-100/60 dark:bg-surface-elevated/40"></div>
@@ -493,7 +493,7 @@
             {{-- CTA band --}}
             <div class="mt-12 bg-white dark:bg-surface-elevated rounded-2xl border border-gray-200 dark:border-white/10 px-6 py-8 sm:px-10 text-center">
                 <div class="mb-3">
-                    <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-red-500/25">
+                    <span class="inline-flex items-center gap-1.5 bg-red-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
                         <i class="ri-user-star-line text-[9px]"></i> Untuk Anda
                     </span>
                 </div>
@@ -627,13 +627,13 @@
     </section>
 
     {{-- ============================== CTA AKHIR — editorial style ============================== --}}
-    <section class="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 editorial-section">
+    <section class="relative overflow-hidden bg-primary-600 editorial-section">
         <div class="pointer-events-none absolute inset-0 hero-pattern"></div>
-        <div class=" bg-white/5 blur-3xl"></div>
-        <div class=" bg-black/10 blur-3xl"></div>
+        
+        
         <div class="relative max-w-[1170px] mx-auto px-4 sm:px-6 text-center">
             <div class="mb-4">
-                <span class="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 via-orange-500 to-amber-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm shadow-black/20">
+                <span class="inline-flex items-center gap-1.5 bg-red-500 text-white text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
                     <i class="ri-home-smile-line text-[9px]"></i> Untuk Pemilik Kos
                 </span>
             </div>
@@ -665,7 +665,7 @@
                 {{-- Brand --}}
                 <div class="col-span-2 sm:col-span-4 lg:col-span-1">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-soft">
+                        <div class="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" viewBox="0 0 64 64" fill="none"><path d="M32 12L14 28V50C14 51.1 14.9 52 16 52H28V38C28 36.9 28.9 36 30 36H34C35.1 36 36 36.9 36 38V52H48C49.1 52 50 51.1 50 50V28L32 12Z" fill="currentColor"/></svg>
                         </div>
                         <span class="text-lg font-extrabold text-white tracking-tight">KosManager</span>

@@ -51,7 +51,7 @@ class WelcomePromoCtaRefreshTest extends TestCase
         $this->assertStringContainsString('Kos Populer', $html);
         $this->assertStringContainsString('Untuk Anda', $html);
         $this->assertStringContainsString('Untuk Pemilik Kos', $html);
-        $this->assertGreaterThanOrEqual(4, substr_count($html, 'from-red-500'), 'Minimal 4 badge universal merah–oranye');
+        $this->assertGreaterThanOrEqual(4, substr_count($html, 'bg-red-500'), 'Minimal 4 badge universal merah');
 
         // Brand-colored partner cards
         $this->assertStringContainsString('from-[#fff3ee]', $html, 'Shopee wash');
