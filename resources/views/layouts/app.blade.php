@@ -130,17 +130,6 @@
                     </div>
 
 <div class="flex items-center gap-2">
-                        {{-- Theme Toggle (Mobile + Desktop accessible in topbar) --}}
-                        <button type="button"
-                                @click="
-                                    document.documentElement.classList.toggle('dark');
-                                    localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                                "
-                                class="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition"
-                                aria-label="Ganti mode tampilan">
-                            <i class="ri-moon-line text-xl dark:hidden"></i>
-                            <i class="ri-sun-line text-xl hidden dark:block"></i>
-                        </button>
                         {{-- Mobile Tenant Search (Icon Trigger) --}}
                         @if(auth()->check() && auth()->user()->isTenant())
                             <div class="sm:hidden" x-data="{ searchOpen: false }">
