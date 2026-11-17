@@ -58,7 +58,7 @@
                 <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
             </span>
         </div>
-        <div class="flex-1 h-px bg-gradient-to-r from-amber-200 to-transparent dark:from-amber-500/30"></div>
+        <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         @foreach($kosPromosHome as $promo)
@@ -79,7 +79,7 @@
             <section aria-label="Kos saya" class="space-y-5">
                 <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
                     {{-- Full-width property photo --}}
-                    <div class="relative h-44 w-full overflow-hidden bg-gradient-to-br from-primary-50 via-primary-100 to-emerald-100 sm:h-52 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700">
+                    <div class="relative h-44 w-full overflow-hidden bg-primary-50 sm:h-52 dark:bg-slate-800">
                         @if(!empty($kos->photo))
                             <img src="{{ asset('storage/'.$kos->photo) }}" alt="Foto {{ $stats['kos_name'] ?? 'Kos' }}" loading="lazy"
                                  class="absolute inset-0 h-full w-full object-cover">
@@ -200,7 +200,7 @@
                         </p>
 
                         <a href="{{ route('tenant.tagihan.pay') }}"
-                           class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary-500 px-5 py-3.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-[0.98]">
+                           class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-3.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-[0.98]">
                             <i class="ri-wallet-3-line text-lg"></i> Bayar Tagihan
                         </a>
 
@@ -212,7 +212,7 @@
                             <span class="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">Diverifikasi Pengelola</span>
                         </div>
                     @else
-                        <div class="mt-4 flex items-center gap-3 rounded-2xl bg-emerald-50/70 px-4 py-3.5 dark:bg-emerald-500/[0.08]">
+                        <div class="mt-4 flex items-center gap-3 rounded-xl bg-emerald-50/70 px-4 py-3.5 dark:bg-emerald-500/[0.08]">
                             <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 text-xl text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
                                 <i class="ri-shield-check-line"></i>
                             </span>
@@ -228,9 +228,9 @@
             {{-- Aksi bantuan premium — Chat Owner + Undangan (selalu tampil, bahkan sebelum check-in) --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a href="{{ route('tenant.messages.index') }}"
-                   class="group relative overflow-hidden flex items-center gap-3 rounded-2xl border border-orange-100 dark:border-orange-500/20 bg-gradient-to-br from-orange-50 to-white dark:from-slate-800 dark:to-slate-900 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
-                    <div class="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-gradient-to-br from-orange-500/10 to-amber-500/10 blur-2xl pointer-events-none"></div>
-                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg shadow-orange-500/20">
+                   class="group relative overflow-hidden flex items-center gap-3 rounded-xl border border-orange-100 dark:border-orange-500/20 bg-white dark:bg-slate-900 p-4 hover:shadow-md transition-all">
+                    
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-orange-500 text-white dark:bg-orange-500/20 dark:text-orange-300">
                         <i class="ri-customer-service-2-line text-xl"></i>
                     </span>
                     <span class="min-w-0 flex-1 text-left">
@@ -240,9 +240,9 @@
                     <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-400 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
                 </a>
                 <a href="{{ route('tenant.invitations.index') }}"
-                   class="group relative overflow-hidden flex items-center gap-3 rounded-2xl border border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:border-amber-200 dark:hover:border-amber-500/30 hover:shadow-md hover:-translate-y-0.5 transition-all">
-                    <div class="absolute -top-10 -right-10 w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 blur-2xl pointer-events-none"></div>
-                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
+                   class="group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:border-amber-200 dark:hover:border-amber-500/30 hover:shadow-md transition-all">
+                    
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
                         <i class="ri-mail-send-line text-xl"></i>
                     </span>
                     <span class="min-w-0 flex-1 text-left">
@@ -310,7 +310,7 @@
                     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         @foreach($attention as $item)
                             <a href="{{ $item['route'] }}"
-                               class="group flex items-start gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30">
+                               class="group flex items-start gap-3 rounded-xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30">
                                 <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl {{ $item['iconClass'] }}">
                                     <i class="{{ $item['icon'] }} text-lg"></i>
                                 </span>
@@ -341,7 +341,7 @@
 
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <a href="{{ route('tenant.kos.index') }}"
-                   class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30"
+                   class="group flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30"
                    aria-label="Cari kos">
                     <span class="grid h-11 w-11 place-items-center rounded-xl bg-primary-50 text-xl text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"><i class="ri-search-eye-line"></i></span>
                     <span class="w-full">
@@ -350,7 +350,7 @@
                     </span>
                 </a>
                 <a href="{{ route('tenant.tagihan.index') }}"
-                   class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-amber-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/30"
+                   class="group flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-amber-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-amber-500/30"
                    aria-label="Lihat tagihan saya">
                     <span class="grid h-11 w-11 place-items-center rounded-xl bg-amber-50 text-xl text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"><i class="ri-bill-line"></i></span>
                     <span class="w-full">
@@ -359,7 +359,7 @@
                     </span>
                 </a>
                 <a href="{{ route('tenant.kontrak.index') }}"
-                   class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-indigo-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/30"
+                   class="group flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:border-indigo-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/30"
                    aria-label="Lihat kontrak sewa">
                     <span class="grid h-11 w-11 place-items-center rounded-xl bg-indigo-50 text-xl text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"><i class="ri-file-text-line"></i></span>
                     <span class="w-full">
@@ -372,7 +372,7 @@
             @if($penghuni)
                 @if($pendingCheckout)
                     <a href="{{ route('tenant.kontrak.index') }}"
-                       class="inline-flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20">
+                       class="inline-flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20">
                         <i class="ri-time-line text-lg"></i> Check-Out Diproses
                         <span class="text-xs font-medium text-amber-600/80 dark:text-amber-400/80">Menunggu persetujuan</span>
                     </a>
@@ -382,7 +382,7 @@
                                            confirmText="Ya, Ajukan" confirmClass="bg-red-600 hover:bg-red-700 text-white"
                                            triggerClass="contents" aria-label="Ajukan check-out">
                             <x-slot name="slot">
-                                <div class="flex w-full items-center gap-3 rounded-2xl border border-red-100 bg-white p-4 text-left shadow-sm transition hover:border-red-200 hover:shadow-md dark:border-red-500/20 dark:bg-slate-900 group">
+                                <div class="flex w-full items-center gap-3 rounded-xl border border-red-100 bg-white p-4 text-left shadow-sm transition hover:border-red-200 hover:shadow-md dark:border-red-500/20 dark:bg-slate-900 group">
                                     <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-red-50 text-lg text-red-600 transition dark:bg-red-500/10 dark:text-red-400 group-hover:bg-red-100 dark:group-hover:bg-red-500/20"><i class="ri-logout-box-r-line"></i></span>
                                     <span class="min-w-0">
                                         <span class="block text-sm font-bold text-slate-900 dark:text-white">Ajukan Check-Out</span>
@@ -411,7 +411,7 @@
         {{-- ============================================================
              CARI KOS (marketplace compact)
              ============================================================ --}}
-        <section aria-label="Cari kos" class="rounded-[1.25rem] border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <section aria-label="Cari kos" class="rounded-xl border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <h2 class="flex items-center gap-2 text-base font-black tracking-tight text-slate-900 dark:text-white">
                 <span class="grid h-8 w-8 place-items-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-500/10 dark:text-primary-300">
                     <i class="ri-search-eye-line"></i>
@@ -483,7 +483,7 @@
              BELUM MEMILIKI KAMAR (callout untuk tenant baru)
              ============================================================ --}}
         @if(!$penghuni)
-            <section aria-label="Belum memiliki kamar" class="flex flex-col items-start gap-4 rounded-[1.25rem] border border-primary-100 bg-primary-50/60 px-5 py-4 sm:flex-row sm:items-center dark:border-primary-500/20 dark:bg-primary-500/[0.06]">
+            <section aria-label="Belum memiliki kamar" class="flex flex-col items-start gap-4 rounded-xl border border-primary-100 bg-primary-50/60 px-5 py-4 sm:flex-row sm:items-center dark:border-primary-500/20 dark:bg-primary-500/[0.06]">
                 <div class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary-100 text-xl text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
                     <i class="ri-door-open-line"></i>
                 </div>
@@ -504,17 +504,22 @@
         @php $locations = $locations ?? collect(); @endphp
         @if($locations->isNotEmpty())
             <section aria-label="Jelajahi berdasarkan lokasi">
-                <div class="mb-4 flex items-end justify-between">
+                <div class="mb-3 flex items-end justify-between">
                     <div>
-                        <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Jelajahi berdasarkan lokasi</h2>
-                        <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Temukan kos di alamat-alamat yang tersedia.</p>
+                        <h2 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">Jelajahi berdasarkan lokasi</h2>
+                        <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500">Temukan kos di alamat-alamat yang tersedia.</p>
                     </div>
+                    @if($locations->count() > 6)
+                        <a href="{{ route('tenant.kos.index') }}" class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
+                            Lihat semua <i class="ri-arrow-right-s-line"></i>
+                        </a>
+                    @endif
                 </div>
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    @foreach($locations->take(9) as $loc)
+                <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($locations->take(6) as $loc)
                         <a href="{{ route('tenant.kos.index', ['loc' => $loc->address]) }}"
-                           class="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30">
-                            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary-50 text-lg text-primary-500 dark:bg-primary-500/10">
+                           class="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm transition hover:border-primary-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-primary-500/40">
+                            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary-50 text-base text-primary-500 dark:bg-primary-500/10">
                                 <i class="ri-map-pin-2-fill"></i>
                             </span>
                             <span class="min-w-0 flex-1">
@@ -528,11 +533,11 @@
             </section>
         @else
             <section aria-label="Jelajahi berdasarkan lokasi">
-                <div class="rounded-2xl border border-dashed border-slate-200 p-8 text-center dark:border-slate-700">
-                    <div class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 dark:bg-slate-800">
-                        <i class="text-xl text-slate-400 dark:text-slate-500 ri-map-pin-line"></i>
+                <div class="rounded-xl border border-dashed border-slate-200 p-6 text-center dark:border-slate-700">
+                    <div class="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800">
+                        <i class="text-lg text-slate-400 dark:text-slate-500 ri-map-pin-line"></i>
                     </div>
-                    <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada lokasi kos untuk dijelajahi.</p>
+                    <p class="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada lokasi kos untuk dijelajahi.</p>
                     <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Segera hadir kos di berbagai alamat.</p>
                 </div>
             </section>
@@ -636,14 +641,14 @@
             <section aria-label="Penawaran partner untuk penghuni kos" class="space-y-4">
                 <div class="flex items-center gap-3">
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-primary-500 to-indigo-500 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-md">
+                        <span class="inline-flex items-center gap-1.5 rounded-lg bg-primary-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary-600 dark:bg-primary-500/10 dark:text-primary-300">
                             <i class="ri-gift-line text-[11px]"></i> Penawaran Partner
                         </span>
                         <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                             <i class="ri-megaphone-line text-[10px]" aria-hidden="true"></i> Sponsor
                         </span>
                     </div>
-                    <div class="flex-1 h-px bg-gradient-to-r from-primary-200 to-transparent dark:from-primary-500/30"></div>
+                    <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach($tenantDashboardAds as $ad)
@@ -709,7 +714,7 @@
             <div class="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2 snap-x snap-mandatory">
                 <template x-for="item in recent" :key="item.id">
                     <a :href="item.url"
-                       class="group relative block w-56 shrink-0 snap-start overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30">
+                       class="group relative block w-56 shrink-0 snap-start overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30">
                         <span class="block truncate px-4 pt-4 text-sm font-bold text-slate-900 dark:text-white" x-text="item.name"></span>
                         <span class="mt-1 block truncate px-4 text-xs text-slate-400 dark:text-slate-500" x-text="item.address"></span>
                         <span class="block px-4 pb-4 pt-2.5 text-sm font-black text-primary-600 dark:text-primary-300" x-text="item.price"></span>
@@ -728,7 +733,7 @@
         {{-- ============================================================
              TRUST
              ============================================================ --}}
-        <section class="rounded-[1.25rem] border border-slate-100 bg-white p-6 dark:border-slate-800 dark:bg-slate-900" aria-label="Kenapa mencari kos di KosManager">
+        <section class="rounded-xl border border-slate-100 bg-white p-6 dark:border-slate-800 dark:bg-slate-900" aria-label="Kenapa mencari kos di KosManager">
             <h2 class="text-center text-lg font-black tracking-tight text-slate-900 dark:text-white">Kenapa mencari kos di KosManager?</h2>
             <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 <div class="flex items-center gap-2.5">
@@ -775,7 +780,7 @@
                     ];
                 @endphp
                 @foreach($faqs as $i => $faq)
-                    <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div class="overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
                         <button type="button"
                                 class="flex w-full items-center justify-between gap-3 px-6 py-4 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40"
                                 @click="open = open === {{ $i }} ? null : {{ $i }}"
@@ -796,7 +801,7 @@
         {{-- ============================================================
              FINAL CTA
              ============================================================ --}}
-        <section class="relative overflow-hidden rounded-[1.25rem] bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 p-8 text-center text-white">
+        <section class="rounded-xl bg-primary-600 p-8 text-center text-white" aria-label="Promosi KosManager">
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute -right-1/4 -top-1/4 h-56 w-56 rounded-full bg-white"></div>
                 <div class="absolute -bottom-1/4 -left-1/4 h-48 w-48 rounded-full bg-white"></div>
@@ -805,7 +810,7 @@
                 <h2 class="text-xl font-black">Sudah menemukan kos yang cocok?</h2>
                 <p class="mt-2 text-sm text-primary-100/80">Pesan kamar pilihanmu sekarang.</p>
                 <a href="{{ route('tenant.kos.index') }}"
-                   class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-3.5 text-sm font-bold text-primary-700 shadow-xl shadow-black/10 transition hover:bg-primary-50 active:scale-95">
+                   class="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-primary-700 shadow-xl shadow-black/10 transition hover:bg-primary-50 active:scale-95">
                     <i class="ri-search-eye-line"></i> Cari Kos
                 </a>
             </div>
