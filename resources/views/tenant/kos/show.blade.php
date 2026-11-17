@@ -6,7 +6,7 @@
         ]" />
 
         {{-- Hero Section --}}
-        <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/[0.08] overflow-hidden">
+        <div class="bg-white dark:bg-surface-elevated rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
             @php
                 $galleryPaths = $kos->galleryPhotoPaths();
                 $galleryCount = count($galleryPaths);
@@ -17,8 +17,8 @@
             <div class="relative h-56 sm:h-72 overflow-hidden bg-gradient-to-br from-slate-100 via-primary-50 to-primary-100 dark:from-surface-elevated dark:via-surface-elevated dark:to-surface-elevated"
                  x-data="{ viewerOpen: false, idx: 0, photos: {{ $galleryUrlsJson }} }"
                  data-hero-gallery>
-                <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-primary-100/70 dark:bg-surface-elevated/60"></div>
-                <div class="absolute -left-12 bottom-[-3rem] w-48 h-48 rounded-full bg-primary-100/60 dark:bg-surface-elevated/40"></div>
+                <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-slate-100/70 dark:bg-slate-800/60"></div>
+                <div class="absolute -left-12 bottom-[-3rem] w-48 h-48 rounded-full bg-slate-100/60 dark:bg-slate-800/40"></div>
                 @if($galleryCount > 0)
                     <button type="button"
                             @click="viewerOpen = true; $nextTick(() => $refs.viewerClose?.focus())"
@@ -391,7 +391,7 @@
                                         @if(auth()->user()->isTenant() && $isAvailable)
                                             <a href="{{ route('tenant.booking.create', ['kos_id' => $kos->id, 'kamar_id' => $kamar->id]) }}"
                                                class="btn-primary flex-1 px-3 py-2.5 text-xs">
-                                                Booking
+                                                Ajukan Booking
                                             </a>
                                         @endif
                                     @endauth
@@ -399,7 +399,7 @@
                                         @if($isAvailable)
                                             <a href="{{ route('login') }}"
                                                class="btn-primary flex-1 px-3 py-2.5 text-xs">
-                                                Booking
+                                                Ajukan Booking
                                             </a>
                                         @endif
                                     @endguest
@@ -550,7 +550,7 @@
         </div>
 
         {{-- Google Maps Location --}}
-        <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/[0.08] overflow-hidden">
+        <div class="bg-white dark:bg-surface-elevated rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div class="p-6">
                 @php
                     $hasCoordinates = $kos->hasValidCoordinates();

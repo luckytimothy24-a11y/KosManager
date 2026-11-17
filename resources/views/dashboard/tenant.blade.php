@@ -10,8 +10,8 @@
         @endphp
         <header class="flex items-start justify-between gap-4 pt-1" aria-label="Selamat datang">
             <div class="min-w-0">
-                <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    Halo, {{ $user->name }} 👋
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                    Halo, {{ $user->name }}
                 </h1>
                 @if($penghuni)
                     @if($isActiveRent)
@@ -50,7 +50,7 @@
 <section aria-label="Promosi kos di beranda" class="space-y-4">
     <div class="flex items-center gap-3">
         <div class="flex items-center gap-2">
-            <span class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white shadow-md">
+            <span class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
                 <i class="ri-star-fill text-[11px]"></i> Promosi Kos
             </span>
             <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300"
@@ -77,7 +77,7 @@
                 $mapsUrl = $kos?->googleMapsDirectionsUrl();
             @endphp
             <section aria-label="Kos saya" class="space-y-5">
-                <div class="overflow-hidden rounded-[1.25rem] border border-slate-100 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
                     {{-- Full-width property photo --}}
                     <div class="relative h-44 w-full overflow-hidden bg-gradient-to-br from-primary-50 via-primary-100 to-emerald-100 sm:h-52 dark:from-slate-800 dark:via-slate-800 dark:to-slate-700">
                         @if(!empty($kos->photo))
@@ -126,14 +126,14 @@
             <div class="mt-4 grid grid-cols-3 gap-2.5">
                 @if($mapsUrl)
                     <a href="{{ $mapsUrl }}" target="_blank" rel="noopener noreferrer"
-                       class="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-primary-50 px-2 py-3 text-[11px] font-semibold text-primary-600 transition active:scale-95 dark:bg-primary-500/10 dark:text-primary-300"
+                       class="flex flex-col items-center justify-center gap-1.5 rounded-xl bg-primary-50 px-2 py-3 text-[11px] font-semibold text-primary-600 transition active:scale-95 dark:bg-primary-500/10 dark:text-primary-300"
                        aria-label="Buka petunjuk arah menuju {{ $kos->name }} di Google Maps">
                         <i class="ri-navigation-line text-xl"></i>
                         Arah ke Kos
                     </a>
                 @endif
                 <a href="{{ route('tenant.kontrak.index') }}"
-                   class="flex flex-col items-center justify-center gap-1.5 rounded-2xl bg-slate-50 px-2 py-3 text-[11px] font-semibold text-slate-600 transition active:scale-95 dark:bg-slate-800/80 dark:text-slate-300"
+                   class="flex flex-col items-center justify-center gap-1.5 rounded-xl bg-slate-50 px-2 py-3 text-[11px] font-semibold text-slate-600 transition active:scale-95 dark:bg-slate-800/80 dark:text-slate-300"
                    aria-label="Lihat kontrak sewa">
                     <i class="ri-file-text-line text-xl text-slate-500 dark:text-slate-400"></i>
                     Kontrak Sewa
@@ -169,7 +169,7 @@
                  TAGIHAN BERIKUTNYA — BILLING CARD
                  ============================================================ --}}
             <section aria-label="Tagihan berikutnya">
-                <div class="rounded-[1.25rem] border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                     <div class="flex items-center justify-between gap-3">
                         <h2 class="text-base font-black tracking-tight text-slate-900 dark:text-white">Tagihan Berikutnya</h2>
                         @if(($stats['total_belum_dibayar'] ?? 0) > 0)

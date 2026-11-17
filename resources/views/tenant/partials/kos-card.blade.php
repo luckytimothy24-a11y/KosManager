@@ -71,7 +71,7 @@
         {{-- Availability badge — top left --}}
         <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full text-[11px] font-semibold px-2.5 py-0.5 shadow-sm backdrop-blur-sm {{ $availableRooms > 0 ? 'bg-white/90 dark:bg-surface-elevated/90 text-green-700 dark:text-green-300' : 'bg-slate-800/90 text-white/90' }}">
             <span class="w-1.5 h-1.5 rounded-full {{ $availableRooms > 0 ? 'bg-green-500 badge-pulse' : 'bg-slate-400' }}"></span>
-            {{ $availableRooms > 0 ? 'TERSEDIA' : 'PENUH' }}
+            {{ $availableRooms > 0 ? 'Tersisa ' . $availableRooms . ' kamar' : 'Penuh' }}
         </span>
 
         {{-- Favorite toggle — top right --}}
@@ -146,7 +146,7 @@
             @else
                 <p class="min-w-0 text-xs leading-relaxed text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
             @endif
-            <a href="{{ $adLink() }}" class="ml-auto inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-xs font-semibold text-primary-500 transition-all duration-300 group-hover:text-primary-600">
+            <a href="{{ $adLink() }}" class="ml-auto inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-600 transition-all duration-300 group-hover:bg-primary-100 dark:bg-primary-500/10 dark:text-primary-300 dark:group-hover:bg-primary-500/20">
                 Lihat Detail <i class="ri-arrow-right-line text-[11px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true"></i>
             </a>
         </div>
