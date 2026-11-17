@@ -54,9 +54,9 @@ class TenantMessageBadgeTest extends TestCase
 
         $response = $this->actingAs($this->tenant)->get(route('dashboard'));
         $response->assertOk();
-        // Sidebar should contain Hubungi Owner with badge 1
-        $response->assertSee('Hubungi Owner');
-        // badge HTML contains count 1 near Hubungi Owner
+        // Sidebar should contain Hubungi Pemilik Kos with badge 1
+        $response->assertSee('Hubungi Pemilik Kos');
+        // badge HTML contains count 1 near Hubungi Pemilik Kos
         $this->assertEquals(1, Message::where('receiver_id', $this->tenant->id)->whereNull('read_at')->count());
     }
 

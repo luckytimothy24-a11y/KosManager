@@ -111,10 +111,10 @@
                                             <div class="mt-4 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated p-4">
                                                 <div class="flex items-center gap-2 mb-2">
                                                     <i class="ri-customer-service-2-line text-primary-500"></i>
-                                                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Tanya Owner?</span>
+                                                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">Tanya Pemilik Kos?</span>
                                                 </div>
                                                 <a href="{{ route('tenant.kos.ask', $selectedKos) }}" class="inline-flex items-center gap-2 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
-                                                    <i class="ri-message-3-line"></i> Hubungi Owner
+                                                    <i class="ri-message-3-line"></i> Hubungi Pemilik Kos
                                                 </a>
                                             </div>
                                         @endif
@@ -273,7 +273,7 @@
                                         @if($selectedKos && $selectedKos->phone)
                                             <div class="pt-4 border-t border-primary-100 dark:border-primary-500/15">
                                                 <a href="{{ route('tenant.kos.ask', $selectedKos) }}" class="inline-flex items-center justify-center gap-2 w-full text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-500/10 px-4 py-2.5 rounded-xl transition">
-                                                    <i class="ri-message-3-line"></i> Hubungi Owner
+                                                    <i class="ri-message-3-line"></i> Hubungi Pemilik Kos
                                                 </a>
                                             </div>
                                         @endif

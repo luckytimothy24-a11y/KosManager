@@ -234,7 +234,7 @@
                         <i class="ri-customer-service-2-line text-xl"></i>
                     </span>
                     <span class="min-w-0 flex-1 text-left">
-                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Hubungi Owner @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-orange-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadMessages'] }}</span>@endif</span>
+                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Hubungi Pemilik Kos @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-orange-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadMessages'] }}</span>@endif</span>
                         <span class="block text-xs text-slate-500 dark:text-slate-400">Chat langsung — kamar, tagihan, fasilitas</span>
                     </span>
                     <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-400 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>

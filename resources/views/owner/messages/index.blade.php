@@ -32,7 +32,7 @@
                     <div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-slate-50">Belum ada percakapan</h2>
                         <p class="mt-1.5 max-w-sm text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                            Ketika penghuni menulis pesan via <b class="text-slate-700 dark:text-slate-200">"Hubungi Owner"</b>, chat-nya akan muncul di sini. Balas cepat agar penghuni merasa dibantu.
+                            Ketika penghuni menulis pesan via <b class="text-slate-700 dark:text-slate-200">"Hubungi Pemilik Kos"</b>, chat-nya akan muncul di sini. Balas cepat agar penghuni merasa dibantu.
                         </p>
                     </div>
                     <a href="{{ route('dashboard') }}" class="mt-2 inline-flex items-center gap-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-2.5 text-sm font-bold hover:bg-black dark:hover:bg-slate-100 transition">

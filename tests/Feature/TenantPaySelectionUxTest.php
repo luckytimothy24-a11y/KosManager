@@ -225,12 +225,12 @@ class TenantPaySelectionUxTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_dashboard_hubungi_owner_cta_links_to_existing_chat(): void
+    public function test_dashboard_hubungi_pemilik_kos_cta_links_to_existing_chat(): void
     {
         $response = $this->actingAs($this->tenant)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Hubungi Owner');
+        $response->assertSee('Hubungi Pemilik Kos');
         $response->assertSee(route('tenant.messages.index'), false);
     }
 

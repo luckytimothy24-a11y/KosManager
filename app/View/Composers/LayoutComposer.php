@@ -57,7 +57,7 @@ class LayoutComposer
                 ['route' => 'tenant.pembayaran*', 'label' => 'Pembayaran', 'icon' => 'ri-money-dollar-circle-line'],
             ],
             'Bantuan' => [
-                ['route' => 'tenant.messages*', 'label' => 'Hubungi Owner', 'icon' => 'ri-customer-service-2-line', 'badgeKey' => 'unreadMessages', 'badgeClass' => 'bg-gradient-to-br from-orange-500 to-orange-600'],
+                ['route' => 'tenant.messages*', 'label' => 'Hubungi Pemilik Kos', 'icon' => 'ri-customer-service-2-line', 'badgeKey' => 'unreadMessages', 'badgeClass' => 'bg-gradient-to-br from-orange-500 to-orange-600'],
                 ['route' => 'tenant.invitations*', 'label' => 'Undangan Kos', 'icon' => 'ri-mail-send-line', 'badgeKey' => 'invitationPending', 'badgeClass' => 'bg-amber-500'],
             ],
         ];

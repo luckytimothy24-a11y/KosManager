@@ -47,7 +47,7 @@ return [
     'tenant.kontrak.index' => 'Kontrak Saya', 'tenant.kontrak.show' => 'Detail Kontrak',
     'tenant.tagihan.index' => 'Tagihan Saya', 'tenant.tagihan.show' => 'Detail Tagihan',
     'tenant.pembayaran.index' => 'Pembayaran Saya', 'tenant.pembayaran.show' => 'Detail Pembayaran',
-    'tenant.messages.index' => 'Pesan', 'tenant.inquiries.index' => 'Pertanyaan Saya',
+    'tenant.messages.index' => 'Hubungi Pemilik Kos', 'tenant.inquiries.index' => 'Pertanyaan Saya',
     'tenant.damage-reports.index' => 'Laporan Kerusakan', 'tenant.damage-reports.show' => 'Detail Laporan',
     'tenant.invitations.index' => 'Undangan Kos',
 ];

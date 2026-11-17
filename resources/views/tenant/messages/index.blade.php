@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <x-page-header title="Hubungi Owner" description="Chat per kos dengan pemilik masing-masing — privat & terpisah." icon="ri-customer-service-2-line">
+        <x-page-header title="Hubungi Pemilik Kos" description="Chat per kos dengan pemilik masing-masing — privat & terpisah." icon="ri-customer-service-2-line">
             @if(!empty($owner))
                 <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 text-white px-3 py-1.5 text-[11px] font-semibold shadow"><i class="ri-checkbox-circle-line"></i> Terhubung</span>
             @endif
