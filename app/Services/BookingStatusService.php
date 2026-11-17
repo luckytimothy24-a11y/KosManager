@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\Booking;
 use App\Models\BookingCancellationRequest;
 use App\Models\Kamar;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\User;
+use App\Support\NotificationType;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -181,8 +183,8 @@ class BookingStatusService
 
             $this->syncRoomAfterBookingTransition($booking, Booking::STATUS_CANCELLED);
 
-            // Refund: mark approved payments as refund requested
-            $this->requestRefundForCancelledBooking($booking, $actor);
+            // Refund: mark approved non-DP payments as refund requested.
+            $this->requestRefundForCancelledBooking($booking, $actor, $lockedRequest);
 
             return [
                 'ok' => true,
@@ -284,31 +286,60 @@ class BookingStatusService
         });
     }
 
-/**
-     * Tandai pembayaran yang sudah approved sebagai refund requested
-     * saat booking dibatalkan oleh owner.
+    /**
+     * Tandai pembayaran non-DP yang sudah approved sebagai refund requested
+     * saat booking dibatalkan. DP non-refundable tidak pernah masuk refund.
      */
-    private function requestRefundForCancelledBooking(Booking $booking, User $actor): void
-    {
-        $pembayarans = \App\Models\Pembayaran::where('booking_id', $booking->id)
-            ->where('verification_status', 'approved')
-            ->where('refund_status', 'none')
+    private function requestRefundForCancelledBooking(
+        Booking $booking,
+        User $actor,
+        ?BookingCancellationRequest $cancellationRequest = null
+    ): void {
+        $pembayarans = Pembayaran::where('booking_id', $booking->id)
+            ->where('verification_status', Pembayaran::STATUS_APPROVED)
+            ->where('refund_status', Pembayaran::REFUND_NONE)
             ->get();
+
+        if ($booking->usesDownPayment()) {
+            $downPaymentAmount = round((float) $booking->down_payment_amount, 2);
+
+            $downPayments = $pembayarans->filter(
+                fn (Pembayaran $pembayaran) => round((float) $pembayaran->amount, 2) === $downPaymentAmount
+            );
+
+            if ($downPayments->isNotEmpty()) {
+                $this->notifyDownPaymentNonRefundable($booking, (float) $downPayments->sum('amount'));
+            }
+
+            // Pembayaran manual/extra pada booking ber-DP bukan DP dan bukan
+            // alur legacy; jangan auto-refund, biarkan untuk review manual.
+            $pembayarans
+                ->reject(fn (Pembayaran $pembayaran) => round((float) $pembayaran->amount, 2) === $downPaymentAmount)
+                ->each(function (Pembayaran $pembayaran) use ($booking) {
+                    \Log::warning('Approved non-DP payment on DP booking left unchanged', [
+                        'booking_id' => $booking->id,
+                        'pembayaran_id' => $pembayaran->id,
+                        'amount' => (float) $pembayaran->amount,
+                    ]);
+                });
+
+            return;
+        }
 
         foreach ($pembayarans as $pembayaran) {
             $pembayaran->update([
-                'refund_status' => \App\Models\Pembayaran::REFUND_REQUESTED,
+                'refund_status' => Pembayaran::REFUND_REQUESTED,
                 'refund_amount' => $pembayaran->amount,
-                'refund_reason' => 'Booking dibatalkan oleh owner: ' . ($booking->booking_code ?? ''),
+                'refund_reason' => $this->refundReasonForCancelledBooking($booking, $actor, $cancellationRequest),
             ]);
 
             // Notifikasi ke tenant
             try {
-                \App\Services\NotificationService::create(
+                NotificationService::create(
                     $booking->user_id,
                     'refund',
-                    'Refund Diminta',
-                    "Booking {$booking->booking_code} dibatalkan. Refund sebesar Rp " . number_format($pembayaran->amount, 0, ',', '.') . " akan diproses.",
+                    'Refund Booking Diajukan',
+                    $this->refundNotificationForCancelledBooking($booking, $pembayaran, $actor, $cancellationRequest),
                     ['url' => route('tenant.pembayaran.show', $pembayaran)],
                     "refund:{$pembayaran->id}"
                 );
@@ -316,6 +347,67 @@ class BookingStatusService
                 \Log::warning("Refund notification failed for pembayaran {$pembayaran->id}: {$e->getMessage()}");
             }
         }
+    }
+
+    private function notifyDownPaymentNonRefundable(Booking $booking, float $amount): void
+    {
+        try {
+            NotificationService::create(
+                $booking->user_id,
+                NotificationType::BOOKING,
+                'Booking Dibatalkan — DP Tidak Dapat Dikembalikan',
+                "Booking {$booking->booking_code} telah dibatalkan. DP sebesar Rp ".number_format($amount, 0, ',', '.').' tidak dapat dikembalikan karena bersifat non-refundable dan menjadi hak pemilik kos sesuai ketentuan.',
+                null,
+                "dp-nonrefundable:{$booking->id}"
+            );
+        } catch (\Exception $e) {
+            \Log::warning("DP non-refundable notification failed for booking {$booking->id}: {$e->getMessage()}");
+        }
+    }
+
+    private function refundReasonForCancelledBooking(
+        Booking $booking,
+        User $actor,
+        ?BookingCancellationRequest $cancellationRequest
+    ): string {
+        $code = $booking->booking_code ?? (string) $booking->id;
+
+        if ($cancellationRequest && (int) $cancellationRequest->requested_by === (int) $booking->user_id) {
+            return "Pengajuan pembatalan oleh penyewa disetujui: {$code}";
+        }
+
+        if ($actor->isOwner()) {
+            return "Booking dibatalkan oleh owner: {$code}";
+        }
+
+        if ($actor->isAdmin() || $actor->isSuperAdmin()) {
+            return "Booking dibatalkan oleh admin: {$code}";
+        }
+
+        return "Booking dibatalkan: {$code}";
+    }
+
+    private function refundNotificationForCancelledBooking(
+        Booking $booking,
+        Pembayaran $pembayaran,
+        User $actor,
+        ?BookingCancellationRequest $cancellationRequest
+    ): string {
+        $amount = number_format((float) $pembayaran->amount, 0, ',', '.');
+
+        if ($cancellationRequest && (int) $cancellationRequest->requested_by === (int) $booking->user_id) {
+            return "Booking {$booking->booking_code} dibatalkan atas permintaan penyewa. Refund sebesar Rp {$amount} akan diproses.";
+        }
+
+        if ($actor->isOwner()) {
+            return "Booking {$booking->booking_code} dibatalkan oleh pemilik kos. Refund sebesar Rp {$amount} akan diproses.";
+        }
+
+        if ($actor->isAdmin() || $actor->isSuperAdmin()) {
+            return "Booking {$booking->booking_code} dibatalkan oleh admin. Refund sebesar Rp {$amount} akan diproses.";
+        }
+
+        return "Booking {$booking->booking_code} dibatalkan. Refund sebesar Rp {$amount} akan diproses.";
     }
 
     /**
