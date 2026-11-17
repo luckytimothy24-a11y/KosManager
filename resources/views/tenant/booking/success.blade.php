@@ -85,6 +85,11 @@
                         <dt class="text-primary-800 dark:text-primary-300 flex items-center gap-2 font-semibold"><i class="ri-secure-payment-line"></i> DP dibayar sekarang</dt>
                         <dd class="font-bold text-primary-700 dark:text-primary-300">Rp {{ number_format($booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</dd>
                     </div>
+                    <div class="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/[0.08] px-3 py-2.5">
+                        <p class="text-[11px] leading-relaxed text-red-700/90 dark:text-red-300/80">
+                            <i class="ri-error-warning-line mr-1"></i> <strong>DP tidak dapat dikembalikan</strong> jika booking ditolak atau dibatalkan.
+                        </p>
+                    </div>
                 @endif
                 <div class="flex items-center justify-between gap-4">
                     <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-line text-slate-400"></i> Periode</dt>

@@ -93,6 +93,11 @@ class NotificationService
         self::create($tenantId, NotificationType::BOOKING, 'Booking Kedaluwarsa', "Booking {$bookingCode} telah kedaluwarsa karena tidak melakukan check-in tepat waktu.", null, $uniqueKey);
     }
 
+    public static function bookingPendingReminder(int $tenantId, string $bookingCode, ?string $uniqueKey = null): void
+    {
+        self::create($tenantId, NotificationType::BOOKING, 'Pengingat: Booking Menunggu Pembayaran', "Booking {$bookingCode} menunggu pembayaran. Segera selesaikan pembayaran sebelum booking kedaluwarsa.", null, $uniqueKey);
+    }
+
     public static function kontrakActive(int $tenantId, string $contractNumber): void
     {
         self::create($tenantId, NotificationType::KONTRAK, 'Kontrak Aktif', "Kontrak sewa {$contractNumber} kini berstatus aktif.");

@@ -125,7 +125,7 @@
                                          <h3 class="text-xs font-bold text-slate-900 dark:text-slate-50 mb-3"><i class="ri-whatsapp-line text-emerald-500 mr-1"></i> Kontak Tenant (Wajib)</h3>
                                          <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
                                              WhatsApp dan alamat diperlukan untuk koordinasi check-in dengan owner.
-                                         </p>
+
                                          <div class="grid grid-cols-1 gap-4">
                                              <div>
                                                  <label for="phone" class="field-label"><i class="ri-whatsapp-line text-emerald-500 mr-1"></i> WhatsApp <span class="text-red-500">*</span></label>
@@ -150,8 +150,19 @@
                                                  <p class="text-xs font-bold text-primary-800 dark:text-primary-300"><i class="ri-secure-payment-line mr-1"></i> Down Payment (DP)</p>
                                                  <p class="mt-1 text-[11px] leading-relaxed text-primary-700/90 dark:text-primary-300/80">
                                                      DP dibayar saat booking, diverifikasi owner, lalu dipotongkan dari tagihan sewa pertama.
-                                                     DP tidak dapat dikembalikan jika booking ditolak atau dibatalkan.
-                                                 </p>
+                                                     {{-- DP warning — non-refundable --}}
+                                        <div class="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/[0.08] px-4 py-3">
+                                            <div class="flex items-start gap-2.5">
+                                                <i class="ri-error-warning-line text-red-500 dark:text-red-400 mt-0.5 shrink-0"></i>
+                                                <div>
+                                                    <p class="text-xs font-bold text-red-800 dark:text-red-300">DP Tidak Dapat Dikembalikan</p>
+                                                    <p class="mt-0.5 text-[11px] leading-relaxed text-red-700/90 dark:text-red-300/80">
+                                                        Down Payment (DP) bersifat <strong>non-refundable</strong>. Jika booking ditolak pemilik kos atau dibatalkan oleh Anda, DP tidak akan dikembalikan. Pastikan Anda siap melanjutkan sebelum membayar.
+  
+                                                </div>
+                                            </div>
+                                        </div>
+
                                              </div>
                                              <span class="shrink-0 text-base font-bold text-primary-700 dark:text-primary-300">Rp {{ number_format($downPaymentAmount, 0, ',', '.') }}</span>
                                          </div>
