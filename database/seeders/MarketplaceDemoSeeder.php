@@ -84,7 +84,14 @@ class MarketplaceDemoSeeder extends Seeder
             ],
         ];
 
+        $seeded = 0;
+
         foreach ($items as $data) {
+            // Idempoten: menjalankan db:seed berulang tidak menggandakan demo.
+            if (MarketplaceItem::where('user_id', $tenant->id)->where('title', $data['title'])->exists()) {
+                continue;
+            }
+
             $imagePath = null;
             $sourcePath = base_path($data['image']);
             if (file_exists($sourcePath)) {
@@ -105,8 +112,9 @@ class MarketplaceDemoSeeder extends Seeder
                 'status' => 'available',
                 'image_path' => $imagePath,
             ]);
+            $seeded++;
         }
 
-        $this->command->info('Marketplace demo items seeded: ' . count($items));
+        $this->command->info('Marketplace demo items seeded: ' . $seeded);
     }
 }
