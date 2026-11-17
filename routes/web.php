@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
+use App\Http\Controllers\Admin\SupportController as AdminSupportController;
 use App\Http\Controllers\AdvertisingClickController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
@@ -47,6 +48,7 @@ use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\SettingsController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\Tenant\BookingOccupantIdentityController;
+use App\Http\Controllers\Tenant\SupportController as TenantSupportController;
 use App\Http\Controllers\Tenant\TenantBookingOccupantController;
 use App\Http\Controllers\Tenant\TenantCheckInController;
 use App\Http\Controllers\Tenant\TenantInvitationController;
@@ -330,6 +332,11 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('owner-messages/{kos}/{owner}', [AdminOwnerMessageController::class, 'show'])->name('owner-messages.show');
     Route::post('owner-messages/{kos}/{owner}', [AdminOwnerMessageController::class, 'store'])->middleware('throttle:5,60')->name('owner-messages.store');
 
+    // Bantuan & CS (admin ↔ tenant)
+    Route::get('support', [AdminSupportController::class, 'index'])->name('support.index');
+    Route::get('support/{tenant}', [AdminSupportController::class, 'show'])->name('support.show');
+    Route::post('support/{tenant}', [AdminSupportController::class, 'store'])->middleware('throttle:5,60')->name('support.store');
+
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
     Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm')->middleware('throttle:10,60');
@@ -396,6 +403,11 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
     Route::get('messages', [TenantMessageController::class, 'index'])->name('messages.index');
     Route::post('messages', [TenantMessageController::class, 'store'])->middleware('throttle:5,60')->name('messages.store');
     Route::get('messages/latest', [TenantMessageController::class, 'latest'])->name('messages.latest');
+
+    // Bantuan & CS (tenant ↔ admin)
+    Route::get('support', [TenantSupportController::class, 'index'])->name('support.index');
+    Route::post('support', [TenantSupportController::class, 'store'])->middleware('throttle:5,60')->name('support.store');
+    Route::get('support/latest', [TenantSupportController::class, 'latest'])->name('support.latest');
 
     // Undangan tinggal bersama — orange modern
     Route::get('invitations', [TenantInvitationController::class, 'index'])->name('invitations.index');

@@ -37,6 +37,7 @@ return [
     'admin.owners.index' => 'Manajemen Owner',
     'admin.moderation.index' => 'Moderation',
     'admin.messages.index' => 'Audit Pesan', 'admin.owner-messages.index' => 'Hubungi Owner',
+    'admin.support.index' => 'Pesan CS', 'admin.support.show' => 'Pesan CS',
     'admin.damage-reports.index' => 'Laporan Kerusakan',
     'admin.fasilitas.index' => 'Fasilitas', 'admin.fasilitas.create' => 'Tambah Fasilitas', 'admin.fasilitas.edit' => 'Edit Fasilitas',
     'admin.advertising.index' => 'Pendapatan',
@@ -47,7 +48,7 @@ return [
     'tenant.kontrak.index' => 'Kontrak Saya', 'tenant.kontrak.show' => 'Detail Kontrak',
     'tenant.tagihan.index' => 'Tagihan Saya', 'tenant.tagihan.show' => 'Detail Tagihan',
     'tenant.pembayaran.index' => 'Pembayaran Saya', 'tenant.pembayaran.show' => 'Detail Pembayaran',
-    'tenant.messages.index' => 'Hubungi Pemilik Kos', 'tenant.inquiries.index' => 'Pertanyaan Saya',
+    'tenant.messages.index' => 'Hubungi Pemilik Kos', 'tenant.support.index' => 'Bantuan & CS', 'tenant.inquiries.index' => 'Pertanyaan Saya',
     'tenant.damage-reports.index' => 'Laporan Kerusakan', 'tenant.damage-reports.show' => 'Detail Laporan',
     'tenant.invitations.index' => 'Undangan Kos',
 ];

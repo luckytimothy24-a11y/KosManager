@@ -10,6 +10,7 @@ use App\Models\Kos;
 use App\Models\Message;
 use App\Models\Notification;
 use App\Models\Penghuni;
+use App\Models\SupportMessage;
 use App\Models\Tagihan;
 use App\View\Composers\LayoutComposer;
 use Illuminate\Database\Eloquent\Model;
@@ -57,6 +58,7 @@ class AppServiceProvider extends ServiceProvider
                 'unreadNotif' => 0,
                 'activeBooking' => 0,
                 'unreadMessages' => 0,
+                'supportUnread' => 0,
                 'invitationPending' => 0,
                 'pendingDamageReports' => 0,
                 'unreadInquiries' => 0,
@@ -92,6 +94,19 @@ class AppServiceProvider extends ServiceProvider
                     $badges['unreadMessages'] = Message::where('receiver_id', $user->id)->whereNull('read_at')->count();
                 } catch (\Throwable $e) {
                     $badges['unreadMessages'] = 0;
+                }
+                try {
+                    if ($user->isAdmin() || $user->isSuperAdmin()) {
+                        // Inbox CS bersifat shared: semua admin melihat jumlah pesan
+                        // tenant yang belum dibaca, bukan hanya yang ditujukan ke dirinya.
+                        $badges['supportUnread'] = SupportMessage::whereColumn('sender_id', 'tenant_id')
+                            ->whereNull('read_at')
+                            ->count();
+                    } elseif ($user->isTenant()) {
+                        $badges['supportUnread'] = SupportMessage::forTenant($user->id)->unread($user->id)->count();
+                    }
+                } catch (\Throwable $e) {
+                    $badges['supportUnread'] = 0;
                 }
                 try {
                     if ($user->isSuperAdmin()) {

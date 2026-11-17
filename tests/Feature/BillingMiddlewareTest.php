@@ -8,6 +8,7 @@ use App\Models\Penghuni;
 use App\Models\Tagihan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class BillingMiddlewareTest extends TestCase
@@ -68,6 +69,48 @@ class BillingMiddlewareTest extends TestCase
         // Should either be redirected with error or show 403
         $response->assertStatus(302) // redirect
             ->assertSessionHas('error', 'Anda memiliki tagihan yang belum dibayar. Silakan lunasi terlebih dahulu.');
+    }
+
+    /** @test */
+    public function tenant_with_overdue_invoice_can_still_contact_cs()
+    {
+        Mail::fake();
+
+        User::factory()->create(['role' => 'admin']);
+        $owner = User::factory()->create(['role' => 'owner']);
+        $tenant = User::factory()->create(['role' => 'pencari']);
+
+        $kos = Kos::factory()->create(['owner_id' => $owner->id, 'status' => 'active']);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
+
+        $penghuni = Penghuni::factory()->create([
+            'user_id' => $tenant->id,
+            'kos_id' => $kos->id,
+            'kamar_id' => $kamar->id,
+            'status' => 'active',
+        ]);
+
+        Tagihan::factory()->create([
+            'penghuni_id' => $penghuni->id,
+            'kamar_id' => $kamar->id,
+            'status' => Tagihan::STATUS_OVERDUE,
+            'total' => 1000000,
+            'subtotal' => 1000000,
+        ]);
+
+        // Billing guard tetap memblokir halaman kos, tetapi CS harus tetap bisa dihubungi.
+        $this->actingAs($tenant)->get('/tenant/kos')->assertRedirect();
+        $this->actingAs($tenant)->get('/tenant/support')->assertOk();
+
+        $this->actingAs($tenant)
+            ->post('/tenant/support', ['message' => 'Saya butuh bantuan untuk tagihan saya.'])
+            ->assertRedirect(route('tenant.support.index'));
+
+        $this->assertDatabaseHas('support_messages', [
+            'tenant_id' => $tenant->id,
+            'sender_id' => $tenant->id,
+            'message' => 'Saya butuh bantuan untuk tagihan saya.',
+        ]);
     }
 
     /** @test */

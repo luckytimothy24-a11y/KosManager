@@ -15,14 +15,22 @@ window.chatPoll = function (pollUrl, latestId, draftKey) {
         pollUrl: pollUrl,
         draftKey: draftKey,
         start() {
-            const ta = document.getElementById('message');
-            if (ta) {
+            // Tunggu Alpine selesai menginisialisasi x-model pada textarea,
+            // lalu pulihkan draft dan sinkronkan ke state Alpine.
+            setTimeout(() => {
+                const ta = document.getElementById('message');
+                if (!ta) {
+                    return;
+                }
+
                 const saved = sessionStorage.getItem(this.draftKey);
                 if (saved) {
                     ta.value = saved;
+                    ta.dispatchEvent(new Event('input', { bubbles: true }));
                     sessionStorage.removeItem(this.draftKey);
                 }
-            }
+            }, 0);
+
             this.timer = setInterval(() => this.poll(), 15000);
         },
         pollError: '',
