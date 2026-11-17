@@ -12,10 +12,11 @@ use App\Models\Notification;
 use App\Models\Penghuni;
 use App\Models\SupportMessage;
 use App\Models\Tagihan;
+use App\Validation\SafeValidator;
 use App\View\Composers\LayoutComposer;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Validator::resolver(function ($translator, $data, $rules, $messages, $attributes) {
+            return new SafeValidator($translator, $data, $rules, $messages, $attributes);
+        });
+
         Paginator::defaultView('vendor.pagination.custom');
         Paginator::defaultSimpleView('vendor.pagination.custom-simple');
 
