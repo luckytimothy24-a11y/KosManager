@@ -164,6 +164,55 @@
                     </div>
                 </div>
             </section>
+            {{-- ============================================================
+             PROGRES SEWA (Booking ? Bayar ? Konfirmasi ? Check-In ? Check-Out)
+             ============================================================ --}}
+        @if($penghuni)
+            @php
+                $progressSteps = [
+                    ['key' => 'booking', 'label' => 'Booking', 'icon' => 'ri-calendar-check-line', 'done' => true],
+                    ['key' => 'payment', 'label' => 'Bayar DP', 'icon' => 'ri-wallet-3-line', 'done' => ($stats['tagihan_pending_verification'] ?? 0) > 0 || ($stats['total_belum_dibayar'] ?? 0) == 0],
+                    ['key' => 'confirmed', 'label' => 'Dikonfirmasi', 'icon' => 'ri-shield-check-line', 'done' => $isActiveRent || ($stats['kontrak_status'] ?? '-') === 'active'],
+                    ['key' => 'checkin', 'label' => 'Check-In', 'icon' => 'ri-login-box-line', 'done' => $isActiveRent],
+                    ['key' => 'checkout', 'label' => 'Check-Out', 'icon' => 'ri-logout-box-line', 'done' => $pendingCheckout],
+                ];
+            @endphp
+            <section aria-label="Progres sewa" class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <h2 class="flex items-center gap-2 text-base font-black tracking-tight text-slate-900 dark:text-white mb-4">
+                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-500/10 dark:text-primary-300">
+                        <i class="ri-road-map-line"></i>
+                    </span>
+                    Progres Sewa
+                </h2>
+                <div class="flex items-center gap-0">
+                    @foreach($progressSteps as $i => $step)
+                        @php
+                            $isDone = $step['done'];
+                            $color = $isDone ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600';
+                            $textColor = $isDone ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500';
+                            $nextDone = $i < count($progressSteps) - 1 && $progressSteps[$i + 1]['done'];
+                            $lineColor = $isDone && $nextDone ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700';
+                        @endphp
+                        <div class="flex min-w-0 flex-1 flex-col items-center">
+                            <div class="w-7 h-7 rounded-full {{ $color }} flex items-center justify-center shrink-0">
+                                @if($isDone)
+                                    <i class="ri-check-line text-white text-xs"></i>
+                                @else
+                                    <i class="{{ $step['icon'] }} text-white text-xs"></i>
+                                @endif
+                            </div>
+                            <p class="mt-2 text-[9px] font-semibold {{ $textColor }} text-center leading-tight sm:text-[11px]">
+                                {{ $step['label'] }}
+                            </p>
+                        </div>
+                        @if($i < count($progressSteps) - 1)
+                            <div class="mt-[13px] h-0.5 w-2 shrink-0 {{ $lineColor }} sm:mx-1 sm:w-auto sm:flex-1"></div>
+                        @endif
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
 
             {{-- ============================================================
                  TAGIHAN BERIKUTNYA — BILLING CARD
@@ -295,9 +344,20 @@
                     ];
                 }
             }
+            // Pending bookings (menunggu pembayaran) — tampil meski belum punya kamar
+            foreach (($pendingBookings ?? collect()) as $pb) {
+                $attention[] = [
+                    'icon' => 'ri-wallet-3-line',
+                    'iconClass' => 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400',
+                    'title' => 'Booking menunggu pembayaran',
+                    'desc' => "Booking {$pb->booking_code} — selesaikan pembayaran sebelum kedaluwarsa.",
+                    'route' => route('tenant.booking.show', $pb),
+                    'cta' => 'Bayar Sekarang',
+                ];
+            }
         @endphp
 
-        @if($penghuni && !empty($attention))
+        @if((!empty($attention)) && ($penghuni || ($pendingBookings ?? collect())->isNotEmpty()))
             <section aria-label="Perlu Perhatian" class="space-y-4">
                 <h2 class="flex items-center gap-2 text-base font-black tracking-tight text-slate-900 dark:text-white">
                     <span class="grid h-8 w-8 place-items-center rounded-xl bg-primary-50 text-primary-500 dark:bg-primary-500/10 dark:text-primary-300">
@@ -391,10 +451,22 @@
                                 </div>
                             </x-slot>
                             <x-slot name="actions">
-                                <form method="POST" action="{{ route('tenant.checkout.request', $penghuni) }}" class="inline-flex" x-data="{ submitting: false }" x-on:submit="submitting = true">
+                                <form method="POST" action="{{ route('tenant.checkout.request', $penghuni) }}" class="space-y-3" x-data="{ submitting: false }" x-on:submit="submitting = true">
                                     @csrf
+                                    <div>
+                                        <label for="checkout-condition" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Kondisi kamar (opsional)</label>
+                                        <textarea id="checkout-condition" name="condition" rows="2" maxlength="500"
+                                                  class="w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-sm px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"
+                                                  placeholder="Contoh: bersih, tidak ada kerusakan..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label for="checkout-notes" class="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Catatan (opsional)</label>
+                                        <textarea id="checkout-notes" name="notes" rows="2" maxlength="1000"
+                                                  class="w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-sm px-3 py-2 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20"
+                                                  placeholder="Catatan tambahan..."></textarea>
+                                    </div>
                                     <button type="submit" :disabled="submitting"
-                                            class="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            class="w-full px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 transition shadow-sm shadow-red-600/30 disabled:opacity-50 disabled:cursor-not-allowed">
                                         <span x-show="!submitting">Ya, Ajukan</span>
                                         <span x-show="submitting" x-cloak>Mengirim...</span>
                                     </button>

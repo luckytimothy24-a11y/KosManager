@@ -151,10 +151,18 @@ class DashboardController extends Controller
             ->with(['kos', 'kamar'])->first();
         $stats = [];
         $pendingCheckout = false;
+        $pendingBookings = collect();
 
         if ($penghuni) {
             $pendingCheckout = $penghuni->checkOuts()->where('status', 'pending')->exists();
             $kontrak = $penghuni->kontraks()->where('status', 'active')->first();
+
+            // Pending bookings (menunggu pembayaran) milik tenant ini
+            $pendingBookings = \App\Models\Booking::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->with(['kos', 'kamar'])
+                ->latest()
+                ->get();
 
             $nearestDue = $penghuni?->tagihans()?->outstanding()?->orderBy('due_date')?->value('due_date');
 
@@ -320,6 +328,7 @@ class DashboardController extends Controller
             'user',
             'penghuni',
             'pendingCheckout',
+            'pendingBookings',
             'recommendations',
             'latestKos',
             'budgetDiscovery',
