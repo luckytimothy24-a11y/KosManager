@@ -72,12 +72,25 @@ class PayoutDisbursementController extends Controller
         $path = $disbursement->proof_path;
         abort_unless($path && Storage::disk('private')->exists($path), 404);
 
-        return Storage::disk('private')->response(
-            $path,
-            null,
-            ['Cache-Control' => 'private, no-store, max-age=0'],
-            'inline'
-        );
+        $disk = Storage::disk('private');
+        $mime = $disk->mimeType($path);
+        $filename = basename($path);
+        $isImage = str_starts_with($mime, 'image/');
+
+        $headers = [
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store, max-age=0',
+        ];
+
+        if ($isImage) {
+            return $disk->response($path, $filename, array_merge($headers, [
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]));
+        }
+
+        return $disk->download($path, $filename, array_merge($headers, [
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]));
     }
 
     public function verify(PayoutDisbursement $disbursement, PropertyOwnerPayoutService $service)

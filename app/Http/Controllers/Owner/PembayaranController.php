@@ -92,7 +92,26 @@ class PembayaranController extends Controller
 
         abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
 
-        return \Storage::disk('private')->download($pembayaran->proof_file);
+        $path = $pembayaran->proof_file;
+        $disk = \Storage::disk('private');
+        $mime = $disk->mimeType($path);
+        $filename = basename($path);
+        $isImage = str_starts_with($mime, 'image/');
+
+        $headers = [
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store, max-age=0',
+        ];
+
+        if ($isImage) {
+            return $disk->response($path, $filename, array_merge($headers, [
+                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            ]));
+        }
+
+        return $disk->download($path, $filename, array_merge($headers, [
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]));
     }
 
     /**
