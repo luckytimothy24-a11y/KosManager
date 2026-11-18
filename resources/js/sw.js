@@ -1,6 +1,6 @@
-import { precacheAndRoute } from "workbox-precaching";
+﻿import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import { CacheFirst, NetworkFirst, StaleWhileRevalidate } from "workbox-strategies";
+import { CacheFirst, NetworkOnly } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
 
 // Precache assets
@@ -72,7 +72,25 @@ function syncPendingBookings() {
         });
 }
 
-// Runtime caching
+// Clear all runtime caches on logout message
+self.addEventListener("message", function(event) {
+    if (event.data && event.data.type === "CLEAR_CACHES") {
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.map(function(cacheName) {
+                    // Don't delete precache, only runtime caches
+                    if (cacheName !== "workbox-precache-v2" && !cacheName.startsWith("workbox-precache")) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        }).then(function() {
+            event.ports[0].postMessage({ cleared: true });
+        });
+    }
+});
+
+// Runtime caching - API routes use NetworkOnly (no caching for sensitive data)
 registerRoute(
     /^https:\/\/fonts\.bunny\.net\/.*/i,
     new CacheFirst({
@@ -88,16 +106,7 @@ registerRoute(
 
 registerRoute(
     /\/api\/.*/i,
-    new NetworkFirst({
-        cacheName: "api-cache",
-        plugins: [
-            new ExpirationPlugin({
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24
-            })
-        ],
-        networkTimeoutSeconds: 10
-    })
+    new NetworkOnly()
 );
 
 registerRoute(

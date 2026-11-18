@@ -191,4 +191,18 @@ function hideOfflineToast() {
     var toast = document.getElementById("offline-toast");
     if (toast) toast.remove();
 }
+// Clear SW caches on logout
+document.addEventListener("submit", function(e) {
+    var form = e.target;
+    if (form && form.action && form.action.includes("/logout")) {
+        if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+            var channel = new MessageChannel();
+            channel.port1.onmessage = function(event) {
+                console.log("Caches cleared:", event.data);
+            };
+            navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHES" }, [channel.port2]);
+        }
+    }
+});
+
 console.log("PWA script loaded");
