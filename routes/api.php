@@ -43,6 +43,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
         Route::get('/me', [MeController::class, 'show'])->name('api.v1.me');
         Route::put('/me', [MeController::class, 'update'])->name('api.v1.me.update');
+
+        // Device registration for push notifications
+        Route::post('/devices/register', [App\Http\Controllers\Api\V1\DeviceController::class, 'register'])->name('api.v1.devices.register');
+        Route::post('/devices/unregister', [App\Http\Controllers\Api\V1\DeviceController::class, 'unregister'])->name('api.v1.devices.unregister');
     });
 
     Route::middleware(['auth:sanctum', 'active', 'role:pencari'])->group(function () {

@@ -1,4 +1,5 @@
 <?php
+Route::get('/offline', function () { return view('offline'); })->name('offline');
 
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
