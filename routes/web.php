@@ -87,7 +87,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('notifications.read');
 
     Route::get('/pembayaran/{pembayaran}/proof', [PembayaranController::class, 'downloadProof'])
-        ->name('pembayaran.proof');
+        ->name('pembayaran.proof')
+        ->middleware('throttle:30,1');
 
     Route::get('/pembayaran/{pembayaran}/kuitansi', [PembayaranController::class, 'receipt'])
         ->name('pembayaran.receipt');
@@ -213,10 +214,10 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('payouts/{payout}/transfer', [PropertyOwnerPayoutController::class, 'markTransferred'])->name('payouts.transfer');
     Route::post('payouts/{payout}/verify', [PropertyOwnerPayoutController::class, 'verify'])->name('payouts.verify');
     Route::post('payouts/{payout}/reject', [PropertyOwnerPayoutController::class, 'reject'])->name('payouts.reject');
-    Route::get('payouts/{payout}/proof', [PropertyOwnerPayoutController::class, 'downloadProof'])->name('payouts.proof');
+    Route::get('payouts/{payout}/proof', [PropertyOwnerPayoutController::class, 'downloadProof'])->name('payouts.proof')->middleware('throttle:30,1');
     Route::post('kos/{kos}/property-owner', [PropertyOwnerPayoutController::class, 'setPropertyOwner'])->name('payouts.set-property-owner');
     Route::post('payouts/{payout}/disbursements', [PayoutDisbursementController::class, 'store'])->name('payouts.disbursements.store');
-    Route::get('disbursements/{disbursement}/proof', [PayoutDisbursementController::class, 'downloadProof'])->name('disbursements.proof');
+    Route::get('disbursements/{disbursement}/proof', [PayoutDisbursementController::class, 'downloadProof'])->name('disbursements.proof')->middleware('throttle:30,1');
     Route::post('disbursements/{disbursement}/verify', [PayoutDisbursementController::class, 'verify'])->name('disbursements.verify');
     Route::post('disbursements/{disbursement}/reject', [PayoutDisbursementController::class, 'reject'])->name('disbursements.reject');
     Route::post('adjustments', [PayoutAdjustmentController::class, 'store'])->name('adjustments.store');
@@ -370,12 +371,12 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
 
     Route::get('booking', [TenantBookingController::class, 'index'])->name('booking.index');
     Route::get('booking/create', [TenantBookingController::class, 'create'])->name('booking.create');
-    Route::post('booking', [TenantBookingController::class, 'store'])->name('booking.store');
+    Route::post('booking', [TenantBookingController::class, 'store'])->name('booking.store')->middleware('throttle:10,60');
     Route::get('booking/success/{booking}', [TenantBookingController::class, 'success'])->name('booking.success');
     Route::get('booking/{booking}', [TenantBookingController::class, 'show'])->name('booking.show');
     Route::post('booking/{booking}/cancel', [TenantBookingController::class, 'cancel'])->name('booking.cancel');
     // Pembayaran booking — prerequisite konfirmasi. Nominal dari server (booking.price).
-    Route::post('booking/{booking}/payment', [TenantBookingPaymentController::class, 'store'])->name('booking.payment.store');
+    Route::post('booking/{booking}/payment', [TenantBookingPaymentController::class, 'store'])->name('booking.payment.store')->middleware('throttle:15,60');
 
     Route::post('favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
     Route::get('favorites', [FavoriteController::class, 'index'])->name('favorites.index');
@@ -395,7 +396,7 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
     Route::get('tagihan/{tagihan}', [TagihanController::class, 'show'])->name('tagihan.show');
 
     Route::get('messages', [TenantMessageController::class, 'index'])->name('messages.index');
-    Route::post('messages', [TenantMessageController::class, 'store'])->middleware('throttle:5,60')->name('messages.store');
+    Route::post('messages', [TenantMessageController::class, 'store'])->middleware('throttle:30,1')->name('messages.store');
     Route::get('messages/latest', [TenantMessageController::class, 'latest'])->name('messages.latest');
 
     // Undangan tinggal bersama — orange modern
@@ -415,7 +416,7 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
 
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
-    Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store');
+    Route::post('pembayaran', [TenantPembayaranController::class, 'store'])->name('pembayaran.store')->middleware('throttle:15,60');
 
     Route::get('laporan', [TenantLaporanController::class, 'index'])->name('laporan.index');
 
