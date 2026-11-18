@@ -24,9 +24,25 @@
                 </div>
 
                 @if($booking->status === 'approved')
+                    @php $idStatus = $booking->identityStatus(); @endphp
                     <div class="mt-5 flex items-start gap-2.5 rounded-xl border border-green-100 dark:border-green-500/20 bg-green-50/70 dark:bg-green-500/[0.06] px-4 py-3">
                         <i class="ri-check-double-line text-green-600 dark:text-green-400 mt-0.5"></i>
-                        <p class="text-sm text-green-800 dark:text-green-300/90">Booking dikonfirmasi. Kamar telah dipesan untuk Anda.</p>
+                        <div>
+                            <p class="text-sm font-bold text-green-800 dark:text-green-300">Booking dikonfirmasi</p>
+                            <p class="text-sm text-green-800/90 dark:text-green-300/80 mt-0.5">
+                                @if($idStatus === 'not_submitted')
+                                    Kamar telah dipesan untuk Anda. Lengkapi identitas untuk mengajukan check-in.
+                                @elseif($idStatus === 'pending')
+                                    Kamar telah dipesan. Data check-in Anda sedang direview owner.
+                                @elseif($idStatus === 'rejected')
+                                    Kamar telah dipesan, tetapi pengajuan check-in ditolak. Perbaiki data identitas.
+                                @elseif($idStatus === 'confirmed')
+                                    Kamar telah dipesan. Data check-in disetujui — datang pada tanggal mulai untuk check-in fisik.
+                                @else
+                                    Kamar telah dipesan untuk Anda.
+                                @endif
+                            </p>
+                        </div>
                     </div>
                 @elseif($booking->status === 'pending')
                     @php $paymentStatus = isset($bookingPayment) ? ($bookingPayment->verification_status ?? 'none') : 'none'; @endphp
@@ -88,9 +104,22 @@
                 @if($booking->nextAction())
                     <div class="mt-3 flex items-start gap-2.5 rounded-xl border border-amber-100 dark:border-amber-500/20 bg-amber-50/70 dark:bg-amber-500/[0.06] px-4 py-3">
                         <i class="ri-lightbulb-flash-line text-amber-500 dark:text-amber-400 mt-0.5"></i>
-                        <div>
+                        <div class="flex-1">
                             <p class="text-label text-amber-700 dark:text-amber-400">Langkah Selanjutnya</p>
                             <p class="mt-0.5 text-sm text-amber-800 dark:text-amber-300/90">{{ $booking->nextAction() }}</p>
+                            @if($booking->status === 'approved' && in_array($booking->identityStatus(), ['not_submitted', 'rejected']))
+                                <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-700 transition">
+                                    <i class="ri-send-plane-line"></i> {{ $booking->identityStatus() === 'rejected' ? 'Perbaiki & Ajukan Ulang' : 'Lengkapi Identitas' }}
+                                </a>
+                            @elseif($booking->status === 'approved' && $booking->identityStatus() === 'pending')
+                                <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-800">
+                                    <i class="ri-eye-line"></i> Lihat Status Pengajuan <i class="ri-arrow-right-s-line"></i>
+                                </a>
+                            @elseif($booking->status === 'approved' && $booking->identityStatus() === 'confirmed')
+                                <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-green-700 dark:text-green-300 hover:text-green-800">
+                                    <i class="ri-shield-check-line"></i> Lihat Detail <i class="ri-arrow-right-s-line"></i>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endif
@@ -164,11 +193,21 @@
                         <i class="ri-road-map-line text-primary-500"></i> Status Booking
                     </h3>
                     @php
+                        $identityStatus = $booking->identityStatus();
                         $steps = [
                             ['key' => 'booking', 'label' => 'Booking Dibuat', 'short' => 'Booking', 'state' => 'done'],
                             ['key' => 'payment', 'label' => $timelineUsesDp ? 'Pembayaran DP' : 'Pembayaran', 'short' => $timelineUsesDp ? 'DP' : 'Bayar', 'state' => $paymentStepState],
                             ['key' => 'confirmed', 'label' => 'Booking Dikonfirmasi', 'short' => 'Konfirmasi', 'state' => ($isApproved || $isCompleted) ? 'done' : 'upcoming'],
-                            ['key' => 'checkin', 'label' => 'Check-In', 'short' => 'Check-In', 'state' => $isCompleted ? 'done' : ($isApproved ? 'current' : 'upcoming')],
+                            ['key' => 'identity', 'label' => 'Verifikasi Data Check-In', 'short' => 'Verifikasi', 'state' => $isApproved
+                                ? match ($identityStatus) {
+                                    'not_submitted' => 'current',
+                                    'pending' => 'waiting',
+                                    'rejected' => 'waiting',
+                                    'confirmed' => 'done',
+                                    default => 'upcoming',
+                                }
+                                : ($isCompleted ? 'done' : 'upcoming')],
+                            ['key' => 'checkin', 'label' => 'Check-In di Kos', 'short' => 'Check-In', 'state' => $isCompleted ? 'done' : ($isApproved && $identityStatus === 'confirmed' ? 'current' : 'upcoming')],
                             ['key' => 'checkout', 'label' => 'Check-Out', 'short' => 'Check-Out', 'state' => $hasCheckOut ? 'done' : 'upcoming'],
                         ];
                     @endphp
@@ -220,7 +259,7 @@
                 <div class="card-surface p-6 sm:p-8 border-l-4 {{ $identityStatus === 'confirmed' ? 'border-green-500' : ($identityStatus === 'pending' ? 'border-amber-400' : ($identityStatus === 'rejected' ? 'border-red-400' : 'border-primary-500')) }}">
                     <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50">
                         <i class="{{ $identityStatus === 'pending' ? 'ri-time-line text-amber-500' : ($identityStatus === 'confirmed' ? 'ri-check-double-line text-green-500' : ($identityStatus === 'rejected' ? 'ri-close-circle-line text-red-500' : 'ri-login-box-line text-primary-500')) }}"></i>
-                        Check-In
+                        Verifikasi Data Check-In
                         @if($identityStatus === 'pending')
                             <span class="ml-1 inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 px-2 py-0.5 text-[11px] font-bold">Menunggu Review Owner</span>
                         @elseif($identityStatus === 'confirmed')
