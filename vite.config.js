@@ -9,50 +9,15 @@ export default defineConfig({
             refresh: true,
         }),
         VitePWA({
+            strategies: "injectManifest",
+            srcDir: "resources/js",
+            filename: "sw.js",
             registerType: "autoUpdate",
             includeAssets: ["favicon.ico", "apple-touch-icon.png", "favicon.svg"],
             manifest: false,
-            workbox: {
-                maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+            injectManifest: {
                 globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-                runtimeCaching: [
-                    {
-                        urlPattern: /^https:\/\/fonts\.bunny\.net\/.*/i,
-                        handler: "CacheFirst",
-                        options: {
-                            cacheName: "google-fonts",
-                            expiration: {
-                                maxEntries: 20,
-                                maxAgeSeconds: 60 * 60 * 24 * 365
-                            }
-                        }
-                    },
-                    {
-                        urlPattern: /\/api\/.*/i,
-                        handler: "NetworkFirst",
-                        options: {
-                            cacheName: "api-cache",
-                            expiration: {
-                                maxEntries: 100,
-                                maxAgeSeconds: 60 * 60 * 24
-                            },
-                            networkTimeoutSeconds: 10
-                        }
-                    },
-                    {
-                        urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
-                        handler: "CacheFirst",
-                        options: {
-                            cacheName: "images",
-                            expiration: {
-                                maxEntries: 100,
-                                maxAgeSeconds: 60 * 60 * 24 * 30
-                            }
-                        }
-                    }
-                ],
-                navigateFallback: "/offline",
-                navigateFallbackDenylist: [/^\/api/, /^\/admin/, /^\/owner/, /^\/tenant\/booking\/.*\/payment/]
+                maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
             },
             devOptions: {
                 enabled: true,

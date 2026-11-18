@@ -40,6 +40,12 @@ return [
         'api_token' => env('WHATSAPP_API_TOKEN'),
     ],
 
+    'vapid' => [
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@kosmanager.test'),
+    ],
+
     'payment_gateway' => [
         'driver' => env('PAYMENT_GATEWAY_DRIVER', 'midtrans'),
         'midtrans' => [

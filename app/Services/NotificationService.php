@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Support\NotificationType;
 use Illuminate\Support\Facades\Mail;
+use App\Services\PushNotificationService;
 
 class NotificationService
 {
@@ -50,6 +51,16 @@ class NotificationService
                 );
             } catch (\Exception $e) {
                 \Log::warning('Failed to send notification email: '.$e->getMessage());
+            }
+
+            // Send push notification
+            try {
+                $pushService = new PushNotificationService();
+                if ($pushService->isAvailable()) {
+                    $pushService->sendToUser($userId, $title, $message, $data['url'] ?? null, $data);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Failed to send push notification: '.$e->getMessage());
             }
         }
 
