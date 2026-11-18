@@ -58,7 +58,7 @@ class MarketplaceController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'condition' => ['required', 'in:baru,bekas,rusak_ringan'],
             'category' => ['required', 'in:elektronik,furniture,pakaian,buku,lainnya'],
-            'image' => ['nullable', 'image', 'max:2048'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new \App\Rules\SafeImage],
         ]);
 
         $imagePath = null;
