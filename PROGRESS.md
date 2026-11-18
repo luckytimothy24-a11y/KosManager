@@ -1,4 +1,4 @@
-﻿# PROGRESS.md
+# PROGRESS.md
 
 ## Status
 - [x] Tahap 0: PWA Phase 1-4 (manifest, SW, push notifications, frontend subscription)
@@ -9,8 +9,14 @@
 - [x] Tahap 0: Dashboard tenant (progress indicator, pending booking card, checkout condition form)
 
 ## Tahap 1: Keamanan Data Sensitif
-- [ ] Langkah 1: Audit (belum dimulai)
-- [ ] Langkah 2: Perbaikan (menunggu persetujuan)
+- [x] Langkah 1: Audit (selesai)
+- [x] Langkah 2: Perbaikan (selesai)
+  - Commit 1 (4ed31c7): Service worker /api/ -> NetworkOnly + cache clearing on logout
+  - Commit 2 (c22bd73): Throttle register, forgot/reset password, booking, payment upload, messages, downloadProof
+  - Commit 3 (06ba9b4): Download private files as attachment with nosniff, inline only for images
+  - Commit 4 (8605c12): .env.example: SESSION_SECURE_COOKIE, SESSION_SAME_SITE, APP_DEBUG notes
+  - Commit 5 (c3ac795): SafeUpload rule for payment proof (image content check, PDF mimes+max) + SafeImage for marketplace
+  - Commit 6 (73a0956): SecurityAuditTest (cross-tenant 403, forbidden file type, mass assignment, throttle 429)
 
 ## Tahap 2: Perbaikan Cepat
 - [ ] Belum dimulai
@@ -26,5 +32,9 @@
 
 ## Catatan
 - Branch: feature/alur-dana-2-tahap
-- Tests terakhir: 112 passed (341 assertions)
+- Tests terakhir: 112 passed (341 assertions) + 9 SecurityAuditTest
 - Build Vite: sukses
+- Audit temuan: file sensitif sudah di disk private + policy check. Rate limiting ditambahkan. SafeUpload rule dibuat. .env.example diperbarui.
+- TODO: Kebijakan riwayat bukti bayar (hapus file lama atau simpan riwayat) - belum ditentukan
+- TODO: Enkripsi identity_number - audit saja, belum diubah (sesuai instruksi)
+- TODO: 2FA dan backup database - hanya rekomendasi, tidak diimplementasi
