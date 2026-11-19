@@ -1,5 +1,6 @@
 <?php
 Route::get('/offline', function () { return view('offline'); })->name('offline');
+Route::get('/health', \App\Http\Controllers\HealthCheckController::class)->name('health');
 
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
