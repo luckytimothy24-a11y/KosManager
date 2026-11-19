@@ -52,3 +52,10 @@ yarn-error.log
 
 base.log
 test-output.txt
+
+# Playwright
+playwright-report/
+test-results/
+
+# Debug
+cookies.txt
