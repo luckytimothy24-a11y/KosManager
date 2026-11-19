@@ -19,7 +19,11 @@
   - Commit 6 (73a0956): SecurityAuditTest (cross-tenant 403, forbidden file type, mass assignment, throttle 429)
 
 ## Tahap 2: Perbaikan Cepat
-- [ ] Belum dimulai
+- [x] Item 1: Ganti 'Lengkapi Identitas' -> 'Verifikasi Data Diri' (commit abc1a52)
+- [x] Item 2: Kebijakan refund DP di config/booking.php (commit 9443fb9)
+- [x] Item 3: Halaman error kustom (commit a478f91)
+- [x] Item 4: Kontras WCAG AA (commit a63d60f) - 131 files
+- [x] Item 5: x-empty-state component (commit a3337a5)
 
 ## Tahap 3: "Perlu Tindakan" dan Navigasi Owner/Admin
 - [ ] Belum dimulai
