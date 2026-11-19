@@ -7,17 +7,21 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=lato:300,400,700,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
-        if (localStorage.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        (function () {
+            const stored = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (stored === 'dark' || (!stored && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
     </script>
 </head>
-<body class="font-sans antialiased bg-slate-50 dark:bg-surface-elevated text-slate-800 dark:text-slate-200">
+<body class="font-sans antialiased bg-slate-50 dark:bg-surface-dark text-slate-800 dark:text-slate-200">
     <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
         <a href="/" class="flex items-center gap-2 mb-8">
             <div class="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center">
