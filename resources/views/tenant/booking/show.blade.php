@@ -211,7 +211,71 @@
                             ['key' => 'checkout', 'label' => 'Check-Out', 'short' => 'Check-Out', 'state' => $hasCheckOut ? 'done' : 'upcoming'],
                         ];
                     @endphp
-                    <div class="flex items-start gap-0">
+                    {{-- Mobile: ringkasan tahap aktif --}}
+                    <div class="sm:hidden mb-4">
+                        @php
+                            $currentStepNum = 1;
+                            $currentStepName = 'Booking Dibuat';
+                            foreach ($steps as $i => $s) {
+                                if (in_array($s['state'], ['current', 'waiting'])) {
+                                    $currentStepNum = $i + 1;
+                                    $currentStepName = $s['label'];
+                                    break;
+                                }
+                                if ($s['state'] === 'done') {
+                                    $currentStepNum = $i + 2;
+                                    if ($i + 1 < count($steps)) {
+                                        $currentStepName = $steps[$i + 1]['label'];
+                                    }
+                                }
+                            }
+                            if ($currentStepNum > count($steps)) {
+                                $currentStepNum = count($steps);
+                                $currentStepName = $steps[count($steps) - 1]['label'];
+                            }
+                        @endphp
+                        <div class="flex items-center gap-3 rounded-xl bg-primary-50 dark:bg-primary-500/10 px-4 py-3 mb-3">
+                            <span class="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary-600 text-white text-xs font-bold">{{ $currentStepNum }}</span>
+                            <div>
+                                <p class="text-xs font-semibold text-primary-700 dark:text-primary-300">Tahap {{ $currentStepNum }} dari {{ count($steps) }}</p>
+                                <p class="text-sm font-bold text-slate-900 dark:text-slate-50">{{ $currentStepName }}</p>
+                            </div>
+                        </div>
+                        <details class="group">
+                            <summary class="flex items-center justify-between cursor-pointer text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition py-2">
+                                <span>Lihat semua tahap</span>
+                                <i class="ri-arrow-down-s-line transition group-open:rotate-180"></i>
+                            </summary>
+                            <div class="mt-2 space-y-2 pl-2">
+                                @foreach($steps as $i => $step)
+                                    @php
+                                        $state = $step['state'];
+                                        $isDone = $state === 'done';
+                                        $isWaiting = $state === 'waiting';
+                                        $isCurrent = $state === 'current';
+                                        $color = $isDone ? 'bg-green-500' : ($isWaiting ? 'bg-amber-500' : ($isCurrent ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'));
+                                    @endphp
+                                    <div class="flex items-center gap-3 py-1.5" @if($isCurrent) aria-current="step" @endif>
+                                        <div class="w-6 h-6 rounded-full {{ $color }} flex items-center justify-center shrink-0">
+                                            @if($isDone)
+                                                <i class="ri-check-line text-white text-[10px]"></i>
+                                            @elseif($isWaiting)
+                                                <i class="ri-time-line text-white text-[10px]"></i>
+                                            @elseif($isCurrent)
+                                                <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                                            @else
+                                                <div class="w-1.5 h-1.5 rounded-full bg-white/60"></div>
+                                            @endif
+                                        </div>
+                                        <span class="text-xs {{ $isDone ? 'text-green-600 dark:text-green-400' : ($isWaiting ? 'text-amber-600 dark:text-amber-400' : ($isCurrent ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500')) }} font-medium">{{ $step['label'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </details>
+                    </div>
+
+                    {{-- Desktop: horizontal timeline --}}
+                    <div class="hidden sm:flex items-start gap-0">
                         @foreach($steps as $i => $step)
                             @php
                                 $state = $step['state'];

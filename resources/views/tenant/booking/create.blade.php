@@ -309,6 +309,24 @@
                                     </div>
                                 </aside>
                             </div>
+
+                            {{-- Navigation buttons --}}
+                            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/[0.08]">
+                                <button type="button" x-show="step > 1" @click="step--"
+                                        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.08] text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition">
+                                    <i class="ri-arrow-left-line"></i> Kembali
+                                </button>
+                                <div x-show="step === 1" class="text-xs text-slate-400 dark:text-slate-500">Pilih kamar untuk melanjutkan</div>
+                                <button type="button" x-show="step < 3" @click="step++"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-700 text-white text-sm font-bold hover:bg-primary-700 transition shadow-sm ml-auto">
+                                    Lanjut <i class="ri-arrow-right-line"></i>
+                                </button>
+                                <button type="submit" x-show="step === 3" :disabled="submitting"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-700 text-white text-sm font-bold hover:bg-primary-700 transition shadow-sm ml-auto disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span x-show="!submitting"><i class="ri-check-line"></i> Ajukan Booking</span>
+                                    <span x-show="submitting" x-cloak>Mengirim...</span>
+                                </button>
+                            </div>
                         </form>
                     @elseif(request('kos_id'))
                         <div class="rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-surface-elevated/30 p-10 text-center">
