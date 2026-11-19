@@ -43,7 +43,7 @@
 - [x] Butir 2: CI GitHub Actions sudah ada (.github/workflows/ci.yml)
 - [x] Butir 3: E2E Playwright - 9 tests, 3 flows (commit 297700c)
 - [x] Butir 4: Health check endpoint /health + monitoring recommendations (commit 45b6b5b)
-- [ ] Butir 5: Dockerfile/docker-compose - menunggu keputusan user
+- [x] Butir 5: Dockerfile, docker-compose, nginx, supervisor, .env.docker (commit 97120dc)
 
 ## Catatan
 - Branch: feature/alur-dana-2-tahap
