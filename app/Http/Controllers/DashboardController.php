@@ -107,7 +107,82 @@ class DashboardController extends Controller
                 ->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds))->count(),
         ];
 
-        return view('dashboard.admin', compact('stats', 'user'));
+        // Perlu Tindakan: agregat per jenis (scope admin)
+        $actionItems = [
+            'pending_bookings' => [
+                'count' => Booking::where('status', 'pending')->whereIn('kos_id', $kosIds)->count(),
+                'items' => Booking::with(['user', 'kamar', 'kos'])
+                    ->where('status', 'pending')
+                    ->whereIn('kos_id', $kosIds)
+                    ->latest()->take(3)->get(),
+                'route' => 'admin.booking.index',
+                'label' => 'Booking Menunggu Persetujuan',
+                'icon' => 'ri-calendar-check-line',
+                'color' => 'amber',
+            ],
+            'pending_identity' => [
+                'count' => Booking::where('status', 'approved')
+                    ->whereNotNull('identity_data_submitted_at')
+                    ->whereNull('identity_confirmed_at')
+                    ->whereNull('identity_rejected_at')
+                    ->whereIn('kos_id', $kosIds)->count(),
+                'items' => Booking::with(['user', 'kamar', 'kos'])
+                    ->where('status', 'approved')
+                    ->whereNotNull('identity_data_submitted_at')
+                    ->whereNull('identity_confirmed_at')
+                    ->whereNull('identity_rejected_at')
+                    ->whereIn('kos_id', $kosIds)
+                    ->latest()->take(3)->get(),
+                'route' => 'admin.checkin.index',
+                'label' => 'Verifikasi Data Diri Menunggu Review',
+                'icon' => 'ri-shield-user-line',
+                'color' => 'blue',
+            ],
+            'checkin_today' => [
+                'count' => CheckIn::whereDate('check_in_date', now()->toDateString())
+                    ->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds))->count(),
+                'items' => CheckIn::with(['penghuni.user', 'kamar.kos'])
+                    ->whereDate('check_in_date', now()->toDateString())
+                    ->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds))
+                    ->latest()->take(3)->get(),
+                'route' => 'admin.checkin.index',
+                'label' => 'Check-In Fisik Hari Ini',
+                'icon' => 'ri-login-box-line',
+                'color' => 'green',
+            ],
+            'pending_checkouts' => [
+                'count' => CheckOut::where('status', 'pending')
+                    ->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds))->count(),
+                'items' => CheckOut::with(['penghuni.user', 'kamar.kos'])
+                    ->where('status', 'pending')
+                    ->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds))
+                    ->latest()->take(3)->get(),
+                'route' => 'admin.checkout.index',
+                'label' => 'Check-Out Menunggu Persetujuan',
+                'icon' => 'ri-logout-box-line',
+                'color' => 'red',
+            ],
+            'pending_payments' => [
+                'count' => Pembayaran::where('verification_status', 'pending')
+                    ->where(function ($q) use ($kosIds) {
+                        $q->whereHas('penghuni', fn ($qq) => $qq->whereIn('kos_id', $kosIds))
+                            ->orWhereHas('booking', fn ($qq) => $qq->whereIn('kos_id', $kosIds));
+                    })->count(),
+                'items' => Pembayaran::with(['penghuni.user', 'booking.user', 'tagihan'])
+                    ->where('verification_status', 'pending')
+                    ->where(function ($q) use ($kosIds) {
+                        $q->whereHas('penghuni', fn ($qq) => $qq->whereIn('kos_id', $kosIds))
+                            ->orWhereHas('booking', fn ($qq) => $qq->whereIn('kos_id', $kosIds));
+                    })
+                    ->latest()->take(3)->get(),
+                'route' => 'admin.pembayaran.index',
+                'label' => 'Pembayaran Menunggu Verifikasi',
+                'icon' => 'ri-wallet-3-line',
+                'color' => 'amber',
+            ],
+        ];
+
+        return view('dashboard.admin', compact('stats', 'user', 'actionItems'));
     }
 
     private function owner($user)
@@ -142,7 +217,83 @@ class DashboardController extends Controller
         $totalKamar = max(1, $stats['total_kamar']);
         $stats['occupancy_percent'] = (int) round(($stats['total_kamar_occupied'] / $totalKamar) * 100);
 
-        return view('dashboard.owner', compact('stats', 'user', 'revenueChart'));
+        // Perlu Tindakan: agregat per jenis (scope owner)
+        $kosIds = Kos::where('owner_id', $user->id)->pluck('id');
+        $actionItems = [
+            'pending_bookings' => [
+                'count' => Booking::where('status', 'pending')->whereIn('kos_id', $kosIds)->count(),
+                'items' => Booking::with(['user', 'kamar', 'kos'])
+                    ->where('status', 'pending')
+                    ->whereIn('kos_id', $kosIds)
+                    ->latest()->take(3)->get(),
+                'route' => 'owner.booking.index',
+                'label' => 'Booking Menunggu Persetujuan',
+                'icon' => 'ri-calendar-check-line',
+                'color' => 'amber',
+            ],
+            'pending_identity' => [
+                'count' => Booking::where('status', 'approved')
+                    ->whereNotNull('identity_data_submitted_at')
+                    ->whereNull('identity_confirmed_at')
+                    ->whereNull('identity_rejected_at')
+                    ->whereIn('kos_id', $kosIds)->count(),
+                'items' => Booking::with(['user', 'kamar', 'kos'])
+                    ->where('status', 'approved')
+                    ->whereNotNull('identity_data_submitted_at')
+                    ->whereNull('identity_confirmed_at')
+                    ->whereNull('identity_rejected_at')
+                    ->whereIn('kos_id', $kosIds)
+                    ->latest()->take(3)->get(),
+                'route' => 'owner.checkin.index',
+                'label' => 'Verifikasi Data Diri Menunggu Review',
+                'icon' => 'ri-shield-user-line',
+                'color' => 'blue',
+            ],
+            'checkin_today' => [
+                'count' => CheckIn::whereDate('check_in_date', now()->toDateString())
+                    ->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds))->count(),
+                'items' => CheckIn::with(['penghuni.user', 'kamar.kos'])
+                    ->whereDate('check_in_date', now()->toDateString())
+                    ->whereHas('kamar', fn ($q) => $q->whereIn('kos_id', $kosIds))
+                    ->latest()->take(3)->get(),
+                'route' => 'owner.checkin.index',
+                'label' => 'Check-In Fisik Hari Ini',
+                'icon' => 'ri-login-box-line',
+                'color' => 'green',
+            ],
+            'pending_checkouts' => [
+                'count' => CheckOut::where('status', 'pending')
+                    ->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds))->count(),
+                'items' => CheckOut::with(['penghuni.user', 'kamar.kos'])
+                    ->where('status', 'pending')
+                    ->whereHas('penghuni', fn ($q) => $q->whereIn('kos_id', $kosIds))
+                    ->latest()->take(3)->get(),
+                'route' => 'owner.checkout.index',
+                'label' => 'Check-Out Menunggu Persetujuan',
+                'icon' => 'ri-logout-box-line',
+                'color' => 'red',
+            ],
+            'pending_payments' => [
+                'count' => Pembayaran::where('verification_status', 'pending')
+                    ->where(function ($q) use ($kosIds) {
+                        $q->whereHas('penghuni', fn ($qq) => $qq->whereIn('kos_id', $kosIds))
+                            ->orWhereHas('booking', fn ($qq) => $qq->whereIn('kos_id', $kosIds));
+                    })->count(),
+                'items' => Pembayaran::with(['penghuni.user', 'booking.user', 'tagihan'])
+                    ->where('verification_status', 'pending')
+                    ->where(function ($q) use ($kosIds) {
+                        $q->whereHas('penghuni', fn ($qq) => $qq->whereIn('kos_id', $kosIds))
+                            ->orWhereHas('booking', fn ($qq) => $qq->whereIn('kos_id', $kosIds));
+                    })
+                    ->latest()->take(3)->get(),
+                'route' => 'owner.pembayaran.index',
+                'label' => 'Pembayaran Menunggu Verifikasi',
+                'icon' => 'ri-wallet-3-line',
+                'color' => 'amber',
+            ],
+        ];
+
+        return view('dashboard.owner', compact('stats', 'user', 'revenueChart', 'actionItems'));
     }
 
     private function tenant($user)

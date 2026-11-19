@@ -15,17 +15,21 @@
                     'active' => request()->routeIs('dashboard'),
                 ],
                 [
-                    'label' => 'Favorit',
-                    'route' => 'tenant.favorites.index',
-                    'icon' => 'ri-heart',
-                    'active' => request()->routeIs('tenant.favorites.*'),
+                    'label' => 'Cari Kos',
+                    'route' => 'tenant.kos.index',
+                    'icon' => 'ri-search-line',
+                    'active' => request()->routeIs('tenant.kos.*'),
                 ],
                 [
                     'label' => 'Booking',
                     'route' => 'tenant.booking.index',
                     'icon' => 'ri-calendar-check',
-                    'active' => request()->routeIs('tenant.booking.*'),
+                    'active' => request()->routeIs('tenant.booking.*', 'tenant.checkin.*'),
                     'badge' => (int) ($sidebarData['activeBooking'] ?? 0),
+                    'subtabs' => [
+                        ['label' => 'Booking', 'route' => 'tenant.booking.index', 'active' => request()->routeIs('tenant.booking.*')],
+                        ['label' => 'Check-In', 'route' => 'tenant.checkin.index', 'active' => request()->routeIs('tenant.checkin.*')],
+                    ],
                 ],
                 [
                     'label' => 'Tagihan',
@@ -39,7 +43,7 @@
                     'label' => 'Profil',
                     'route' => 'profile.edit',
                     'icon' => 'ri-user-3',
-                    'active' => request()->routeIs('profile.*'),
+                    'active' => request()->routeIs('profile.*', 'tenant.favorites.*', 'tenant.messages.*', 'tenant.dispute.*', 'tenant.damage-reports.*', 'tenant.laporan.*'),
                 ],
             ];
         } else {
@@ -62,8 +66,13 @@
                     'label' => 'Booking',
                     'route' => $routePrefix.'.booking.index',
                     'icon' => 'ri-calendar-check',
-                    'active' => request()->routeIs($routePrefix.'.booking.*'),
+                    'active' => request()->routeIs($routePrefix.'.booking.*', $routePrefix.'.checkin.*', $routePrefix.'.checkout.*'),
                     'badge' => (int) ($sidebarData['bookingPending'] ?? 0),
+                    'subtabs' => [
+                        ['label' => 'Booking', 'route' => $routePrefix.'.booking.index', 'active' => request()->routeIs($routePrefix.'.booking.*')],
+                        ['label' => 'Check-In', 'route' => $routePrefix.'.checkin.index', 'active' => request()->routeIs($routePrefix.'.checkin.*')],
+                        ['label' => 'Check-Out', 'route' => $routePrefix.'.checkout.index', 'active' => request()->routeIs($routePrefix.'.checkout.*')],
+                    ],
                 ],
                 [
                     'label' => 'Tagihan',
@@ -107,4 +116,21 @@
             @endforeach
         </div>
     </nav>
+
+    {{-- Sub-tab bar for Booking (owner/admin/tenant) --}}
+    @foreach($items as $item)
+        @if(!empty($item['subtabs']) && $item['active'])
+            <div class="lg:hidden fixed bottom-[var(--bottom-nav-h)] left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/60 dark:border-slate-800 safe-area-bottom">
+                <div class="flex items-stretch justify-around h-10 px-2">
+                    @foreach($item['subtabs'] as $subtab)
+                        <a href="{{ route($subtab['route']) }}"
+                           class="flex-1 flex items-center justify-center text-xs font-semibold transition {{ $subtab['active'] ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300' }}"
+                           aria-label="{{ $subtab['label'] }}">
+                            {{ $subtab['label'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    @endforeach
 @endif
