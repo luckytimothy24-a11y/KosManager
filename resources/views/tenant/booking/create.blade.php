@@ -508,4 +508,15 @@
             })();
         </script>
     @endif
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var firstError = document.querySelector('[aria-invalid="true"], .border-red-500, .text-red-500');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+        }
+    });
+</script>
+@endpush
 </x-app-layout>
