@@ -8,6 +8,8 @@ use App\Models\AdvertisingPackage;
 use App\Services\AdvertisingAnalytics;
 use App\Services\AdvertisingService;
 use App\Services\AuditLogService;
+use App\Services\NotificationService;
+use App\Models\User;
 use App\Support\AdvertisingLabels;
 use Illuminate\Http\Request;
 
@@ -153,6 +155,20 @@ class AdvertisingController extends Controller
             "Kampanye iklan {$campaign->campaign_number} dibuat untuk {$entityLabel}",
             ['campaign_id' => $campaign->id, 'kos_id' => $campaign->kos_id, 'package_id' => $campaign->package_id]
         );
+
+        // Notify super admins about new advertising campaign
+        try {
+            $superAdminIds = User::where('role', 'super_admin')->where('is_active', true)->pluck('id')->toArray();
+            if (! empty($superAdminIds)) {
+                NotificationService::advertisingCreated(
+                    $superAdminIds[0],
+                    $request->user()->name,
+                    $campaign->kos?->name ?? 'kos'
+                );
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Advertising notification failed: ' . $e->getMessage());
+        }
 
         return redirect()->route('owner.advertising.show', $campaign)
             ->with('success', 'Kampanye iklan berhasil dibuat. Silakan lakukan pembayaran.');

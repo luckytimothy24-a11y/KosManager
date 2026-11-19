@@ -115,6 +115,8 @@
                 if ($user->isSuperAdmin()) {
                     $groups['Manajemen'] = [
                         $navItem('super-admin.users.index', 'Manajemen User', 'ri-team-line'),
+                        $navItem('super-admin.owners.index', 'Manajemen Owner', 'ri-user-settings-line'),
+                        $navItem('super-admin.admins.index', 'Manajemen Admin', 'ri-shield-user-line'),
                         $navItem('owner.kos.index', 'Kelola Kos', 'ri-building-2-line'),
                         $navItem('owner.kamar.index', 'Kelola Kamar', 'ri-door-open-line'),
                         $navItem('super-admin.fasilitas.index', 'Fasilitas', 'ri-archive-drawer-line'),
@@ -123,23 +125,23 @@
                         $navItem('owner.booking.index', 'Booking', 'ri-calendar-check-line', $bookingPending),
                         $navItem('owner.penghuni.index', 'Penghuni', 'ri-user-star-line'),
                         $navItem('owner.kontrak.index', 'Kontrak', 'ri-file-text-line'),
+                        $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
+                        $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
                         $navItem('owner.checkin.index', 'Check-in', 'ri-login-box-line'),
                         $navItem('owner.checkout.index', 'Check-out', 'ri-logout-box-line'),
                     ];
-                    $groups['Keuangan'] = [
-                        $navItem('owner.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
-                        $navItem('owner.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                    $groups['Moderasi'] = [
+                        $navItem('super-admin.moderation.kos', 'Moderasi Kos', 'ri-building-2-line'),
+                        $navItem('super-admin.moderation.photos', 'Moderasi Foto', 'ri-image-line'),
+                        $navItem('super-admin.moderation.advertising', 'Moderasi Iklan', 'ri-megaphone-line'),
+                        $navItem('super-admin.moderation.damage-reports', 'Damage Report', 'ri-tools-line'),
                     ];
                     $groups['Sistem'] = [
                         $navItem('super-admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
                         $navItem('super-admin.audit-log.index', 'Activity Log', 'ri-history-line'),
-                    ];
-                    $groups['Monetisasi'] = [
+                        $navItem('super-admin.settings.index', 'Settings', 'ri-settings-3-line'),
                         $navItem('super-admin.partners.index', 'Partner', 'ri-handshake-line'),
                         $navItem('super-admin.advertising.dashboard', 'Advertising', 'ri-megaphone-line'),
-                        $navItem('super-admin.advertising.packages.index', 'Paket Iklan', 'ri-price-tag-3-line'),
-                        $navItem('super-admin.advertising.campaigns.index', 'Kampanye', 'ri-bill-line'),
-                        $navItem('super-admin.advertising.revenue', 'Revenue', 'ri-line-chart-line'),
                     ];
                 } elseif ($user->isOwner()) {
                     $groups['Manajemen'] = [

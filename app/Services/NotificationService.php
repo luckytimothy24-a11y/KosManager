@@ -109,6 +109,13 @@ class NotificationService
         self::create($tenantId, NotificationType::BOOKING, 'Pengingat: Booking Menunggu Pembayaran', "Booking {$bookingCode} menunggu pembayaran. Segera selesaikan pembayaran sebelum booking kedaluwarsa.", null, $uniqueKey);
     }
 
+    public static function damageReportCreated(array $superAdminIds, string $tenantName, string $kosName, ?string $url = null): void
+    {
+        foreach ($superAdminIds as $adminId) {
+            self::create($adminId, NotificationType::DAMAGE_REPORT, 'Laporan Kerusakan Baru', "{$tenantName} melaporkan kerusakan di kos {$kosName} yang menunggu review.", ['url' => $url]);
+        }
+    }
+
     public static function kontrakActive(int $tenantId, string $contractNumber): void
     {
         self::create($tenantId, NotificationType::KONTRAK, 'Kontrak Aktif', "Kontrak sewa {$contractNumber} kini berstatus aktif.");

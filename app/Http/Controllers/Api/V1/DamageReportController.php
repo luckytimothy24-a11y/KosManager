@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DamageReport;
 use App\Models\Kamar;
 use App\Models\Penghuni;
+use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -91,6 +93,21 @@ class DamageReportController extends Controller
             'description' => $validated['description'],
             'status' => DamageReport::STATUS_PENDING,
         ]);
+
+        // Notify super admins about new damage report
+        try {
+            $superAdminIds = User::where('role', 'super_admin')->where('is_active', true)->pluck('id')->toArray();
+            if (! empty($superAdminIds)) {
+                NotificationService::damageReportCreated(
+                    $superAdminIds,
+                    $user->name,
+                    \App\Models\Kos::find((int) $validated['kos_id'])?->name ?? 'kos',
+                    route('super-admin.moderation.damage-reports')
+                );
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Damage report notification failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'data' => ['id' => $report->id],
