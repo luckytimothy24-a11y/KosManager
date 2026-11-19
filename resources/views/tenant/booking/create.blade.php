@@ -39,6 +39,9 @@
                         <form method="POST" action="{{ route('tenant.booking.store') }}" id="booking-form"
                               x-data="{ submitting: false, step: 1, totalSteps: 3 }" x-on:submit="submitting = true">
                             @csrf
+                            @if($kamar->count())
+                            <x-stepper :steps="['Pilih Kamar', 'Periode Sewa', 'Review & Submit']" :current-step="1" />
+                            @endif
                             <input type="hidden" name="kos_id" value="{{ request('kos_id') }}">
                             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
                                 <div class="lg:col-span-3 space-y-6" x-show="step === 1" x-transition>
