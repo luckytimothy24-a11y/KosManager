@@ -618,15 +618,17 @@
                               x-data="{
                                   method: @js(old('payment_method', 'qris')),
                                   submitting: false,
-                                  proof: { name: '', oversize: false },
+                                  proof: { name: '', oversize: false, preview: null },
                                   handleProofChange(event) {
                                       const file = event.target.files && event.target.files[0];
-                                      if (!file) { this.proof = { name: '', oversize: false }; return; }
+                                      if (!file) { this.proof = { name: '', oversize: false, preview: null }; return; }
                                       const sizeMb = file.size / (1024 * 1024);
-                                      this.proof = { name: file.name, oversize: sizeMb > 5 };
+                                      const preview = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+                                      this.proof = { name: file.name, oversize: sizeMb > 5, preview: preview };
                                   },
                                   clearProof() {
-                                      this.proof = { name: '', oversize: false };
+                                      if (this.proof.preview) URL.revokeObjectURL(this.proof.preview);
+                                      this.proof = { name: '', oversize: false, preview: null };
                                       this.$refs.proofInput.value = '';
                                   }
                               }"
@@ -736,15 +738,22 @@
                                        x-bind:required="method === 'transfer_bank'"
                                        @change="handleProofChange($event)"
                                        class="field-input file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
-                                <div x-show="proof.name" x-cloak class="mt-2 flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-surface-elevated/50 p-3">
-                                    <span class="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0"><i class="ri-file-line text-lg text-red-500"></i></span>
-                                    <div class="min-w-0 flex-1">
-                                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate" x-text="proof.name"></p>
-                                        <p x-show="proof.oversize" class="text-xs text-red-600 dark:text-red-400 font-semibold">Melebihi 5MB</p>
+                                <div x-show="proof.name" x-cloak class="mt-2 space-y-2">
+                                    <div class="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-50/70 dark:bg-surface-elevated/50 p-3">
+                                        <template x-if="proof.preview">
+                                            <img :src="proof.preview" alt="Preview bukti" class="w-10 h-10 rounded-lg object-cover shrink-0">
+                                        </template>
+                                        <template x-if="!proof.preview">
+                                            <span class="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-500/10 flex items-center justify-center shrink-0"><i class="ri-file-line text-lg text-red-500"></i></span>
+                                        </template>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate" x-text="proof.name"></p>
+                                            <p x-show="proof.oversize" class="text-xs text-red-600 dark:text-red-400 font-semibold">Melebihi 5MB</p>
+                                        </div>
+                                        <button type="button" @click="clearProof()" class="text-slate-500 hover:text-red-500 transition shrink-0" aria-label="Hapus bukti terpilih">
+                                            <i class="ri-close-circle-line text-lg"></i>
+                                        </button>
                                     </div>
-                                    <button type="button" @click="clearProof()" class="text-slate-500 hover:text-red-500 transition shrink-0" aria-label="Hapus bukti terpilih">
-                                        <i class="ri-close-circle-line text-lg"></i>
-                                    </button>
                                 </div>
                                 @error('proof_file') <p class="text-red-500 text-xs mt-1.5" aria-live="polite">{{ $message }}</p> @enderror
                             </div>
