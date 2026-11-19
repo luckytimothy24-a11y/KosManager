@@ -39,7 +39,11 @@
 - [x] Butir 5: BookingWizardTest (commit 93ceda1)
 
 ## Tahap 5: Dokumentasi, E2E, dan Monitoring
-- [ ] Belum dimulai
+- [x] Butir 1: README.md sudah ada (comprehensive)
+- [x] Butir 2: CI GitHub Actions sudah ada (.github/workflows/ci.yml)
+- [x] Butir 4: Health check endpoint /health + monitoring recommendations (commit 45b6b5b)
+- [ ] Butir 3: E2E Playwright - rencana di E2E_PLAN.md, menunggu persetujuan
+- [ ] Butir 5: Dockerfile/docker-compose - menunggu keputusan user
 
 ## Catatan
 - Branch: feature/alur-dana-2-tahap
