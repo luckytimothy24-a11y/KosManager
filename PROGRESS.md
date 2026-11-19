@@ -41,8 +41,8 @@
 ## Tahap 6: Super Admin Flow Improvements
 - [x] Bottom nav khusus super admin (Beranda | User | Moderasi | Settings | Profil)
 - [x] Perlu Tindakan section di dashboard super admin
-- [ ] Sidebar reorganisasi (belum)
-- [ ] Notifikasi ke super admin (belum)
+- [x] Sidebar reorganisasi (4 grup: Manajemen, Transaksi, Moderasi, Sistem)
+- [x] Notifikasi ke super admin (damage report + advertising campaign)
 
 ## Tahap 5: Dokumentasi, E2E, dan Monitoring
 - [x] Butir 1: README.md sudah ada (comprehensive)
