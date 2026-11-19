@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Penghuni;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
 class PenghuniController extends Controller
@@ -25,8 +26,11 @@ class PenghuniController extends Controller
 
         if ($request->filled('search')) {
             $search = addcslashes($request->search, '%_');
-            $query->where(function ($q) use ($search) {
-                $q->where('identity_number', 'like', '%'.$search.'%')
+            $identityHash = Penghuni::identityHash($request->search);
+
+            $query->where(function ($q) use ($search, $identityHash) {
+                // NIK dienkripsi: pencarian exact-match memakai hash.
+                $q->where('identity_number_hash', $identityHash)
                     ->orWhereHas('user', fn ($uq) => $uq->where('name', 'like', '%'.$search.'%'));
             });
         }
@@ -46,5 +50,23 @@ class PenghuniController extends Controller
         $penghuni->load(['user', 'kos', 'kamar', 'kontraks', 'checkIns', 'checkOuts']);
 
         return view('owner.penghuni.show', compact('penghuni'));
+    }
+
+    /**
+     * Buka NIK penuh (audit-logged). Dipakai tombol "Lihat" pada halaman detail.
+     */
+    public function revealIdentity(Penghuni $penghuni)
+    {
+        $this->authorize('view', $penghuni);
+
+        AuditLogService::create(
+            'Penghuni',
+            'Membuka NIK penghuni '.($penghuni->user?->name ?? '#'.$penghuni->id),
+            ['penghuni_id' => $penghuni->id, 'kos_id' => $penghuni->kos_id]
+        );
+
+        return response()->json([
+            'identity_number' => $penghuni->identity_number,
+        ]);
     }
 }

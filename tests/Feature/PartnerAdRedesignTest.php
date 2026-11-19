@@ -139,7 +139,7 @@ class PartnerAdRedesignTest extends TestCase
         $html = $this->renderAd($ad, 'homepage', 'banner');
 
         $this->assertStringContainsString('from-slate-50', $html);
-        $this->assertStringContainsString('bg-primary-600', $html);
+        $this->assertStringContainsString('bg-primary-700', $html);
     }
 
     // ---------------------------------------------------------------------
@@ -189,14 +189,14 @@ class PartnerAdRedesignTest extends TestCase
 
         foreach ($registryPartners as $slug => $expectedSvgUrl) {
             $ad = $this->livePartnerCampaign($slug, 'homepage');
-            $ad->partner->update(['logo' => 'https://cdn.example.com/' . $slug . '.png']);
+            $ad->partner->update(['logo' => 'https://cdn.example.com/'.$slug.'.png']);
 
             $html = $this->renderAd($ad->fresh(), 'homepage', 'banner');
 
             // Official SVG dari images/partners/{slug}.svg harus ada di HTML.
             $this->assertStringContainsString($expectedSvgUrl, $html);
             // External URL dari partner->logo TIDAK boleh ada (tertimpa registry).
-            $this->assertStringNotContainsString('https://cdn.example.com/' . $slug . '.png', $html);
+            $this->assertStringNotContainsString('https://cdn.example.com/'.$slug.'.png', $html);
         }
     }
 

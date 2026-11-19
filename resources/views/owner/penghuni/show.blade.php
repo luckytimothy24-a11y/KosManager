@@ -35,7 +35,32 @@
                             <i class="ri-id-card-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div class="min-w-0">
                                 <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">No. Identitas</dt>
-                                <dd class="mt-0.5 font-mono font-medium text-slate-700 dark:text-slate-200 break-all">{{ $penghuni->identity_number ?: '-' }}</dd>
+                                <dd class="mt-0.5 font-mono font-medium text-slate-700 dark:text-slate-200 break-all"
+                                    x-data="{
+                                        revealed: false,
+                                        value: null,
+                                        loading: false,
+                                        async reveal() {
+                                            this.loading = true;
+                                            try {
+                                                const res = await fetch('{{ route((auth()->user()->isAdmin() ? 'admin' : 'owner').'.penghuni.identity', $penghuni) }}', { headers: { 'Accept': 'application/json' } });
+                                                const data = await res.json();
+                                                this.value = data.identity_number || '-';
+                                                this.revealed = true;
+                                            } finally {
+                                                this.loading = false;
+                                            }
+                                        }
+                                    }">
+                                    <span x-show="!revealed">{{ $penghuni->maskedIdentityNumber() }}</span>
+                                    <span x-show="revealed" x-text="value" x-cloak></span>
+                                    @if ($penghuni->identity_number)
+                                        <button type="button" x-show="!revealed" @click="reveal()" :disabled="loading"
+                                                class="ml-2 inline-flex items-center gap-1 rounded-md border border-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50 dark:border-white/[0.14] dark:text-slate-300 dark:hover:bg-white/[0.04]">
+                                            <i class="ri-eye-line"></i> <span x-text="loading ? 'Memuat…' : 'Lihat'"></span>
+                                        </button>
+                                    @endif
+                                </dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">

@@ -1,15 +1,9 @@
 <?php
 
-Route::get('/offline', function () {
-    return view('offline');
-})->name('offline');
-Route::get('/health', HealthCheckController::class)->name('health');
-
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
 use App\Http\Controllers\AdvertisingClickController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Owner\AdminOwnerMessageController;
@@ -72,6 +66,10 @@ Route::get('/ad/click/{campaign}', [AdvertisingClickController::class, 'track'])
 
 Route::get('/health', HealthController::class)->name('health');
 Route::get('/up', HealthController::class)->name('up');
+
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
 
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'active', 'verified'])
@@ -248,6 +246,9 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
+    Route::get('penghuni/{penghuni}/identity', [PenghuniController::class, 'revealIdentity'])
+        ->name('penghuni.identity')
+        ->middleware('throttle:20,1');
 
     Route::get('kontrak', [KontrakController::class, 'index'])->name('kontrak.index');
     Route::get('kontrak/{kontrak}', [KontrakController::class, 'show'])->name('kontrak.show');
@@ -329,6 +330,9 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 
     Route::get('penghuni', [PenghuniController::class, 'index'])->name('penghuni.index');
     Route::get('penghuni/{penghuni}', [PenghuniController::class, 'show'])->name('penghuni.show');
+    Route::get('penghuni/{penghuni}/identity', [PenghuniController::class, 'revealIdentity'])
+        ->name('penghuni.identity')
+        ->middleware('throttle:20,1');
 
     Route::get('kontrak', [KontrakController::class, 'index'])->name('kontrak.index');
     Route::get('kontrak/{kontrak}', [KontrakController::class, 'show'])->name('kontrak.show');

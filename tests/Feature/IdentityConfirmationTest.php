@@ -51,7 +51,7 @@ class IdentityConfirmationTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.checkin.identity', $this->booking));
 
         $response->assertOk();
-        $response->assertSee('Lengkapi Data Diri');
+        $response->assertSee('Verifikasi Data Diri');
         $response->assertSee($this->tenant->name);
         $response->assertSee($this->tenant->email);
         $response->assertSee($this->kos->name);
@@ -265,7 +265,7 @@ class IdentityConfirmationTest extends TestCase
         $this->assertDatabaseHas('penghunis', [
             'user_id' => $this->tenant->id,
             'kamar_id' => $this->kamar->id,
-            'identity_number' => null,
+            'identity_number_encrypted' => null,
             'phone' => '08123456789',
             'address' => 'Jl. Test',
             'status' => 'active',
