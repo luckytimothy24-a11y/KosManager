@@ -99,7 +99,7 @@ class TenantInvitationController extends Controller
             return response()->json(['message' => 'Undangan diterima.', 'data' => ['id' => $occupant->id, 'status' => $occupant->status]]);
         }
 
-        return redirect()->route('tenant.invitations.index')->with('success', 'Undangan diterima. Silakan lengkapi identitas.');
+        return redirect()->route('tenant.invitations.index')->with('success', 'Undangan diterima. Silakan verifikasi data diri.');
     }
 
     public function declineById(Request $request, BookingOccupant $occupant)
@@ -225,7 +225,7 @@ class TenantInvitationController extends Controller
             return response()->json(['message' => 'Undangan diterima.', 'data' => ['id' => $occupant->id, 'status' => $occupant->status]]);
         }
 
-        return redirect()->route('tenant.booking.show', $occupant->booking_id)->with('success', 'Undangan diterima. Silakan lengkapi identitas.');
+        return redirect()->route('tenant.booking.show', $occupant->booking_id)->with('success', 'Undangan diterima. Silakan verifikasi data diri.');
     }
 
     public function decline(Request $request, string $token)

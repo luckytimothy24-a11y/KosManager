@@ -23,7 +23,7 @@
                                 <span class="text-xs text-slate-500 dark:text-slate-400">{{ \Carbon\Carbon::parse($booking->start_date)->translatedFormat('d M Y') }} – {{ \Carbon\Carbon::parse($booking->end_date)->translatedFormat('d M Y') }}</span>
                             @endif
                         </div>
-                        <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Jika kamu terima, kamu akan langsung menjadi anggota booking ini. Setelah itu, lengkapi identitasmu sendiri — tidak ikut pemilik lain.</p>
+                        <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">Jika kamu terima, kamu akan langsung menjadi anggota booking ini. Setelah itu, verifikasi data dirimu sendiri — tidak ikut pemilik lain.</p>
                     </div>
                 </div>
 
@@ -64,10 +64,10 @@
                         <span class="grid w-9 h-9 place-items-center rounded-xl bg-emerald-500 text-white shrink-0"><i class="ri-checkbox-circle-line"></i></span>
                         <div>
                             <p class="text-sm font-bold text-emerald-800 dark:text-emerald-300">Sudah diterima ✓</p>
-                            <p class="text-xs leading-relaxed text-emerald-700 dark:text-emerald-400 mt-1">Kamu sudah jadi anggota booking. Lengkapi identitas agar owner bisa konfirmasi check-in.</p>
+                            <p class="text-xs leading-relaxed text-emerald-700 dark:text-emerald-400 mt-1">Kamu sudah jadi anggota booking. Verifikasi data diri agar owner bisa konfirmasi check-in.</p>
                         </div>
                     </div>
-                    <a href="{{ route('tenant.invitations.identity', $token) }}" class="btn-primary mt-4 w-full"><i class="ri-quill-pen-line"></i> Lengkapi Identitas</a>
+                    <a href="{{ route('tenant.invitations.identity', $token) }}" class="btn-primary mt-4 w-full"><i class="ri-quill-pen-line"></i> Verifikasi Data Diri</a>
                 @elseif($occupant->status === 'declined')
                     <div class="mt-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated p-4 flex gap-3">
                         <span class="grid w-9 h-9 place-items-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 shrink-0"><i class="ri-close-circle-line"></i></span>

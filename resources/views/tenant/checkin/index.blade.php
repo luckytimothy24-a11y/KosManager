@@ -38,7 +38,7 @@
                                 @endif
                             </div>
                             <a href="{{ route('tenant.checkin.identity', $booking) }}" class="shrink-0 inline-flex items-center gap-2 rounded-xl {{ $booking->identityConfirmed() ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' : 'bg-primary-600 text-white hover:bg-primary-700' }} px-5 py-2.5 text-sm font-bold transition">
-                                {{ $booking->identityConfirmed() ? 'Lihat' : 'Lengkapi Identitas' }} <i class="ri-arrow-right-line"></i>
+                                {{ $booking->identityConfirmed() ? 'Lihat' : 'Verifikasi Data Diri' }} <i class="ri-arrow-right-line"></i>
                             </a>
                         </div>
                     @endforeach

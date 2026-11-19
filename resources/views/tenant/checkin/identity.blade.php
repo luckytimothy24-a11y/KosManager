@@ -21,7 +21,7 @@
                         <i class="ri-user-shield-line text-xl text-primary-600 dark:text-primary-400"></i>
                     </span>
                     <div>
-                        <h1 class="text-base font-bold text-slate-900 dark:text-slate-50">Lengkapi Data Diri</h1>
+                        <h1 class="text-base font-bold text-slate-900 dark:text-slate-50">Verifikasi Data Diri</h1>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Isi Nomor WhatsApp dan alamat Anda. Data akan diperiksa owner sebelum check-in diproses.</p>
                     </div>
                 </div>

@@ -31,7 +31,7 @@
                             <p class="text-sm font-bold text-green-800 dark:text-green-300">Booking dikonfirmasi</p>
                             <p class="text-sm text-green-800/90 dark:text-green-300/80 mt-0.5">
                                 @if($idStatus === 'not_submitted')
-                                    Kamar telah dipesan untuk Anda. Lengkapi identitas untuk mengajukan check-in.
+                                    Kamar telah dipesan untuk Anda. Verifikasi data diri untuk mengajukan check-in.
                                 @elseif($idStatus === 'pending')
                                     Kamar telah dipesan. Data check-in Anda sedang direview owner.
                                 @elseif($idStatus === 'rejected')
@@ -109,7 +109,7 @@
                             <p class="mt-0.5 text-sm text-amber-800 dark:text-amber-300/90">{{ $booking->nextAction() }}</p>
                             @if($booking->status === 'approved' && in_array($booking->identityStatus(), ['not_submitted', 'rejected']))
                                 <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-700 transition">
-                                    <i class="ri-send-plane-line"></i> {{ $booking->identityStatus() === 'rejected' ? 'Perbaiki & Ajukan Ulang' : 'Lengkapi Identitas' }}
+                                    <i class="ri-send-plane-line"></i> {{ $booking->identityStatus() === 'rejected' ? 'Perbaiki & Ajukan Ulang' : 'Verifikasi Data Diri' }}
                                 </a>
                             @elseif($booking->status === 'approved' && $booking->identityStatus() === 'pending')
                                 <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-300 hover:text-amber-800">
@@ -269,9 +269,10 @@
                         @endif
                     </h3>
                     @if($identityStatus === 'not_submitted')
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Booking telah dikonfirmasi. Lengkapi identitas untuk mengajukan check-in.</p>
+                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Booking telah dikonfirmasi. Verifikasi data diri untuk mengajukan check-in.</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Langkah ini memverifikasi data Anda sebelum tiba di kos, bukan proses check-in fisik.</p>
                         <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-soft hover:bg-primary-700 transition">
-                            <i class="ri-send-plane-line"></i> Lengkapi Identitas — Ajukan Check-In
+                            <i class="ri-send-plane-line"></i> Verifikasi Data Diri — Ajukan Check-In
                         </a>
                     @elseif($identityStatus === 'pending')
                         <p class="mt-2 text-sm text-amber-800 dark:text-amber-200">Pengajuan telah dikirim pada {{ $booking->identity_data_submitted_at?->translatedFormat('d F Y, H:i') }}. Menunggu konfirmasi owner — tidak perlu kirim ulang.</p>

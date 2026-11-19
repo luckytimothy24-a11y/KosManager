@@ -447,7 +447,7 @@ class Booking extends Model
                 default => 'Booking Anda sedang menunggu konfirmasi dari pemilik kos.',
             },
             self::STATUS_APPROVED => match ($this->identityStatus()) {
-                'not_submitted' => 'Booking dikonfirmasi. Lengkapi identitas Anda untuk mengajukan check-in.',
+                'not_submitted' => 'Booking dikonfirmasi. Verifikasi data diri Anda untuk mengajukan check-in.',
                 'pending' => 'Data check-in sedang direview owner. Anda akan mendapat notifikasi setelah data disetujui; setelah itu datang ke kos pada tanggal mulai sewa untuk proses check-in.',
                 'rejected' => 'Pengajuan check-in ditolak. Perbaiki data identitas Anda dan ajukan ulang.',
                 'confirmed' => 'Data check-in disetujui owner. Datang ke kos pada tanggal mulai sewa untuk proses check-in final.',

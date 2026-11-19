@@ -215,7 +215,7 @@ class PhaseGBookingExperienceTest extends TestCase
         $response = $this->actingAs($this->tenant)->get(route('tenant.booking.index'));
 
         $response->assertOk();
-        $response->assertSeeText('Lengkapi identitas');
+        $response->assertSeeText('Verifikasi data diri');
     }
 
     public function test_detail_renders_next_action_guidance_for_expired_booking(): void
