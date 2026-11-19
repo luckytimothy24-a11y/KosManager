@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
@@ -19,16 +18,24 @@ class SafeUpload implements Rule
             return false;
         }
 
+        // Cek MIME dari upload (client-declared) dan finfo (actual content)
+        $clientMime = $value->getMimeType();
         $realMime = (new \finfo(FILEINFO_MIME_TYPE))->file($value->getRealPath());
 
-        // Gambar: terapkan SafeImage
+        // Gambar: terapkan SafeImage (content check)
         if (in_array($realMime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
             $safeImage = new SafeImage();
             return $safeImage->passes($attribute, $value);
         }
 
+        // Jika client mengirim sebagai image tapi finfo tidak match, tolak
+        if (in_array($clientMime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+            return false;
+        }
+
         // PDF: cukup mimes + max (sudah divalidasi di rules())
-        if ($realMime === 'application/pdf') {
+        // Terima jika client atau finfo mendeteksi sebagai PDF
+        if ($clientMime === 'application/pdf' || $realMime === 'application/pdf') {
             return true;
         }
 

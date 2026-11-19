@@ -37,11 +37,11 @@
                 <div class="mt-7 pt-7 border-t border-slate-100 dark:border-white/10">
                     @if($kamar->count())
                         <form method="POST" action="{{ route('tenant.booking.store') }}" id="booking-form"
-                              x-data="{ submitting: false }" x-on:submit="submitting = true">
+                              x-data="{ submitting: false, step: 1, totalSteps: 3 }" x-on:submit="submitting = true">
                             @csrf
                             <input type="hidden" name="kos_id" value="{{ request('kos_id') }}">
                             <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                                <div class="lg:col-span-3 space-y-6">
+                                <div class="lg:col-span-3 space-y-6" x-show="step === 1" x-transition>
                                     <div>
                                         <label for="kamar-select" class="field-label"><i class="ri-door-open-line text-primary-500 mr-1"></i> Kamar <span class="text-red-500">*</span></label>
                                         <select id="kamar-select" name="kamar_id" required
@@ -70,6 +70,8 @@
                                         </div>
                                     </div>
 
+                                </div>
+                                <div class="lg:col-span-3 space-y-6" x-show="step === 2" x-transition>
                                     <fieldset>
                                         <legend class="field-label mb-3"><i class="ri-time-line text-primary-500 mr-1"></i> Tipe Sewa <span class="text-red-500">*</span></legend>
                                         <div class="grid grid-cols-3 gap-3">
@@ -201,6 +203,8 @@
                                     </div>
                                 </div>
 
+                                </div>
+                                <div class="lg:col-span-3 space-y-6" x-show="step === 3" x-transition>
                                 {{-- Review / Ringkasan + Trust --}}
                                 <aside class="lg:col-span-2">
                                     <div class="rounded-2xl border border-primary-100 dark:border-primary-500/20 bg-gradient-to-br from-primary-50 via-white to-primary-50/50 dark:from-slate-700 dark:via-slate-700 dark:to-primary-950/10 p-5 lg:sticky lg:top-20 space-y-5 shadow-sm">
