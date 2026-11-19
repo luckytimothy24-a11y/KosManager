@@ -26,7 +26,10 @@
 - [x] Item 5: x-empty-state component (commit a3337a5)
 
 ## Tahap 3: "Perlu Tindakan" dan Navigasi Owner/Admin
-- [ ] Belum dimulai
+- [x] Butir 1-2: Perlu Tindakan section di dashboard owner & admin (commit f29f297)
+- [x] Butir 3: Bottom nav reorganized - Booking sub-tabs, Profil for secondary menus (commit f29f297)
+- [x] Butir 4: Scope label di admin header (commit f29f297)
+- [x] Butir 5: DashboardActionItemsTest (commit e9eedb9)
 
 ## Tahap 4: Wizard Booking, Pembayaran, dan Timeline
 - [ ] Belum dimulai
