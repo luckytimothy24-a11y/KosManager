@@ -12,9 +12,9 @@
         {{-- Ringkasan total --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Tagihan</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Total Tagihan</p>
                 <p class="mt-1 text-3xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp {{ number_format($tagihan->total, 0, ',', '.') }}</p>
-                <div class="mt-1.5 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                <div class="mt-1.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
                     <i class="ri-calendar-deadline-line"></i> Jatuh tempo {{ $tagihan->due_date->translatedFormat('d F Y') }}
                     @if(in_array($tagihan->status, ['unpaid', 'overdue']) && $tagihan->due_date->isPast())
                         · <span class="text-red-500 font-medium">{{ abs($tagihan->due_date->diffInDays(now())) }} hari terlambat</span>
@@ -34,30 +34,30 @@
 
                     <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-user-star-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-user-star-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Penghuni</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Penghuni</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->penghuni->user->name }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kamar</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->kamar->room_number }} · {{ $tagihan->kamar->kos?->name }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-price-tag-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Jenis Tagihan</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Jenis Tagihan</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \PaymentLabels::billType($tagihan->bill_type) }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-calendar-range-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-calendar-range-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Periode</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Periode</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->period_start->translatedFormat('d M Y') }} — {{ $tagihan->period_end->translatedFormat('d M Y') }}</dd>
                             </div>
                         </div>
@@ -104,11 +104,11 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $p->payment_number }}</p>
-                                        <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                                        <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1.5">
                                             <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }}"></i>
                                             {{ \PaymentLabels::paymentMethod($p->payment_method) }}
                                         </p>
-                                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ $p->payment_date->translatedFormat('d M Y') }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{{ $p->payment_date->translatedFormat('d M Y') }}</p>
                                     </div>
                                     <div class="text-right shrink-0">
                                         <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($p->amount, 0, ',', '.') }}</p>
@@ -121,7 +121,7 @@
                                 <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">
                                     <i class="ri-money-dollar-circle-line text-lg text-slate-300 dark:text-slate-600"></i>
                                 </span>
-                                <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Belum ada pembayaran.</p>
+                                <p class="mt-2.5 text-sm text-slate-500 dark:text-slate-500">Belum ada pembayaran.</p>
                             </div>
                         @endforelse
                     </div>
@@ -132,7 +132,7 @@
                         <h4 class="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-slate-50 mb-1">
                             <i class="ri-qr-code-2-line text-primary-500"></i> Pembayaran QRIS
                         </h4>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-4">Scan QR code, lalu kirim konfirmasi. Pembayaran akan diverifikasi oleh pemilik kos.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500 mb-4">Scan QR code, lalu kirim konfirmasi. Pembayaran akan diverifikasi oleh pemilik kos.</p>
                         <form method="POST" action="{{ route('tenant.pembayaran.store') }}" enctype="multipart/form-data" x-data="{ submitting: false }" x-on:submit="submitting = true">
                             @csrf
                             <input type="hidden" name="tagihan_id" value="{{ $tagihan->id }}">
@@ -151,10 +151,10 @@
                                     <label for="proof_file" class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Bukti Pembayaran <span class="font-normal">(opsional)</span></label>
                                     <input id="proof_file" type="file" name="proof_file" accept="image/jpeg,image/png,application/pdf"
                                            class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-500/10 file:text-primary-600 dark:file:text-primary-300 hover:file:bg-primary-100 cursor-pointer">
-                                    <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">JPG, PNG, atau PDF. Unggah jika diperlukan pengelola.</p>
+                                    <p class="text-[11px] text-slate-500 dark:text-slate-500 mt-1">JPG, PNG, atau PDF. Unggah jika diperlukan pengelola.</p>
                                 </div>
                                 <button type="submit" :disabled="submitting"
-                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
+                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-700 active:bg-primary-700 transition shadow-sm shadow-primary-500/30 disabled:opacity-60 disabled:cursor-not-allowed">
                                     <i class="ri-qr-code-2-line"></i> Kirim Konfirmasi QRIS
                                 </button>
                             </div>

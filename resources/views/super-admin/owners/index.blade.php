@@ -13,7 +13,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau telepon..." aria-label="Cari owner"
                            class="field-input w-full pl-10">
                 </div>
@@ -90,7 +90,7 @@
                                                class="block font-semibold text-slate-900 dark:text-slate-50 truncate hover:text-primary-600 dark:hover:text-primary-400 transition">
                                                 {{ $owner->name }}
                                             </a>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $owner->email }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500 truncate">{{ $owner->email }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -105,7 +105,7 @@
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route('super-admin.owners.show', $owner) }}"
-                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Lihat" aria-label="Lihat {{ $owner->name }}">
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Lihat" aria-label="Lihat {{ $owner->name }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
                                         @if($owner->is_active)
@@ -115,7 +115,7 @@
                                                     title="Nonaktifkan owner ini?"
                                                     description="{{ $owner->name }} akan kehilangan akses login."
                                                     confirmText="Ya, Nonaktifkan"
-                                                    triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition"
+                                                    triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition"
                                                 >
                                                     <i class="ri-power-off-line"></i>
                                                     <x-slot name="actions">
@@ -127,7 +127,7 @@
                                             <form method="POST" action="{{ route('super-admin.owners.activate', $owner) }}" class="inline">
                                                 @csrf @method('POST')
                                                 <button type="submit"
-                                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
+                                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
                                                         title="Aktifkan" aria-label="Aktifkan {{ $owner->name }}">
                                                     <i class="ri-power-on-line"></i>
                                                 </button>

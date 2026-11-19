@@ -39,7 +39,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {{-- Pemilik Kos --}}
             <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Pemilik Kos Asli</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Pemilik Kos Asli</p>
                 <p class="mt-2 text-base font-bold text-slate-900 dark:text-slate-50">{{ $payout->propertyOwner?->name ?? '-' }}</p>
                 @if($payout->propertyOwner?->phone)
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Telepon: {{ $payout->propertyOwner->phone }}</p>
@@ -89,7 +89,7 @@
                         }
                     }
                  }">
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Rekening Tujuan</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Rekening Tujuan</p>
                 @if($payout->hasRecipientSnapshot())
                     <p class="mt-2 text-base font-bold text-slate-900 dark:text-slate-50">{{ $payout->recipient_bank_name }}</p>
                     <p class="text-sm font-mono text-slate-700 dark:text-slate-200 mt-1">{{ $payout->maskedRecipientAccountNumber() }}</p>
@@ -116,7 +116,7 @@
 
                         <template x-if="full">
                             <div class="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-3">
-                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nomor rekening lengkap</p>
+                                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Nomor rekening lengkap</p>
                                 <p class="mt-1 font-mono text-sm font-semibold text-slate-800 dark:text-slate-100" x-text="full.account_number"></p>
                                 <p class="text-[11px] text-slate-500 dark:text-slate-400" x-text="'a.n. ' + full.account_holder_name"></p>
                                 <p class="mt-1 text-[11px] text-amber-600 dark:text-amber-400" x-show="full.legacy">
@@ -131,14 +131,14 @@
                         </template>
 
                         <p x-show="error" x-text="error" class="mt-2 text-xs text-red-600 dark:text-red-400"></p>
-                        <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Nomor lengkap hanya untuk Pengelola/Super Admin; akses dicatat di audit log.</p>
+                        <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-500">Nomor lengkap hanya untuk Pengelola/Super Admin; akses dicatat di audit log.</p>
                     </div>
                 @endif
             </div>
 
             {{-- Nominal --}}
             <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6">
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nominal</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Nominal</p>
                 <div class="mt-2 space-y-1">
                     <div class="flex justify-between text-sm">
                         <span class="text-slate-500 dark:text-slate-400">Pendapatan Sewa</span>
@@ -159,7 +159,7 @@
                         <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format((float) $payout->amount, 0, ',', '.') }}</span>
                     </div>
                 </div>
-                <p class="mt-3 text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
+                <p class="mt-3 text-[11px] text-slate-500 dark:text-slate-500 leading-relaxed">
                     Komisi persentase dihitung dari nilai sewa. Komisi nominal tetap dihitung satu kali per Kos per periode. Penalti/denda tidak masuk basis komisi maupun dana Pemilik Kos.
                 </p>
             </div>
@@ -184,7 +184,7 @@
                     1. Transfer <strong class="text-slate-700 dark:text-slate-200">Rp {{ number_format((float) $payout->amount, 0, ',', '.') }}</strong> ke rekening tujuan di atas melalui mobile banking/ATM.<br>
                     2. Unggah bukti transfer, isi tanggal transfer, lalu konfirmasi.
                 </p>
-                <p class="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-500">
                     Butuh nomor rekening? Klik <strong>Lihat nomor lengkap</strong> di kartu Rekening Tujuan.
                 </p>
 
@@ -405,20 +405,20 @@
 
         {{-- Info alur --}}
         <div class="rounded-2xl border border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-5">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Alur Payout</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Alur Payout</p>
             <div class="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
                 <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 font-semibold">Pendapatan</span>
-                <i class="ri-arrow-right-line text-slate-400"></i>
+                <i class="ri-arrow-right-line text-slate-500"></i>
                 <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 font-semibold">Payout Pending</span>
-                <i class="ri-arrow-right-line text-slate-400"></i>
+                <i class="ri-arrow-right-line text-slate-500"></i>
                 <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 font-semibold">Transfer Manual</span>
-                <i class="ri-arrow-right-line text-slate-400"></i>
+                <i class="ri-arrow-right-line text-slate-500"></i>
                 <span class="px-2 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 font-semibold">Upload Bukti</span>
-                <i class="ri-arrow-right-line text-slate-400"></i>
+                <i class="ri-arrow-right-line text-slate-500"></i>
                 <span class="px-2 py-1 rounded-lg bg-blue-100 dark:bg-blue-500/15 text-blue-800 dark:text-blue-300 font-semibold">Transferred</span>
-                <i class="ri-arrow-right-line text-slate-400"></i>
+                <i class="ri-arrow-right-line text-slate-500"></i>
                 <span class="px-2 py-1 rounded-lg bg-green-100 dark:bg-green-500/15 text-green-800 dark:text-green-300 font-semibold">Verified</span>
-                <span class="text-slate-400 mx-1">/</span>
+                <span class="text-slate-500 mx-1">/</span>
                 <span class="px-2 py-1 rounded-lg bg-red-100 dark:bg-red-500/15 text-red-800 dark:text-red-300 font-semibold">Rejected → resubmit</span>
             </div>
         </div>

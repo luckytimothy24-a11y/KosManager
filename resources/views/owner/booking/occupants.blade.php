@@ -12,7 +12,7 @@
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 overflow-hidden">
             <div class="px-6 py-4 border-b border-slate-100 dark:border-white/10 flex items-center justify-between">
                 <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Daftar Occupant</h3>
-                <span class="text-xs text-slate-400 dark:text-slate-500">{{ $booking->occupants->count() }} orang</span>
+                <span class="text-xs text-slate-500 dark:text-slate-500">{{ $booking->occupants->count() }} orang</span>
             </div>
 
             <div class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -25,9 +25,9 @@
                                 </div>
                                 <div class="min-w-0">
                                     <p class="text-sm font-semibold text-slate-900 dark:text-slate-50">{{ $occupant->name ?? $occupant->user?->name ?? '-' }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ $occupant->email ?? $occupant->user?->email ?? '-' }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ $occupant->email ?? $occupant->user?->email ?? '-' }}</p>
                                     @if($occupant->phone)
-                                        <p class="text-xs text-slate-400 dark:text-slate-500">{{ $occupant->phone }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-500">{{ $occupant->phone }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -92,7 +92,7 @@
                             <i class="ri-group-line text-xl text-slate-300 dark:text-slate-600"></i>
                         </span>
                         <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada occupant</p>
-                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Occupant akan muncul setelah booking dikonfirmasi.</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Occupant akan muncul setelah booking dikonfirmasi.</p>
                     </div>
                 @endforelse
             </div>

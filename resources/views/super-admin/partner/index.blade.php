@@ -37,7 +37,7 @@
                                         @endif
                                         <span class="min-w-0">
                                             <span class="block font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $partner->name }}</span>
-                                            <span class="block text-xs text-slate-400 dark:text-slate-500 truncate">/{{ $partner->slug }}</span>
+                                            <span class="block text-xs text-slate-500 dark:text-slate-500 truncate">/{{ $partner->slug }}</span>
                                         </span>
                                     </div>
                                 </td>
@@ -45,7 +45,7 @@
                                 <td class="font-semibold text-slate-900 dark:text-slate-50">{{ $partner->campaigns_count }}</td>
                                 <td>
                                     <span class="block text-slate-600 dark:text-slate-300">{{ $partner->contact_name ?: '-' }}</span>
-                                    <span class="block text-xs text-slate-400 dark:text-slate-500">{{ $partner->contact_email ?: '' }}</span>
+                                    <span class="block text-xs text-slate-500 dark:text-slate-500">{{ $partner->contact_email ?: '' }}</span>
                                 </td>
                                 <td>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold {{ \App\Support\AdvertisingLabels::partnerStatusBadge($partner->status) }}">
@@ -55,7 +55,7 @@
                                 <td>
                                     <div class="flex items-center gap-2">
                                         <a href="{{ route('super-admin.partners.edit', $partner) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
                                            aria-label="Edit {{ $partner->name }}">
                                             <i class="ri-edit-line text-base"></i>
                                         </a>
@@ -64,7 +64,7 @@
                                                 title="Hapus partner?"
                                                 description="Apakah Anda yakin ingin menghapus {{ $partner->name }}?"
                                                 confirmText="Ya, Hapus"
-                                                triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                                 aria-label="Hapus {{ $partner->name }}"
                                             >
                                                 <i class="ri-delete-bin-line text-base"></i>

@@ -8,12 +8,12 @@
 
         <div class="grid grid-cols-2 gap-3">
             <div class="card-surface p-4">
-                <p class="text-[11px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Total Owner</p>
+                <p class="text-[11px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-500">Total Owner</p>
                 <p class="mt-1 text-2xl font-black text-slate-900 dark:text-slate-50">{{ $totalOwners }}</p>
                 <p class="text-xs text-slate-500 dark:text-slate-400">dalam cakupan penugasan</p>
             </div>
             <div class="card-surface p-4">
-                <p class="text-[11px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Total Kos Dikelola</p>
+                <p class="text-[11px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-500">Total Kos Dikelola</p>
                 <p class="mt-1 text-2xl font-black text-slate-900 dark:text-slate-50">{{ $totalKos }}</p>
                 <p class="text-xs text-slate-500 dark:text-slate-400">kos unik pada penugasan Anda</p>
             </div>
@@ -22,7 +22,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." aria-label="Cari owner" class="field-input w-full pl-10">
                 </div>
                 <select name="status" aria-label="Filter status" class="field-input sm:w-44">
@@ -86,7 +86,7 @@
                                         </a>
                                         <div class="min-w-0">
                                             <a href="{{ route('admin.owners.show', $owner) }}" class="block font-semibold text-slate-900 dark:text-slate-50 truncate hover:text-primary-600 dark:hover:text-primary-400 transition">{{ $owner->name }}</a>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate md:hidden">{{ $owner->email }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500 truncate md:hidden">{{ $owner->email }}</p>
                                         </div>
                                     </div>
                                 </td>

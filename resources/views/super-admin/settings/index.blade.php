@@ -28,7 +28,7 @@
                     <div class="section-tint rounded-xl p-4 sm:p-5">
                         <div class="mb-4">
                             <h3 class="text-section-title">{{ $groupLabels[$group] ?? ucfirst($group) }}</h3>
-                            <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{{ $groupDescriptions[$group] ?? '' }}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{{ $groupDescriptions[$group] ?? '' }}</p>
                         </div>
 
                         <div class="space-y-4">
@@ -45,7 +45,7 @@
                                                    class="mt-0.5 rounded border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500 cursor-pointer">
                                             <label for="setting-{{ $setting['key'] }}" class="cursor-pointer select-none">
                                                 <span class="block text-sm font-semibold text-slate-700 dark:text-slate-200">{{ $setting['value'] ? 'Aktif' : 'Nonaktif' }}</span>
-                                                <span class="block text-xs text-slate-400 dark:text-slate-500 mt-0.5">Toggle {{ $setting['label'] }}</span>
+                                                <span class="block text-xs text-slate-500 dark:text-slate-500 mt-0.5">Toggle {{ $setting['label'] }}</span>
                                             </label>
                                         </div>
                                     @elseif($setting['type'] === 'integer')

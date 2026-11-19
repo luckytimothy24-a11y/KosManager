@@ -84,7 +84,7 @@
                 @guest
                     <a href="{{ route('login') }}" class="hidden sm:inline-flex text-sm font-medium text-gray-600 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition">Masuk</a>
                     @if(Route::has('register'))
-                        <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 px-4 py-2 rounded-lg transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">Daftar</a>
+                        <a href="{{ route('register') }}" class="hidden sm:inline-flex items-center text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 active:bg-primary-800 px-4 py-2 rounded-lg transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">Daftar</a>
                     @endif
                 @else
                     <a href="{{ url('/dashboard') }}" class="hidden sm:inline-flex text-sm font-medium text-gray-700 dark:text-slate-200 hover:text-primary-500 dark:hover:text-primary-300 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition">Dashboard</a>
@@ -156,10 +156,10 @@
                     @guest
                         <a href="{{ route('login') }}" class="inline-flex justify-center items-center text-sm font-medium text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-white/[0.08] px-4 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800 transition">Masuk</a>
                         @if(Route::has('register'))
-                            <a href="{{ route('register') }}" class="inline-flex justify-center items-center text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">Daftar</a>
+                            <a href="{{ route('register') }}" class="inline-flex justify-center items-center text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">Daftar</a>
                         @endif
                     @else
-                        <a href="{{ url('/dashboard') }}" class="col-span-2 inline-flex justify-center items-center gap-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">
+                        <a href="{{ url('/dashboard') }}" class="col-span-2 inline-flex justify-center items-center gap-2 text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-lg transition">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
                             Dashboard
                         </a>
@@ -219,7 +219,7 @@
                                 <i class="ri-close-circle-fill text-lg"></i>
                             </a>
                         @endif
-                        <button type="submit" class="shrink-0 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition">Cari Kos</button>
+                        <button type="submit" class="shrink-0 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition">Cari Kos</button>
                     </div>
 
                     {{-- Quick filter chips --}}
@@ -232,7 +232,7 @@
                 </form>
 
                 <div class="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-                    <a href="{{ route('tenant.kos.index') }}" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
+                    <a href="{{ route('tenant.kos.index') }}" class="w-full sm:w-auto inline-flex justify-center items-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500">
                         <i class="ri-search-line"></i> Lihat Kos
                     </a>
                     @guest
@@ -270,12 +270,12 @@
                         {{-- Greeting bar — like real tenant dashboard --}}
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500">Selamat pagi,</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-500">Selamat pagi,</p>
                                 <p class="text-sm font-bold text-slate-900 dark:text-slate-50">Rina Wulandari</p>
                             </div>
                             <div class="flex gap-2">
                                 <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                                 </div>
                                 <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center">
                                     <span class="text-xs font-bold text-primary-600 dark:text-primary-300">R</span>
@@ -299,7 +299,7 @@
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-xs font-bold text-slate-900 dark:text-slate-50">Kos Melati Indah</p>
-                                        <p class="text-[10px] text-slate-400">Kamar A03</p>
+                                        <p class="text-[10px] text-slate-500">Kamar A03</p>
                                     </div>
                                     <span class="text-[10px] font-bold bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300 px-2 py-0.5 rounded-md">Kontrak Aktif</span>
                                 </div>
@@ -309,14 +309,14 @@
                         {{-- Billing summary — compact metric style --}}
                         <div class="grid grid-cols-2 gap-2">
                             <div class="rounded-lg bg-slate-50 dark:bg-surface-elevated/60 p-2.5">
-                                <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Tagihan</p>
+                                <p class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">Tagihan</p>
                                 <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-0.5">Rp 850.000</p>
                                 <p class="text-[9px] text-amber-500 font-medium mt-0.5">Belum dibayar</p>
                             </div>
                             <div class="rounded-lg bg-slate-50 dark:bg-surface-elevated/60 p-2.5">
-                                <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">Favorit</p>
+                                <p class="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">Favorit</p>
                                 <p class="text-sm font-bold text-slate-900 dark:text-slate-50 mt-0.5">3 Kos</p>
-                                <p class="text-[9px] text-slate-400 mt-0.5">Tersimpan</p>
+                                <p class="text-[9px] text-slate-500 mt-0.5">Tersimpan</p>
                             </div>
                         </div>
 
@@ -327,11 +327,11 @@
                                 <span class="text-[10px] font-semibold text-primary-600 dark:text-primary-300">Cari Kos</span>
                             </div>
                             <div class="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-slate-100 dark:bg-surface-elevated py-2">
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                 <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Kontrak</span>
                             </div>
                             <div class="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-slate-100 dark:bg-surface-elevated py-2">
-                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                                 <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Chat</span>
                             </div>
                         </div>
@@ -345,7 +345,7 @@
                     </span>
                     <div>
                         <p class="text-xs font-bold text-slate-800 dark:text-slate-50">Pembayaran diverifikasi</p>
-                        <p class="text-[10px] text-slate-400 dark:text-slate-500">Kamar A03 · 2 menit lalu</p>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-500">Kamar A03 · 2 menit lalu</p>
                     </div>
                 </div>
 
@@ -356,7 +356,7 @@
                     </div>
                     <div class="min-w-0">
                         <p class="text-[10px] font-bold text-slate-900 dark:text-slate-50 truncate">Kos Melati</p>
-                        <p class="text-[9px] text-slate-400">Rp 850.000/bln</p>
+                        <p class="text-[9px] text-slate-500">Rp 850.000/bln</p>
                         <div class="flex items-center gap-1 mt-0.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                             <span class="text-[8px] font-semibold text-green-600">2 tersedia</span>
@@ -506,15 +506,15 @@
                 <p class="mt-2 text-sm text-gray-500 dark:text-slate-400 max-w-md mx-auto">Jelajahi kos yang tersedia dan pilih kamar sesuai kebutuhan Anda.</p>
                 <div class="mt-6">
                     @guest
-                        <a href="{{ Route::has('register') ? route('register') : route('login') }}" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">
+                        <a href="{{ Route::has('register') ? route('register') : route('login') }}" class="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">
                             <i class="ri-user-add-line"></i> Daftar sebagai Penghuni
                         </a>
                     @elseif($isTenant)
-                        <a href="{{ route('tenant.kos.index') }}" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">
+                        <a href="{{ route('tenant.kos.index') }}" class="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">
                             <i class="ri-search-line"></i> Jelajahi Kos
                         </a>
                     @else
-                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">
+                        <a href="{{ url('/dashboard') }}" class="inline-flex items-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white text-sm font-semibold px-7 py-3 rounded-xl transition shadow-sm shadow-primary-500/30">
                             <i class="ri-dashboard-line"></i> Buka Dashboard
                         </a>
                     @endguest
@@ -811,19 +811,19 @@
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.2 2.8 11a1 1 0 0 0 1.3 1.5L5 11.8V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-8.2l.9.7a1 1 0 0 0 1.3-1.5L12 3.2Z"/></svg>
             <span class="text-[10px] font-semibold leading-none">Beranda</span>
         </a>
-        <a href="{{ route('tenant.favorites.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Favorit">
+        <a href="{{ route('tenant.favorites.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-500 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Favorit">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
             <span class="text-[10px] font-semibold leading-none">Favorit</span>
         </a>
-        <a href="{{ route('tenant.booking.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Booking">
+        <a href="{{ route('tenant.booking.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-500 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Booking">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
             <span class="text-[10px] font-semibold leading-none">Booking</span>
         </a>
-        <a href="{{ route('tenant.tagihan.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Tagihan">
+        <a href="{{ route('tenant.tagihan.index') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-500 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Tagihan">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg>
             <span class="text-[10px] font-semibold leading-none">Tagihan</span>
         </a>
-        <a href="{{ route('login') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Profil">
+        <a href="{{ route('login') }}" class="group relative flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-[64px] text-slate-500 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-600 dark:hover:text-slate-300" aria-label="Profil">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <span class="text-[10px] font-semibold leading-none">Profil</span>
         </a>

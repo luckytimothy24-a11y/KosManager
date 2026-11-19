@@ -12,7 +12,7 @@
             </span>
             <div class="min-w-0">
                 <p class="font-bold text-slate-900 dark:text-slate-50 truncate">{{ $user->name }}</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500 truncate">{{ $user->email }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500 truncate">{{ $user->email }}</p>
                 <span class="mt-1 inline-flex"><x-status-badge :status="$user->is_active ? 'active' : 'inactive'" context="penghuni" :label="$user->is_active ? 'Aktif' : 'Nonaktif'" /></span>
             </div>
         </div>

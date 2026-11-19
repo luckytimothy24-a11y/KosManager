@@ -18,7 +18,7 @@
             </p>
         @endif
         <p class="whitespace-pre-line text-[13px] font-medium leading-relaxed">{{ $message }}</p>
-        <p class="mt-2 flex items-center gap-1 text-[10px] {{ $mine ? 'text-white/70' : 'text-slate-400 dark:text-slate-500' }}">
+        <p class="mt-2 flex items-center gap-1 text-[10px] {{ $mine ? 'text-white/70' : 'text-slate-500 dark:text-slate-500' }}">
             <i class="ri-time-line"></i> {{ $time }}
             @if(!is_null($read))
                 @if($read)

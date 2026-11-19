@@ -20,7 +20,7 @@
                     <i class="ri-price-tag-line text-4xl text-slate-300 dark:text-slate-600"></i>
                 </div>
                 <p class="text-slate-500 dark:text-slate-400 font-medium">Belum ada barang yang dijual.</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Jadilah yang pertama menjual barang bekas!</p>
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">Jadilah yang pertama menjual barang bekas!</p>
                 <a href="{{ route('tenant.marketplace.create') }}" class="btn-primary mt-4 inline-flex">
                     <i class="ri-add-line"></i> Jual Barang Pertama
                 </a>

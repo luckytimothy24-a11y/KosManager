@@ -13,7 +13,7 @@
                     </div>
                     <div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-slate-50">Informasi Profile</h2>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Perbarui nama dan alamat email akun Anda.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Perbarui nama dan alamat email akun Anda.</p>
                     </div>
                 </header>
 
@@ -28,7 +28,7 @@
                     </div>
                     <div>
                         <h2 class="text-base font-bold text-slate-900 dark:text-slate-50">Keamanan &amp; Password</h2>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Gunakan password yang panjang dan unik agar akun tetap aman.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Gunakan password yang panjang dan unik agar akun tetap aman.</p>
                     </div>
                 </header>
 

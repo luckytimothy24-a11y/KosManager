@@ -56,7 +56,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 transition">Buat Laporan</button>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 transition">Buat Laporan</button>
                 <a href="{{ route($drPrefix.'.damage-reports.index') }}" class="text-sm font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400">Batal</a>
             </div>
         </form>

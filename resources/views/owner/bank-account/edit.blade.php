@@ -45,7 +45,7 @@
 
                 @if($account)
                     <div class="rounded-xl border border-slate-100 dark:border-white/10 p-4">
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Rekening saat ini</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Rekening saat ini</p>
                         <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">{{ $account->bank_name }} · {{ $account->maskedAccountNumber() }}</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Atas nama: {{ $account->account_holder_name }}</p>
                     </div>
@@ -57,7 +57,7 @@
 
                 <div class="flex justify-end">
                     <button type="submit"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
                         <i class="ri-save-line"></i> Simpan Rekening
                     </button>
                 </div>

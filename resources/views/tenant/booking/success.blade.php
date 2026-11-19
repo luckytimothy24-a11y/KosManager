@@ -54,31 +54,31 @@
             </div>
             <dl class="px-6 py-5 space-y-4 text-sm">
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-quill-pen-line text-slate-400"></i> Kode Booking</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-quill-pen-line text-slate-500"></i> Kode Booking</dt>
                     <dd class="font-mono font-bold text-slate-900 dark:text-slate-50">{{ $booking->booking_code }}</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-building-2-line text-slate-400"></i> Kos</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-building-2-line text-slate-500"></i> Kos</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50 text-right">{{ $booking->kos->name }}</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-door-open-line text-slate-400"></i> Kamar</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-door-open-line text-slate-500"></i> Kamar</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50">Kamar {{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-team-line text-slate-400"></i> Jumlah penghuni</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-team-line text-slate-500"></i> Jumlah penghuni</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50">1 orang (satu kamar untuk satu penghuni)</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-wallet-3-line text-slate-400"></i> Pembayaran</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-wallet-3-line text-slate-500"></i> Pembayaran</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50">Tagihan pribadi</dd>
                 </div>
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 -mt-2">
                     Total harga kamar untuk periode ini. Satu kamar untuk satu penghuni.
                 </p>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-money-dollar-circle-line text-slate-400"></i> Total harga kamar</dt>
-                    <dd class="font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($booking->price, 0, ',', '.') }}<span class="text-xs text-slate-400">/{{ $booking->rental_type === 'daily' ? 'hari' : 'bulan' }}</span></dd>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-money-dollar-circle-line text-slate-500"></i> Total harga kamar</dt>
+                    <dd class="font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($booking->price, 0, ',', '.') }}<span class="text-xs text-slate-500">/{{ $booking->rental_type === 'daily' ? 'hari' : 'bulan' }}</span></dd>
                 </div>
                 @if($booking->usesDownPayment())
                     <div class="flex items-center justify-between gap-4 rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/70 dark:bg-primary-500/[0.06] px-3 py-2.5">
@@ -92,11 +92,11 @@
                     </div>
                 @endif
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-line text-slate-400"></i> Periode</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-line text-slate-500"></i> Periode</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50 text-right">{{ $booking->start_date->format('d M Y') }} – {{ $booking->end_date->format('d M Y') }}</dd>
                 </div>
                 <div class="flex items-center justify-between gap-4">
-                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-check-line text-slate-400"></i> Tanggal Booking</dt>
+                    <dt class="text-slate-500 dark:text-slate-400 flex items-center gap-2"><i class="ri-calendar-check-line text-slate-500"></i> Tanggal Booking</dt>
                     <dd class="font-semibold text-slate-900 dark:text-slate-50">{{ $booking->booking_date->translatedFormat('d F Y') }}</dd>
                 </div>
             </dl>
@@ -143,12 +143,12 @@
         <div class="flex flex-col sm:flex-row gap-3">
             @if($isPending)
                 <a href="{{ route('tenant.booking.show', $booking) }}#pembayaran"
-                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl transition shadow-soft shadow-primary-600/20">
+                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-primary-700 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl transition shadow-soft shadow-primary-600/20">
                     <i class="ri-wallet-3-line"></i> Bayar Sekarang
                 </a>
             @else
                 <a href="{{ route('tenant.booking.show', $booking) }}"
-                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl transition shadow-soft shadow-primary-600/20">
+                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-primary-700 hover:bg-primary-700 text-white text-sm font-semibold rounded-xl transition shadow-soft shadow-primary-600/20">
                     <i class="ri-calendar-check-line"></i> Lihat Booking
                 </a>
             @endif

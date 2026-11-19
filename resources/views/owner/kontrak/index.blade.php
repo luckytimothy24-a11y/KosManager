@@ -11,7 +11,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor kontrak atau nama penghuni..." aria-label="Cari kontrak"
                            class="field-input pl-10 pr-3.5">
                 </div>
@@ -78,7 +78,7 @@
                             <tr>
                                 <td>
                                     <p class="font-mono font-semibold text-slate-900 dark:text-slate-50">{{ $k->contract_number }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ \StatusLabels::rentalTypeLabel($k->rental_type) }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ \StatusLabels::rentalTypeLabel($k->rental_type) }}</p>
                                 </td>
                                 <td class="hidden md:table-cell">
                                     <div class="flex items-center gap-2.5">
@@ -88,7 +88,7 @@
                                 </td>
                                 <td>
                                     <p class="font-medium text-slate-900 dark:text-slate-50">{{ $k->kamar->room_number }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[10rem]">{{ $k->kos->name }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 truncate max-w-[10rem]">{{ $k->kos->name }}</p>
                                 </td>
                                 <td class="hidden sm:table-cell">
                                     <p class="text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($k->start_date)->format('d M Y') }} — {{ \Illuminate\Support\Carbon::parse($k->end_date)->format('d M Y') }}</p>
@@ -98,7 +98,7 @@
                                 <td>
                                     <div class="flex items-center justify-end">
                                         <a href="{{ route("$prefix.kontrak.show", $k) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
                                            title="Detail" aria-label="Detail kontrak {{ $k->contract_number }}">
                                             <i class="ri-eye-line"></i>
                                         </a>

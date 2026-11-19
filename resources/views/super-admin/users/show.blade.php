@@ -47,7 +47,7 @@
             </span>
             <div class="min-w-0">
                 <p class="font-bold text-slate-900 dark:text-slate-50 truncate">{{ $user->name }}</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500 truncate">{{ $user->email }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500 truncate">{{ $user->email }}</p>
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium @switch($user->role)
                         @case('super_admin') bg-purple-100 text-purple-800 dark:bg-purple-500/10 dark:text-purple-300 @break
                         @case('admin') bg-blue-100 text-blue-800 dark:bg-blue-500/10 dark:text-blue-300 @break
@@ -95,7 +95,7 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-sm text-slate-400 dark:text-slate-500">Tidak ada kos.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500">Tidak ada kos.</p>
             @endif
         </div>
 
@@ -112,7 +112,7 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-sm text-slate-400 dark:text-slate-500">Tidak ada booking.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500">Tidak ada booking.</p>
             @endif
         </div>
 
@@ -129,7 +129,7 @@
                     @endforeach
                 </div>
             @else
-                <p class="text-sm text-slate-400 dark:text-slate-500">Tidak ada penghuni.</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500">Tidak ada penghuni.</p>
             @endif
         </div>
     </div>

@@ -84,7 +84,7 @@
             @if($agreements->isEmpty())
                 <div class="px-6 py-12 text-center">
                     <div class="mx-auto w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                        <i class="ri-file-list-line text-2xl text-slate-400"></i>
+                        <i class="ri-file-list-line text-2xl text-slate-500"></i>
                     </div>
                     <p class="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada perjanjian.</p>
                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Buat perjanjian untuk kos dengan pemilik asli sebelum membuat payout.</p>
@@ -107,7 +107,7 @@
                                 <span class="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold {{ $a->commission_type === 'percent' ? 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300' }}">
                                     {{ $a->commission_type === 'percent' ? number_format((float) $a->commission_value, 2) . '%' : 'Rp ' . number_format((float) $a->commission_value, 0, ',', '.') }}
                                 </span>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{{ $a->commission_type === 'percent' ? 'Persen' : 'Fixed' }}</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-500 mt-1">{{ $a->commission_type === 'percent' ? 'Persen' : 'Fixed' }}</p>
                             </div>
                         </div>
                     @endforeach

@@ -15,10 +15,10 @@
                 <div class="min-w-0">
                     <p class="text-sm text-slate-500 dark:text-slate-400">{{ $greeting }}, {{ $user->name }}</p>
                     <h1 class="mt-0.5 text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Ringkasan Operasional</h1>
-                    <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{{ now()->translatedFormat('l, d F Y') }} — Ringkasan properti Anda hari ini.</p>
+                    <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-500">{{ now()->translatedFormat('l, d F Y') }} — Ringkasan properti Anda hari ini.</p>
                 </div>
                 <div class="flex shrink-0 flex-wrap gap-2">
-                    <a href="{{ route('owner.kos.create') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 active:scale-95">
+                    <a href="{{ route('owner.kos.create') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-primary-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 active:scale-95">
                         <i class="ri-add-line text-base"></i> Tambah Kos
                     </a>
                     <a href="{{ route('owner.kamar.create') }}" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-white/[0.1] bg-white dark:bg-white/[0.04] px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-white/[0.08] active:scale-95">
@@ -44,7 +44,7 @@
                             <i class="ri-money-dollar-circle-line text-xl"></i>
                         </span>
                     </div>
-                    <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500">Total pembayaran terverifikasi</p>
+                    <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-500">Total pembayaran terverifikasi</p>
                 </div>
 
                 @php
@@ -60,7 +60,7 @@
                             <i class="ri-lock-line text-xl"></i>
                         </span>
                     </div>
-                    <p class="mt-3 text-[11px] font-semibold text-slate-400 dark:text-slate-500">{{ $occupancy }}% okupansi</p>
+                    <p class="mt-3 text-[11px] font-semibold text-slate-500 dark:text-slate-500">{{ $occupancy }}% okupansi</p>
                 </div>
 
                 <div class="metric-card group">
@@ -73,7 +73,7 @@
                             <i class="ri-checkbox-circle-line text-xl"></i>
                         </span>
                     </div>
-                    <p class="mt-3 text-[11px] font-semibold text-slate-400 dark:text-slate-500">{{ $stats['total_kamar_maintenance'] }} dalam perawatan</p>
+                    <p class="mt-3 text-[11px] font-semibold text-slate-500 dark:text-slate-500">{{ $stats['total_kamar_maintenance'] }} dalam perawatan</p>
                 </div>
 
                 <div class="col-span-2 metric-card group sm:flex sm:items-center sm:justify-between lg:col-span-1 lg:block">
@@ -95,31 +95,31 @@
             {{-- Compact KPI strip (secondary stats, low visual weight) --}}
             <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
                 <a href="{{ route('owner.kos.index') }}" class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-building-2-line text-primary-500"></i> Total Kos</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-building-2-line text-primary-500"></i> Total Kos</p>
                     <p class="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-50">{{ $stats['total_kos'] }}</p>
                 </a>
                 <a href="{{ route('owner.kamar.index') }}" class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-door-open-line text-indigo-500"></i> Total Kamar</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-door-open-line text-indigo-500"></i> Total Kamar</p>
                     <p class="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-50">{{ $stats['total_kamar'] }}</p>
                 </a>
                 <a href="{{ route('owner.checkin.index') }}" class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-calendar-todo-line text-warn-500"></i> Perlu Check-in</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-calendar-todo-line text-warn-500"></i> Perlu Check-in</p>
                     <p class="mt-0.5 text-lg font-bold {{ $stats['needs_checkin'] > 0 ? 'text-warn-600' : 'text-slate-900 dark:text-slate-50' }}">{{ $stats['needs_checkin'] }}</p>
                 </a>
                 <div class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-tools-line text-amber-500"></i> Maintenance</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-tools-line text-amber-500"></i> Maintenance</p>
                     <p class="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-50">{{ $stats['total_kamar_maintenance'] }}</p>
                 </div>
                 <div class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-file-warning-line text-red-500"></i> Belum Bayar</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-file-warning-line text-red-500"></i> Belum Bayar</p>
                     <p class="mt-0.5 text-lg font-bold text-slate-900 dark:text-slate-50">{{ $stats['tagihan_outstanding'] }}</p>
                 </div>
                 <div class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-alarm-warning-line text-rose-500"></i> Terlambat</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-alarm-warning-line text-rose-500"></i> Terlambat</p>
                     <p class="mt-0.5 text-lg font-bold {{ $stats['tagihan_overdue'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-900 dark:text-slate-50' }}">{{ $stats['tagihan_overdue'] }}</p>
                 </div>
                 <a href="{{ route('owner.damage-reports.index') }}" class="metric-card">
-                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400"><i class="ri-tools-line text-amber-500"></i> Laporan Pending</p>
+                    <p class="flex items-center gap-1.5 text-[11px] font-medium text-slate-500"><i class="ri-tools-line text-amber-500"></i> Laporan Pending</p>
                     <p class="mt-0.5 text-lg font-bold {{ ($stats['pending_damage_reports'] ?? 0) > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-50' }}">{{ $stats['pending_damage_reports'] ?? 0 }}</p>
                 </a>
             </div>
@@ -136,7 +136,7 @@
                 </span>
                 <div class="min-w-0">
                     <h2 class="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-50">Rekap Pendapatan</h2>
-                    <p class="truncate text-[11px] text-slate-400 dark:text-slate-500">Trend pembayaran terverifikasi 6 bulan terakhir.</p>
+                    <p class="truncate text-[11px] text-slate-500 dark:text-slate-500">Trend pembayaran terverifikasi 6 bulan terakhir.</p>
                 </div>
             </div>
 
@@ -147,13 +147,13 @@
             @else
                 {{-- Intentional empty state — no dummy data, real Rp 0 --}}
                 <div class="mt-4 flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center dark:border-white/[0.08] dark:bg-surface-elevated/50">
-                    <span class="grid h-12 w-12 place-items-center rounded-2xl bg-white text-slate-400 shadow-sm dark:bg-surface-elevated dark:text-slate-500">
+                    <span class="grid h-12 w-12 place-items-center rounded-2xl bg-white text-slate-500 shadow-sm dark:bg-surface-elevated dark:text-slate-500">
                         <i class="ri-line-chart-line text-2xl" aria-hidden="true"></i>
                     </span>
                     <p class="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
                     <p class="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada pendapatan</p>
-                    <p class="mt-1.5 max-w-sm text-xs leading-relaxed text-slate-400 dark:text-slate-500">Belum ada pembayaran yang tercatat sebagai pembayaran berhasil. Mulai dengan membuat tagihan untuk penghuni dan catat pembayaran setelah pembayaran diterima.</p>
-                    <a href="{{ route('owner.tagihan.index') }}" class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700 active:scale-95">
+                    <p class="mt-1.5 max-w-sm text-xs leading-relaxed text-slate-500 dark:text-slate-500">Belum ada pembayaran yang tercatat sebagai pembayaran berhasil. Mulai dengan membuat tagihan untuk penghuni dan catat pembayaran setelah pembayaran diterima.</p>
+                    <a href="{{ route('owner.tagihan.index') }}" class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-primary-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700 active:scale-95">
                         <i class="ri-file-list-3-line"></i> Kelola Tagihan
                     </a>
                 </div>
@@ -171,10 +171,10 @@
                     </span>
                     <div>
                         <h2 class="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-50">Okupansi Kamar</h2>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500">{{ $stats['total_kamar_occupied'] }} dari {{ $stats['total_kamar'] }} kamar terisi</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500">{{ $stats['total_kamar_occupied'] }} dari {{ $stats['total_kamar'] }} kamar terisi</p>
                     </div>
                 </div>
-                <p class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">{{ $stats['occupancy_percent'] }}<span class="text-xl text-slate-400">%</span></p>
+                <p class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">{{ $stats['occupancy_percent'] }}<span class="text-xl text-slate-500">%</span></p>
             </div>
 
             <div class="mt-4 w-full">
@@ -192,17 +192,17 @@
                     <div class="flex items-center gap-2 text-xs">
                         <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
                         <span class="font-semibold text-slate-700 dark:text-slate-300">Tersedia</span>
-                        <span class="text-slate-400">{{ $stats['total_kamar_available'] }}</span>
+                        <span class="text-slate-500">{{ $stats['total_kamar_available'] }}</span>
                     </div>
                     <div class="flex items-center gap-2 text-xs">
                         <span class="h-2.5 w-2.5 rounded-full bg-blue-500"></span>
                         <span class="font-semibold text-slate-700 dark:text-slate-300">Terisi</span>
-                        <span class="text-slate-400">{{ $stats['total_kamar_occupied'] }}</span>
+                        <span class="text-slate-500">{{ $stats['total_kamar_occupied'] }}</span>
                     </div>
                     <div class="flex items-center gap-2 text-xs">
                         <span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span>
                         <span class="font-semibold text-slate-700 dark:text-slate-300">Maintenance</span>
-                        <span class="text-slate-400">{{ $stats['total_kamar_maintenance'] }}</span>
+                        <span class="text-slate-500">{{ $stats['total_kamar_maintenance'] }}</span>
                     </div>
                     <a href="{{ route('owner.kamar.index') }}" class="ml-auto inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700">
                         Lihat Semua <i class="ri-arrow-right-s-line"></i>

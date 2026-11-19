@@ -72,14 +72,14 @@
                                 </td>
                                 <td>
                                     <p class="font-medium text-slate-900 dark:text-slate-50">{{ $co->kamar->room_number }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[10rem]">{{ $co->kamar->kos->name }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 truncate max-w-[10rem]">{{ $co->kamar->kos->name }}</p>
                                     @if($co->room_condition)
                                         <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400" title="{{ $co->room_condition }}">
                                             <i class="ri-file-list-line mr-0.5"></i> {{ Str::limit($co->room_condition, 40) }}
                                         </p>
                                     @endif
                                     @if($co->notes)
-                                        <p class="text-[11px] text-slate-400 dark:text-slate-500" title="{{ $co->notes }}">
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-500" title="{{ $co->notes }}">
                                             <i class="ri-sticky-note-line mr-0.5"></i> {{ Str::limit($co->notes, 40) }}
                                         </p>
                                     @endif
@@ -87,7 +87,7 @@
                                 <td class="hidden sm:table-cell">
                                     <p class="text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ $co->request_date->format('d M Y') }}</p>
                                     @if($co->check_out_date)
-                                        <p class="text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap">rencana: {{ $co->check_out_date->format('d M Y') }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-500 whitespace-nowrap">rencana: {{ $co->check_out_date->format('d M Y') }}</p>
                                     @endif
                                 </td>
                                 <td class="text-center"><x-status-badge :status="$co->status" context="checkout" /></td>
@@ -96,7 +96,7 @@
                                         <div class="flex items-center justify-end gap-1.5">
                                             <x-confirm-dialog title="Setujui Check-Out?" description="Setujui check-out untuk {{ $co->penghuni->user->name }}? Penghuni akan dikeluarkan dari kamar."
                                                                confirmText="Setujui" confirmClass="bg-green-600 hover:bg-green-700 text-white"
-                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
+                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
                                                                aria-label="Setujui check-out {{ $co->penghuni->user->name }}">
                                                 <x-slot name="slot"><i class="ri-check-line"></i></x-slot>
                                                 <x-slot name="actions">
@@ -112,7 +112,7 @@
                                             </x-confirm-dialog>
                                             <x-confirm-dialog title="Tolak Check-Out?" description="Tolak check-out untuk {{ $co->penghuni->user->name }}?"
                                                                confirmText="Tolak"
-                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                                                aria-label="Tolak check-out {{ $co->penghuni->user->name }}">
                                                 <x-slot name="slot"><i class="ri-close-line"></i></x-slot>
                                                 <x-slot name="actions">
@@ -128,7 +128,7 @@
                                             </x-confirm-dialog>
                                             <x-confirm-dialog title="Batalkan Check-Out?" description="Batalkan pengajuan check-out untuk {{ $co->penghuni->user->name }}? Data pengajuan tetap tersimpan dengan status Dibatalkan."
                                                                confirmText="Ya, Batalkan" confirmClass="bg-slate-600 hover:bg-slate-700 text-white"
-                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                                                aria-label="Batalkan check-out {{ $co->penghuni->user->name }}">
                                                 <x-slot name="slot"><i class="ri-close-circle-line"></i></x-slot>
                                                 <x-slot name="actions">
@@ -144,7 +144,7 @@
                                             </x-confirm-dialog>
                                         </div>
                                     @elseif($co->status !== 'pending')
-                                        <span class="text-xs text-slate-400 dark:text-slate-500">—</span>
+                                        <span class="text-xs text-slate-500 dark:text-slate-500">—</span>
                                     @endif
                                 </td>
                             </tr>

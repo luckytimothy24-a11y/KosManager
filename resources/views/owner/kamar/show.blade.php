@@ -10,7 +10,7 @@
                 <x-button href="{{ $backUrl }}" type="secondary"><i class="ri-arrow-left-line"></i> Kembali</x-button>
                 @if($canManage)
                     <a href="{{ route('owner.kamar.edit', $kamar) }}"
-                       class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30">
+                       class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-700 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30">
                         <i class="ri-edit-line"></i> Edit
                     </a>
                 @endif
@@ -43,49 +43,49 @@
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm flex-1 min-w-0">
                                 <div class="flex items-start gap-2.5">
-                                    <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                    <i class="ri-price-tag-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                     <div>
-                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tipe</dt>
+                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Tipe</dt>
                                         <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kamar->room_type }}</dd>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2.5">
-                                    <i class="ri-stairs-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                    <i class="ri-stairs-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                     <div>
-                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Lantai</dt>
+                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Lantai</dt>
                                         <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kamar->floor ?? '-' }}</dd>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2.5">
-                                    <i class="ri-expand-height-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                    <i class="ri-expand-height-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                     <div>
-                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Luas</dt>
+                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Luas</dt>
                                         <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kamar->area ? $kamar->area.' m²' : '-' }}</dd>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2.5">
-                                    <i class="ri-information-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                    <i class="ri-information-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                     <div>
-                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</dt>
+                                        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Status</dt>
                                         <dd class="mt-0.5"><x-status-badge :status="$kamar->status" context="kamar" /></dd>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2.5">
-                                        <i class="ri-group-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                        <i class="ri-group-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                         <div>
-                                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kapasitas maksimal</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kapasitas maksimal</dt>
                                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $capacity }} Orang</dd>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2.5">
-                                        <i class="ri-scales-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                        <i class="ri-scales-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                         <div>
-                                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mode Tagihan</dt>
+                                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Mode Tagihan</dt>
                                             @php $bm = $kamar->billing_mode ?? 'personal'; @endphp
                                             <dd class="mt-0.5">
                                                 <x-status-badge :status="$bm" context="billing_mode" />
                                             </dd>
-                                            <dd class="mt-1 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">{{ $bm === 'shared' ? 'Biaya kamar dapat dibagi antar penghuni.' : 'Satu kamar untuk satu penghuni.' }}</dd>
+                                            <dd class="mt-1 text-xs text-slate-500 dark:text-slate-500 leading-relaxed">{{ $bm === 'shared' ? 'Biaya kamar dapat dibagi antar penghuni.' : 'Satu kamar untuk satu penghuni.' }}</dd>
                                         </div>
                                     </div>
                                 </dl>
@@ -94,11 +94,11 @@
 
                         <div class="mt-5 pt-5 border-t border-slate-100 dark:border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div class="flex items-center justify-between rounded-xl border border-slate-100 dark:border-white/10 px-4 py-3">
-                                <span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500"><i class="ri-calendar-line"></i> Harian</span>
+                                <span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500"><i class="ri-calendar-line"></i> Harian</span>
                                 <span class="font-bold text-slate-900 dark:text-slate-50">Rp {{ number_format($kamar->daily_price, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex items-center justify-between rounded-xl border border-slate-100 dark:border-white/10 px-4 py-3">
-                                <span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500"><i class="ri-calendar-todo-line"></i> Mingguan</span>
+                                <span class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500"><i class="ri-calendar-todo-line"></i> Mingguan</span>
                                 <span class="font-bold text-slate-900 dark:text-slate-50">Rp {{ number_format($kamar->weekly_price, 0, ',', '.') }}</span>
                             </div>
                             <div class="flex items-center justify-between rounded-xl border border-primary-100 dark:border-primary-500/20 bg-primary-50/50 dark:bg-primary-500/[0.06] px-4 py-3">
@@ -126,7 +126,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="mt-3 text-sm text-slate-400 dark:text-slate-500">Belum ada fasilitas yang ditambahkan.</p>
+                        <p class="mt-3 text-sm text-slate-500 dark:text-slate-500">Belum ada fasilitas yang ditambahkan.</p>
                     @endif
                 </div>
             </div>
@@ -151,14 +151,14 @@
                                 <span class="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 flex items-center justify-center text-sm font-bold shrink-0">{{ $initial }}</span>
                                 <div class="min-w-0 flex-1">
                                     <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $p->user?->name ?? '-' }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $p->phone ?: '-' }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 truncate">{{ $p->phone ?: '-' }}</p>
                                     @if($pBillingMode === 'shared')
                                         <p class="text-xs font-semibold text-primary-600 dark:text-primary-400 mt-0.5">
                                             Rp {{ number_format($pShare ?? (int) round($kamar->monthly_price / max(1,$capacity)), 0, ',', '.') }}/bln
-                                            @if($pShare) <span class="font-normal text-slate-400">· custom</span> @endif
+                                            @if($pShare) <span class="font-normal text-slate-500">· custom</span> @endif
                                         </p>
                                     @else
-                                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Rp {{ number_format($pKontrak->rental_price ?? 0, 0, ',', '.') }}/{{ $pKontrak->rental_type ?? 'bulan' }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Rp {{ number_format($pKontrak->rental_price ?? 0, 0, ',', '.') }}/{{ $pKontrak->rental_type ?? 'bulan' }}</p>
                                     @endif
                                 </div>
                                 @if($canManage)
@@ -173,7 +173,7 @@
                                 <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">
                                     <i class="ri-user-search-line text-lg text-slate-300 dark:text-slate-600"></i>
                                 </span>
-                                <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Tidak ada penghuni aktif.</p>
+                                <p class="mt-2.5 text-sm text-slate-500 dark:text-slate-500">Tidak ada penghuni aktif.</p>
                             </div>
                         @endforelse
                     </div>

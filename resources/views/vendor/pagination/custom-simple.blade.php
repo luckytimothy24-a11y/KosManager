@@ -11,7 +11,7 @@
             </a>
         @endif
 
-        <span class="text-xs text-slate-400 dark:text-slate-500">Halaman {{ $paginator->currentPage() }}</span>
+        <span class="text-xs text-slate-500 dark:text-slate-500">Halaman {{ $paginator->currentPage() }}</span>
 
         @if ($paginator->hasMorePages())
             <a href="{{ $paginator->appends(request()->query())->nextPageUrl() }}" rel="next"

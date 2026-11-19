@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-8">
         <h1 class="text-[1.65rem] font-bold tracking-tight text-slate-800 dark:text-slate-100">Daftar Akun</h1>
-        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1.5">Buat akun baru untuk memulai</p>
+        <p class="text-sm text-slate-500 dark:text-slate-500 mt-1.5">Buat akun baru untuk memulai</p>
     </div>
 
     @if(session('error'))
@@ -37,7 +37,7 @@
                        class="w-full px-4 pr-11 py-3 border border-slate-200/80 dark:border-white/[0.08]/60 rounded-2xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400/70 dark:placeholder-slate-500 focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10 transition-all duration-200 bg-surface-card dark:bg-white/[0.06]"
                        placeholder="Minimal 8 karakter">
                 <button type="button" @click="show = !show" tabindex="-1" aria-label="Tampilkan/sembunyikan password"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-0.5">
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition p-0.5">
                     <i class="ri-eye-off-line text-[15px]" x-show="!show"></i>
                     <i class="ri-eye-line text-[15px]" x-show="show" x-cloak></i>
                 </button>
@@ -55,7 +55,7 @@
 
         <button type="submit"
                 :disabled="submitting"
-                class="group w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 disabled:bg-primary-400 text-white font-semibold py-3 rounded-2xl transition-all duration-200 text-sm mt-3 shadow-sm shadow-primary-600/20 hover:shadow-md hover:shadow-primary-600/25">
+                class="group w-full inline-flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 disabled:bg-primary-400 text-white font-semibold py-3 rounded-2xl transition-all duration-200 text-sm mt-3 shadow-sm shadow-primary-600/20 hover:shadow-md hover:shadow-primary-600/25">
             <svg x-show="submitting" x-cloak class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
@@ -65,7 +65,7 @@
         </button>
     </form>
 
-    <p class="mt-8 text-center text-sm text-slate-400 dark:text-slate-500">
+    <p class="mt-8 text-center text-sm text-slate-500 dark:text-slate-500">
         Sudah punya akun?
         <a href="{{ route('login') }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition">Masuk</a>
     </p>

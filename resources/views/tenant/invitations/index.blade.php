@@ -3,7 +3,7 @@
         @php $pendingCount = $pending->count(); @endphp
         <x-page-header title="Undangan Kos" description="Ajakan tinggal bersama dari teman — terima atau tolak di sini." icon="ri-mail-send-line">
             @if($pendingCount > 0)
-                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-600 text-white px-3 py-1.5 text-[11px] font-semibold shadow"><i class="ri-notification-3-line"></i> {{ $pendingCount }} Menunggu</span>
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-primary-700 text-white px-3 py-1.5 text-[11px] font-semibold shadow"><i class="ri-notification-3-line"></i> {{ $pendingCount }} Menunggu</span>
             @endif
         </x-page-header>
     </x-slot>
@@ -41,7 +41,7 @@
                                             @if($kamar) <span class="inline-flex items-center gap-1 rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-2.5 py-1 text-[11px] font-bold"><i class="ri-door-open-line"></i> {{ $kamar->room_number }}</span> @endif
                                             <span class="inline-flex items-center gap-1 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-700 dark:text-primary-300 border border-primary-100 dark:border-primary-500/20 px-2.5 py-1 text-[11px] font-bold"><i class="ri-team-line"></i> {{ (int) ($booking->requested_occupants ?? 1) }} orang</span>
                                             @if($booking?->start_date && $booking?->end_date)
-                                                <span class="text-slate-400">· {{ \Carbon\Carbon::parse($booking->start_date)->translatedFormat('d M Y') }} – {{ \Carbon\Carbon::parse($booking->end_date)->translatedFormat('d M Y') }}</span>
+                                                <span class="text-slate-500">· {{ \Carbon\Carbon::parse($booking->start_date)->translatedFormat('d M Y') }} – {{ \Carbon\Carbon::parse($booking->end_date)->translatedFormat('d M Y') }}</span>
                                             @endif
                                         </p>
                                         @if($inviter)
@@ -52,7 +52,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary-600 text-white px-3 py-1.5 text-[11px] font-semibold shadow">Menunggu</span>
+                                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary-700 text-white px-3 py-1.5 text-[11px] font-semibold shadow">Menunggu</span>
                             </div>
                             <div class="mt-5 flex flex-col sm:flex-row gap-2.5">
                                 <form method="POST" action="{{ route('tenant.invitations.acceptId', $inv) }}" class="flex-1" x-on:submit="if(submittingAccept) $event.preventDefault(); submittingAccept=true">
@@ -122,7 +122,7 @@
                         @endphp
                         <div class="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 dark:border-white/[0.08] bg-slate-50/50 dark:bg-surface-elevated/50 px-4 py-3.5 hover:bg-white dark:hover:bg-slate-800 transition">
                             <div class="min-w-0 flex gap-3">
-                                <span class="hidden sm:grid w-9 h-9 place-items-center rounded-xl bg-white dark:bg-surface-elevated border border-slate-100 dark:border-white/[0.08] text-slate-400 shrink-0"><i class="ri-mail-line"></i></span>
+                                <span class="hidden sm:grid w-9 h-9 place-items-center rounded-xl bg-white dark:bg-surface-elevated border border-slate-100 dark:border-white/[0.08] text-slate-500 shrink-0"><i class="ri-mail-line"></i></span>
                                 <div class="min-w-0">
                                     <p class="text-sm font-bold leading-tight text-slate-900 dark:text-slate-50 truncate">{{ $kos->name ?? 'Kos' }} @if($kamar) <span class="font-medium text-slate-500">· {{ $kamar->room_number }}</span> @endif</p>
                                     <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400 truncate">

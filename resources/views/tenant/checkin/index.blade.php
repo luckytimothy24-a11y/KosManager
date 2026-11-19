@@ -15,12 +15,12 @@
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
             @if($bookings->isEmpty())
                 <div class="py-16 text-center">
-                    <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 grid place-items-center text-slate-400 dark:text-slate-500">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 grid place-items-center text-slate-500 dark:text-slate-500">
                         <i class="ri-shield-keyhole-line text-2xl"></i>
                     </div>
                     <p class="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada booking yang perlu check-in</p>
                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Booking dengan status disetujui akan muncul di sini untuk verifikasi identitas.</p>
-                    <a href="{{ route('tenant.booking.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition">Lihat Booking</a>
+                    <a href="{{ route('tenant.booking.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition">Lihat Booking</a>
                 </div>
             @else
                 <div class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -37,7 +37,7 @@
                                     <span class="mt-2 inline-flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-2.5 py-1"><i class="ri-file-edit-line"></i> Perlu isi identitas</span>
                                 @endif
                             </div>
-                            <a href="{{ route('tenant.checkin.identity', $booking) }}" class="shrink-0 inline-flex items-center gap-2 rounded-xl {{ $booking->identityConfirmed() ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' : 'bg-primary-600 text-white hover:bg-primary-700' }} px-5 py-2.5 text-sm font-bold transition">
+                            <a href="{{ route('tenant.checkin.identity', $booking) }}" class="shrink-0 inline-flex items-center gap-2 rounded-xl {{ $booking->identityConfirmed() ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200' : 'bg-primary-700 text-white hover:bg-primary-700' }} px-5 py-2.5 text-sm font-bold transition">
                                 {{ $booking->identityConfirmed() ? 'Lihat' : 'Verifikasi Data Diri' }} <i class="ri-arrow-right-line"></i>
                             </a>
                         </div>

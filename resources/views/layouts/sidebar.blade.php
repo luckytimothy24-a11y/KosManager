@@ -85,7 +85,7 @@
         @if(!$user->isTenant())
             <a href="{{ route('dashboard') }}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                      {{ $isActive('dashboard') ? 'bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                      {{ $isActive('dashboard') ? 'bg-primary-700 text-white dark:bg-primary-700 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                title="Dashboard"
                aria-label="Dashboard"
@@ -192,7 +192,7 @@
             @foreach($groups as $groupLabel => $items)
                 @if(!empty($items))
                     <div class="pt-6 pb-2 px-3" :class="{ 'lg:hidden': sidebarCollapsed }">
-                        <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
+                        <p class="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
                     </div>
                 @endif
 
@@ -202,7 +202,7 @@
                     @endphp
                     <a href="{{ route($item['route']) }}"
                        class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                              {{ $active ? 'bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                              {{ $active ? 'bg-primary-700 text-white dark:bg-primary-700 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                        :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                        title="{{ $item['label'] }}"
                        aria-label="{{ $item['label'] }}"
@@ -246,7 +246,7 @@
 
             @foreach($groups as $groupLabel => $items)
                 <div class="pt-6 pb-2 px-3" :class="{ 'lg:hidden': sidebarCollapsed }">
-                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
+                    <p class="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
                 </div>
                 @foreach($items as $item)
                     @php
@@ -258,7 +258,7 @@
                     @endphp
                     <a href="{{ route($routeName) }}"
                        class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all
-                              {{ $active ? 'bg-primary-600 text-white dark:bg-primary-600 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
+                              {{ $active ? 'bg-primary-700 text-white dark:bg-primary-700 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]' }}"
                        :class="{ 'lg:justify-center lg:px-0': sidebarCollapsed }"
                        title="{{ $item['label'] }}"
                        aria-label="{{ $item['label'] }}"
@@ -281,7 +281,7 @@
 
             @if(($unreadNotif) > 0)
                 <div class="pt-6 pb-2 px-3" :class="{ 'lg:hidden': sidebarCollapsed }">
-                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">Notifikasi</p>
+                    <p class="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-[0.18em]">Notifikasi</p>
                 </div>
                 <a href="{{ route('notifications.index') }}"
                    class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]"
@@ -326,7 +326,7 @@
             </span>
             <span :class="{ 'lg:hidden': sidebarCollapsed }">Pengaturan</span>
         </a>
-        <p class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500" :class="{ 'lg:hidden': sidebarCollapsed }">© {{ date('Y') }} KosManager</p>
+        <p class="mt-2 px-3 text-[10px] font-medium text-slate-500 dark:text-slate-500" :class="{ 'lg:hidden': sidebarCollapsed }">© {{ date('Y') }} KosManager</p>
     </div>
 </aside>
 

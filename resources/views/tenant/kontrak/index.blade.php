@@ -25,7 +25,7 @@
                                         </span>
                                     </div>
                                     <h3 class="mt-2 text-sm font-bold text-slate-900 dark:text-slate-50 leading-snug">{{ $k->kos->name }}</h3>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Kamar {{ $k->kamar->room_number }} · {{ $k->kamar->room_name }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Kamar {{ $k->kamar->room_number }} · {{ $k->kamar->room_name }}</p>
                                 </div>
                                 <x-status-badge :status="$k->status" context="kontrak" />
                             </div>

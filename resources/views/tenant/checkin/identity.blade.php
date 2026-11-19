@@ -28,35 +28,35 @@
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-user-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-user-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Nama</dt>
                             <dd class="mt-0.5 font-semibold text-slate-900 dark:text-slate-50">{{ $booking->user->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-mail-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-mail-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Email</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->user->email }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-building-2-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-building-2-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Kos</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kos->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Kamar</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} · {{ \StatusLabels::kamarLabel($booking->kamar->status) }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-file-text-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-file-text-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Periode</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->start_date->translatedFormat('d M Y') }} — {{ $booking->end_date->translatedFormat('d M Y') }}</dd>
@@ -235,7 +235,7 @@
             </div>
 
             <div class="flex items-start gap-2.5 rounded-2xl border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/40 px-5 py-4 text-xs text-slate-500 dark:text-slate-400">
-                <i class="ri-information-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                <i class="ri-information-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                 <p>Setelah pengajuan dikirim, owner akan memeriksa Nomor WhatsApp dan alamat Anda. Jika disetujui, status berubah menjadi Dikonfirmasi dan owner akan memproses check-in Anda.</p>
             </div>
         </div>

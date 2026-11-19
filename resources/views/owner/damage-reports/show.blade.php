@@ -13,20 +13,20 @@
             </div>
             <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                    <dt class="text-xs text-slate-400">Pelapor</dt>
+                    <dt class="text-xs text-slate-500">Pelapor</dt>
                     <dd class="font-semibold text-slate-700 dark:text-slate-200">{{ $report->user->name ?? '-' }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs text-slate-400">Kos / Kamar</dt>
+                    <dt class="text-xs text-slate-500">Kos / Kamar</dt>
                     <dd class="font-semibold text-slate-700 dark:text-slate-200">{{ $report->kos->name ?? '-' }} · {{ $report->kamar->room_number ?? '-' }}</dd>
                 </div>
                 <div>
-                    <dt class="text-xs text-slate-400">Dilaporkan</dt>
+                    <dt class="text-xs text-slate-500">Dilaporkan</dt>
                     <dd class="font-semibold text-slate-700 dark:text-slate-200">{{ $report->created_at->translatedFormat('d M Y H:i') }}</dd>
                 </div>
             </dl>
             <div>
-                <p class="text-xs text-slate-400">Deskripsi</p>
+                <p class="text-xs text-slate-500">Deskripsi</p>
                 <p class="mt-1 text-sm text-slate-700 dark:text-slate-200">{{ $report->description }}</p>
             </div>
         </div>
@@ -52,7 +52,7 @@
                     <label for="rejection_reason" class="block text-sm font-semibold text-slate-700 dark:text-slate-200">Alasan Penolakan (jika ditolak)</label>
                     <textarea name="rejection_reason" id="rejection_reason" rows="2" maxlength="500" class="mt-1 w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">{{ old('rejection_reason', $report->rejection_reason) }}</textarea>
                 </div>
-                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 transition">Perbarui Status</button>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 transition">Perbarui Status</button>
             </form>
         </div>
 

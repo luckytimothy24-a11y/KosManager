@@ -33,7 +33,7 @@
                 <div class="min-w-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Spending</p>
                     <p class="text-2xl font-bold text-slate-900 dark:text-slate-50 mt-1 truncate">Rp {{ number_format($stats['spending'], 0, ',', '.') }}</p>
-                    <p class="mt-2 text-xs font-medium text-slate-400 dark:text-slate-500">Total pembayaran iklan Anda</p>
+                    <p class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-500">Total pembayaran iklan Anda</p>
                 </div>
                 <div class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center shrink-0">
                     <i class="ri-money-dollar-circle-line text-2xl text-primary-600 dark:text-primary-400"></i>
@@ -46,17 +46,17 @@
             <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/[0.08] p-4 flex flex-col gap-1">
                 <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Aktif</p>
                 <p class="text-xl font-bold text-slate-900 dark:text-slate-50">{{ $stats['active'] }}</p>
-                <p class="text-[11px] text-slate-400 dark:text-slate-500">Sedang tayang</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-500">Sedang tayang</p>
             </div>
             <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/[0.08] p-4 flex flex-col gap-1">
                 <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Menunggu</p>
                 <p class="text-xl font-bold text-slate-900 dark:text-slate-50">{{ $stats['pending'] }}</p>
-                <p class="text-[11px] text-slate-400 dark:text-slate-500">Menunggu review</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-500">Menunggu review</p>
             </div>
             <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/[0.08] p-4 flex flex-col gap-1">
                 <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Selesai</p>
                 <p class="text-xl font-bold text-slate-900 dark:text-slate-50">{{ $completedCount }}</p>
-                <p class="text-[11px] text-slate-400 dark:text-slate-500">Selesai tayang</p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-500">Selesai tayang</p>
             </div>
         </div>
 
@@ -67,22 +67,22 @@
                 <div class="text-center sm:text-left">
                     <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Impressions</p>
                     <p class="text-lg font-bold text-slate-900 dark:text-slate-50 mt-0.5">{{ number_format($stats['totalImpressions']) }}</p>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-eye-line"></i> Tampilan</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-500"><i class="ri-eye-line"></i> Tampilan</p>
                 </div>
                 <div class="text-center sm:text-left">
                     <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Clicks</p>
                     <p class="text-lg font-bold text-slate-900 dark:text-slate-50 mt-0.5">{{ number_format($stats['totalClicks']) }}</p>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-cursor-line"></i> Klik</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-500"><i class="ri-cursor-line"></i> Klik</p>
                 </div>
                 <div class="text-center sm:text-left">
                     <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">CTR</p>
                     <p class="text-lg font-bold text-slate-900 dark:text-slate-50 mt-0.5">{{ $stats['ctr'] }}%</p>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Click-through</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-500">Click-through</p>
                 </div>
                 <div class="text-center sm:text-left">
                     <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Conversion</p>
                     <p class="text-lg font-bold text-slate-900 dark:text-slate-50 mt-0.5">{{ $stats['conversionRate'] }}%</p>
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500">Konversi</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-500">Konversi</p>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@
                 <div class="px-5 py-10 text-center">
                     <i class="ri-megaphone-line text-3xl text-slate-300 dark:text-slate-600"></i>
                     <p class="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">Belum ada kampanye.</p>
-                    <a href="{{ route('owner.advertising.create') }}" class="mt-3 inline-flex items-center gap-2 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition min-h-[44px]">
+                    <a href="{{ route('owner.advertising.create') }}" class="mt-3 inline-flex items-center gap-2 text-xs font-bold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition min-h-[44px]">
                         <i class="ri-add-line"></i> Buat Kampanye
                     </a>
                 </div>
@@ -179,7 +179,7 @@
                                 </span>
                             </div>
                             <p class="text-xs text-slate-500 dark:text-slate-400">{{ $c->starts_at?->format('d/m/Y') }} — {{ $c->ends_at?->format('d/m/Y') }}</p>
-                            <a href="{{ route('owner.advertising.show', $c) }}" class="w-full inline-flex items-center justify-center gap-1.5 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition min-h-[44px]">
+                            <a href="{{ route('owner.advertising.show', $c) }}" class="w-full inline-flex items-center justify-center gap-1.5 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition min-h-[44px]">
                                 Detail <i class="ri-arrow-right-line"></i>
                             </a>
                         </div>

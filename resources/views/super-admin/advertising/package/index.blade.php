@@ -7,7 +7,7 @@
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50">Paket Advertising</h1>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola paket iklan yang dapat dipilih owner.</p>
             </div>
-            <a href="{{ route('super-admin.advertising.packages.create') }}" class="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 shrink-0">
+            <a href="{{ route('super-admin.advertising.packages.create') }}" class="inline-flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 shrink-0">
                 <i class="ri-add-line"></i> + Paket Baru
             </a>
         </div>
@@ -42,7 +42,7 @@
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300"><i class="ri-home-line mr-1"></i>HOMEPAGE</span>
                                 @endif
                                 @if(!$pkg->hasAnyPromotion())
-                                    <span class="text-[11px] text-slate-400 dark:text-slate-500">Tanpa highlight khusus</span>
+                                    <span class="text-[11px] text-slate-500 dark:text-slate-500">Tanpa highlight khusus</span>
                                 @endif
                             </div>
                             <div class="mt-4 flex items-center gap-2 pt-4 border-t border-slate-100 dark:border-white/[0.06]">
@@ -54,7 +54,7 @@
                                         <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 px-3 py-2 rounded-xl transition">Hapus</button>
                                     </form>
                                 @else
-                                    <span class="flex-1 inline-flex items-center justify-center text-xs font-semibold text-slate-400 bg-slate-100 dark:bg-white/[0.06] px-3 py-2 rounded-xl cursor-not-allowed" title="Paket telah dipakai, hanya bisa dinonaktifkan">Hapus</span>
+                                    <span class="flex-1 inline-flex items-center justify-center text-xs font-semibold text-slate-500 bg-slate-100 dark:bg-white/[0.06] px-3 py-2 rounded-xl cursor-not-allowed" title="Paket telah dipakai, hanya bisa dinonaktifkan">Hapus</span>
                                 @endif
                             </div>
                         </div>

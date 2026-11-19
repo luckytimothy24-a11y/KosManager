@@ -37,7 +37,7 @@
 @endphp
 <body class="min-h-screen bg-surface-light font-sans text-slate-700 antialiased dark:bg-surface-dark dark:text-slate-300">
     <a href="#main-content"
-       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-600 focus:text-white focus:text-sm focus:font-semibold"
+       class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-primary-700 focus:text-white focus:text-sm focus:font-semibold"
        aria-label="Lewati ke konten utama">Lewati ke konten utama</a>
 
     <div class="min-h-screen flex">
@@ -81,7 +81,7 @@
                 </ul>
             </div>
 
-            <p class="relative text-xs tracking-wide text-slate-400 dark:text-slate-500">&copy; {{ date('Y') }} KosManager</p>
+            <p class="relative text-xs tracking-wide text-slate-500 dark:text-slate-500">&copy; {{ date('Y') }} KosManager</p>
         </div>
 
         {{-- Area Form (kanan) --}}
@@ -98,11 +98,11 @@
                     </div>
                     <span class="text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">KosManager</span>
                 </a>
-                <a href="/" class="hidden items-center gap-1.5 text-sm font-medium text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 lg:inline-flex">
+                <a href="/" class="hidden items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 lg:inline-flex">
                     <i class="ri-arrow-left-line"></i> Beranda
                 </a>
                 <a href="{{ route('tenant.kos.index') }}"
-                   class="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-white/5 dark:hover:text-slate-300"
+                   class="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-white/5 dark:hover:text-slate-300"
                    title="Cari Kos" aria-label="Cari Kos">
                     <i class="ri-search-line text-lg"></i>
                 </a>
@@ -120,7 +120,7 @@
                 <x-guest-bottom-nav />
             @endif
 
-            <p class="pb-6 text-center text-[11px] tracking-wide text-slate-400 dark:text-slate-500 lg:hidden">&copy; {{ date('Y') }} KosManager</p>
+            <p class="pb-6 text-center text-[11px] tracking-wide text-slate-500 dark:text-slate-500 lg:hidden">&copy; {{ date('Y') }} KosManager</p>
         </div>
     </div>
 

@@ -31,7 +31,7 @@
                                         </span>
                                     </div>
                                     <h3 class="mt-2 text-sm font-bold text-slate-900 dark:text-slate-50 leading-snug">{{ $b->kos->name }}</h3>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Kamar {{ $b->kamar->room_number }} · {{ $b->kamar->room_name }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Kamar {{ $b->kamar->room_number }} · {{ $b->kamar->room_name }}</p>
                                 </div>
                                 <x-status-badge :status="$b->status" context="booking" />
                             </div>
@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="text-label">Harga Sewa</p>
-                                        <p class="text-base font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($b->price, 0, ',', '.') }} <span class="text-xs font-medium text-slate-400 dark:text-slate-500">{{ $b->priceUnitLabel() }}</span></p>
+                                        <p class="text-base font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($b->price, 0, ',', '.') }} <span class="text-xs font-medium text-slate-500 dark:text-slate-500">{{ $b->priceUnitLabel() }}</span></p>
                                     </div>
                                 </div>
 

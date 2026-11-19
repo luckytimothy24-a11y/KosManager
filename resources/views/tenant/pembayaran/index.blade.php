@@ -10,7 +10,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor pembayaran..." aria-label="Cari pembayaran"
                            class="field-input pl-10">
                 </div>
@@ -41,21 +41,21 @@
                             <div class="min-w-0">
                                 <p class="font-mono font-semibold text-slate-900 dark:text-slate-50 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">{{ $p->payment_number }}</p>
                                 <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-                                    <i class="ri-bank-card-line text-slate-400"></i> {{ \PaymentLabels::paymentMethod($p->payment_method) }}
+                                    <i class="ri-bank-card-line text-slate-500"></i> {{ \PaymentLabels::paymentMethod($p->payment_method) }}
                                     @if($p->isFromGateway())
                                         <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary-600 dark:text-primary-300"><i class="ri-global-line"></i> Online</span>
                                     @endif
                                 </p>
                                 @if($p->tagihan)
                                     <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400 truncate">
-                                        <i class="ri-file-list-3-line text-slate-400"></i>
+                                        <i class="ri-file-list-3-line text-slate-500"></i>
                                         <span class="font-mono font-medium text-slate-600 dark:text-slate-300">{{ $p->tagihan->bill_number }}</span>
                                         <span class="text-slate-300 dark:text-slate-600">·</span>
                                         Periode {{ $p->tagihan->period_start?->translatedFormat('d M Y') ?? '-' }} – {{ $p->tagihan->period_end?->translatedFormat('d M Y') ?? '-' }}
                                     </p>
                                 @elseif($p->booking)
                                     <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400 truncate">
-                                        <i class="ri-calendar-check-line text-slate-400"></i>
+                                        <i class="ri-calendar-check-line text-slate-500"></i>
                                         <span class="font-mono font-medium text-slate-600 dark:text-slate-300">{{ $p->booking->booking_code }}</span>
                                         <span class="text-slate-300 dark:text-slate-600">·</span>
                                         Pembayaran Booking

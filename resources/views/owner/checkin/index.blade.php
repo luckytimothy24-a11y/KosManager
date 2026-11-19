@@ -34,7 +34,7 @@
                     </span>
                     <div>
                         <h2 class="font-bold text-slate-900 dark:text-slate-50 text-sm">Pengajuan Check-In</h2>
-                        <p class="text-xs text-slate-400 dark:text-slate-500">Tenant mengisi WhatsApp & alamat — Anda cukup verifikasi kontak dan pembayaran DP.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500">Tenant mengisi WhatsApp & alamat — Anda cukup verifikasi kontak dan pembayaran DP.</p>
                     </div>
                     <span class="ml-auto px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{{ $readyBookings->count() }} booking</span>
                 </div>
@@ -58,7 +58,7 @@
                                         <span class="min-w-0 truncate font-semibold text-slate-900 dark:text-slate-50">{{ $rb->user->name }}</span>
                                     </span>
                                     <span class="text-slate-500 dark:text-slate-400 truncate hidden sm:inline">{{ $rb->kos->name }} · Kamar {{ $rb->kamar->room_number }}</span>
-                                    <span class="text-slate-400 dark:text-slate-500 text-xs">{{ $rb->start_date->format('d M Y') }} – {{ $rb->end_date->format('d M Y') }}</span>
+                                    <span class="text-slate-500 dark:text-slate-500 text-xs">{{ $rb->start_date->format('d M Y') }} – {{ $rb->end_date->format('d M Y') }}</span>
                                 </div>
                                 <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold" tabindex="-1">
                                     @if($identityStatus === 'confirmed')
@@ -82,7 +82,7 @@
                                             <span class="text-slate-600 dark:text-slate-300">Belum Mengisi</span>
                                         </span>
                                     @endif
-                                    <i class="ri-arrow-down-s-line ml-0.5 text-slate-400 transition-transform duration-200" :class="open && 'rotate-180'"></i>
+                                    <i class="ri-arrow-down-s-line ml-0.5 text-slate-500 transition-transform duration-200" :class="open && 'rotate-180'"></i>
                                 </span>
                             </button>
 
@@ -304,7 +304,7 @@
                                 <td class="text-slate-600 dark:text-slate-300 hidden md:table-cell">{{ $ci->kamar->kos->name }}</td>
                                 <td class="hidden sm:table-cell">
                                     <p class="text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ \Carbon\Carbon::parse($ci->check_in_date)->format('d M Y') }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ $ci->check_in_time }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ $ci->check_in_time }}</p>
                                 </td>
                                 <td class="text-slate-600 dark:text-slate-300 hidden lg:table-cell">{{ $ci->officer->name }}</td>
                             </tr>

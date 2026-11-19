@@ -52,7 +52,7 @@
                                class="field-input pr-11"
                                placeholder="Minimal 8 karakter">
                         <button type="button" @click="show = !show" tabindex="-1" aria-label="Tampilkan/sembunyikan password"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition">
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition">
                             <i class="ri-eye-off-line" x-show="!show"></i>
                             <i class="ri-eye-line" x-show="show" x-cloak></i>
                         </button>

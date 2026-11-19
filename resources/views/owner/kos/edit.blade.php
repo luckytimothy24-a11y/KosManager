@@ -80,7 +80,7 @@
                         @foreach($gallery as $photo)
                             <div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated">
                                 <img src="{{ asset('storage/'.$photo->path) }}" alt="Foto kos" class="w-full h-28 object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                                <div style="display:none" class="w-full h-28 items-center justify-center text-xs text-slate-400">File tidak ditemukan</div>
+                                <div style="display:none" class="w-full h-28 items-center justify-center text-xs text-slate-500">File tidak ditemukan</div>
                                 <span class="absolute top-1.5 left-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md {{ $photo->is_cover ? 'bg-primary-500 text-white' : 'bg-black/60 text-white' }}">{{ $photo->is_cover ? 'COVER' : '#'.$photo->position }}</span>
                                 <div class="p-2 space-y-1.5 bg-white dark:bg-surface-elevated">
                                     <label class="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 cursor-pointer">
@@ -101,19 +101,19 @@
                         <img src="{{ asset('storage/'.$kos->photo) }}" alt="Foto kos saat ini" class="mt-2 max-h-32 rounded-lg object-cover" onerror="this.style.display='none'">
                     </div>
                 @else
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Belum ada foto gallery.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mb-3">Belum ada foto gallery.</p>
                 @endif
 
                 <label for="photos"
                        class="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] hover:border-primary-300 dark:hover:border-primary-500/40 px-6 py-8 cursor-pointer transition group text-center">
                     <span class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-surface-elevated flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-500/10 transition">
-                        <i class="ri-upload-cloud-2-line text-xl text-slate-400 dark:text-slate-500"></i>
+                        <i class="ri-upload-cloud-2-line text-xl text-slate-500 dark:text-slate-500"></i>
                     </span>
                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Tambah Foto (maks 10 total)</span>
-                    <span class="text-xs text-slate-400 dark:text-slate-500">PNG, JPG, WEBP hingga 2MB per foto.</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-500">PNG, JPG, WEBP hingga 2MB per foto.</span>
                     <input type="file" id="photos" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple class="sr-only" x-ref="photosInput" @change="handleFiles($event)">
                 </label>
-                <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500"><span x-text="previews.length"></span> foto baru dipilih. Cover untuk foto baru diatur via Cover radio di atas (pilih existing) atau foto pertama baru jadi cover jika belum ada cover.</p>
+                <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-500"><span x-text="previews.length"></span> foto baru dipilih. Cover untuk foto baru diatur via Cover radio di atas (pilih existing) atau foto pertama baru jadi cover jika belum ada cover.</p>
                 @error('photos') <p role="alert" class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                 @error('photos.*') <p role="alert" class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                 @error('delete_photo_ids') <p role="alert" class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
@@ -169,7 +169,7 @@
                     Lokasi Kos
                 </h3>
 
-                <p class="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                <p class="text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
                     Masukkan koordinat lokasi kos. Koordinat dapat diperoleh dari
                     <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:text-primary-600 underline">Google Maps</a>
                     dengan klik kanan pada lokasi → koordinat.
@@ -212,9 +212,9 @@
 
                 <div>
                     <span class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">Fasilitas Umum</span>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Pilih fasilitas yang tersedia untuk seluruh kos.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mb-3">Pilih fasilitas yang tersedia untuk seluruh kos.</p>
                     @if($fasilitasList->isEmpty())
-                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-400 dark:text-slate-500">
+                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-500 dark:text-slate-500">
                             Belum ada fasilitas umum. Admin dapat menambahkannya pada master fasilitas.
                         </div>
                     @else
@@ -224,9 +224,9 @@
                                     <input type="checkbox" name="fasilitas[]" value="{{ $f->id }}" {{ in_array($f->id, old('fasilitas', $selectedFasilitas)) ? 'checked' : '' }}
                                            class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
                                     @if($f->icon)
-                                        <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-slate-400 group-hover:text-primary-500 transition"></i>
+                                        <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-slate-500 group-hover:text-primary-500 transition"></i>
                                     @else
-                                        <i class="ri-checkbox-line text-slate-400 group-hover:text-primary-500 transition"></i>
+                                        <i class="ri-checkbox-line text-slate-500 group-hover:text-primary-500 transition"></i>
                                     @endif
                                     <span class="text-sm text-slate-700 dark:text-slate-200">{{ $f->name }}</span>
                                 </label>
@@ -247,7 +247,7 @@
                     <textarea id="payment_info" name="payment_info" rows="3"
                               placeholder="Contoh:{{ "\n" }}Pembayaran tunai langsung kepada pengelola di loket kos,{{ "\n" }}hubungi 0812xxxxxxx untuk konfirmasi."
                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">{{ old('payment_info', $kos->payment_info) }}</textarea>
-                    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
                         <i class="ri-eye-line mt-0.5 shrink-0"></i> Ditampilkan ke penghuni saat mereka melakukan pembayaran tagihan.
                     </p>
                     @error('payment_info') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -264,9 +264,9 @@
 
                     <div>
                         <span class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">Pilih admin yang berhak mengelola kos ini</span>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Admin terpilih dapat melihat dan mengelola kos ini dari dashboard mereka.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500 mb-3">Admin terpilih dapat melihat dan mengelola kos ini dari dashboard mereka.</p>
                         @if($admins->isEmpty())
-                            <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-400 dark:text-slate-500">
+                            <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-500 dark:text-slate-500">
                                 Belum ada admin. Tambahkan admin pada menu kelola user.
                             </div>
                         @else
@@ -280,7 +280,7 @@
                                         </span>
                                         <span class="min-w-0">
                                             <span class="block text-sm text-slate-700 dark:text-slate-200 truncate">{{ $admin->name }}</span>
-                                            <span class="block text-xs text-slate-400 dark:text-slate-500 truncate">{{ $admin->email }}</span>
+                                            <span class="block text-xs text-slate-500 dark:text-slate-500 truncate">{{ $admin->email }}</span>
                                         </span>
                                     </label>
                                 @endforeach
@@ -296,7 +296,7 @@
                 <a href="{{ route('owner.kos.show', $kos) }}"
                    class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
                 <button type="submit" :disabled="submitting"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-700 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="ri-save-line"></i> <span x-show="!submitting">Simpan Perubahan</span><span x-show="submitting" x-cloak>Menyimpan...</span>
                 </button>
             </div>

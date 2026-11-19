@@ -30,38 +30,38 @@
                     </h3>
                     <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-home-4-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-home-4-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
                                 <dt class="text-label">Kos</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->kos->name }}</dd>
                                 @if($kontrak->kos->address)
-                                    <dd class="text-xs text-slate-400 dark:text-slate-500">{{ $kontrak->kos->address }}</dd>
+                                    <dd class="text-xs text-slate-500 dark:text-slate-500">{{ $kontrak->kos->address }}</dd>
                                 @endif
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
                                 <dt class="text-label">Kamar</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->kamar->room_number }} · {{ $kontrak->kamar->room_name }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-play-circle-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-play-circle-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
                                 <dt class="text-label">Mulai</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->start_date->translatedFormat('d F Y') }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-flag-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-flag-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
                                 <dt class="text-label">Berakhir</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->end_date->translatedFormat('d F Y') }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-repeat-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-repeat-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
                                 <dt class="text-label">Tipe Sewa</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($kontrak->rental_type) }}</dd>
@@ -70,7 +70,7 @@
 
                         @if($kontrak->notes)
                             <div class="sm:col-span-2 flex items-start gap-2.5">
-                                <i class="ri-quill-pen-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                                <i class="ri-quill-pen-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                                 <div>
                                     <dt class="text-label">Catatan</dt>
                                     <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200 whitespace-pre-line">{{ $kontrak->notes }}</dd>
@@ -114,7 +114,7 @@
                                 <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center">
                                     <i class="ri-bill-line text-lg text-slate-300 dark:text-slate-600"></i>
                                 </span>
-                                <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Belum ada tagihan untuk kontrak ini.</p>
+                                <p class="mt-2.5 text-sm text-slate-500 dark:text-slate-500">Belum ada tagihan untuk kontrak ini.</p>
                             </div>
                         @endforelse
                     </div>

@@ -22,17 +22,17 @@
         <div class="metric-card">
             <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Total Revenue (Order Paid)</p>
             <p class="text-metric mt-1 text-slate-900 dark:text-slate-50">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
-            <p class="mt-2 text-xs text-slate-400 dark:text-slate-500">{{ count($orders) }} order ditampilkan</p>
+            <p class="mt-2 text-xs text-slate-500 dark:text-slate-500">{{ count($orders) }} order ditampilkan</p>
         </div>
 
         {{-- Rekonsiliasi --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="metric-card">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1"><i class="ri-timer-line text-amber-500"></i> Belum Diterima (Pending)</p>
+                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1"><i class="ri-timer-line text-amber-500"></i> Belum Diterima (Pending)</p>
                 <p class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1">Rp {{ number_format($pendingRevenue, 0, ',', '.') }}</p>
             </div>
             <div class="metric-card">
-                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1"><i class="ri-refund-2-line text-slate-400"></i> Dikembalikan (Refunded)</p>
+                <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1"><i class="ri-refund-2-line text-slate-500"></i> Dikembalikan (Refunded)</p>
                 <p class="text-xl font-bold text-slate-500 dark:text-slate-300 mt-1">Rp {{ number_format($refundedRevenue, 0, ',', '.') }}</p>
             </div>
         </div>

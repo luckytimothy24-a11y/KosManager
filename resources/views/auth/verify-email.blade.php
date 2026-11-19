@@ -11,7 +11,7 @@
             <i class="ri-mail-check-line text-2xl text-primary-600 dark:text-primary-400"></i>
         </div>
         <h1 class="text-[1.65rem] font-bold tracking-tight text-slate-800 dark:text-slate-100">Verifikasi Email</h1>
-        <p class="text-sm text-slate-400 dark:text-slate-500 mt-1.5 leading-relaxed">
+        <p class="text-sm text-slate-500 dark:text-slate-500 mt-1.5 leading-relaxed">
             Terima kasih telah mendaftar! Sebelum memulai, verifikasi alamat email Anda dengan mengeklik link yang kami kirimkan.
         </p>
     </div>
@@ -24,7 +24,7 @@
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
             <button type="submit"
-                    class="group w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3 rounded-2xl transition-all duration-200 text-sm shadow-sm shadow-primary-600/20 hover:shadow-md hover:shadow-primary-600/25">
+                    class="group w-full inline-flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3 rounded-2xl transition-all duration-200 text-sm shadow-sm shadow-primary-600/20 hover:shadow-md hover:shadow-primary-600/25">
                 <i class="ri-mail-send-line"></i> Kirim Ulang Email Verifikasi
             </button>
         </form>
@@ -32,7 +32,7 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
-                    class="w-full inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition rounded-2xl">
+                    class="w-full inline-flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-slate-500 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 transition rounded-2xl">
                 <i class="ri-logout-box-r-line"></i> Keluar dari Akun
             </button>
         </form>

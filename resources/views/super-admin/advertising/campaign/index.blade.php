@@ -8,7 +8,7 @@
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola dan moderasi semua kampanye iklan.</p>
             </div>
             <div class="flex w-full flex-wrap gap-2 sm:w-auto">
-                <a href="{{ route('super-admin.advertising.campaigns.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">
+                <a href="{{ route('super-admin.advertising.campaigns.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">
                     <i class="ri-add-circle-line"></i> Iklan Pihak Ketiga
                 </a>
                 <a href="{{ route('super-admin.advertising.dashboard') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
@@ -41,7 +41,7 @@
                 </select>
             </div>
             <div class="mt-3 flex gap-3">
-                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
+                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-700 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
                     <i class="ri-filter-3-line"></i> Filter
                 </button>
                 @if(request()->anyFilled(['q', 'status', 'owner_id']))

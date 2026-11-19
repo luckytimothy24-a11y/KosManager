@@ -70,11 +70,11 @@
                         @if($context['latestTagihan'])
                             <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
                                 <div class="rounded-2xl bg-white dark:bg-surface-elevated border border-slate-100 dark:border-white/[0.08] p-3 shadow-sm">
-                                    <dt class="text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Tagihan</dt>
+                                    <dt class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-500">Tagihan</dt>
                                     <dd class="mt-1 font-bold text-slate-900 dark:text-slate-50">{{ $context['latestTagihan']->bill_number }}</dd>
                                 </div>
                                 <div class="rounded-2xl bg-white dark:bg-surface-elevated border border-slate-100 dark:border-white/[0.08] p-3 shadow-sm">
-                                    <dt class="text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">Status</dt>
+                                    <dt class="text-[10px] font-bold tracking-widest uppercase text-slate-500 dark:text-slate-500">Status</dt>
                                     <dd class="mt-1 font-bold text-slate-800 dark:text-slate-200">{!! \PaymentLabels::tagihanBadge($context['latestTagihan']->status) !!}</dd>
                                 </div>
                             </dl>
@@ -179,7 +179,7 @@
                             <span class="flex items-center gap-2"><i class="ri-loader-4-line animate-spin"></i> Mengirim...</span>
                         </template>
                     </button>
-                    <p class="mt-2 text-center text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-lock-2-line mr-1"></i> Pesan hanya terlihat oleh kamu & penghuni ini</p>
+                    <p class="mt-2 text-center text-[11px] text-slate-500 dark:text-slate-500"><i class="ri-lock-2-line mr-1"></i> Pesan hanya terlihat oleh kamu & penghuni ini</p>
                 </form>
             </x-slot>
         </x-chat-shell>

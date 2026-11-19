@@ -32,7 +32,7 @@
                         </div>
                 </div>
                 <div class="mt-3 flex items-center gap-2 text-[11px]">
-                    <span class="text-slate-400 dark:text-slate-500">Owner: {{ $stats['total_owners'] }} · Tenant: {{ $stats['total_tenants'] }}</span>
+                    <span class="text-slate-500 dark:text-slate-500">Owner: {{ $stats['total_owners'] }} · Tenant: {{ $stats['total_tenants'] }}</span>
                 </div>
             </div>
 
@@ -91,7 +91,7 @@
                             <i class="ri-user-star-line text-success-600 dark:text-success-400"></i>
                         </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Penghuni Aktif</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Penghuni Aktif</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ number_format($stats['total_penghunis']) }}</p>
                     </div>
                 </div>
@@ -102,7 +102,7 @@
                             <i class="ri-login-box-line text-warn-600 dark:text-warn-400"></i>
                         </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Perlu Check-in</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Perlu Check-in</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ number_format($stats['total_active_bookings']) }}</p>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                             <i class="ri-checkbox-circle-line text-success-600 dark:text-success-400"></i>
                         </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Kamar Tersedia</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Kamar Tersedia</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ number_format($stats['total_kamar_available']) }}</p>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                         <i class="ri-lock-line text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Kamar Terisi</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Kamar Terisi</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ number_format($stats['total_kamar_occupied']) }}</p>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
                         </div>
                     <div class="min-w-0">
                         <p class="font-bold text-sm text-slate-900 dark:text-slate-50">Manajemen User</p>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500">Kelola akun pengguna</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500">Kelola akun pengguna</p>
                     </div>
                     <i class="ri-arrow-right-s-line text-slate-300 dark:text-slate-600 ml-auto group-hover:text-primary-500 transition-colors duration-300"></i>
                 </a>
@@ -165,7 +165,7 @@
                         </div>
                     <div class="min-w-0">
                         <p class="font-bold text-sm text-slate-900 dark:text-slate-50">Laporan</p>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500">Export PDF & Excel</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500">Export PDF & Excel</p>
                     </div>
                     <i class="ri-arrow-right-s-line text-slate-300 dark:text-slate-600 ml-auto group-hover:text-primary-500 transition-colors duration-300"></i>
                 </a>
@@ -175,7 +175,7 @@
                     </div>
                     <div class="min-w-0">
                         <p class="font-bold text-sm text-slate-900 dark:text-slate-50">Activity Log</p>
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500">Riwayat aktivitas sistem</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500">Riwayat aktivitas sistem</p>
                     </div>
                     <i class="ri-arrow-right-s-line text-slate-300 dark:text-slate-600 ml-auto group-hover:text-primary-500 transition-colors duration-300"></i>
                 </a>

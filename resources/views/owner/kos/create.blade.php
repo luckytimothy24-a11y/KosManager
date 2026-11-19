@@ -83,14 +83,14 @@
                 <label for="photos"
                        class="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] hover:border-primary-300 dark:hover:border-primary-500/40 px-6 py-8 cursor-pointer transition group text-center">
                     <span class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-surface-elevated flex items-center justify-center group-hover:bg-primary-50 dark:group-hover:bg-primary-500/10 transition">
-                        <i class="ri-upload-cloud-2-line text-xl text-slate-400 dark:text-slate-500"></i>
+                        <i class="ri-upload-cloud-2-line text-xl text-slate-500 dark:text-slate-500"></i>
                     </span>
                     <span class="text-sm font-semibold text-slate-600 dark:text-slate-300">Klik untuk unggah foto</span>
-                    <span class="text-xs text-slate-400 dark:text-slate-500">PNG, JPG, WEBP hingga 2MB per foto. Maksimal 10 foto. Foto pertama menjadi cover kos.</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-500">PNG, JPG, WEBP hingga 2MB per foto. Maksimal 10 foto. Foto pertama menjadi cover kos.</span>
                     <input type="file" id="photos" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple class="sr-only"
                            x-ref="photosInput" @change="handleFiles($event)">
                 </label>
-                <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500"><span x-text="previews.length"></span>/10 foto dipilih. Klik cover untuk memilih cover.</p>
+                <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-500"><span x-text="previews.length"></span>/10 foto dipilih. Klik cover untuk memilih cover.</p>
                 @error('photos') <p role="alert" class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                 @error('photos.*') <p role="alert" class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
                 @error('cover_index') <p role="alert" class="text-red-500 text-xs mt-2">{{ $message }}</p> @enderror
@@ -157,7 +157,7 @@
                     Lokasi Kos
                 </h3>
 
-                <p class="text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                <p class="text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
                     Masukkan koordinat lokasi kos. Koordinat dapat diperoleh dari
                     <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:text-primary-600 underline">Google Maps</a>
                     dengan klik kanan pada lokasi → koordinat.
@@ -190,9 +190,9 @@
 
                 <div>
                     <span class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-3">Fasilitas Umum</span>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-3">Pilih fasilitas yang tersedia untuk seluruh kos.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mb-3">Pilih fasilitas yang tersedia untuk seluruh kos.</p>
                     @if($fasilitasList->isEmpty())
-                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-400 dark:text-slate-500">
+                        <div class="rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] p-4 text-sm text-slate-500 dark:text-slate-500">
                             Belum ada fasilitas umum. Admin dapat menambahkannya pada master fasilitas.
                         </div>
                     @else
@@ -202,9 +202,9 @@
                                     <input type="checkbox" name="fasilitas[]" value="{{ $f->id }}" {{ in_array($f->id, old('fasilitas', [])) ? 'checked' : '' }}
                                            class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
                                     @if($f->icon)
-                                        <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-slate-400 group-hover:text-primary-500 transition"></i>
+                                        <i class="{{ str_starts_with($f->icon, 'ri-') ? $f->icon : 'ri-'.$f->icon.'-line' }} text-slate-500 group-hover:text-primary-500 transition"></i>
                                     @else
-                                        <i class="ri-checkbox-line text-slate-400 group-hover:text-primary-500 transition"></i>
+                                        <i class="ri-checkbox-line text-slate-500 group-hover:text-primary-500 transition"></i>
                                     @endif
                                     <span class="text-sm text-slate-700 dark:text-slate-200">{{ $f->name }}</span>
                                 </label>
@@ -226,7 +226,7 @@
                     <textarea id="payment_info" name="payment_info" rows="3"
                               placeholder="Contoh:{{ "\n" }}Pembayaran tunai langsung kepada pengelola di loket kos,{{ "\n" }}hubungi 0812xxxxxxx untuk konfirmasi."
                               class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] dark:bg-surface-elevated/60 dark:text-slate-200 text-sm focus:border-primary-500 focus:ring-primary-500">{{ old('payment_info') }}</textarea>
-                    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
                         <i class="ri-eye-line mt-0.5 shrink-0"></i> Ditampilkan ke penghuni saat mereka melakukan pembayaran tagihan.
                     </p>
                     @error('payment_info') <p role="alert" class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -247,7 +247,7 @@
                         </ol>
                         <div class="mt-4 flex flex-wrap gap-2">
                             <a href="{{ route('owner.kamar.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/[0.08] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition"><i class="ri-door-open-line"></i> Kelola Kamar</a>
-                            <span class="inline-flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500"><i class="ri-information-line"></i> Tombol aktif setelah Kos disimpan</span>
+                            <span class="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-500"><i class="ri-information-line"></i> Tombol aktif setelah Kos disimpan</span>
                         </div>
                     </div>
                 </div>
@@ -258,7 +258,7 @@
                 <a href="{{ route('owner.kos.index') }}"
                    class="px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-surface-elevated border border-slate-200 dark:border-white/[0.08] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
                 <button type="submit" :disabled="submitting"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-700 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="ri-save-line"></i> <span x-show="!submitting">Simpan Kos</span><span x-show="submitting" x-cloak>Menyimpan...</span>
                 </button>
             </div>

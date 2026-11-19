@@ -113,7 +113,7 @@
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-3">
                         <button @click="sidebarOpen = !sidebarOpen"
-                                class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                class="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                 aria-label="Buka menu navigasi" :aria-expanded="sidebarOpen.toString()"
                                 id="hamburger-btn">
                             <i class="ri-menu-line text-xl"></i>
@@ -129,7 +129,7 @@
                             <form method="GET" action="{{ route('tenant.kos.index') }}" class="hidden sm:flex items-center flex-1 max-w-xs ml-4">
                                 <div class="relative w-full">
                                     <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <i class="ri-search-line text-slate-400 text-sm leading-none"></i>
+                                        <i class="ri-search-line text-slate-500 text-sm leading-none"></i>
                                     </span>
                                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari kos, area, kampus..."
                                            class="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-50 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition">
@@ -143,7 +143,7 @@
                         @if(auth()->check() && auth()->user()->isTenant())
                             <div class="sm:hidden" x-data="{ searchOpen: false }">
                                 <button type="button" @click="searchOpen = !searchOpen"
-                                        class="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                        class="inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                         aria-label="Buka pencarian" :aria-expanded="searchOpen.toString()">
                                     <i class="ri-search-line text-xl"></i>
                                 </button>
@@ -152,13 +152,13 @@
                                     <form method="GET" action="{{ route('tenant.kos.index') }}" class="flex gap-2">
                                         <div class="relative flex-1">
                                             <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                                <i class="ri-search-line text-slate-400 text-sm leading-none"></i>
+                                                <i class="ri-search-line text-slate-500 text-sm leading-none"></i>
                                             </span>
                                             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari kos, area, kampus..."
                                                    class="w-full h-10 pl-10 pr-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-50 placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition"
                                                    autofocus>
                                         </div>
-                                        <button type="submit" class="px-3 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition">
+                                        <button type="submit" class="px-3 py-2 bg-primary-700 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition">
                                             <i class="ri-search-line"></i>
                                         </button>
                                     </form>
@@ -170,7 +170,7 @@
                          @if(auth()->check() && auth()->user()->isTenant())
                              {{-- Tenant Chat: Direct Link to Messages --}}
                              <a href="{{ route('tenant.messages.index') }}"
-                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                 aria-label="Chat">
                                  <i class="ri-chat-3-line text-xl"></i>
                                  @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)
@@ -179,7 +179,7 @@
                              </a>
                          @elseif(auth()->check() && auth()->user()->isOwner())
                              <a href="{{ route('owner.messages.index') }}"
-                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                 aria-label="Pesan tenant">
                                  <i class="ri-chat-3-line text-xl"></i>
                                  @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)
@@ -188,7 +188,7 @@
                              </a>
                          @elseif(auth()->check() && auth()->user()->isAdmin())
                              <a href="{{ route('admin.messages.index') }}"
-                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                 aria-label="Pesan tenant">
                                  <i class="ri-chat-3-line text-xl"></i>
                                  @if(($sidebarBadges['unreadAdminMessages'] ?? 0) > 0)
@@ -202,7 +202,7 @@
 
 {{-- Notifikasi: di mobile langsung menuju halaman notifikasi (tanpa dropdown) --}}
                          <a href="{{ route('notifications.index') }}"
-                            class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition lg:hidden"
+                            class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition lg:hidden"
                             aria-label="Notifikasi">
                              <i class="ri-notification-3-line text-xl"></i>
                              @if($unreadCount > 0)
@@ -213,7 +213,7 @@
                          {{-- Notifikasi: dropdown hanya di desktop --}}
                          <div class="relative hidden lg:block" x-data="{ open: false }">
                              <button @click="open = !open"
-                                     class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                     class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                      aria-label="Notifikasi" :aria-expanded="open.toString()">
                                  <i class="ri-notification-3-line text-xl"></i>
                                  @if($unreadCount > 0)
@@ -269,14 +269,14 @@
                                                      </div>
                                                      <span class="inline-block mt-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.06] px-1.5 py-0.5 rounded-full">{{ \App\Support\NotificationType::label($notif->type) }}</span>
                                                      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">{{ $notif->message }}</p>
-                                                     <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 tracking-wide">{{ $notif->created_at->diffForHumans() }}</p>
+                                                     <p class="text-[10px] text-slate-500 dark:text-slate-500 mt-1.5 tracking-wide">{{ $notif->created_at->diffForHumans() }}</p>
                                                  </div>
                                              </div>
                                          </button>
                                      @empty
                                          <div class="px-4 py-8 text-center">
                                              <i class="ri-notification-off-line text-2xl text-slate-300"></i>
-                                             <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">Belum ada notifikasi</p>
+                                             <p class="text-xs text-slate-500 dark:text-slate-500 mt-2">Belum ada notifikasi</p>
                                          </div>
                                      @endforelse
 
@@ -320,12 +320,12 @@
                                  <div class="hidden sm:block text-left">
                                      @if(Auth::check())
                                          <p class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">{{ Auth::user()->name }}</p>
-                                         <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-medium">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</p>
+                                         <p class="text-[10px] text-slate-500 dark:text-slate-500 uppercase tracking-wider font-medium">{{ ucfirst(str_replace('_', ' ', Auth::user()->role)) }}</p>
                                      @else
                                          <p class="text-[10px] font-medium text-slate-500">Login</p>
                                      @endif
                                  </div>
-                                 <i class="ri-arrow-down-s-line text-slate-400 dark:text-slate-500 hidden sm:block text-sm"></i>
+                                 <i class="ri-arrow-down-s-line text-slate-500 dark:text-slate-500 hidden sm:block text-sm"></i>
                              </button>
                              <div x-show="open" @click.away="open = false" x-cloak
                                   x-transition:enter="transition ease-out duration-200"
@@ -338,14 +338,14 @@
 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
                                      @if(Auth::check())
                                          <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ Auth::user()->name }}</p>
-                                         <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{{ Auth::user()->email }}</p>
+                                         <p class="text-[10px] text-slate-500 dark:text-slate-500 mt-0.5">{{ Auth::user()->email }}</p>
                                      @endif
                                  </div>
 @if(Auth::check())
                                   <div class="py-1">
                                       <a href="{{ route('profile.edit') }}"
                                          class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100/40 dark:hover:bg-slate-800/[0.06] transition">
-                                          <i class="ri-user-settings-line text-slate-400 dark:text-slate-500"></i> Profil
+                                          <i class="ri-user-settings-line text-slate-500 dark:text-slate-500"></i> Profil
                                       </a>
                                       <form method="POST" action="{{ route('logout') }}">
                                           @csrf

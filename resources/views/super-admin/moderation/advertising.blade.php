@@ -51,7 +51,7 @@
                                     <tr>
                                         <td>
                                             <p class="font-semibold text-slate-900 dark:text-slate-50">{{ $campaign->campaign_number }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500">{{ $campaign->headline ?? '-' }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500">{{ $campaign->headline ?? '-' }}</p>
                                         </td>
                                         <td class="text-slate-600 dark:text-slate-400">{{ $campaign->owner->name ?? '-' }}</td>
                                         <td class="text-slate-600 dark:text-slate-400">{{ $campaign->kos->name ?? 'Pihak Ketiga' }}</td>

@@ -24,7 +24,7 @@
         </select>
         @if($editMode)
             <input type="hidden" name="package_id" value="{{ $campaign->package_id }}">
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Paket & periode tidak dapat diubah setelah pembuatan — hanya creative/CTA/placement yang dapat diedit.</p>
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Paket & periode tidak dapat diubah setelah pembuatan — hanya creative/CTA/placement yang dapat diedit.</p>
         @endif
         @error('package_id')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
@@ -40,7 +40,7 @@
                     </option>
                 @endforeach
             </select>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Kaitkan ke entitas partner terdaftar (mis. DANA, Shopee, GoPay) bila berlaku.</p>
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Kaitkan ke entitas partner terdaftar (mis. DANA, Shopee, GoPay) bila berlaku.</p>
             @error('partner_id')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
         <div>
@@ -103,7 +103,7 @@
         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Teks Penawaran Besar (opsional)</label>
         <input type="text" name="highlight_text" value="{{ old('highlight_text', $editMode ? $campaign->highlight_text : '') }}" maxlength="120" placeholder="cth: Cashback 20% / Gratis Ongkir"
                class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tampil sebagai teks besar di area visual. Kosongkan agar visual hanya menampilkan ilustrasi — jangan menulis klaim yang belum disetujui advertiser.</p>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Tampil sebagai teks besar di area visual. Kosongkan agar visual hanya menampilkan ilustrasi — jangan menulis klaim yang belum disetujui advertiser.</p>
         @error('highlight_text')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
 
@@ -114,7 +114,7 @@
                 <option value="{{ $themeValue }}" {{ old('visual_theme', $editMode ? $campaign->visual_theme : '') === $themeValue ? 'selected' : '' }}>{{ $themeLabel }}</option>
             @endforeach
         </select>
-        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tema ilustrasi SVG. Pilih otomatis untuk mengikuti mitra (Shopee/DANA/GoPay) atau pilih manual.</p>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Tema ilustrasi SVG. Pilih otomatis untuk mengikuti mitra (Shopee/DANA/GoPay) atau pilih manual.</p>
         @error('visual_theme')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
 
@@ -146,7 +146,7 @@
         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Destination URL *</label>
         <input type="url" name="destination_url" value="{{ old('destination_url', $editMode ? $campaign->destination_url : '') }}" required maxlength="500" placeholder="https://example.com/landing"
                class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Klik iklan pihak ketiga mengarah ke URL ini — tidak pernah diatribusikan ke booking kos.</p>
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Klik iklan pihak ketiga mengarah ke URL ini — tidak pernah diatribusikan ke booking kos.</p>
         @error('destination_url')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
     </div>
 
@@ -154,13 +154,13 @@
         <div>
             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Tanggal Mulai Tayang</label>
             <input type="date" name="starts_at" value="{{ $startsValue }}" class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Kosongkan untuk langsung tayang (durasi mengikuti paket).</p>
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Kosongkan untuk langsung tayang (durasi mengikuti paket).</p>
             @error('starts_at')<p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>@enderror
         </div>
     @endif
 
     <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/10">
         <a href="{{ $backRoute ?? url()->previous() }}" class="text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-5 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
-        <button type="submit" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-6 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">{{ $submitLabel }}</button>
+        <button type="submit" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 px-6 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">{{ $submitLabel }}</button>
     </div>
 </form>

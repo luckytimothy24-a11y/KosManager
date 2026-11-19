@@ -34,7 +34,7 @@
                         </span>
                         <div class="min-w-0 flex-1">
                             <p class="text-sm font-bold text-slate-900 dark:text-slate-50">{{ $label }}</p>
-                            <p class="text-xs text-slate-400 dark:text-slate-500">{{ $detail }}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500">{{ $detail }}</p>
                         </div>
                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium {{ $ok ? 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-300' }}">
                             <span class="w-1.5 h-1.5 rounded-full {{ $ok ? 'bg-green-500' : 'bg-red-500' }}"></span>

@@ -8,7 +8,7 @@
             <div class="relative mt-1.5">
                 <x-text-input id="update_password_current_password" name="current_password" type="password" x-bind:type="showCurrent ? 'text' : 'password'" class="block w-full pr-11" autocomplete="current-password" placeholder="Password saat ini" />
                 <button type="button" @click="showCurrent = !showCurrent" tabindex="-1" aria-label="Tampilkan/sembunyikan password"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition">
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition">
                     <i class="ri-eye-off-line" x-show="!showCurrent"></i>
                     <i class="ri-eye-line" x-show="showCurrent" x-cloak></i>
                 </button>
@@ -21,7 +21,7 @@
             <div class="relative mt-1.5">
                 <x-text-input id="update_password_password" name="password" type="password" x-bind:type="showNew ? 'text' : 'password'" class="block w-full pr-11" autocomplete="new-password" placeholder="Password baru (minimal 8 karakter)" />
                 <button type="button" @click="showNew = !showNew" tabindex="-1" aria-label="Tampilkan/sembunyikan password"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition">
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition">
                     <i class="ri-eye-off-line" x-show="!showNew"></i>
                     <i class="ri-eye-line" x-show="showNew" x-cloak></i>
                 </button>
@@ -34,7 +34,7 @@
             <div class="relative mt-1.5">
                 <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" x-bind:type="showConfirm ? 'text' : 'password'" class="block w-full pr-11" autocomplete="new-password" placeholder="Ulangi password baru" />
                 <button type="button" @click="showConfirm = !showConfirm" tabindex="-1" aria-label="Tampilkan/sembunyikan password"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition">
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition">
                     <i class="ri-eye-off-line" x-show="!showConfirm"></i>
                     <i class="ri-eye-line" x-show="showConfirm" x-cloak></i>
                 </button>

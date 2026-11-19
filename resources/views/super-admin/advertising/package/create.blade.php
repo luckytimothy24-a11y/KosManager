@@ -72,7 +72,7 @@
 
             <div class="flex items-center justify-end gap-3 pt-2 border-t border-slate-100 dark:border-white/10">
                 <a href="{{ route('super-admin.advertising.packages.index') }}" class="text-sm font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] px-5 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">Batal</a>
-                <button type="submit" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-6 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">Simpan Paket</button>
+                <button type="submit" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 px-6 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30">Simpan Paket</button>
             </div>
         </form>
     </div>

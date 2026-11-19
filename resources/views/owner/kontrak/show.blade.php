@@ -13,7 +13,7 @@
         {{-- Ringkasan status --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-4">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nomor Kontrak</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Nomor Kontrak</p>
                 <p class="mt-1 text-xl font-bold font-mono text-slate-900 dark:text-slate-50">{{ $kontrak->contract_number }}</p>
             </div>
             <div class="flex items-center gap-2.5">
@@ -35,37 +35,37 @@
                     </h3>
                     <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-user-star-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-user-star-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Penghuni</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Penghuni</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->penghuni->user->name }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kamar</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kontrak->kamar->room_number }} · {{ $kontrak->kos->name }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-play-circle-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-play-circle-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mulai</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Mulai</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($kontrak->start_date)->translatedFormat('d F Y') }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-flag-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-flag-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Berakhir</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Berakhir</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($kontrak->end_date)->translatedFormat('d F Y') }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-repeat-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-repeat-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tipe Sewa</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Tipe Sewa</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($kontrak->rental_type) }}</dd>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                             <a href="{{ route($prefix . '.tagihan.show', $t) }}" class="flex items-center justify-between gap-4 px-6 py-3.5 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
                                 <div class="min-w-0">
                                     <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $t->bill_number }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ \Carbon\Carbon::parse($t->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($t->period_end)->format('d M Y') }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ \Carbon\Carbon::parse($t->period_start)->format('d M') }} — {{ \Carbon\Carbon::parse($t->period_end)->format('d M Y') }}</p>
                                 </div>
                                 <div class="text-right shrink-0">
                                     <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($t->total, 0, ',', '.') }}</p>
@@ -106,7 +106,7 @@
                                 <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">
                                     <i class="ri-bill-line text-lg text-slate-300 dark:text-slate-600"></i>
                                 </span>
-                                <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Belum ada tagihan.</p>
+                                <p class="mt-2.5 text-sm text-slate-500 dark:text-slate-500">Belum ada tagihan.</p>
                             </div>
                         @endforelse
                     </div>

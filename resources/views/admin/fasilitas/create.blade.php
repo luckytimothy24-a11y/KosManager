@@ -18,7 +18,7 @@
                         <i class="ri-door-open-line text-xl text-primary-500"></i>
                         <div>
                             <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Fasilitas Kamar</p>
-                            <p class="text-xs text-slate-400 dark:text-slate-500">Per kamar (AC, kasur, lemari)</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500">Per kamar (AC, kasur, lemari)</p>
                         </div>
                     </label>
                     <label class="relative flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition {{ old('type', 'kamar') === 'kos' ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/10' : 'border-slate-200 dark:border-white/[0.08] hover:border-slate-300 dark:hover:border-slate-600' }}">
@@ -26,7 +26,7 @@
                         <i class="ri-home-4-line text-xl text-primary-500"></i>
                         <div>
                             <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Fasilitas Umum Kos</p>
-                            <p class="text-xs text-slate-400 dark:text-slate-500">Seluruh kos (WiFi, parkir, dapur)</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500">Seluruh kos (WiFi, parkir, dapur)</p>
                         </div>
                     </label>
                 </div>
@@ -51,7 +51,7 @@
 
             <div>
                 <label for="icon" class="field-label">
-                    Icon <span class="font-normal text-xs text-slate-400 dark:text-slate-500">(nama ikon Remix Icon)</span>
+                    Icon <span class="font-normal text-xs text-slate-500 dark:text-slate-500">(nama ikon Remix Icon)</span>
                 </label>
                 <div class="relative">
                     <input id="icon" type="text" name="icon" value="{{ old('icon') }}" x-model="icon"
@@ -61,7 +61,7 @@
                         <i :class="icon || 'ri-question-line'" class="text-slate-500 dark:text-slate-400"></i>
                     </span>
                 </div>
-                <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
                     Kosongkan untuk memakai icon default. Lihat katalog di
                     <a href="https://remixicon.com" target="_blank" rel="noopener noreferrer" class="text-primary-500 hover:text-primary-600 underline underline-offset-2">remixicon.com</a>.
                 </p>

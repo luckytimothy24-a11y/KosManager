@@ -23,7 +23,7 @@
         <dl class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
             @foreach($meta as $label => $value)
                 <div class="min-w-0">
-                    <dt class="text-slate-400 dark:text-slate-500">{{ $label }}</dt>
+                    <dt class="text-slate-500 dark:text-slate-500">{{ $label }}</dt>
                     <dd class="mt-0.5 break-words font-semibold text-slate-700 dark:text-slate-200">{{ $value }}</dd>
                 </div>
             @endforeach

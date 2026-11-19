@@ -94,7 +94,7 @@
                 @endphp
 
                 <a href="{{ route($item['route']) }}"
-                   class="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-1.5 rounded-xl transition-all {{ $active ? 'bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 active:text-slate-600' }}"
+                   class="relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-1.5 rounded-xl transition-all {{ $active ? 'bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400' : 'text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 active:text-slate-600' }}"
                    aria-label="{{ $item['label'] }}"
                    @if($active) aria-current="page" @endif>
                     <i class="{{ $item['icon'] }}-{{ $active ? 'fill' : 'line' }} text-xl" aria-hidden="true"></i>

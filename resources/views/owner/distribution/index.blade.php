@@ -19,7 +19,7 @@
                         Halaman ini hanya mencatat dana booking dari tenant ke rekening Pengelola. Dana belum otomatis diteruskan ke Pemilik Kos Asli.
                     </p>
                 </div>
-                <a href="{{ route('owner.payouts.index') }}" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700">
+                <a href="{{ route('owner.payouts.index') }}" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-700">
                     Lanjut ke Transfer Pemilik Kos <i class="ri-arrow-right-line"></i>
                 </a>
             </div>
@@ -52,7 +52,7 @@
             </div>
         @else
             <div class="rounded-2xl border border-slate-100 dark:border-white/10 bg-white dark:bg-surface-elevated p-5">
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Rekening Pengelola (penerima pembayaran tenant)</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Rekening Pengelola (penerima pembayaran tenant)</p>
                 <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">{{ $bankAccount->bank_name }} · {{ $bankAccount->maskedAccountNumber() }}</p>
                 <p class="text-xs text-slate-500 dark:text-slate-400">Atas nama: {{ $bankAccount->account_holder_name }}</p>
             </div>
@@ -61,21 +61,21 @@
         @if($summary)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="rounded-2xl border border-slate-100 dark:border-white/10 bg-white dark:bg-surface-elevated p-5">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Total Dana Booking Masuk</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Total Dana Booking Masuk</p>
                     <p class="mt-1 text-lg font-bold text-slate-900 dark:text-slate-50">Rp {{ number_format((float) $summary['total_gross'], 0, ',', '.') }}</p>
                 </div>
                 <div class="rounded-2xl border border-slate-100 dark:border-white/10 bg-white dark:bg-surface-elevated p-5">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Siap Diproses Pengelola</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Siap Diproses Pengelola</p>
                     <p class="mt-1 text-lg font-bold text-amber-600">Rp {{ number_format((float) $summary['waiting'], 0, ',', '.') }}</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ $summary['count_waiting'] }} transaksi</p>
                 </div>
                 <div class="rounded-2xl border border-slate-100 dark:border-white/10 bg-white dark:bg-surface-elevated p-5">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Sudah Diproses Pengelola</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Sudah Diproses Pengelola</p>
                     <p class="mt-1 text-lg font-bold text-green-600">Rp {{ number_format((float) $summary['processed'], 0, ',', '.') }}</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400">{{ $summary['count_processed'] }} transaksi</p>
                 </div>
                 <div class="rounded-2xl border border-slate-100 dark:border-white/10 bg-white dark:bg-surface-elevated p-5">
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Dana Diterima Pengelola</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Dana Diterima Pengelola</p>
                     <p class="mt-1 text-lg font-bold text-primary-600">Rp {{ number_format((float) $summary['total_owner'], 0, ',', '.') }}</p>
                 </div>
             </div>
@@ -185,10 +185,10 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <span class="text-xs text-slate-400">—</span>
+                                            <span class="text-xs text-slate-500">—</span>
                                         @endif
                                     @else
-                                        <span class="text-xs text-slate-400">—</span>
+                                        <span class="text-xs text-slate-500">—</span>
                                     @endcan
                                 </td>
                             </tr>

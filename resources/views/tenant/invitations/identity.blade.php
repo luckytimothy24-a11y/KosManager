@@ -35,7 +35,7 @@
                         <p class="text-xs leading-relaxed text-primary-700 dark:text-primary-400 mt-1">Data sudah kami kirim. Owner akan cek kontak & alamatmu sebelum menyetujui check-in. Kamu akan mendapat notifikasi.</p>
                     </div>
                 </div>
-                <p class="mt-4 text-center text-xs text-slate-400 dark:text-slate-500"><i class="ri-information-line mr-1"></i> Jika ada yang salah, hubungi owner lewat pesan.</p>
+                <p class="mt-4 text-center text-xs text-slate-500 dark:text-slate-500"><i class="ri-information-line mr-1"></i> Jika ada yang salah, hubungi owner lewat pesan.</p>
             @else
                 <form method="POST" action="{{ route('tenant.invitations.identity.submit', $token) }}" class="space-y-4" x-on:submit="submitting=true">
                     @csrf

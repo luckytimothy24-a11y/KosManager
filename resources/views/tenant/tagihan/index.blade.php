@@ -10,7 +10,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor tagihan..." aria-label="Cari tagihan"
                            class="field-input pl-10">
                 </div>

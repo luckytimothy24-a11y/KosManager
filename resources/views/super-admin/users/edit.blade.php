@@ -12,7 +12,7 @@
             </span>
             <div class="min-w-0">
                 <p class="font-bold text-slate-900 dark:text-slate-50 truncate">{{ $user->name }}</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500 truncate">{{ $user->email }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500 truncate">{{ $user->email }}</p>
             </div>
         </div>
 
@@ -58,7 +58,7 @@
                        class="mt-0.5 rounded border-slate-300 dark:border-white/[0.08] text-primary-500 focus:ring-primary-500 cursor-pointer">
                 <label for="is_active" class="cursor-pointer select-none">
                     <span class="block text-sm font-semibold text-slate-700 dark:text-slate-200">Akun Aktif</span>
-                    <span class="block text-xs text-slate-400 dark:text-slate-500 mt-0.5">User nonaktif tidak dapat login ke sistem.</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-500 mt-0.5">User nonaktif tidak dapat login ke sistem.</span>
                 </label>
             </div>
 

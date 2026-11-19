@@ -107,7 +107,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="mt-3 text-xs text-slate-400 dark:text-slate-500">
+                    <div class="mt-3 text-xs text-slate-500 dark:text-slate-500">
                         <i class="ri-calendar-line"></i> Diposting {{ $item->created_at->format('d M Y') }}
                     </div>
                 </div>
@@ -220,13 +220,13 @@
                     </a>
 
                     {{-- Report button --}}
-                    <button type="button" onclick="document.getElementById('report-modal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 hover:text-red-500 transition mt-2">
+                    <button type="button" onclick="document.getElementById('report-modal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-500 hover:text-red-500 transition mt-2">
                         <i class="ri-flag-line"></i> Laporkan Barang
                     </button>
                 </div>
 
                     {{-- Report button --}}
-                    <button type="button" onclick="document.getElementById('report-modal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500 hover:text-red-500 transition mt-2">
+                    <button type="button" onclick="document.getElementById('report-modal').classList.remove('hidden')" class="inline-flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-500 hover:text-red-500 transition mt-2">
                         <i class="ri-flag-line"></i> Laporkan Barang
                     </button>
                 </div>

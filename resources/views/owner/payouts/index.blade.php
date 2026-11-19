@@ -10,7 +10,7 @@
         @isset($settlement)
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-4">
-                    <p class="text-[11px] uppercase tracking-wider text-slate-400">Sewa Disetujui</p>
+                    <p class="text-[11px] uppercase tracking-wider text-slate-500">Sewa Disetujui</p>
                     <p class="text-base font-bold text-slate-900 dark:text-white">Rp {{ number_format((float) $settlement['received'], 0, ',', '.') }}</p>
                 </div>
                 <div class="bg-white dark:bg-surface-elevated rounded-2xl border border-slate-100 dark:border-white/10 p-4">
@@ -25,7 +25,7 @@
                     <p class="text-[11px] uppercase tracking-wider text-blue-500">Tertunda</p>
                     <p class="text-base font-bold text-blue-600">Rp {{ number_format((float) $settlement['payout_pending'], 0, ',', '.') }}</p>
                     @if((float) ($settlement['penalty_excluded'] ?? 0) > 0)
-                        <p class="text-[10px] text-slate-400">Penalti excl: Rp {{ number_format((float) $settlement['penalty_excluded'], 0, ',', '.') }}</p>
+                        <p class="text-[10px] text-slate-500">Penalti excl: Rp {{ number_format((float) $settlement['penalty_excluded'], 0, ',', '.') }}</p>
                     @endif
                 </div>
             </div>
@@ -197,7 +197,7 @@
             @if($payouts->isEmpty())
                 <div class="px-6 py-12 text-center">
                     <div class="mx-auto w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                        <i class="ri-hand-coin-line text-2xl text-slate-400"></i>
+                        <i class="ri-hand-coin-line text-2xl text-slate-500"></i>
                     </div>
                     <p class="mt-4 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada tagihan transfer.</p>
                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Buat tagihan transfer setelah ada pendapatan approved pada suatu periode.</p>
@@ -232,11 +232,11 @@
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Periode: {{ \Illuminate\Support\Carbon::parse($p->period_start)->translatedFormat('d M Y') }} — {{ \Illuminate\Support\Carbon::parse($p->period_end)->translatedFormat('d M Y') }}</p>
                             </div>
                             <div class="sm:text-right shrink-0">
-                                <p class="text-xs text-slate-400 dark:text-slate-500 uppercase tracking-wide font-medium">Sewa Disetujui</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-500 uppercase tracking-wide font-medium">Sewa Disetujui</p>
                                 <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Rp {{ number_format((float) $p->gross_amount, 0, ',', '.') }}</p>
                                 <p class="text-xs text-amber-600 dark:text-amber-400 mt-0.5">Komisi Pengelola: -Rp {{ number_format((float) ($p->commission_total ?? 0), 0, ',', '.') }}</p>
                                 <p class="text-base font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format((float) $p->amount, 0, ',', '.') }}</p>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500">Dana untuk Pemilik Kos</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-500">Dana untuk Pemilik Kos</p>
                                 <a href="{{ route('owner.payouts.show', $p) }}" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline">
                                     {{ $p->status === 'pending' || $p->status === 'rejected' ? 'Transfer Sekarang' : 'Lihat Detail' }}
                                     <i class="ri-arrow-right-line"></i>

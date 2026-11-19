@@ -12,19 +12,19 @@
         }" class="space-y-6">
 
         {{-- Hero Search --}}
-        <div class="bg-primary-600 rounded-xl p-5 sm:p-8 text-white relative overflow-hidden">
+        <div class="bg-primary-700 rounded-xl p-5 sm:p-8 text-white relative overflow-hidden">
             <div class="relative">
                 <h1 class="text-lg sm:text-2xl font-bold">Cari Kos Impianmu</h1>
                 <p class="mt-1 text-primary-100/80 text-sm">Temukan kos yang cocok untuk kebutuhanmu.</p>
                 <form method="GET" action="{{ route('tenant.kos.index') }}" class="mt-4 flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1 max-w-lg">
-                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                         <label for="search-kos" class="sr-only">Cari kos atau fasilitas</label>
                         <input type="text" name="q" id="search-kos" value="{{ request('q') }}" placeholder="Cari kos atau fasilitas..." autocomplete="off"
                                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/95 dark:bg-surface-elevated/95 text-slate-900 dark:text-slate-50 text-sm placeholder-slate-500 focus:ring-2 focus:ring-white/30 transition border-0 shadow-sm">
                     </div>
                     <div class="relative sm:w-64">
-                        <i class="ri-map-pin-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <i class="ri-map-pin-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                         <label for="search-loc" class="sr-only">Lokasi</label>
                         <input type="text" name="loc" id="search-loc" value="{{ request('loc') }}"
                                placeholder="Pilih lokasi..." list="loc-suggestions" autocomplete="off"
@@ -127,7 +127,7 @@
                     @endforeach
                     @if($selectedLocation && !$locations->contains('address', $selectedLocation))
                         <a href="{{ request()->fullUrlWithQuery(['loc' => null, 'page' => null]) }}"
-                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full border bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30 hover:bg-primary-600 transition"
+                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-full border bg-primary-500 text-white border-primary-500 shadow-sm shadow-primary-500/30 hover:bg-primary-700 transition"
                            title="{{ $selectedLocation }}">
                             <i class="ri-map-pin-2-line text-[11px]"></i>
                             <span class="max-w-[10rem] truncate">{{ $selectedLocation }}</span>
@@ -182,7 +182,7 @@
                     <div class="sticky top-0 bg-white dark:bg-surface-elevated border-b border-slate-100 dark:border-white/[0.08] px-6 py-4 flex items-center justify-between z-10">
                         <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Filter & Urutkan</h3>
                         <button type="button" x-on:click="filterOpen = false"
-                                class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                 aria-label="Tutup filter">
                             <i class="ri-close-line text-lg"></i>
                         </button>
@@ -218,13 +218,13 @@
                             <label class="field-label">Harga per Bulan</label>
                             <div class="mt-2 flex items-center gap-3">
                                 <div class="relative flex-1">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Rp</span>
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">Rp</span>
                                     <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Minimal" min="0"
                                            class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-sm text-slate-900 dark:text-slate-50 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">
                                 </div>
-                                <span class="text-slate-400">—</span>
+                                <span class="text-slate-500">—</span>
                                 <div class="relative flex-1">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">Rp</span>
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">Rp</span>
                                     <input type="number" name="price_max" value="{{ request('price_max') }}" placeholder="Maksimal" min="0"
                                            class="pl-10 pr-3 py-2.5 w-full rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-sm text-slate-900 dark:text-slate-50 placeholder-slate-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/10 transition">
                                 </div>
@@ -261,7 +261,7 @@
                                         <option value="{{ request('loc') }}" selected>{{ request('loc') }}</option>
                                     @endif
                                 </select>
-                                <p class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">Kosongkan untuk melihat semua lokasi.</p>
+                                <p class="mt-1.5 text-[11px] text-slate-500 dark:text-slate-500">Kosongkan untuk melihat semua lokasi.</p>
                             </div>
                         @endif
 
@@ -298,7 +298,7 @@
                                                         <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                                                     @endif
                                                 </span>
-                                                <i class="ri-arrow-down-s-line text-slate-400 transition-transform" :class="openFacility === '{{ $catKey }}' ? 'rotate-180' : ''"></i>
+                                                <i class="ri-arrow-down-s-line text-slate-500 transition-transform" :class="openFacility === '{{ $catKey }}' ? 'rotate-180' : ''"></i>
                                             </button>
                                             <div id="facility-panel-{{ $catKey }}" x-show="openFacility === '{{ $catKey }}'" x-cloak x-transition
                                                  class="px-3.5 py-3 flex flex-wrap gap-2" role="region">
@@ -326,7 +326,7 @@
                             Atur Ulang
                         </a>
                         <button type="submit" x-on:click="filterOpen = false"
-                                class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white transition shadow-sm shadow-primary-500/30">
+                                class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl bg-primary-700 hover:bg-primary-700 text-white transition shadow-sm shadow-primary-500/30">
                             Terapkan Filter
                         </button>
                     </div>

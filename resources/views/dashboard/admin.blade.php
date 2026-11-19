@@ -94,7 +94,7 @@
                         <i class="ri-login-box-line text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Check-in Hari Ini</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Check-in Hari Ini</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ $stats['checkin_today'] }}</p>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                         <i class="ri-logout-box-line text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Check-out Hari Ini</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Check-out Hari Ini</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ $stats['checkout_today'] }}</p>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                         <i class="ri-checkbox-circle-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Kamar Tersedia</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Kamar Tersedia</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ $stats['kamar_available'] }}</p>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
                         <i class="ri-lock-line text-primary-600 dark:text-primary-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Kamar Terisi</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Kamar Terisi</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">{{ $stats['kamar_occupied'] }}</p>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                         <i class="ri-wallet-3-line text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Pendapatan</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Pendapatan</p>
                         <p class="text-lg font-extrabold text-slate-900 dark:text-slate-50">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                         <i class="ri-tools-line text-amber-600 dark:text-amber-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Laporan Pending</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Laporan Pending</p>
                         <p class="text-lg font-extrabold {{ ($stats['pending_damage_reports'] ?? 0) > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-slate-50' }}">{{ $stats['pending_damage_reports'] ?? 0 }}</p>
                     </div>
                 </div>
@@ -160,7 +160,7 @@
                         <i class="ri-logout-box-line text-purple-600 dark:text-purple-400"></i>
                     </div>
                     <div class="min-w-0">
-                        <p class="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Check-out Pending</p>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-500 font-medium">Check-out Pending</p>
                         <p class="text-lg font-extrabold {{ ($stats['pending_checkouts'] ?? 0) > 0 ? 'text-purple-600 dark:text-purple-400' : 'text-slate-900 dark:text-slate-50' }}">{{ $stats['pending_checkouts'] ?? 0 }}</p>
                     </div>
                 </div>

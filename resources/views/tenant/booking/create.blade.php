@@ -308,7 +308,7 @@
                         </form>
                     @elseif(request('kos_id'))
                         <div class="rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] bg-slate-50/50 dark:bg-surface-elevated/30 p-10 text-center">
-                            <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white dark:bg-surface-elevated shadow-sm text-slate-400"><i class="ri-home-smile-line text-2xl"></i></span>
+                            <span class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white dark:bg-surface-elevated shadow-sm text-slate-500"><i class="ri-home-smile-line text-2xl"></i></span>
                             <h3 class="mt-4 font-bold text-slate-900 dark:text-slate-50">Tidak ada kamar tersedia</h3>
                             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kos ini belum memiliki kamar kosong saat ini.</p>
                             <a href="{{ route('tenant.kos.index') }}" class="btn-secondary mt-4">

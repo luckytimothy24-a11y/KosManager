@@ -86,7 +86,7 @@
 
         @forelse($groups as $dateLabel => $dayGroups)
             <div class="space-y-3">
-                <h3 class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-1">
+                <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-500 uppercase tracking-wider px-1">
                     {{ $dateLabel }}
                 </h3>
                 @foreach($dayGroups as $day => $items)
@@ -110,7 +110,7 @@
                                     <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                                         <p class="text-sm font-bold text-slate-900 dark:text-slate-50 leading-snug line-clamp-2">{{ $n->title }}</p>
                                         @if(! $n->is_read)
-                                            <span class="shrink-0 text-[10px] font-semibold text-white bg-primary-600 px-2 py-0.5 rounded-full">Baru</span>
+                                            <span class="shrink-0 text-[10px] font-semibold text-white bg-primary-700 px-2 py-0.5 rounded-full">Baru</span>
                                         @endif
                                         <span class="shrink-0 text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.06] px-2 py-0.5 rounded-full">{{ \App\Support\NotificationType::label($n->type) }}</span>
                                         @if($isClickable)
@@ -118,7 +118,7 @@
                                         @endif
                                     </div>
                                     <p class="text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed line-clamp-2">{{ $n->message }}</p>
-                                    <p class="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">{{ $n->created_at->diffForHumans() }}</p>
+                                    <p class="mt-1.5 text-[11px] text-slate-500 dark:text-slate-500">{{ $n->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
 
@@ -130,7 +130,7 @@
                                         <input type="hidden" name="redirect_to_target" value="1">
                                     </form>
                                     <a href="{{ $url }}"
-                                       class="mb-2 lg:mb-0 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary-600 text-white text-xs font-semibold hover:bg-primary-700 transition">
+                                       class="mb-2 lg:mb-0 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-primary-700 text-white text-xs font-semibold hover:bg-primary-700 transition">
                                         <i class="ri-external-link-line"></i> Buka
                                     </a>
                                 @endif
@@ -144,7 +144,7 @@
                                         </button>
                                     </form>
                                 @else
-                                    <span class="text-xs text-slate-400 dark:text-slate-500">Sudah dibaca</span>
+                                    <span class="text-xs text-slate-500 dark:text-slate-500">Sudah dibaca</span>
                                 @endif
                             </div>
                         </div>

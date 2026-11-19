@@ -9,7 +9,7 @@
             </div>
             <div class="min-w-0">
                 <h1 class="text-[15px] font-bold text-slate-900 dark:text-slate-50 leading-none truncate">{{ $tenant->name }}</h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><i class="ri-building-2-line text-slate-400"></i> {{ $kosName }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"><i class="ri-building-2-line text-slate-500"></i> {{ $kosName }}</p>
             </div>
             <span class="hidden sm:inline-flex ml-auto items-center gap-1 rounded-full bg-slate-200 dark:bg-surface-elevated text-slate-600 dark:text-slate-300 px-2.5 py-1 text-[11px] font-bold"><i class="ri-eye-line"></i> Mode Baca</span>
         </div>
@@ -24,14 +24,14 @@
 
         <x-chat-shell listTitle="Audit Pesan" mobile="panel">
             <x-slot name="list">
-                <div class="px-5 py-4 text-xs text-slate-400 dark:text-slate-500">Gunakan halaman daftar untuk berpindah percakapan.</div>
+                <div class="px-5 py-4 text-xs text-slate-500 dark:text-slate-500">Gunakan halaman daftar untuk berpindah percakapan.</div>
             </x-slot>
             <x-slot name="panel">
                 <div class="min-h-[16rem] flex-1 space-y-3 overflow-y-auto bg-slate-50/30 px-4 py-5 dark:bg-surface-elevated/20 sm:px-5" aria-live="polite">
                     @forelse($messages as $msg)
                         @php $isOwner = (int) $msg->sender_id !== (int) $tenant->id; @endphp
                         <div>
-                            <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 {{ $isOwner ? 'text-right' : '' }}">{{ $msg->sender->name ?? ($isOwner ? 'Owner' : 'pencari') }}</p>
+                            <p class="mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-500 {{ $isOwner ? 'text-right' : '' }}">{{ $msg->sender->name ?? ($isOwner ? 'Owner' : 'pencari') }}</p>
                             <x-chat-bubble
                                 :mine="$isOwner"
                                 :message="$msg->message"

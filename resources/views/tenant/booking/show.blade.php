@@ -108,7 +108,7 @@
                             <p class="text-label text-amber-700 dark:text-amber-400">Langkah Selanjutnya</p>
                             <p class="mt-0.5 text-sm text-amber-800 dark:text-amber-300/90">{{ $booking->nextAction() }}</p>
                             @if($booking->status === 'approved' && in_array($booking->identityStatus(), ['not_submitted', 'rejected']))
-                                <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-700 transition">
+                                <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-primary-700 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-primary-700 transition">
                                     <i class="ri-send-plane-line"></i> {{ $booking->identityStatus() === 'rejected' ? 'Perbaiki & Ajukan Ulang' : 'Verifikasi Data Diri' }}
                                 </a>
                             @elseif($booking->status === 'approved' && $booking->identityStatus() === 'pending')
@@ -219,7 +219,7 @@
                                 $isWaiting = $state === 'waiting';
                                 $isCurrent = $state === 'current';
                                 $color = $isDone ? 'bg-green-500' : ($isWaiting ? 'bg-amber-500' : ($isCurrent ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'));
-                                $textColor = $isDone ? 'text-green-600 dark:text-green-400' : ($isWaiting ? 'text-amber-600 dark:text-amber-400' : ($isCurrent ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'));
+                                $textColor = $isDone ? 'text-green-600 dark:text-green-400' : ($isWaiting ? 'text-amber-600 dark:text-amber-400' : ($isCurrent ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-500'));
                                 $nextDone = $i < count($steps) - 1 && $steps[$i + 1]['state'] === 'done';
                                 $lineColor = $isDone && $nextDone ? 'bg-green-500' : 'bg-slate-200 dark:bg-surface-elevated';
                             @endphp
@@ -271,7 +271,7 @@
                     @if($identityStatus === 'not_submitted')
                         <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">Booking telah dikonfirmasi. Verifikasi data diri untuk mengajukan check-in.</p>
                         <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Langkah ini memverifikasi data Anda sebelum tiba di kos, bukan proses check-in fisik.</p>
-                        <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-bold text-white shadow-soft hover:bg-primary-700 transition">
+                        <a href="{{ route('tenant.checkin.identity', $booking) }}" class="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary-700 px-5 py-2.5 text-sm font-bold text-white shadow-soft hover:bg-primary-700 transition">
                             <i class="ri-send-plane-line"></i> Verifikasi Data Diri — Ajukan Check-In
                         </a>
                     @elseif($identityStatus === 'pending')
@@ -371,11 +371,11 @@
                         <div class="min-w-0">
                             <dt class="sr-only">Nama penyewa</dt>
                             <dd class="font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $booking->user->name }}</dd>
-                            <dd class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $booking->user->email }}</dd>
+                            <dd class="text-xs text-slate-500 dark:text-slate-500 truncate">{{ $booking->user->email }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-calendar-close-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-calendar-close-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Tanggal Booking</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->booking_date->translatedFormat('d F Y') }}</dd>
@@ -391,49 +391,49 @@
                 </h3>
                 <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-building-2-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-building-2-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Kos</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kos->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-price-tag-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Kamar</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-play-circle-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-play-circle-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Mulai</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->start_date->translatedFormat('d F Y') }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-flag-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-flag-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Selesai</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->end_date->translatedFormat('d F Y') }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-repeat-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-repeat-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Tipe Sewa</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($booking->rental_type) }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-user-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-user-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Penghuni</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">1 orang (satu kamar untuk satu penghuni)</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-wallet-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-wallet-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Pembayaran</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">Tagihan pribadi</dd>
@@ -451,7 +451,7 @@
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-slate-500 dark:text-slate-400">
                         <p>Harga sewa ({{ \StatusLabels::rentalTypeLabel($booking->rental_type) }})</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Tarif {{ $booking->priceUnitLabel() }} untuk periode yang dipilih.</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5">Tarif {{ $booking->priceUnitLabel() }} untuk periode yang dipilih.</p>
                     </div>
                     <span class="text-lg font-bold text-primary-600 dark:text-primary-400">Rp {{ number_format($booking->price, 0, ',', '.') }}</span>
                 </div>
@@ -678,7 +678,7 @@
                                         <p class="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate" x-text="proof.name"></p>
                                         <p x-show="proof.oversize" class="text-xs text-red-600 dark:text-red-400 font-semibold">Melebihi 5MB</p>
                                     </div>
-                                    <button type="button" @click="clearProof()" class="text-slate-400 hover:text-red-500 transition shrink-0" aria-label="Hapus bukti terpilih">
+                                    <button type="button" @click="clearProof()" class="text-slate-500 hover:text-red-500 transition shrink-0" aria-label="Hapus bukti terpilih">
                                         <i class="ri-close-circle-line text-lg"></i>
                                     </button>
                                 </div>

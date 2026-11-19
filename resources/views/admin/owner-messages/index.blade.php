@@ -44,7 +44,7 @@
                                     @if($row['unread'] > 0)
                                         <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">{{ $row['unread'] }} pesan baru</span>
                                     @else
-                                        <span class="text-xs text-slate-400 dark:text-slate-500">—</span>
+                                        <span class="text-xs text-slate-500 dark:text-slate-500">—</span>
                                     @endif
                                 </td>
                                 <td class="text-right">

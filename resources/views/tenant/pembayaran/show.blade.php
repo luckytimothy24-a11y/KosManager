@@ -164,7 +164,7 @@
                     @else
                         <div class="flex-1 flex flex-col items-center justify-center gap-2 p-10 text-center rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08]">
                             <i class="ri-image-off-line text-3xl text-slate-300 dark:text-slate-600"></i>
-                            <p class="text-sm text-slate-400 dark:text-slate-500">Tidak ada bukti pembayaran.</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-500">Tidak ada bukti pembayaran.</p>
                         </div>
                     @endif
                 </div>

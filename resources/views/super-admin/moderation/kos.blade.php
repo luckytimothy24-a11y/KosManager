@@ -51,7 +51,7 @@
                                     <tr>
                                         <td>
                                             <p class="font-semibold text-slate-900 dark:text-slate-50">{{ $item->name }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500">{{ Str::limit($item->address, 40) }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500">{{ Str::limit($item->address, 40) }}</p>
                                         </td>
                                         <td class="text-slate-600 dark:text-slate-400">{{ $item->owner->name ?? '-' }}</td>
                                         <td class="text-center">

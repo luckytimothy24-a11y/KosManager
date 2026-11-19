@@ -17,7 +17,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor atau nama kamar..." aria-label="Cari kamar"
                            class="field-input pl-10 pr-3.5">
                 </div>
@@ -102,31 +102,31 @@
                                         </span>
                                         <div class="min-w-0">
                                             <p class="font-semibold text-slate-900 dark:text-slate-50">{{ $kamar->room_number }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[12rem]">{{ $kamar->room_name }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500 truncate max-w-[12rem]">{{ $kamar->room_name }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="hidden md:table-cell">
                                     {{ $kamar->kos->name }}
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ $kamar->room_type }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ $kamar->room_type }}</p>
                                 </td>
                                 <td class="text-center hidden sm:table-cell">
                                     <x-status-badge :status="$kamar->billing_mode ?? 'personal'" context="billing_mode" />
                                 </td>
                                 <td class="text-right">
                                     <p class="font-semibold text-slate-900 dark:text-slate-50">Rp {{ number_format($kamar->monthly_price, 0, ',', '.') }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">Rp {{ number_format($kamar->daily_price, 0, ',', '.') }}/hari · Rp {{ number_format($kamar->weekly_price, 0, ',', '.') }}/mgg</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">Rp {{ number_format($kamar->daily_price, 0, ',', '.') }}/hari · Rp {{ number_format($kamar->weekly_price, 0, ',', '.') }}/mgg</p>
                                 </td>
                                 <td class="text-center"><x-status-badge :status="$kamar->status" context="kamar" /></td>
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route("$prefix.kamar.show", $kamar) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail kamar {{ $kamar->room_number }}">
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail kamar {{ $kamar->room_number }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
                                         @if($canManage)
                                             <a href="{{ route("$prefix.kamar.edit", $kamar) }}"
-                                               class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit" aria-label="Edit kamar {{ $kamar->room_number }}">
+                                               class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit" aria-label="Edit kamar {{ $kamar->room_number }}">
                                                 <i class="ri-edit-line"></i>
                                             </a>
 
@@ -134,7 +134,7 @@
                                                 title="Hapus kamar ini?"
                                                 description="Kamar &ldquo;{{ $kamar->room_number }}&rdquo; akan dihapus permanen. Tindakan ini tidak dapat dibatalkan."
                                                 confirmText="Ya, Hapus"
-                                                triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                                 aria-label="Hapus kamar {{ $kamar->room_number }}"
                                             >
                                                 <x-slot name="slot"><i class="ri-delete-bin-line"></i></x-slot>

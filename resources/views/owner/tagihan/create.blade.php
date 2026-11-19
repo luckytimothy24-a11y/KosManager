@@ -78,7 +78,7 @@
                     <input type="number" name="subtotal" id="subtotal-field" value="{{ old('subtotal') }}" readonly min="0"
                            placeholder="Otomatis dari kontrak &times; periode"
                            class="w-full rounded-xl border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-surface-elevated/60 dark:text-slate-300 text-sm cursor-not-allowed font-semibold">
-                    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">
+                    <p class="mt-1.5 flex items-start gap-1.5 text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
                         <i class="ri-information-line mt-0.5 shrink-0"></i> Dihitung otomatis dari harga kontrak &times; periode dan diverifikasi ulang oleh sistem.
                     </p>
                 </div>
@@ -103,7 +103,7 @@
             <div class="flex items-center justify-end gap-3 mt-6">
                 <x-button href="{{ $backUrl }}" type="secondary">Batal</x-button>
                 <button type="submit" :disabled="submitting"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-700 active:bg-primary-700 transition-colors shadow-sm shadow-primary-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
                     <i class="ri-save-line"></i> <span x-show="!submitting">Terbitkan Tagihan</span><span x-show="submitting" x-cloak>Menerbitkan...</span>
                 </button>
             </div>

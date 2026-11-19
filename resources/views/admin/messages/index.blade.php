@@ -33,7 +33,7 @@
                 </x-slot>
                 <x-slot name="panel">
                     <div class="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-                        <span class="grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 dark:bg-white/[0.06] text-slate-400">
+                        <span class="grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 dark:bg-white/[0.06] text-slate-500">
                             <i class="ri-chat-search-line text-3xl"></i>
                         </span>
                         <h2 class="text-base font-bold text-slate-900 dark:text-slate-50">Pilih percakapan</h2>

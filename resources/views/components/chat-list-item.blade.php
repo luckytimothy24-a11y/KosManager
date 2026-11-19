@@ -30,11 +30,11 @@
             @endif
         </span>
         @if($context)
-            <span class="mt-0.5 block truncate text-xs text-slate-400 dark:text-slate-500">{{ $context }}</span>
+            <span class="mt-0.5 block truncate text-xs text-slate-500 dark:text-slate-500">{{ $context }}</span>
         @endif
         <span class="mt-0.5 block truncate text-[13px] text-slate-500 dark:text-slate-400">{{ $snippet }}</span>
     </span>
     @if($time)
-        <span class="shrink-0 text-[11px] text-slate-400 dark:text-slate-500">{{ $time }}</span>
+        <span class="shrink-0 text-[11px] text-slate-500 dark:text-slate-500">{{ $time }}</span>
     @endif
 </a>

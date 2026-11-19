@@ -12,7 +12,7 @@
             </span>
             <div class="min-w-0">
                 <p class="font-bold text-slate-900 dark:text-slate-50 truncate">{{ $owner->name }}</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500 truncate">{{ $owner->email }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-500 truncate">{{ $owner->email }}</p>
                 <span class="mt-1 inline-flex"><x-status-badge :status="$owner->is_active ? 'active' : 'inactive'" context="penghuni" :label="$owner->is_active ? 'Aktif' : 'Nonaktif'" /></span>
             </div>
         </div>
@@ -74,7 +74,7 @@
                                     @else
                                         <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800/60">
                                             <i class="ri-home-4-line text-3xl text-slate-300 dark:text-slate-600"></i>
-                                            <span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">Foto belum tersedia</span>
+                                            <span class="text-[11px] font-medium text-slate-500 dark:text-slate-500">Foto belum tersedia</span>
                                         </div>
                                     @endif
                                     <span class="absolute top-2 right-2"><x-status-badge :status="$kos->status" context="kos" /></span>
@@ -86,10 +86,10 @@
                                     </div>
                                     <div class="flex items-center gap-3 text-xs">
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] text-slate-600 dark:text-slate-300 font-medium">
-                                            <i class="ri-door-open-line text-slate-400"></i> {{ $kos->kamar_count ?? 0 }} kamar
+                                            <i class="ri-door-open-line text-slate-500"></i> {{ $kos->kamar_count ?? 0 }} kamar
                                         </span>
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-slate-50 dark:bg-white/[0.06] border border-slate-100 dark:border-white/[0.06] text-slate-600 dark:text-slate-300 font-medium">
-                                            <i class="ri-user-3-line text-slate-400"></i> {{ $kos->active_penghunis_count ?? 0 }} penghuni aktif
+                                            <i class="ri-user-3-line text-slate-500"></i> {{ $kos->active_penghunis_count ?? 0 }} penghuni aktif
                                         </span>
                                     </div>
                                     <div class="pt-1 mt-auto">
@@ -102,7 +102,7 @@
                                                 <i class="ri-eye-line"></i> Lihat Detail Kos
                                             </a>
                                         @else
-                                            <span class="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-white/[0.06] text-slate-400 dark:text-slate-500">Tidak ada akses</span>
+                                            <span class="inline-flex w-full items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-white/[0.06] text-slate-500 dark:text-slate-500">Tidak ada akses</span>
                                         @endif
                                     </div>
                                 </div>

@@ -21,7 +21,7 @@
             <div class="metric-card">
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Total Revenue</p>
                 <p class="text-metric mt-1 text-slate-900 dark:text-slate-50">Rp {{ number_format($stats['revenue'], 0, ',', '.') }}</p>
-                <p class="mt-2 text-xs text-slate-400 dark:text-slate-500">{{ $stats['orders'] }} transaksi</p>
+                <p class="mt-2 text-xs text-slate-500 dark:text-slate-500">{{ $stats['orders'] }} transaksi</p>
             </div>
             <div class="metric-card">
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Revenue Bulan Ini</p>
@@ -90,22 +90,22 @@
             <div class="metric-card">
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Total Clicks</p>
                 <p class="text-metric text-slate-900 dark:text-slate-50 mt-1">{{ number_format($stats['clicks']) }}</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1"><i class="ri-cursor-line"></i> Klik</p>
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-1"><i class="ri-cursor-line"></i> Klik</p>
             </div>
             <div class="metric-card">
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">CTR</p>
                 <p class="text-metric text-primary-600 dark:text-primary-400 mt-1">{{ $stats['ctr'] }}%</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Click-through rate</p>
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">Click-through rate</p>
             </div>
             <div class="metric-card">
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Konversi (Booking)</p>
                 <p class="text-metric text-green-600 dark:text-green-400 mt-1">{{ number_format($stats['conversions']) }}</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">{{ $stats['conversionRate'] }}% dari klik</p>
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">{{ $stats['conversionRate'] }}% dari klik</p>
             </div>
             <div class="metric-card">
                 <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Order Berbayar</p>
                 <p class="text-metric text-slate-900 dark:text-slate-50 mt-1">{{ number_format($stats['orders']) }}</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">
                     <span class="text-amber-600 dark:text-amber-400">{{ $stats['pendingOrders'] }} pending</span>
                     ·
                     <span class="text-slate-500 dark:text-slate-400">{{ $stats['refundedOrders'] }} refunded</span>

@@ -14,7 +14,7 @@
             <i class="ri-bar-chart-grouped-line text-white"></i>
         </div>
         <h3 class="font-bold text-slate-900 dark:text-slate-50 text-sm tracking-tight">{{ $title }}</h3>
-        <span class="ml-auto hidden sm:inline-flex items-center gap-1 text-[11px] font-bold tracking-widest uppercase text-slate-400 bg-slate-100 dark:bg-surface-elevated px-2.5 py-1 rounded-full">{{ $dataCount }} data</span>
+        <span class="ml-auto hidden sm:inline-flex items-center gap-1 text-[11px] font-bold tracking-widest uppercase text-slate-500 bg-slate-100 dark:bg-surface-elevated px-2.5 py-1 rounded-full">{{ $dataCount }} data</span>
     </div>
     @endif
 
@@ -22,7 +22,7 @@
         <div class="relative py-10 text-center">
             <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary-50 dark:bg-primary-500/10 text-primary-500"><i class="ri-line-chart-line text-2xl"></i></span>
             <p class="mt-3 text-sm font-bold text-slate-700 dark:text-slate-200">Belum ada data</p>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Grafik akan muncul setelah ada transaksi.</p>
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Grafik akan muncul setelah ada transaksi.</p>
         </div>
     @else
         <div class="relative h-52">

@@ -24,7 +24,7 @@
             @foreach ($elements as $element)
                 {{-- "Three dots" separator --}}
                 @if (is_string($element))
-                    <span class="px-1.5 text-xs text-slate-400 dark:text-slate-500">{{ $element }}</span>
+                    <span class="px-1.5 text-xs text-slate-500 dark:text-slate-500">{{ $element }}</span>
                 @endif
 
                 {{-- Array of page links --}}

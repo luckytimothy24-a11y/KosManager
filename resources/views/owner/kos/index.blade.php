@@ -17,7 +17,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama kos atau alamat..." aria-label="Cari kos"
                            class="field-input pl-10 pr-3.5">
                 </div>
@@ -95,7 +95,7 @@
                                         @endif
                                         <div class="min-w-0">
                                             <p class="font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $item->name }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate flex items-center gap-1">
+                                            <p class="text-xs text-slate-500 dark:text-slate-500 truncate flex items-center gap-1">
                                                 <i class="ri-map-pin-line text-[10px] shrink-0"></i> {{ $item->address }}
                                             </p>
                                         </div>
@@ -117,12 +117,12 @@
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route("$kosPrefix.kos.show", $item) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail {{ $item->name }}">
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail {{ $item->name }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
                                         @if(!$isAdminView)
                                         <a href="{{ route("owner.kos.edit", $item) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit" aria-label="Edit {{ $item->name }}">
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit" aria-label="Edit {{ $item->name }}">
                                             <i class="ri-edit-line"></i>
                                         </a>
 
@@ -130,7 +130,7 @@
                                             title="Hapus kos ini?"
                                             description="Kos &ldquo;{{ $item->name }}&rdquo; beserta data terkait akan dihapus permanen. Tindakan ini tidak dapat dibatalkan."
                                             confirmText="Ya, Hapus"
-                                            triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                            triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                             aria-label="Hapus {{ $item->name }}"
                                         >
                                             <x-slot name="slot"><i class="ri-delete-bin-line"></i></x-slot>

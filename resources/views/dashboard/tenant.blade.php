@@ -29,11 +29,11 @@
                         </span>
                     @endif
                 @else
-                    <p class="mt-1 text-sm text-slate-400 dark:text-slate-500">Temukan tempat tinggal yang cocok untukmu.</p>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-500">Temukan tempat tinggal yang cocok untukmu.</p>
                 @endif
             </div>
             <a href="{{ route('notifications.index') }}"
-               class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-400 shadow-sm transition hover:text-primary-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500"
+               class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-100 bg-white text-slate-500 shadow-sm transition hover:text-primary-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500"
                aria-label="Notifikasi">
                 <i class="ri-notification-3-line text-xl"></i>
                 @if(($sidebarBadges['unreadNotif'] ?? 0) > 0)
@@ -112,7 +112,7 @@
                                         {{ \StatusLabels::kontrakLabel($stats['kontrak_status'] ?? '-') }}
                                     @endif
                                 </p>
-                                <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                                <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-500">
                                     @if(!empty($stats['kontrak_end']))
                                         Berakhir {{ $stats['kontrak_end']->translatedFormat('d M Y') }}
                                     @else
@@ -189,7 +189,7 @@
                         @php
                             $isDone = $step['done'];
                             $color = $isDone ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600';
-                            $textColor = $isDone ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500';
+                            $textColor = $isDone ? 'text-green-600 dark:text-green-400' : 'text-slate-500 dark:text-slate-500';
                             $nextDone = $i < count($progressSteps) - 1 && $progressSteps[$i + 1]['done'];
                             $lineColor = $isDone && $nextDone ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700';
                         @endphp
@@ -233,13 +233,13 @@
                     </div>
 
                     @if(($stats['total_belum_dibayar'] ?? 0) > 0)
-                        <p class="mt-4 text-xs font-semibold text-slate-400 dark:text-slate-500">
+                        <p class="mt-4 text-xs font-semibold text-slate-500 dark:text-slate-500">
                             {{ $stats['tagihan_pending'] ?? 0 }} tagihan belum dibayar
                         </p>
                         <p class="mt-1 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                             Rp {{ number_format((float) $stats['total_belum_dibayar'], 0, ',', '.') }}
                         </p>
-                        <p class="mt-2 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                        <p class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-500">
                             <i class="ri-calendar-line"></i>
                             @if(!empty($stats['nearest_due']))
                                 Jatuh tempo {{ $stats['nearest_due']->translatedFormat('d M Y') }}
@@ -249,12 +249,12 @@
                         </p>
 
                         <a href="{{ route('tenant.tagihan.pay') }}"
-                           class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-3.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-[0.98]">
+                           class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-3.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-700 active:scale-[0.98]">
                             <i class="ri-wallet-3-line text-lg"></i> Bayar Tagihan
                         </a>
 
                         <div class="mt-3 flex flex-wrap items-center gap-2">
-                            <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                            <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-500">
                                 <i class="ri-secure-payment-line"></i> Metode pembayaran
                             </span>
                             <span class="rounded-full border border-slate-100 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-500 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300">QRIS / Transfer Bank</span>
@@ -286,7 +286,7 @@
                         <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Hubungi Owner @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-orange-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadMessages'] }}</span>@endif</span>
                         <span class="block text-xs text-slate-500 dark:text-slate-400">Chat langsung — kamar, tagihan, fasilitas</span>
                     </span>
-                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-400 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
+                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
                 </a>
                 <a href="{{ route('tenant.invitations.index') }}"
                    class="group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:border-amber-200 dark:hover:border-amber-500/30 hover:shadow-md transition-all">
@@ -295,10 +295,10 @@
                         <i class="ri-mail-send-line text-xl"></i>
                     </span>
                     <span class="min-w-0 flex-1 text-left">
-                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="text-[11px] font-medium text-slate-400">Belum ada undangan</span>@endif</span>
+                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="text-[11px] font-medium text-slate-500">Belum ada undangan</span>@endif</span>
                         <span class="block text-xs text-slate-500 dark:text-slate-400">Ajakan tinggal bersama dari teman</span>
                     </span>
-                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition"><i class="ri-arrow-right-line"></i></span>
+                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition"><i class="ri-arrow-right-line"></i></span>
                 </a>
             </div>
         @endif
@@ -309,7 +309,7 @@
                 <div class="flex items-center gap-3">
                     <span class="grid h-10 w-10 place-items-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900"><i class="ri-mail-send-line text-lg"></i></span>
                     <div class="min-w-0 flex-1">
-                        <h2 class="text-sm font-black text-slate-900 dark:text-white">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="ml-1 inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="ml-1 text-xs font-medium text-slate-400">Belum ada undangan</span>@endif</h2>
+                        <h2 class="text-sm font-black text-slate-900 dark:text-white">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="ml-1 inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="ml-1 text-xs font-medium text-slate-500">Belum ada undangan</span>@endif</h2>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Jika teman mengajakmu, undangan muncul di sini.</p>
                     </div>
                     <a href="{{ route('tenant.invitations.index') }}" class="inline-flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 transition">Lihat <i class="ri-arrow-right-s-line"></i></a>
@@ -406,7 +406,7 @@
                     <span class="grid h-11 w-11 place-items-center rounded-xl bg-primary-50 text-xl text-primary-600 dark:bg-primary-500/10 dark:text-primary-400"><i class="ri-search-eye-line"></i></span>
                     <span class="w-full">
                         <span class="block text-sm font-bold leading-tight text-slate-900 dark:text-white">Cari Kos</span>
-                        <span class="mt-0.5 block text-[11px] text-slate-400 dark:text-slate-500">Temukan kos baru</span>
+                        <span class="mt-0.5 block text-[11px] text-slate-500 dark:text-slate-500">Temukan kos baru</span>
                     </span>
                 </a>
                 <a href="{{ route('tenant.tagihan.index') }}"
@@ -415,7 +415,7 @@
                     <span class="grid h-11 w-11 place-items-center rounded-xl bg-amber-50 text-xl text-amber-600 dark:bg-amber-500/10 dark:text-amber-400"><i class="ri-bill-line"></i></span>
                     <span class="w-full">
                         <span class="block text-sm font-bold leading-tight text-slate-900 dark:text-white">Tagihan Saya</span>
-                        <span class="mt-0.5 block text-[11px] text-slate-400 dark:text-slate-500">Status &amp; riwayat tagihan</span>
+                        <span class="mt-0.5 block text-[11px] text-slate-500 dark:text-slate-500">Status &amp; riwayat tagihan</span>
                     </span>
                 </a>
                 <a href="{{ route('tenant.kontrak.index') }}"
@@ -424,7 +424,7 @@
                     <span class="grid h-11 w-11 place-items-center rounded-xl bg-indigo-50 text-xl text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"><i class="ri-file-text-line"></i></span>
                     <span class="w-full">
                         <span class="block text-sm font-bold leading-tight text-slate-900 dark:text-white">Kontrak</span>
-                        <span class="mt-0.5 block text-[11px] text-slate-400 dark:text-slate-500">Lihat kontrak sewa</span>
+                        <span class="mt-0.5 block text-[11px] text-slate-500 dark:text-slate-500">Lihat kontrak sewa</span>
                     </span>
                 </a>
             </div>
@@ -446,7 +446,7 @@
                                     <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-red-50 text-lg text-red-600 transition dark:bg-red-500/10 dark:text-red-400 group-hover:bg-red-100 dark:group-hover:bg-red-500/20"><i class="ri-logout-box-r-line"></i></span>
                                     <span class="min-w-0">
                                         <span class="block text-sm font-bold text-slate-900 dark:text-white">Ajukan Check-Out</span>
-                                        <span class="block truncate text-[11px] text-slate-400 dark:text-slate-500">Keluar dari kamar saat ini</span>
+                                        <span class="block truncate text-[11px] text-slate-500 dark:text-slate-500">Keluar dari kamar saat ini</span>
                                     </span>
                                 </div>
                             </x-slot>
@@ -494,7 +494,7 @@
             <form method="GET" action="{{ route('tenant.kos.index') }}" class="mt-4" role="search">
                 <div class="flex flex-col gap-2.5 sm:flex-row">
                     <div class="relative flex-1">
-                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                         <label for="dashboard-search-kos" class="sr-only">Cari kos, lokasi, atau fasilitas</label>
                         <input type="text" name="q" id="dashboard-search-kos" value="{{ request('q') }}"
                                placeholder="Cari nama kos, lokasi, atau fasilitas..."
@@ -503,7 +503,7 @@
                                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:border-primary-500/40 focus:bg-white focus:ring-2 focus:ring-primary-500/40 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white dark:placeholder-slate-500">
                     </div>
                     <button type="submit"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-95">
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-700 active:scale-95">
                         <i class="ri-search-line"></i> Cari Kos
                     </button>
                 </div>
@@ -518,7 +518,7 @@
                 ];
             @endphp
             <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
-                <span class="font-medium text-slate-400 dark:text-slate-500">Atau cari cepat:</span>
+                <span class="font-medium text-slate-500 dark:text-slate-500">Atau cari cepat:</span>
                 @foreach($filters as $f)
                     <a href="{{ $f['url'] }}"
                        class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 font-semibold text-slate-600 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-primary-500/30 dark:hover:bg-primary-500/10">
@@ -564,7 +564,7 @@
                     <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Belum punya kamar? Temukan kos yang sesuai kebutuhanmu.</p>
                 </div>
                 <a href="{{ route('tenant.kos.index') }}"
-                   class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-600 active:scale-95">
+                   class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary-500/30 transition hover:bg-primary-700 active:scale-95">
                     <i class="ri-search-eye-line"></i> Cari Kos Sekarang
                 </a>
             </section>
@@ -579,7 +579,7 @@
                 <div class="mb-3 flex items-end justify-between">
                     <div>
                         <h2 class="text-base font-bold tracking-tight text-slate-900 dark:text-white">Jelajahi berdasarkan lokasi</h2>
-                        <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500">Temukan kos di alamat-alamat yang tersedia.</p>
+                        <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-500">Temukan kos di alamat-alamat yang tersedia.</p>
                     </div>
                     @if($locations->count() > 6)
                         <a href="{{ route('tenant.kos.index') }}" class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
@@ -596,7 +596,7 @@
                             </span>
                             <span class="min-w-0 flex-1">
                                 <span class="block text-sm font-semibold leading-snug text-slate-900 line-clamp-2 dark:text-white" title="{{ $loc->address }}">{{ $loc->address }}</span>
-                                <span class="mt-0.5 block text-xs text-slate-400 dark:text-slate-500">{{ $loc->kos_count }} kos</span>
+                                <span class="mt-0.5 block text-xs text-slate-500 dark:text-slate-500">{{ $loc->kos_count }} kos</span>
                             </span>
                             <i class="shrink-0 text-slate-300 transition group-hover:text-primary-500 ri-arrow-right-s-line"></i>
                         </a>
@@ -607,10 +607,10 @@
             <section aria-label="Jelajahi berdasarkan lokasi">
                 <div class="rounded-xl border border-dashed border-slate-200 p-6 text-center dark:border-slate-700">
                     <div class="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800">
-                        <i class="text-lg text-slate-400 dark:text-slate-500 ri-map-pin-line"></i>
+                        <i class="text-lg text-slate-500 dark:text-slate-500 ri-map-pin-line"></i>
                     </div>
                     <p class="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">Belum ada lokasi kos untuk dijelajahi.</p>
-                    <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Segera hadir kos di berbagai alamat.</p>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Segera hadir kos di berbagai alamat.</p>
                 </div>
             </section>
         @endif
@@ -623,7 +623,7 @@
                 <div class="mb-4 flex items-end justify-between">
                     <div>
                         <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Rekomendasi untukmu</h2>
-                        <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Pilihan kos yang mungkin cocok untuk kebutuhanmu.</p>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">Pilihan kos yang mungkin cocok untuk kebutuhanmu.</p>
                     </div>
                     <a href="{{ route('tenant.kos.index') }}" class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
                         Lihat Semua <i class="ri-arrow-right-s-line"></i>
@@ -645,7 +645,7 @@
                 <div class="mb-4 flex items-end justify-between">
                     <div>
                         <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">{{ $bSection['title'] }}</h2>
-                        <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">{{ $bSection['subtitle'] }}</p>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">{{ $bSection['subtitle'] }}</p>
                     </div>
                     <a href="{{ route('tenant.kos.index', ['sort' => 'harga_terendah']) }}"
                        class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
@@ -668,7 +668,7 @@
                 <div class="mb-4 flex items-end justify-between">
                     <div>
                         <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">{{ $fSection['title'] }}</h2>
-                        <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">{{ $fSection['subtitle'] }}</p>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">{{ $fSection['subtitle'] }}</p>
                     </div>
                     <a href="{{ route('tenant.kos.index', ['facilities' => [$fSection['id']]]) }}"
                        class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
@@ -691,7 +691,7 @@
                 <div class="mb-4 flex items-end justify-between">
                     <div>
                         <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Kos Terbaru</h2>
-                        <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Temukan pilihan kos yang baru ditambahkan.</p>
+                        <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">Temukan pilihan kos yang baru ditambahkan.</p>
                     </div>
                     <a href="{{ route('tenant.kos.index') }}" class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
                         Lihat Semua <i class="ri-arrow-right-s-line"></i>
@@ -741,7 +741,7 @@
             <div class="mb-4 flex items-end justify-between">
                 <div>
                     <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Kos yang Kamu Simpan ❤️</h2>
-                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Kembali lagi ke kos favoritmu kapan saja.</p>
+                    <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">Kembali lagi ke kos favoritmu kapan saja.</p>
                 </div>
                 @if($favoriteKos->isNotEmpty())
                     <a href="{{ route('tenant.favorites.index') }}" class="flex shrink-0 items-center gap-0.5 text-xs font-semibold text-primary-500 transition hover:text-primary-600">
@@ -779,7 +779,7 @@
             <div class="mb-4 flex items-end justify-between">
                 <div>
                     <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Baru Kamu Lihat</h2>
-                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Lanjutkan dari kos yang baru kamu kunjungi.</p>
+                    <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">Lanjutkan dari kos yang baru kamu kunjungi.</p>
                 </div>
             </div>
 
@@ -788,7 +788,7 @@
                     <a :href="item.url"
                        class="group relative block w-56 shrink-0 snap-start overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm transition hover:border-primary-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-primary-500/30">
                         <span class="block truncate px-4 pt-4 text-sm font-bold text-slate-900 dark:text-white" x-text="item.name"></span>
-                        <span class="mt-1 block truncate px-4 text-xs text-slate-400 dark:text-slate-500" x-text="item.address"></span>
+                        <span class="mt-1 block truncate px-4 text-xs text-slate-500 dark:text-slate-500" x-text="item.address"></span>
                         <span class="block px-4 pb-4 pt-2.5 text-sm font-black text-primary-600 dark:text-primary-300" x-text="item.price"></span>
                     </a>
                 </template>
@@ -796,7 +796,7 @@
 
             <div class="mt-3">
                 <button type="button" @click="clearRecent()"
-                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 transition hover:text-red-500 dark:text-slate-500">
+                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-red-500 dark:text-slate-500">
                     <i class="ri-delete-bin-line"></i> Hapus riwayat
                 </button>
             </div>
@@ -838,7 +838,7 @@
             <div class="mb-4 flex items-end justify-between">
                 <div>
                     <h2 class="text-lg font-black tracking-tight text-slate-900 dark:text-white">Masih bingung?</h2>
-                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-400">Temukan jawaban seputar layanan, kendala, dan pelaporan kerusakan.</p>
+                    <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Temukan jawaban seputar layanan, kendala, dan pelaporan kerusakan.</p>
                 </div>
             </div>
             <div class="mx-auto max-w-3xl space-y-3">
@@ -858,7 +858,7 @@
                                 @click="open = open === {{ $i }} ? null : {{ $i }}"
                                 :aria-expanded="(open === {{ $i }}).toString()">
                             <span class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $faq['q'] }}</span>
-                            <i class="ri-arrow-down-s-line text-slate-400 transition-transform"
+                            <i class="ri-arrow-down-s-line text-slate-500 transition-transform"
                                :class="open === {{ $i }} ? 'rotate-180' : ''"></i>
                         </button>
                         <div x-show="open === {{ $i }}" x-cloak x-transition
@@ -873,7 +873,7 @@
         {{-- ============================================================
              FINAL CTA
              ============================================================ --}}
-        <section class="rounded-xl bg-primary-600 p-8 text-center text-white" aria-label="Promosi KosManager">
+        <section class="rounded-xl bg-primary-700 p-8 text-center text-white" aria-label="Promosi KosManager">
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute -right-1/4 -top-1/4 h-56 w-56 rounded-full bg-white"></div>
                 <div class="absolute -bottom-1/4 -left-1/4 h-48 w-48 rounded-full bg-white"></div>

@@ -25,9 +25,9 @@
         {{-- Ringkasan --}}
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8 flex flex-wrap items-center justify-between gap-5">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nominal Pembayaran</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Nominal Pembayaran</p>
                 <p class="mt-1 text-3xl font-bold text-primary-600 dark:text-primary-400 whitespace-nowrap">Rp {{ number_format($pembayaran->amount, 0, ',', '.') }}</p>
-                <p class="mt-1.5 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                <p class="mt-1.5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
                     <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$pembayaran->payment_method] ?? 'ri-wallet-3-line' }}"></i>
                     {{ \PaymentLabels::paymentMethod($pembayaran->payment_method) }} · {{ $pembayaran->payment_date?->translatedFormat('d F Y') ?? '-' }}
                 </p>
@@ -51,32 +51,32 @@
                     <i class="ri-money-dollar-circle-line text-primary-500"></i> Informasi Pembayaran
                 </h3>
                 <dl class="px-6 py-5 divide-y divide-slate-100 dark:divide-slate-800 text-sm [&>div]:flex [&>div]:items-center [&>div]:justify-between [&>div]:gap-6 [&>div]:py-2.5 first:[&>div]:pt-0 last:[&>div]:pb-0">
-                    <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">No. Pembayaran</dt><dd class="font-mono font-semibold text-slate-900 dark:text-slate-50">{{ $pembayaran->payment_number }}</dd></div>
+                    <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">No. Pembayaran</dt><dd class="font-mono font-semibold text-slate-900 dark:text-slate-50">{{ $pembayaran->payment_number }}</dd></div>
                     @if($pembayaran->isBookingPayment() && $pembayaran->booking)
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Pemesan</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->booking->user?->name ?? '-' }}</dd></div>
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Kos / Kamar</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->booking->kos?->name ?? '-' }} · {{ $pembayaran->booking->kamar?->room_number ?? '-' }}</dd></div>
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Kode Booking</dt>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Pemesan</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->booking->user?->name ?? '-' }}</dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Kos / Kamar</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->booking->kos?->name ?? '-' }} · {{ $pembayaran->booking->kamar?->room_number ?? '-' }}</dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Kode Booking</dt>
                             <dd><a href="{{ route($prefix.'.booking.show', $pembayaran->booking) }}" class="font-mono font-semibold text-primary-600 hover:text-primary-700 dark:hover:text-primary-400 transition">{{ $pembayaran->booking->booking_code }}</a></dd>
                         </div>
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Periode Sewa</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->booking->start_date?->translatedFormat('d M Y') ?? '-' }} – {{ $pembayaran->booking->end_date?->translatedFormat('d M Y') ?? '-' }}</dd></div>
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">{{ $pembayaran->booking->usesDownPayment() ? 'DP Booking' : 'Harga Booking' }}</dt><dd class="font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($pembayaran->booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Periode Sewa</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->booking->start_date?->translatedFormat('d M Y') ?? '-' }} – {{ $pembayaran->booking->end_date?->translatedFormat('d M Y') ?? '-' }}</dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">{{ $pembayaran->booking->usesDownPayment() ? 'DP Booking' : 'Harga Booking' }}</dt><dd class="font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($pembayaran->booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</dd></div>
                     @else
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Penghuni</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->penghuni?->user?->name ?? '-' }}</dd></div>
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Kos / Kamar</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->penghuni?->kos?->name ?? '-' }} · {{ $pembayaran->penghuni?->kamar?->room_number ?? '-' }}</dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Penghuni</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->penghuni?->user?->name ?? '-' }}</dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Kos / Kamar</dt><dd class="font-medium text-slate-900 dark:text-slate-50 truncate">{{ $pembayaran->penghuni?->kos?->name ?? '-' }} · {{ $pembayaran->penghuni?->kamar?->room_number ?? '-' }}</dd></div>
                         @if($pembayaran->tagihan)
-                            <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Tagihan</dt>
+                            <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Tagihan</dt>
                                 <dd><a href="{{ route($prefix.'.tagihan.show', $pembayaran->tagihan) }}" class="font-mono font-semibold text-primary-600 hover:text-primary-700 dark:hover:text-primary-400 transition">{{ $pembayaran->tagihan->bill_number }}</a></dd>
                             </div>
-                            <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Periode Tagihan</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->tagihan->period_start?->translatedFormat('d M Y') ?? '-' }} – {{ $pembayaran->tagihan->period_end?->translatedFormat('d M Y') ?? '-' }}</dd></div>
-                            <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Total Tagihan</dt><dd class="font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format((float) ($pembayaran->tagihan->total ?? 0), 0, ',', '.') }}</dd></div>
-                            <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Jatuh Tempo</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->tagihan->due_date?->translatedFormat('d M Y') ?? '-' }}</dd></div>
+                            <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Periode Tagihan</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->tagihan->period_start?->translatedFormat('d M Y') ?? '-' }} – {{ $pembayaran->tagihan->period_end?->translatedFormat('d M Y') ?? '-' }}</dd></div>
+                            <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Total Tagihan</dt><dd class="font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format((float) ($pembayaran->tagihan->total ?? 0), 0, ',', '.') }}</dd></div>
+                            <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Jatuh Tempo</dt><dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->tagihan->due_date?->translatedFormat('d M Y') ?? '-' }}</dd></div>
                         @endif
                     @endif
                     @if($pembayaran->isFromGateway())
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Sumber</dt><dd class="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200"><i class="ri-global-line text-primary-500"></i> Pembayaran Online <span class="text-[11px] font-mono text-slate-400 dark:text-slate-500">{{ $pembayaran->gateway_reference }}</span></dd></div>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Sumber</dt><dd class="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200"><i class="ri-global-line text-primary-500"></i> Pembayaran Online <span class="text-[11px] font-mono text-slate-500 dark:text-slate-500">{{ $pembayaran->gateway_reference }}</span></dd></div>
                     @endif
                     @if($pembayaran->verified_at)
-                        <div><dt class="text-slate-400 dark:text-slate-500 shrink-0">Diverifikasi</dt>
+                        <div><dt class="text-slate-500 dark:text-slate-500 shrink-0">Diverifikasi</dt>
                             <dd class="text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $pembayaran->verified_at->translatedFormat('d M Y H:i') }}{{ $pembayaran->verifier ? ' oleh '.$pembayaran->verifier->name : '' }}</dd>
                         </div>
                     @endif
@@ -108,7 +108,7 @@
                             <iframe src="{{ route('pembayaran.proof', $pembayaran) }}#toolbar=0&navpanes=0"
                                     class="w-full h-96" title="Pratinjau bukti pembayaran PDF"></iframe>
                         </div>
-                        <p class="mt-2 text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1"><i class="ri-file-pdf-line"></i> Pratinjau PDF — jika tidak tampil, gunakan tombol unduh di bawah.</p>
+                        <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-500 flex items-center gap-1"><i class="ri-file-pdf-line"></i> Pratinjau PDF — jika tidak tampil, gunakan tombol unduh di bawah.</p>
                     @else
                         <div class="flex flex-col items-center justify-center gap-3 p-8 text-center rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] bg-slate-50/60 dark:bg-surface-elevated/40">
                             <span class="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center"><i class="ri-file-pdf-line text-2xl text-red-500"></i></span>
@@ -122,7 +122,7 @@
                 @else
                     <div class="flex flex-1 flex-col items-center justify-center gap-2.5 p-8 text-center rounded-xl border border-dashed border-slate-200 dark:border-white/[0.08] bg-slate-50/60 dark:bg-surface-elevated/40 min-h-[12rem]">
                         <span class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-surface-elevated flex items-center justify-center"><i class="ri-image-off-line text-xl text-slate-300 dark:text-slate-600"></i></span>
-                        <p class="text-sm text-slate-400 dark:text-slate-500">Tidak ada bukti pembayaran<br>(mungkin metode tunai).</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-500">Tidak ada bukti pembayaran<br>(mungkin metode tunai).</p>
                     </div>
                 @endif
 

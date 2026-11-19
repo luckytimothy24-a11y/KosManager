@@ -7,7 +7,7 @@
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50">Kampanye Advertising</h1>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Kelola kampanye iklan Anda — promosi kos atau iklan partner pihak ketiga.</p>
             </div>
-            <a href="{{ route('owner.advertising.create') }}" class="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 shrink-0">
+            <a href="{{ route('owner.advertising.create') }}" class="inline-flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 shrink-0">
                 <i class="ri-megaphone-line"></i> + Buat Kampanye
             </a>
         </div>
@@ -23,7 +23,7 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
+                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-700 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
                     <i class="ri-filter-3-line"></i> Filter
                 </button>
                 @if(request('status'))
@@ -40,7 +40,7 @@
                 <i class="ri-megaphone-line text-4xl text-slate-300 dark:text-slate-600"></i>
                 <h3 class="mt-4 text-lg font-bold text-slate-900 dark:text-slate-50">Belum ada kampanye</h3>
                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Mulai buat kampanye — promosi kos Anda atau menjadi advertiser partner di marketplace.</p>
-                <a href="{{ route('owner.advertising.create') }}" class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-5 py-2.5 rounded-xl transition">
+                <a href="{{ route('owner.advertising.create') }}" class="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 px-5 py-2.5 rounded-xl transition">
                     <i class="ri-add-line"></i> Buat Kampanye
                 </a>
             </div>
@@ -81,15 +81,15 @@
 
                         <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">Paket</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-500 font-semibold">Paket</p>
                                 <p class="font-semibold text-slate-800 dark:text-slate-200">{{ $c->package->name }}</p>
                             </div>
                             <div>
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">Budget</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-500 font-semibold">Budget</p>
                                 <p class="font-semibold text-slate-800 dark:text-slate-200">Rp {{ number_format($c->budget, 0, ',', '.') }}</p>
                             </div>
                             <div class="col-span-2">
-                                <p class="text-[11px] text-slate-400 dark:text-slate-500 font-semibold">Periode</p>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-500 font-semibold">Periode</p>
                                 <p class="font-medium text-slate-700 dark:text-slate-300">{{ $c->starts_at?->format('d/m/Y') }} - {{ $c->ends_at?->format('d/m/Y') }}</p>
                             </div>
                         </div>

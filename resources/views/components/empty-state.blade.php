@@ -27,7 +27,7 @@
     @endif
     <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{ $title }}</p>
     @if($description)
-        <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500 max-w-xs leading-relaxed">{{ $description }}</p>
+        <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-500 max-w-xs leading-relaxed">{{ $description }}</p>
     @endif
     @isset($slot)
         <div class="mt-5">{{ $slot }}</div>

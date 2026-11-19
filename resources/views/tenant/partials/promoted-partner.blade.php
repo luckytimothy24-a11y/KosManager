@@ -38,7 +38,7 @@
                 <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{{ $ad->displayDescription() }}</p>
 
                 <div class="mt-4 flex items-center justify-between gap-3">
-                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Iklan · Partner KosManager</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-500 font-medium">Iklan · Partner KosManager</span>
                     <span class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-bold px-4 py-2 transition active:scale-95">
                         {{ $ad->displayCta() }} <i class="ri-arrow-right-line text-xs"></i>
                     </span>
@@ -77,7 +77,7 @@
                     <span class="inline-flex items-center gap-1.5 bg-indigo-500 group-hover:bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition active:scale-95">
                         {{ $ad->displayCta() }} <i class="ri-arrow-right-line text-xs"></i>
                     </span>
-                    <span class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Iklan · Partner KosManager</span>
+                    <span class="text-[10px] text-slate-500 dark:text-slate-500 font-medium">Iklan · Partner KosManager</span>
                 </div>
             </div>
         </a>

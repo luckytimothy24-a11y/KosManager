@@ -6,7 +6,7 @@
                 <img src="{{ asset('favicon.svg') }}" alt="KosManager" class="h-7 w-7 brightness-0 invert sm:h-8 sm:w-8">
             </a>
             <h1 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-100">Selamat Datang Kembali</h1>
-            <p class="text-sm text-slate-400 dark:text-slate-500 mt-2">Masuk untuk mengelola atau cari kos Anda</p>
+            <p class="text-sm text-slate-500 dark:text-slate-500 mt-2">Masuk untuk mengelola atau cari kos Anda</p>
         </div>
 
         {{-- Alert Error --}}
@@ -51,7 +51,7 @@
                                class="w-full pl-11 pr-12 py-3.5 bg-surface-card dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.14] rounded-2xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-primary-400 focus:ring-2 focus:ring-primary-500/15 focus:shadow-md transition-all duration-200 outline-none"
                                placeholder="Masukkan password">
                         <button type="button" @click="show = !show" aria-label="Tampilkan/sembunyikan password"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-1 min-w-[44px] min-h-[44px] grid place-items-center focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition p-1 min-w-[44px] min-h-[44px] grid place-items-center focus-visible:ring-2 focus-visible:ring-primary-500 rounded-lg">
                             <i class="ri-eye-off-line text-base" x-show="!show"></i>
                             <i class="ri-eye-line text-base" x-show="show" x-cloak></i>
                         </button>
@@ -72,7 +72,7 @@
 
                 {{-- Submit Button --}}
                 <button type="submit"
-                        class="group w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3.5 rounded-2xl transition-all duration-200 text-sm shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-600/30 mt-2 fade-up animate-delay-4">
+                        class="group w-full inline-flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold py-3.5 rounded-2xl transition-all duration-200 text-sm shadow-lg shadow-primary-600/25 hover:shadow-xl hover:shadow-primary-600/30 mt-2 fade-up animate-delay-4">
                     Masuk
                     <i class="ri-arrow-right-line text-base transition-transform duration-200 group-hover:translate-x-1"></i>
                 </button>
@@ -81,7 +81,7 @@
             {{-- Register Link --}}
             @if(Route::has('register'))
                 <div class="mt-6 pt-6 border-t border-slate-100 dark:border-white/[0.08] text-center fade-up animate-delay-4">
-                    <p class="text-xs text-slate-400 dark:text-slate-500">
+                    <p class="text-xs text-slate-500 dark:text-slate-500">
                         Belum punya akun?
                         <a href="{{ route('register') }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition">Daftar sekarang</a>
                     </p>

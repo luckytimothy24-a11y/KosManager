@@ -51,11 +51,11 @@
                                     <tr>
                                         <td>
                                             <p class="text-sm font-medium text-slate-900 dark:text-slate-50">{{ $report->user->name ?? '-' }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500">{{ $report->created_at->diffForHumans() }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500">{{ $report->created_at->diffForHumans() }}</p>
                                         </td>
                                         <td class="text-slate-600 dark:text-slate-400">
                                             {{ $report->kos->name ?? '-' }}
-                                            <p class="text-xs text-slate-400 dark:text-slate-500">Owner: {{ $report->kos->owner->name ?? '-' }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500">Owner: {{ $report->kos->owner->name ?? '-' }}</p>
                                         </td>
                                         <td>
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 dark:bg-white/[0.06] dark:text-slate-300">

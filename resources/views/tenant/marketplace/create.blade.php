@@ -27,7 +27,7 @@
                         <i class="ri-money-dollar-circle-line text-primary-500"></i> Harga (Rp)
                     </label>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-sm">Rp</span>
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-sm">Rp</span>
                         <input type="number" name="price" class="field-input pl-10" required min="0" placeholder="0">
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                 <div class="relative border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-6 text-center hover:border-primary-300 dark:hover:border-primary-500/40 transition-colors cursor-pointer" onclick="document.querySelector('input[name=image]').click()">
                     <i class="ri-image-line text-3xl text-slate-300 dark:text-slate-600"></i>
                     <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Klik untuk upload foto</p>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Maks 2MB. Format: JPG, PNG.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">Maks 2MB. Format: JPG, PNG.</p>
                     <input type="file" name="image" accept="image/*" class="hidden">
                 </div>
             </div>

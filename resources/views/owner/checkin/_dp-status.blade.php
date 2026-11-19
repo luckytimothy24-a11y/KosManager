@@ -7,11 +7,11 @@
     <div class="mt-3 rounded-xl border border-slate-200/70 dark:border-white/[0.08] bg-slate-50/70 dark:bg-surface-elevated/50 px-4 py-3 text-sm">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">DP Booking</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">DP Booking</p>
                 <p class="mt-0.5 font-bold text-slate-900 dark:text-slate-50">Rp {{ number_format($booking->expectedBookingPaymentAmount(), 0, ',', '.') }}</p>
             </div>
             <div class="text-right">
-                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</p>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Status</p>
                 <span class="mt-1 inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold
                     {{ $dpStatus === 'approved' ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-300' : ($dpStatus === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-slate-300') }}">
                     {{ $dpPayment ? \PaymentLabels::verificationLabel($dpPayment->verification_status) : 'Belum dibayar' }}

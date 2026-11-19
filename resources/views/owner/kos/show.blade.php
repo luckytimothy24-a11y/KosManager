@@ -62,30 +62,30 @@
 
                         <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                             <div class="flex items-start gap-2.5 min-w-0">
-                                <i class="ri-map-pin-2-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                                <i class="ri-map-pin-2-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                                 <div class="min-w-0">
-                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Alamat</dt>
+                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Alamat</dt>
                                     <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200 break-words">{{ $kos->address }}</dd>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2.5">
-                                <i class="ri-phone-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                                <i class="ri-phone-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                                 <div>
-                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Telepon</dt>
+                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Telepon</dt>
                                     <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kos->phone ?: '-' }}</dd>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2.5">
-                                <i class="ri-user-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                                <i class="ri-user-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                                 <div>
-                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Pemilik</dt>
+                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Pemilik</dt>
                                     <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kos->owner?->name ?? '-' }}</dd>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2.5">
-                                <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                                <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                                 <div>
-                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Jumlah Kamar</dt>
+                                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Jumlah Kamar</dt>
                                     <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $kos->kamar_count }} kamar</dd>
                                 </div>
                             </div>

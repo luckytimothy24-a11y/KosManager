@@ -14,7 +14,7 @@
             <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kode Booking</p>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kode Booking</p>
                         <p class="mt-1 text-xl font-bold font-mono text-slate-900 dark:text-slate-50">{{ $booking->booking_code }}</p>
                     </div>
                     <x-status-badge :status="$booking->status" context="booking" />
@@ -32,13 +32,13 @@
                         <div class="min-w-0">
                             <dt class="sr-only">Nama penyewa</dt>
                             <dd class="font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $booking->user->name }}</dd>
-                            <dd class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $booking->user->email }}</dd>
+                            <dd class="text-xs text-slate-500 dark:text-slate-500 truncate">{{ $booking->user->email }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-calendar-close-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-calendar-close-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tanggal Booking</dt>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Tanggal Booking</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('d F Y') }}</dd>
                         </div>
                     </div>
@@ -51,37 +51,37 @@
                 </h3>
                 <dl class="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-building-2-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-building-2-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kos</dt>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kos</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kos->name }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-price-tag-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kamar</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $booking->kamar->room_number }} · {{ $booking->kamar->room_type }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-play-circle-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-play-circle-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mulai</dt>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Mulai</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($booking->start_date)->translatedFormat('d F Y') }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-flag-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-flag-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Selesai</dt>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Selesai</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($booking->end_date)->translatedFormat('d F Y') }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-repeat-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-repeat-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
-                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tipe Sewa</dt>
+                            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Tipe Sewa</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($booking->rental_type) }}</dd>
                         </div>
                     </div>
@@ -193,17 +193,17 @@
                         <div class="rounded-xl border border-slate-100 dark:border-white/10 p-4">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Status</p>
                                     <p class="mt-1 text-sm font-bold {{ $bookingPayment->verification_status === 'approved' ? 'text-green-600' : ($bookingPayment->verification_status === 'pending' ? 'text-amber-600' : 'text-red-600') }}">
                                         {{ \PaymentLabels::verificationLabel($bookingPayment->verification_status) }}
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Nominal</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Nominal</p>
                                     <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">Rp {{ number_format((float) $bookingPayment->amount, 0, ',', '.') }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Metode</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Metode</p>
                                     <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">{{ \PaymentLabels::paymentMethod($bookingPayment->payment_method) }}</p>
                                 </div>
                             </div>
@@ -234,13 +234,13 @@
                     <div class="rounded-xl border border-slate-100 dark:border-white/10 p-4 mb-4">
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status Pengajuan</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Status Pengajuan</p>
                                 <p class="mt-1 text-sm font-bold {{ $cancellationRequest->status === 'pending' ? 'text-amber-600' : ($cancellationRequest->status === 'approved' ? 'text-green-600' : 'text-red-600') }}">
                                     {{ $cancellationRequest->status === 'pending' ? 'Menunggu Review' : ($cancellationRequest->status === 'approved' ? 'Disetujui' : 'Ditolak') }}
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status Booking</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Status Booking</p>
                                 <p class="mt-1 text-sm font-bold text-slate-800 dark:text-slate-100">{{ \StatusLabels::bookingLabel($booking->status) }}</p>
                             </div>
                         </div>
@@ -304,7 +304,7 @@
                             <form method="POST" action="{{ route("$prefix.booking.approve", $booking) }}" class="contents">
                                 @csrf
                                 <button type="submit"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
                                     <i class="ri-check-line"></i> Approve Booking
                                 </button>
                             </form>
@@ -319,7 +319,7 @@
                     <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-6 sm:p-8" x-data="{ submitting: false }">
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <a href="{{ route("$prefix.checkin.index") }}"
-                               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
+                               class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
                                 <i class="ri-login-box-line"></i> Proses Check-In
                             </a>
                         </div>

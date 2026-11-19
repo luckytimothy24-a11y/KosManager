@@ -53,13 +53,13 @@
                                                     </span>
                                                 @else
                                                     <span class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
-                                                        <i class="ri-price-tag-line text-slate-400 dark:text-slate-500"></i>
+                                                        <i class="ri-price-tag-line text-slate-500 dark:text-slate-500"></i>
                                                     </span>
                                                 @endif
                                                 <div>
                                                     <span class="font-semibold text-slate-900 dark:text-slate-50">{{ $f->name }}</span>
                                                     @if($f->description)
-                                                        <p class="text-xs text-slate-400 dark:text-slate-500">{{ $f->description }}</p>
+                                                        <p class="text-xs text-slate-500 dark:text-slate-500">{{ $f->description }}</p>
                                                     @endif
                                                 </div>
                                             </div>
@@ -75,7 +75,7 @@
                                         <td>
                                             <div class="flex items-center justify-end gap-1.5">
                                                 <a href="{{ route('admin.fasilitas.edit', $f) }}"
-                                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit fasilitas" aria-label="Edit {{ $f->name }}">
+                                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit fasilitas" aria-label="Edit {{ $f->name }}">
                                                     <i class="ri-edit-line"></i>
                                                 </a>
 
@@ -85,7 +85,7 @@
                                                         title="Hapus fasilitas ini?"
                                                         description="Fasilitas &ldquo;{{ $f->name }}&rdquo; akan dilepas dari semua kos/kamar yang menggunakannya."
                                                         confirmText="Ya, Hapus"
-                                                        triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                        triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                                     >
                                                         <i class="ri-delete-bin-line"></i>
                                                         <x-slot name="actions">

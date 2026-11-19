@@ -7,7 +7,7 @@
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-50">Moderasi Advertising</h1>
                 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Review kampanye iklan untuk kos yang Anda kelola.</p>
             </div>
-            <a href="{{ route('admin.advertising.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 self-start sm:self-auto">
+            <a href="{{ route('admin.advertising.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 self-start sm:self-auto">
                 <i class="ri-add-circle-line"></i> Iklan Pihak Ketiga
             </a>
         </div>
@@ -23,7 +23,7 @@
                         </option>
                     @endforeach
                 </select>
-                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
+                <button type="submit" class="inline-flex items-center gap-2 text-sm font-semibold bg-primary-700 hover:bg-primary-700 text-white px-5 py-2.5 rounded-xl transition">
                     <i class="ri-filter-3-line"></i> Filter
                 </button>
                 @if(request('status'))

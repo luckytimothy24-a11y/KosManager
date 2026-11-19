@@ -66,7 +66,7 @@
             'default' => [
                 'grad' => 'bg-gradient-to-br from-slate-50 via-white to-primary-50 dark:from-slate-700 dark:via-surface-elevated dark:to-slate-800',
                 'badge' => 'bg-white/85 text-primary-600 border-primary-500/15 dark:bg-primary-500/15 dark:text-primary-300 dark:border-primary-400/20',
-                'cta' => 'bg-primary-600 text-white hover:bg-primary-700',
+                'cta' => 'bg-primary-700 text-white hover:bg-primary-700',
                 'ctaGhost' => 'text-primary-600 dark:text-primary-400',
                 'mono' => 'from-primary-600 to-primary-500',
                 'accent' => 'text-primary-600 dark:text-primary-400',
@@ -145,7 +145,7 @@
                     <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400">
                         <i class="ri-information-line"></i> Iklan Partner
                     </span>
-                    <span class="hidden sm:inline text-[10px] text-slate-400 dark:text-slate-500">Iklan · Partner KosManager</span>
+                    <span class="hidden sm:inline text-[10px] text-slate-500 dark:text-slate-500">Iklan · Partner KosManager</span>
                 </div>
             </div>
         </a>

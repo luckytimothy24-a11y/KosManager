@@ -63,7 +63,7 @@
                             <div class="rounded-xl border border-dashed border-slate-300 dark:border-white/[0.08] p-6 text-center">
                                 <i class="ri-building-2-line text-3xl text-slate-300 dark:text-slate-600"></i>
                                 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Anda belum memiliki kos. Silakan tambahkan kos terlebih dahulu.</p>
-                                <a href="{{ route('owner.kos.create') }}" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition min-h-[44px]">
+                                <a href="{{ route('owner.kos.create') }}" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 px-4 py-2.5 rounded-xl transition min-h-[44px]">
                                     <i class="ri-add-line"></i> Tambah Kos
                                 </a>
                             </div>
@@ -132,7 +132,7 @@
                         <label for="highlight_text" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Teks Penawaran Besar (opsional)</label>
                         <input type="text" name="highlight_text" id="highlight_text" x-model="partner.highlight" value="{{ old('highlight_text') }}" maxlength="120" placeholder="cth: Cashback 20% / Gratis Ongkir"
                                class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px]">
-                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tampil sebagai teks besar di area visual. Kosongkan agar visual hanya menampilkan ilustrasi.</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Tampil sebagai teks besar di area visual. Kosongkan agar visual hanya menampilkan ilustrasi.</p>
                         @error('highlight_text')
                             <p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror
@@ -148,7 +148,7 @@
                             <option value="wallet">Dompet digital</option>
                             <option value="generic">Umum</option>
                         </select>
-                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Tema ilustrasi SVG. Pilih otomatis untuk mengikuti mitra (Shopee/DANA/GoPay).</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Tema ilustrasi SVG. Pilih otomatis untuk mengikuti mitra (Shopee/DANA/GoPay).</p>
                         @error('visual_theme')
                             <p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror
@@ -186,7 +186,7 @@
                         <label for="destination_url" class="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Destination URL <span class="text-red-500">*</span></label>
                         <input type="url" name="destination_url" id="destination_url" x-model="partner.destination" :required="mode === 'partner'" value="{{ old('destination_url') }}" maxlength="500" placeholder="https://example.com/promo"
                                class="w-full text-sm rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-700 dark:text-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-transparent min-h-[44px]">
-                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Pengguna diarahkan ke halaman ini setelah mengklik iklan.</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Pengguna diarahkan ke halaman ini setelah mengklik iklan.</p>
                         @error('destination_url')
                             <p role="alert" class="mt-1 text-xs text-red-500">{{ $message }}</p>
                         @enderror
@@ -243,7 +243,7 @@
                                         @endif
                                     </div>
                                     <div class="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                                        <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><i class="ri-time-line text-slate-400"></i> {{ $pkg->duration_days }} hari</span>
+                                        <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><i class="ri-time-line text-slate-500"></i> {{ $pkg->duration_days }} hari</span>
                                         <span class="text-slate-300 dark:text-slate-600">·</span>
                                         <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300"><i class="ri-layout-grid-line text-primary-400"></i> {{ \App\Support\AdvertisingLabels::placementLabel($pkg->placement) }}</span>
                                     </div>
@@ -257,7 +257,7 @@
                     @error('package_id')
                         <p role="alert" class="mt-2 text-xs text-red-500">{{ $message }}</p>
                     @enderror
-                    <p class="text-[11px] text-slate-400 dark:text-slate-500" x-text="mode==='kos' ? 'Menampilkan paket promosi kos (maks. 3)' : 'Menampilkan paket iklan partner (maks. 3)'"></p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-500" x-text="mode==='kos' ? 'Menampilkan paket promosi kos (maks. 3)' : 'Menampilkan paket iklan partner (maks. 3)'"></p>
                 @endif
             </div>
 
@@ -271,7 +271,7 @@
                 {{-- Empty state when no package selected --}}
                 <div x-show="!selectedPackage" class="rounded-2xl border-2 border-dashed border-slate-200 dark:border-white/[0.08] bg-slate-50/60 dark:bg-surface-elevated/30 p-8 text-center">
                     <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-surface-elevated flex items-center justify-center mx-auto">
-                        <i class="ri-eye-line text-slate-400 text-xl"></i>
+                        <i class="ri-eye-line text-slate-500 text-xl"></i>
                     </div>
                     <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Pilih paket untuk melihat preview</p>
                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Preview akan menampilkan foto/CTA sesuai pilihan.</p>
@@ -300,7 +300,7 @@
                                 </div>
                                 <div class="p-4">
                                     <h3 class="font-bold text-slate-900 dark:text-slate-50 line-clamp-1" x-text="previewKos ? previewKos.name : ''"></h3>
-                                    <p class="mt-1 flex items-start gap-1 text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+                                    <p class="mt-1 flex items-start gap-1 text-xs leading-relaxed text-slate-500 dark:text-slate-500">
                                         <i class="ri-map-pin-2-fill mt-0.5 shrink-0 text-primary-500" aria-hidden="true"></i>
                                         <span class="min-w-0 line-clamp-2 break-words" x-text="previewKos ? previewKos.address : ''"></span>
                                     </p>
@@ -313,19 +313,19 @@
                                     </div>
                                     <div class="mt-3 flex flex-wrap items-end justify-between gap-x-3 gap-y-2 border-t border-slate-100 pt-3 dark:border-white/[0.08]">
                                         <div class="min-w-0">
-                                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Mulai dari</p>
+                                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-500">Mulai dari</p>
                                             <template x-if="previewKos && previewKos.harga_mulai">
                                                 <p class="whitespace-nowrap text-base font-bold leading-tight text-slate-900 dark:text-slate-50">
-                                                    Rp <span x-text="previewKos.harga_mulai.toLocaleString('id-ID')"></span><span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/bln</span>
+                                                    Rp <span x-text="previewKos.harga_mulai.toLocaleString('id-ID')"></span><span class="text-[11px] font-medium text-slate-500 dark:text-slate-500">/bln</span>
                                                 </p>
                                             </template>
                                             <template x-if="previewKos && !previewKos.harga_mulai && previewKos.harga_harian_mulai">
                                                 <p class="whitespace-nowrap text-base font-bold leading-tight text-slate-900 dark:text-slate-50">
-                                                    Rp <span x-text="previewKos.harga_harian_mulai.toLocaleString('id-ID')"></span><span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/hr</span>
+                                                    Rp <span x-text="previewKos.harga_harian_mulai.toLocaleString('id-ID')"></span><span class="text-[11px] font-medium text-slate-500 dark:text-slate-500">/hr</span>
                                                 </p>
                                             </template>
                                             <template x-if="(!previewKos) || (!previewKos.harga_mulai && !previewKos.harga_harian_mulai)">
-                                                <p class="text-xs text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
+                                                <p class="text-xs text-slate-500 dark:text-slate-500">Harga hubungi pemilik</p>
                                             </template>
                                         </div>
                                         <span class="ml-auto inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-primary-500 px-3.5 py-2 text-xs font-bold text-white min-h-[44px]">
@@ -342,7 +342,7 @@
                             <div class="max-w-sm mx-auto bg-white dark:bg-surface-elevated rounded-2xl border border-dashed border-slate-300 dark:border-white/[0.08] p-6 text-center">
                                 <i class="ri-building-2-line text-2xl text-slate-300 dark:text-slate-600"></i>
                                 <p class="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">Pilih kos untuk melihat preview</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500">Foto dan harga akan tampil sesuai kos terpilih.</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-500">Foto dan harga akan tampil sesuai kos terpilih.</p>
                                 <span x-show="previewPackage" class="mt-3 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold" :class="previewPackage ? placementBadgeClass(previewPackage.placement) : ''" x-text="previewPackage ? placementLabelText(previewPackage.placement) : ''"></span>
                                 <p class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-400 justify-center w-full">
                                     <i class="ri-information-line"></i> Iklan · Promosi Kos
@@ -404,7 +404,7 @@
                         Batal
                     </a>
                     <button type="submit" {{ $packages->isEmpty() ? 'disabled' : '' }}
-                            class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 min-h-[44px]">
+                            class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-700 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed px-6 py-2.5 rounded-xl transition shadow-sm shadow-primary-500/30 min-h-[44px]">
                         <i class="ri-megaphone-line"></i> Buat Kampanye
                     </button>
                 </div>

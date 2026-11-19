@@ -18,44 +18,44 @@
                         <span class="w-16 h-16 rounded-2xl bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 flex items-center justify-center text-2xl font-bold shrink-0">{{ strtoupper(substr($penghuni->user->name, 0, 1)) }}</span>
                         <div class="min-w-0 flex-1">
                             <h2 class="text-lg font-bold text-slate-900 dark:text-slate-50 truncate">{{ $penghuni->user->name }}</h2>
-                            <p class="text-sm text-slate-400 dark:text-slate-500 truncate">{{ $penghuni->user->email }}</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-500 truncate">{{ $penghuni->user->email }}</p>
                             <div class="mt-2"><x-status-badge :status="$penghuni->status" context="penghuni" /></div>
                         </div>
                     </div>
 
                     <dl class="px-6 sm:px-8 pb-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm border-t border-slate-100 dark:border-white/10 pt-6">
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-phone-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-phone-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div class="min-w-0">
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Telepon</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Telepon</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $penghuni->phone ?: '-' }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-id-card-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-id-card-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div class="min-w-0">
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">No. Identitas</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">No. Identitas</dt>
                                 <dd class="mt-0.5 font-mono font-medium text-slate-700 dark:text-slate-200 break-all">{{ $penghuni->identity_number ?: '-' }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kamar</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kamar</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $penghuni->kamar->room_number }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-building-2-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-building-2-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Kos</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Kos</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $penghuni->kos->name }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5 sm:col-span-2">
-                            <i class="ri-calendar-check-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                            <i class="ri-calendar-check-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                             <div>
-                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Tanggal Masuk</dt>
+                                <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Tanggal Masuk</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \Carbon\Carbon::parse($penghuni->check_in_date)->translatedFormat('d F Y') }}</dd>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
                                         <p class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{{ $k->contract_number }}</p>
-                                        <p class="mt-0.5 text-xs text-slate-400 dark:text-slate-500 whitespace-nowrap">{{ \Carbon\Carbon::parse($k->start_date)->format('d M Y') }} — {{ \Carbon\Carbon::parse($k->end_date)->format('d M Y') }}</p>
+                                        <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-500 whitespace-nowrap">{{ \Carbon\Carbon::parse($k->start_date)->format('d M Y') }} — {{ \Carbon\Carbon::parse($k->end_date)->format('d M Y') }}</p>
                                         <p class="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($k->rental_price, 0, ',', '.') }}</p>
                                     </div>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium shrink-0 {{ \StatusLabels::kontrakBadge($k->status) }}">{{ \StatusLabels::kontrakLabel($k->status) }}</span>
@@ -87,7 +87,7 @@
                                 <span class="mx-auto w-10 h-10 rounded-full bg-slate-100 dark:bg-surface-elevated flex items-center justify-center">
                                     <i class="ri-file-text-line text-lg text-slate-300 dark:text-slate-600"></i>
                                 </span>
-                                <p class="mt-2.5 text-sm text-slate-400 dark:text-slate-500">Belum ada kontrak.</p>
+                                <p class="mt-2.5 text-sm text-slate-500 dark:text-slate-500">Belum ada kontrak.</p>
                             </div>
                         @endforelse
                     </div>

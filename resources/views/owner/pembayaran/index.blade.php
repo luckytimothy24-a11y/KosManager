@@ -11,7 +11,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nomor pembayaran..." aria-label="Cari pembayaran"
                            class="field-input pl-10 pr-3.5">
                 </div>
@@ -24,7 +24,7 @@
                 @foreach([null => 'Semua', 'pending' => 'Menunggu Verifikasi', 'approved' => 'Terverifikasi', 'rejected' => 'Ditolak'] as $s => $label)
                     @php $active = ($s === null && request('status') === null) || (request('status') === (string) $s); @endphp
                     <a href="{{ route($prefix.'.pembayaran.index', array_filter(['status' => $s])) }}"
-                       class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition {{ $active ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/30' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/[0.1]' }}">
+                       class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition {{ $active ? 'bg-primary-700 text-white shadow-sm shadow-primary-600/30' : 'bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/[0.1]' }}">
                         {{ $label }}
                         @if($s === 'pending')
                             <span class="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded-full {{ $active ? 'bg-white/25' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-500/15 dark:text-yellow-300' }}">{{ $pendingCount ?? 0 }}</span>
@@ -134,7 +134,7 @@
                                         <div class="min-w-0">
                                             <span class="text-slate-700 dark:text-slate-200 truncate max-w-[10rem] block">{{ $displayName }}</span>
                                             @if($p->isBookingPayment() && $p->booking)
-                                                <span class="text-[11px] font-mono text-slate-400 dark:text-slate-500">Booking {{ $p->booking->booking_code }}</span>
+                                                <span class="text-[11px] font-mono text-slate-500 dark:text-slate-500">Booking {{ $p->booking->booking_code }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -143,7 +143,7 @@
                                 <td class="hidden lg:table-cell text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ $p->payment_date?->translatedFormat('d M Y') ?? '-' }}</td>
                                 <td class="hidden sm:table-cell">
                                     <span class="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-300 whitespace-nowrap">
-                                        <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }} text-slate-400"></i>
+                                        <i class="{{ ['transfer_bank' => 'ri-bank-line', 'qris' => 'ri-qr-code-2-line', 'e_wallet' => 'ri-smartphone-line'][$p->payment_method] ?? 'ri-wallet-3-line' }} text-slate-500"></i>
                                         {{ \PaymentLabels::paymentMethod($p->payment_method) }}
                                         @if($p->isFromGateway())
                                             <span class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-300" title="Verifikasi otomatis"><i class="ri-global-line"></i> Online</span>
@@ -154,7 +154,7 @@
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route("$prefix.pembayaran.show", $p) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
                                            title="Detail" aria-label="Detail pembayaran {{ $p->payment_number }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
@@ -162,7 +162,7 @@
                                         @if($p->verification_status === 'pending')
                                             <x-confirm-dialog title="Verifikasi Pembayaran?" description="Verifikasi pembayaran {{ $p->payment_number }} sebagai LUNAS?"
                                                                confirmText="Verifikasi" confirmClass="bg-green-600 hover:bg-green-700 text-white"
-                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
+                                                               triggerClass="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-500/10 transition"
                                                                aria-label="Verifikasi pembayaran {{ $p->payment_number }}">
                                                 <x-slot name="slot"><i class="ri-check-double-line"></i></x-slot>
                                                 <x-slot name="actions">
@@ -177,7 +177,7 @@
                                                 </x-slot>
                                             </x-confirm-dialog>
                                             <button type="button"
-                                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                                     title="Tolak pembayaran" aria-label="Tolak pembayaran {{ $p->payment_number }}"
                                                     x-data @click="$dispatch('open-modal', 'reject-{{ $p->id }}')">
                                                 <i class="ri-close-line"></i>

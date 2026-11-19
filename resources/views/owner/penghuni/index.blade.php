@@ -11,7 +11,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, telepon, atau identitas..." aria-label="Cari penghuni"
                            class="field-input pl-10 pr-3.5">
                 </div>
@@ -78,20 +78,20 @@
                                         <span class="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 flex items-center justify-center text-sm font-bold shrink-0">{{ strtoupper(substr($p->user->name, 0, 1)) }}</span>
                                         <div class="min-w-0">
                                             <p class="font-semibold text-slate-900 dark:text-slate-50 truncate max-w-[12rem]">{{ $p->user->name }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[12rem]">{{ $p->user->email }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500 truncate max-w-[12rem]">{{ $p->user->email }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="hidden md:table-cell">
                                     <p class="font-medium text-slate-900 dark:text-slate-50">{{ $p->kamar->room_number }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[10rem]">{{ $p->kos->name }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 truncate max-w-[10rem]">{{ $p->kos->name }}</p>
                                 </td>
                                 <td class="hidden lg:table-cell text-slate-600 dark:text-slate-300 whitespace-nowrap">{{ $p->phone ?: '-' }}</td>
                                 <td class="text-center"><x-status-badge :status="$p->status" context="penghuni" /></td>
                                 <td>
                                     <div class="flex items-center justify-end">
                                         <a href="{{ route("$prefix.penghuni.show", $p) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition"
                                            title="Detail" aria-label="Detail penghuni {{ $p->user->name }}">
                                             <i class="ri-eye-line"></i>
                                         </a>

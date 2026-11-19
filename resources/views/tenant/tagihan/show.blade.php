@@ -57,7 +57,7 @@
 
                 <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div class="flex items-start gap-2.5 min-w-0">
-                        <i class="ri-door-open-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-door-open-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div class="min-w-0">
                             <dt class="text-label">Kamar</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200 truncate">{{ $tagihan->kamar->room_number }} — {{ $tagihan->kamar->room_name }}</dd>
@@ -65,21 +65,21 @@
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-calendar-range-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-calendar-range-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Periode Sewa</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->period_start->translatedFormat('d M Y') }} — {{ $tagihan->period_end->translatedFormat('d M Y') }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-price-tag-3-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-price-tag-3-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Tipe Tagihan</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \PaymentLabels::billType($tagihan->bill_type) }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-2.5">
-                        <i class="ri-calendar-deadline-line text-slate-400 dark:text-slate-500 mt-0.5"></i>
+                        <i class="ri-calendar-deadline-line text-slate-500 dark:text-slate-500 mt-0.5"></i>
                         <div>
                             <dt class="text-label">Jatuh Tempo</dt>
                             <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ $tagihan->due_date->translatedFormat('d F Y') }}</dd>
@@ -94,21 +94,21 @@
                 @if($kontrak)
                     <div class="mt-5 rounded-xl border border-slate-100 dark:border-white/[0.08] section-tint p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                         <div class="flex items-start gap-2.5 min-w-0">
-                            <i class="ri-file-text-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                            <i class="ri-file-text-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                             <div class="min-w-0">
                                 <dt class="text-label">No. Kontrak</dt>
                                 <dd class="mt-0.5 font-mono font-semibold text-slate-700 dark:text-slate-200 truncate">{{ $kontrak->contract_number }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-home-4-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                            <i class="ri-home-4-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                             <div>
                                 <dt class="text-label">Tipe Sewa</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200">{{ \StatusLabels::rentalTypeLabel($kontrak->rental_type) }}</dd>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <i class="ri-calendar-line text-slate-400 dark:text-slate-500 mt-0.5 shrink-0"></i>
+                            <i class="ri-calendar-line text-slate-500 dark:text-slate-500 mt-0.5 shrink-0"></i>
                             <div>
                                 <dt class="text-label">Periode Kontrak</dt>
                                 <dd class="mt-0.5 font-medium text-slate-700 dark:text-slate-200 whitespace-nowrap">{{ $kontrak->start_date->translatedFormat('d M Y') }} – {{ $kontrak->end_date->translatedFormat('d M Y') }}</dd>
@@ -181,8 +181,8 @@
                                 @endif
                             </span>
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold {{ isset($step['rejected']) ? 'text-red-700 dark:text-red-300' : ($step['done'] ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500') }}">{{ $step['label'] }}</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500">{{ $step['desc'] }}</p>
+                                <p class="text-sm font-semibold {{ isset($step['rejected']) ? 'text-red-700 dark:text-red-300' : ($step['done'] ? 'text-slate-800 dark:text-slate-200' : 'text-slate-500 dark:text-slate-500') }}">{{ $step['label'] }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-500">{{ $step['desc'] }}</p>
                             </div>
                         </li>
                     @endforeach
@@ -197,7 +197,7 @@
                     <h4 class="flex items-center gap-2 font-bold text-base text-slate-900 dark:text-slate-50 mb-1">
                         <i class="ri-upload-cloud-2-line text-primary-500"></i> Bayar Tagihan Ini
                     </h4>
-                    <p class="text-xs text-slate-400 dark:text-slate-500 mb-5">Pilih metode <strong>Transfer Bank</strong> atau <strong>Cash</strong> sesuai instruksi pengelola.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500 mb-5">Pilih metode <strong>Transfer Bank</strong> atau <strong>Cash</strong> sesuai instruksi pengelola.</p>
 
                     {{-- Rekening tujuan pembayaran Owner (server-side: tagihan → kamar → kos → owner) --}}
                     @include('tenant.partials.owner-bank-account', [
@@ -362,7 +362,7 @@
                                             <template x-if="proof.oversize"><span class="text-red-600 dark:text-red-400 font-semibold"> · Melebihi 5MB</span></template>
                                         </p>
                                     </div>
-                                    <button type="button" @click="clearProof()" class="text-slate-400 hover:text-red-500 transition shrink-0" aria-label="Hapus bukti terpilih">
+                                    <button type="button" @click="clearProof()" class="text-slate-500 hover:text-red-500 transition shrink-0" aria-label="Hapus bukti terpilih">
                                         <i class="ri-close-circle-line text-lg"></i>
                                     </button>
                                 </div>
@@ -442,7 +442,7 @@
                                 <div class="flex items-center gap-2">
                                     <x-status-badge :status="$p->verification_status" context="verification" />
                                     <span class="text-meta">{{ $p->payment_date->translatedFormat('d M Y') }}</span>
-                                    <i class="ri-arrow-right-up-line text-slate-400"></i>
+                                    <i class="ri-arrow-right-up-line text-slate-500"></i>
                                 </div>
                             </div>
                         </a>

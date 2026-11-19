@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <p class="font-bold text-slate-900 dark:text-white text-sm">{{ $item->user->name ?? 'Penjual' }}</p>
-                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Penjual · {{ $item->kos->name ?? '' }}</p>
+                    <p class="text-[10px] text-slate-500 dark:text-slate-500">Penjual · {{ $item->kos->name ?? '' }}</p>
                 </div>
                 <div class="ml-auto flex items-center gap-1">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -53,7 +53,7 @@
                             <i class="ri-chat-quote-line text-3xl text-primary-400 dark:text-primary-300"></i>
                         </div>
                         <p class="text-sm font-semibold text-slate-600 dark:text-slate-300">Belum ada pesan</p>
-                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Mulai percakapan dengan penjual!</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">Mulai percakapan dengan penjual!</p>
                     </div>
                 @else
                     @php $lastDate = null; @endphp
@@ -61,7 +61,7 @@
                         @if($lastDate !== $msg->created_at->format('Y-m-d'))
                             @php $lastDate = $msg->created_at->format('Y-m-d'); @endphp
                             <div class="flex justify-center">
-                                <span class="text-[10px] font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                                <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
                                     {{ $msg->created_at->translatedFormat('d M Y') }}
                                 </span>
                             </div>
@@ -79,7 +79,7 @@
                                         : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-bl-md' }}">
                                     <p class="leading-relaxed">{{ $msg->message }}</p>
                                 </div>
-                                <p class="text-[10px] mt-1 {{ $msg->sender_id === auth()->id() ? 'text-right text-slate-400' : 'text-slate-400' }}">
+                                <p class="text-[10px] mt-1 {{ $msg->sender_id === auth()->id() ? 'text-right text-slate-500' : 'text-slate-500' }}">
                                     {{ $msg->created_at->format('H:i') }}
                                     @if($msg->sender_id === auth()->id())
                                         <i class="ri-check-double-line text-primary-400 ml-0.5"></i>
@@ -102,7 +102,7 @@
                     @csrf
                     <div class="flex-1 relative">
                         <input type="text" name="message" class="field-input pr-10" placeholder="Ketik pesan..." required maxlength="2000" autocomplete="off">
-                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition" onclick="this.previousElementSibling.value += '😊'">
+                        <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 transition" onclick="this.previousElementSibling.value += '😊'">
                             <i class="ri-star-fill"></i>
                         </button>
                     </div>

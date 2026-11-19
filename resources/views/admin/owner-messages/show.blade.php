@@ -11,7 +11,7 @@
         <div class="bg-white dark:bg-surface-elevated rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 p-5">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Konteks Percakapan</p>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Konteks Percakapan</p>
                     <p class="mt-1 text-sm font-bold text-slate-900 dark:text-slate-50">Kos: {{ $kos->name }} · Owner: {{ $owner->name }}</p>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                     </div>
                     <div class="flex justify-end">
                         <button type="submit"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
+                                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-primary-700 hover:bg-primary-700 active:bg-primary-800 rounded-xl transition shadow-sm shadow-primary-500/30">
                             <i class="ri-send-plane-line"></i> Kirim ke Owner
                         </button>
                     </div>

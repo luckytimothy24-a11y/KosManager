@@ -143,7 +143,7 @@
             @foreach($groups as $groupLabel => $items)
                 @if(!empty($items))
                     <div class="pt-6 pb-2 px-3">
-                        <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
+                        <p class="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
                     </div>
                 @endif
 
@@ -192,7 +192,7 @@
 
             @foreach($groups as $groupLabel => $items)
                 <div class="pt-6 pb-2 px-3">
-                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
+                    <p class="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-[0.18em]">{{ $groupLabel }}</p>
                 </div>
                 @foreach($items as $item)
                     @php
@@ -223,7 +223,7 @@
 
             @if(($unreadNotif) > 0)
                 <div class="pt-6 pb-2 px-3">
-                    <p class="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.18em]">Notifikasi</p>
+                    <p class="text-[10px] font-black text-slate-500 dark:text-slate-500 uppercase tracking-[0.18em]">Notifikasi</p>
                 </div>
                 <a href="{{ route('notifications.index') }}"
                    class="group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06]">
@@ -261,7 +261,7 @@
             </span>
             Pengaturan
         </a>
-        <p class="mt-2 px-3 text-[10px] font-medium text-slate-400 dark:text-slate-500">Â© {{ date('Y') }} KosManager</p>
+        <p class="mt-2 px-3 text-[10px] font-medium text-slate-500 dark:text-slate-500">Â© {{ date('Y') }} KosManager</p>
     </div>
 </aside>
 

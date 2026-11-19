@@ -3,7 +3,7 @@
 @php
     $variant = $variant ?? $type;
     $colors = [
-        'primary' => 'bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white shadow-soft',
+        'primary' => 'bg-primary-700 hover:bg-primary-700 active:bg-primary-800 text-white shadow-soft',
         'secondary' => 'bg-surface-card dark:bg-white/[0.04] border border-slate-200/60 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-600 dark:text-slate-300',
         'danger' => 'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white shadow-soft',
         'success' => 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-soft',

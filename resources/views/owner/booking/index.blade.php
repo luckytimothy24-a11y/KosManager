@@ -11,7 +11,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kode booking atau nama..." aria-label="Cari booking"
                            class="field-input pl-10 pr-3.5">
                 </div>
@@ -77,7 +77,7 @@
                             <tr>
                                 <td>
                                     <p class="font-mono font-semibold text-slate-900 dark:text-slate-50">{{ $b->booking_code }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500">{{ $b->start_date?->format('d M Y') ?? $b->start_date }} s/d {{ $b->end_date?->format('d M Y') ?? $b->end_date }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ $b->start_date?->format('d M Y') ?? $b->start_date }} s/d {{ $b->end_date?->format('d M Y') ?? $b->end_date }}</p>
                                 </td>
                                 <td class="hidden md:table-cell">
                                     <div class="flex items-center gap-2.5">
@@ -87,14 +87,14 @@
                                 </td>
                                 <td>
                                     <p class="font-medium text-slate-900 dark:text-slate-50">{{ $b->kamar->room_number }}</p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 truncate max-w-[10rem]">{{ $b->kos->name }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 truncate max-w-[10rem]">{{ $b->kos->name }}</p>
                                 </td>
                                 <td class="text-right font-medium text-slate-900 dark:text-slate-50 whitespace-nowrap">Rp {{ number_format($b->price, 0, ',', '.') }}</td>
                                 <td class="text-center"><x-status-badge :status="$b->status" context="booking" /></td>
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route("$prefix.booking.show", $b) }}"
-                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail booking {{ $b->booking_code }}">
+                                           class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Detail" aria-label="Detail booking {{ $b->booking_code }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
                                     </div>

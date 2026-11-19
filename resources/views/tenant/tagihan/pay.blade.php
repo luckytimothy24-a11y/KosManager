@@ -78,7 +78,7 @@
                                                 <span class="block text-meta">{{ $t->bill_number }}</span>
                                             </span>
                                         </div>
-                                        <span class="ml-[26px] mt-0.5 block text-xs {{ $t->status === 'overdue' ? 'font-semibold text-red-500 dark:text-red-400' : 'text-slate-400 dark:text-slate-500' }}">
+                                        <span class="ml-[26px] mt-0.5 block text-xs {{ $t->status === 'overdue' ? 'font-semibold text-red-500 dark:text-red-400' : 'text-slate-500 dark:text-slate-500' }}">
                                             @if($t->status === 'overdue')
                                                 <span class="flex items-center gap-1"><i class="ri-alarm-warning-line text-[12px]"></i> Terlambat · Jatuh tempo {{ $t->due_date->translatedFormat('d M Y') }}</span>
                                             @else
@@ -194,7 +194,7 @@
                                     <template x-if="proof.oversize"><span class="font-semibold text-red-600 dark:text-red-400"> · Melebihi 5MB</span></template>
                                 </span>
                             </span>
-                            <button type="button" @click="clearProof()" class="shrink-0 text-slate-400 transition hover:text-red-500" aria-label="Hapus bukti terpilih">
+                            <button type="button" @click="clearProof()" class="shrink-0 text-slate-500 transition hover:text-red-500" aria-label="Hapus bukti terpilih">
                                 <i class="ri-close-circle-line text-lg"></i>
                             </button>
                         </div>

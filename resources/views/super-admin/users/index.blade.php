@@ -16,7 +16,7 @@
         <div class="filter-card">
             <form method="GET" class="flex flex-col sm:flex-row gap-3" role="search">
                 <div class="relative flex-1 min-w-0">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-sm"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 dark:text-slate-500 text-sm"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email user..." aria-label="Cari user"
                            class="field-input w-full pl-10" >
                 </div>
@@ -85,7 +85,7 @@
                                         </span>
                                         <div class="min-w-0">
                                             <p class="font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $u->name }}</p>
-                                            <p class="text-xs text-slate-400 dark:text-slate-500 truncate">{{ $u->email }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-500 truncate">{{ $u->email }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -99,12 +99,12 @@
                                 <td>
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route('super-admin.users.edit', $u) }}"
-                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit user" aria-label="Edit {{ $u->name }}">
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Edit user" aria-label="Edit {{ $u->name }}">
                                             <i class="ri-edit-line"></i>
                                         </a>
 
                                         <a href="{{ route('super-admin.users.show', $u) }}"
-                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Lihat user" aria-label="Lihat {{ $u->name }}">
+                                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-500/10 transition" title="Lihat user" aria-label="Lihat {{ $u->name }}">
                                             <i class="ri-eye-line"></i>
                                         </a>
 
@@ -114,7 +114,7 @@
                                                 title="Hapus user ini?"
                                                 description="{{ $u->name }} akan dihapus permanen beserta data terkait. Tindakan ini tidak dapat dibatalkan."
                                                 confirmText="Ya, Hapus"
-                                                triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
+                                                triggerClass="inline-flex items-center justify-center w-8 h-8 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition"
                                             >
                                                 <i class="ri-delete-bin-line"></i>
                                                 <x-slot name="actions">

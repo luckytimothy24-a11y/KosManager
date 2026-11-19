@@ -151,16 +151,16 @@
             <div class="mt-auto flex flex-wrap items-end justify-between gap-x-3 gap-y-2 border-t border-slate-100/80 pt-3 dark:border-white/[0.08]">
                 @if(!is_null($kos->harga_mulai))
                     <div class="min-w-0">
-                        <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Mulai dari</p>
-                        <p class="mt-0.5 whitespace-nowrap text-base font-bold leading-tight tracking-tight text-slate-900 sm:text-lg dark:text-slate-50">Rp {{ number_format($kos->harga_mulai, 0, ',', '.') }}<span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/bln</span></p>
+                        <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">Mulai dari</p>
+                        <p class="mt-0.5 whitespace-nowrap text-base font-bold leading-tight tracking-tight text-slate-900 sm:text-lg dark:text-slate-50">Rp {{ number_format($kos->harga_mulai, 0, ',', '.') }}<span class="text-[11px] font-medium text-slate-500 dark:text-slate-500">/bln</span></p>
                     </div>
                 @elseif(!is_null($kos->harga_harian_mulai))
                     <div class="min-w-0">
-                        <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Mulai dari</p>
-                        <p class="mt-0.5 whitespace-nowrap text-base font-bold leading-tight tracking-tight text-slate-900 sm:text-lg dark:text-slate-50">Rp {{ number_format($kos->harga_harian_mulai, 0, ',', '.') }}<span class="text-[11px] font-medium text-slate-400 dark:text-slate-500">/hr</span></p>
+                        <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-500">Mulai dari</p>
+                        <p class="mt-0.5 whitespace-nowrap text-base font-bold leading-tight tracking-tight text-slate-900 sm:text-lg dark:text-slate-50">Rp {{ number_format($kos->harga_harian_mulai, 0, ',', '.') }}<span class="text-[11px] font-medium text-slate-500 dark:text-slate-500">/hr</span></p>
                     </div>
                 @else
-                    <p class="min-w-0 text-xs leading-relaxed text-slate-400 dark:text-slate-500">Harga hubungi pemilik</p>
+                    <p class="min-w-0 text-xs leading-relaxed text-slate-500 dark:text-slate-500">Harga hubungi pemilik</p>
                 @endif
                 <a href="{{ $adUrl }}" class="ml-auto inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-600 transition-all duration-300 hover:bg-amber-100 group-hover:text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20 dark:group-hover:text-amber-300">
                     Lihat Detail <i class="ri-arrow-right-line text-[11px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden="true"></i>

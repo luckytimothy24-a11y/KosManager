@@ -146,7 +146,7 @@
                     @else
                         <div>
                             <h2 class="text-label">Tentang Kos</h2>
-                            <p class="mt-1.5 text-sm text-slate-400 dark:text-slate-500 italic">Belum ada deskripsi dari pengelola.</p>
+                            <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-500 italic">Belum ada deskripsi dari pengelola.</p>
                         </div>
                     @endif
 
@@ -172,7 +172,7 @@
                     <div x-data="{ open: null }">
                         <h2 class="text-label">Fasilitas Kos</h2>
                         @if(count($facilityGroups))
-                            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Fasilitas yang tersedia pada kos ini.</p>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Fasilitas yang tersedia pada kos ini.</p>
                             <div class="mt-3 space-y-2.5">
                                 @foreach($facilityGroups as $key => $group)
                                     @php $label = $groupLabels[$key] ?? 'Fasilitas'; $gicon = $groupIcons[$key] ?? 'ri-check-line'; @endphp
@@ -186,8 +186,8 @@
                                                 <i class="{{ $gicon }} text-primary-500"></i> {{ $label }}
                                             </span>
                                             <span class="inline-flex items-center gap-2">
-                                                <span class="text-[11px] font-bold text-slate-400">{{ $group->count() }}</span>
-                                                <i class="ri-arrow-down-s-line text-slate-400 transition-transform" :class="open === '{{ $key }}' ? 'rotate-180' : ''"></i>
+                                                <span class="text-[11px] font-bold text-slate-500">{{ $group->count() }}</span>
+                                                <i class="ri-arrow-down-s-line text-slate-500 transition-transform" :class="open === '{{ $key }}' ? 'rotate-180' : ''"></i>
                                             </span>
                                         </button>
                                         <ul id="facility-group-{{ $key }}" x-show="open === '{{ $key }}'" x-cloak x-transition
@@ -206,7 +206,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <p class="mt-1.5 text-sm text-slate-400 dark:text-slate-500">Informasi fasilitas belum tersedia. Hubungi pemilik untuk detail lengkap.</p>
+                            <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-500">Informasi fasilitas belum tersedia. Hubungi pemilik untuk detail lengkap.</p>
                         @endif
                     </div>
 
@@ -227,7 +227,7 @@
                             <span class="w-11 h-11 rounded-full bg-primary-100 dark:bg-primary-500/15 text-primary-600 dark:text-primary-300 flex items-center justify-center text-base font-bold uppercase shrink-0">{{ mb_substr($kos->owner?->name ?? '?', 0, 1) }}</span>
                             <div class="min-w-0">
                                 <p class="text-sm font-bold text-slate-900 dark:text-slate-50 truncate">{{ $kos->owner?->name ?? 'Pemilik Kos' }}</p>
-                                <p class="text-xs text-slate-400 dark:text-slate-500">Pemilik KosManager</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-500">Pemilik KosManager</p>
                             </div>
                         </div>
                         @if($kos->phone)
@@ -291,7 +291,7 @@
             <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
                     <h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-50">Pilihan Kamar</h2>
-                    <p class="mt-0.5 text-sm text-slate-400 dark:text-slate-500">Temukan kamar yang sesuai kebutuhan dan budgetmu.</p>
+                    <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-500">Temukan kamar yang sesuai kebutuhan dan budgetmu.</p>
                 </div>
                 <span class="text-meta">{{ $allKamar->count() }} kamar total · {{ $kamarTersedia->count() }} tersedia</span>
             </div>
@@ -424,7 +424,7 @@
                         <div class="sticky top-0 bg-white dark:bg-surface-elevated border-b border-slate-100 dark:border-white/[0.08] px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                             <h3 class="text-sm font-bold text-slate-900 dark:text-slate-50">Detail Kamar</h3>
                             <button type="button" x-on:click="detailKamar = null"
-                                    class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                    class="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                                     aria-label="Tutup detail kamar">
                                 <i class="ri-close-line text-lg"></i>
                             </button>
@@ -442,7 +442,7 @@
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <p class="text-lg font-bold text-slate-900 dark:text-slate-50" x-text="'Kamar ' + detailKamar.room_number"></p>
-                                    <p class="text-xs text-slate-400 dark:text-slate-500 mt-0.5" x-text="detailKamar.room_name"></p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500 mt-0.5" x-text="detailKamar.room_name"></p>
                                 </div>
                                 <span class="shrink-0 text-xs font-bold px-2.5 py-1 rounded-lg bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-300" x-text="detailKamar.room_type"></span>
                             </div>
@@ -517,7 +517,7 @@
                                     </ul>
                                 </template>
                                 <template x-if="!detailKamar.fasilitas || detailKamar.fasilitas.length === 0">
-                                    <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">Belum ada informasi fasilitas.</p>
+                                    <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-500">Belum ada informasi fasilitas.</p>
                                 </template>
                             </div>
 
@@ -538,7 +538,7 @@
                                     @endguest
                                 </template>
                                 <template x-if="detailKamar.status !== 'available'">
-                                    <div class="w-full text-center text-xs font-semibold py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-400 dark:text-slate-500">
+                                    <div class="w-full text-center text-xs font-semibold py-3 rounded-xl border border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-slate-500">
                                         Kamar Tidak Tersedia
                                     </div>
                                 </template>
@@ -608,10 +608,10 @@
                 @else
                     <div class="mt-4 rounded-xl section-tint p-5 text-center">
                         <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-surface-elevated flex items-center justify-center mx-auto">
-                            <i class="ri-map-pin-line text-lg text-slate-400 dark:text-slate-500"></i>
+                            <i class="ri-map-pin-line text-lg text-slate-500 dark:text-slate-500"></i>
                         </div>
                         <p class="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Lokasi peta belum tersedia.</p>
-                        <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Alamat kos belum tersedia.</p>
+                        <p class="mt-1 text-xs text-slate-500 dark:text-slate-500">Alamat kos belum tersedia.</p>
                     </div>
                 @endif
             </div>

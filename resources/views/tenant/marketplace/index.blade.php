@@ -23,7 +23,7 @@
         <form method="GET" action="{{ route('tenant.marketplace.index') }}" class="card-surface p-4 mb-6">
             <div class="flex flex-col sm:flex-row gap-3">
                 <div class="flex-1 relative">
-                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <i class="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari barang..." class="field-input pl-10">
                 </div>
                 <select name="category" class="field-input sm:w-40">
@@ -58,7 +58,7 @@
                     <i class="ri-price-tag-line text-4xl text-slate-300 dark:text-slate-600"></i>
                 </div>
                 <p class="text-slate-500 dark:text-slate-400 font-medium">Belum ada barang yang dijual.</p>
-                <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Jadilah yang pertama menjual barang bekas!</p>
+                <p class="text-xs text-slate-500 dark:text-slate-500 mt-1">Jadilah yang pertama menjual barang bekas!</p>
                 <a href="{{ route('tenant.marketplace.create') }}" class="btn-primary mt-4 inline-flex">
                     <i class="ri-add-line"></i> Jual Barang Pertama
                 </a>
