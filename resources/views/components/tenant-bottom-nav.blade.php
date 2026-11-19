@@ -6,7 +6,41 @@
     $items = [];
 
     if ($user) {
-        if ($isTenant) {
+        if ($user->isSuperAdmin()) {
+            $items = [
+                [
+                    'label' => 'Beranda',
+                    'route' => 'dashboard',
+                    'icon' => 'ri-home-5',
+                    'active' => request()->routeIs('dashboard'),
+                ],
+                [
+                    'label' => 'User',
+                    'route' => 'super-admin.users.index',
+                    'icon' => 'ri-team-line',
+                    'active' => request()->routeIs('super-admin.users.*'),
+                    'badge' => (int) (\App\Models\User::where('is_active', false)->count()),
+                ],
+                [
+                    'label' => 'Moderasi',
+                    'route' => 'super-admin.moderation.index',
+                    'icon' => 'ri-shield-check-line',
+                    'active' => request()->routeIs('super-admin.moderation.*'),
+                ],
+                [
+                    'label' => 'Settings',
+                    'route' => 'super-admin.settings.index',
+                    'icon' => 'ri-settings-3-line',
+                    'active' => request()->routeIs('super-admin.settings.*'),
+                ],
+                [
+                    'label' => 'Profil',
+                    'route' => 'profile.edit',
+                    'icon' => 'ri-user-3',
+                    'active' => request()->routeIs('profile.*'),
+                ],
+            ];
+        } elseif ($isTenant) {
             $items = [
                 [
                     'label' => 'Beranda',

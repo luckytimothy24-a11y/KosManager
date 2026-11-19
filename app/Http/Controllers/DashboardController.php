@@ -72,7 +72,46 @@ class DashboardController extends Controller
             ->pluck('total', 'month');
         $bookingChart = self::monthlySeries($monthlyBookings);
 
-        return view('dashboard.super-admin', compact('stats', 'user', 'revenueChart', 'bookingChart'));
+        // Perlu Tindakan: agregat per jenis (scope super admin - semua)
+        $actionItems = [
+            'pending_kos' => [
+                'count' => Kos::where('status', 'pending')->count(),
+                'route' => 'super-admin.moderation.kos',
+                'label' => 'Kos Menunggu Persetujuan',
+                'icon' => 'ri-building-2-line',
+                'color' => 'amber',
+            ],
+            'pending_photos' => [
+                'count' => \App\Models\KosPhoto::where('status', 'pending')->count(),
+                'route' => 'super-admin.moderation.photos',
+                'label' => 'Foto Menunggu Moderasi',
+                'icon' => 'ri-image-line',
+                'color' => 'blue',
+            ],
+            'pending_advertising' => [
+                'count' => AdvertisingCampaign::where('status', 'pending_review')->count(),
+                'route' => 'super-admin.moderation.advertising',
+                'label' => 'Iklan Menunggu Review',
+                'icon' => 'ri-megaphone-line',
+                'color' => 'purple',
+            ],
+            'pending_damage_reports' => [
+                'count' => DamageReport::where('status', DamageReport::STATUS_PENDING)->count(),
+                'route' => 'super-admin.moderation.damage-reports',
+                'label' => 'Laporan Kerusakan Menunggu',
+                'icon' => 'ri-tools-line',
+                'color' => 'red',
+            ],
+            'inactive_owners' => [
+                'count' => User::where('role', 'owner')->where('is_active', false)->count(),
+                'route' => 'super-admin.owners.index',
+                'label' => 'Owner Menunggu Aktivasi',
+                'icon' => 'ri-user-settings-line',
+                'color' => 'amber',
+            ],
+        ];
+
+        return view('dashboard.super-admin', compact('stats', 'user', 'revenueChart', 'bookingChart', 'actionItems'));
     }
 
     private function admin($user)

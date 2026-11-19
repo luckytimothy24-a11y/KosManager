@@ -19,6 +19,46 @@
             </div>
         </header>
 
+        {{-- ============================================================
+             PERLU TINDAKAN
+             ============================================================ --}}
+        @php
+            $totalActions = collect($actionItems ?? [])->sum('count');
+        @endphp
+        <section aria-label="Perlu tindakan" class="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated p-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="flex items-center gap-2 text-base font-bold text-slate-900 dark:text-slate-50">
+                    <i class="ri-inbox-2-line text-primary-500"></i> Perlu Tindakan
+                </h2>
+                @if($totalActions > 0)
+                    <span class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-300 px-2.5 py-0.5 text-xs font-bold">{{ $totalActions }} item</span>
+                @endif
+            </div>
+            @if($totalActions === 0)
+                <div class="flex items-center gap-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3">
+                    <i class="ri-checkbox-circle-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                    <p class="text-sm text-emerald-800 dark:text-emerald-300">Tidak ada yang perlu ditindak. Semua sudah terkendali.</p>
+                </div>
+            @else
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach($actionItems as $key => $item)
+                        @if($item['count'] > 0)
+                            <a href="{{ route($item['route']) }}" class="group flex items-center gap-3 rounded-xl border border-slate-100 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02] p-4 hover:border-primary-200 dark:hover:border-primary-500/30 transition">
+                                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-{{ $item['color'] }}-50 text-{{ $item['color'] }}-600 dark:bg-{{ $item['color'] }}-500/15 dark:text-{{ $item['color'] }}-400">
+                                    <i class="{{ $item['icon'] }} text-lg"></i>
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 truncate">{{ $item['label'] }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ $item['count'] }} item menunggu</p>
+                                </div>
+                                <i class="ri-arrow-right-s-line text-slate-400 group-hover:text-primary-500 transition"></i>
+                            </a>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
         {{-- Primary Stat Cards — unique gradient treatment per metric --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="metric-card group">
