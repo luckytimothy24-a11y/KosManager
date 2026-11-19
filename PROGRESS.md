@@ -32,11 +32,11 @@
 - [x] Butir 5: DashboardActionItemsTest (commit e9eedb9)
 
 ## Tahap 4: Wizard Booking, Pembayaran, dan Timeline
-- [x] Butir 1: Wizard booking 3 langkah (commit c9feffd)
+- [x] Butir 1: Wizard booking 3 langkah (commit c9feffd, 93ceda1)
 - [x] Butir 2: Image preview + sticky submit di payment (commit cd6bea0)
 - [x] Butir 3: Timeline mobile summary (commit cd6bea0)
 - [x] Butir 4: Aksesibilitas - x-form-field + focus management (commit 48cc6e7)
-- [ ] Butir 5: Test validasi bertahap dan alur sukses (belum)
+- [x] Butir 5: BookingWizardTest (commit 93ceda1)
 
 ## Tahap 5: Dokumentasi, E2E, dan Monitoring
 - [ ] Belum dimulai
