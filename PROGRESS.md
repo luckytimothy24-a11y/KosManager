@@ -38,6 +38,12 @@
 - [x] Butir 4: Aksesibilitas - x-form-field + focus management (commit 48cc6e7)
 - [x] Butir 5: BookingWizardTest (commit 93ceda1)
 
+## Tahap 6: Super Admin Flow Improvements
+- [x] Bottom nav khusus super admin (Beranda | User | Moderasi | Settings | Profil)
+- [x] Perlu Tindakan section di dashboard super admin
+- [ ] Sidebar reorganisasi (belum)
+- [ ] Notifikasi ke super admin (belum)
+
 ## Tahap 5: Dokumentasi, E2E, dan Monitoring
 - [x] Butir 1: README.md sudah ada (comprehensive)
 - [x] Butir 2: CI GitHub Actions sudah ada (.github/workflows/ci.yml)
