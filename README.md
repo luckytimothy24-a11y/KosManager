@@ -300,6 +300,57 @@ Project menggunakan **GitHub Actions** (`.github/workflows/ci.yml`) yang berjala
 
 Pipeline gagal jika salah satu tahap gagal, sehingga regresi terdeteksi sebelum merge.
 
+## Deployment dengan Docker
+
+Project menyediakan `Dockerfile` dan `docker-compose.yml` untuk deployment produksi.
+
+### Prasyarat
+- Docker & Docker Compose terpasang
+- File `.env` dikonfigurasi (atau gunakan `.env.docker` sebagai template)
+
+### Menjalankan dengan Docker Compose
+
+```bash
+# Copy .env.docker sebagai .env (sesuaikan nilai)
+cp .env.docker .env
+php artisan key:generate
+
+# Build dan jalankan
+docker-compose up -d --build
+
+# Jalankan migrasi & seeder
+docker-compose exec app php artisan migrate --seed
+
+docker-compose exec app php artisan storage:link
+```
+
+Aplikasi berjalan di `http://localhost:8000`.
+
+### Layanan yang Dijalankan
+| Service | Port | Keterangan |
+|---------|------|------------|
+| app (Nginx + PHP-FPM) | 8000 | Web server + PHP-FPM + queue worker |
+| db (MySQL 8.0) | 3306 | Database |
+| redis (Redis 7) | 6379 | Cache, session, queue |
+
+### Perintah Berguna
+
+```bash
+# Lihat log
+docker-compose logs -f app
+
+# Jalankan artisan command
+docker-compose exec app php artisan migrate
+
+docker-compose exec app php artisan queue:work
+
+# Stop
+docker-compose down
+
+# Stop dan hapus volume
+docker-compose down -v
+```
+
 ## Future Development
 
 Rencana pengembangan selanjutnya (belum diimplementasikan):
