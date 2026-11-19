@@ -24,6 +24,8 @@ class NotificationType
 
     public const DAMAGE_REPORT = 'damage_report';
 
+    public const KOS_MODERATION = 'kos_moderation';
+
     public static function label(string $type): string
     {
         return match ($type) {
@@ -37,6 +39,7 @@ class NotificationType
             self::MESSAGE => 'Pesan',
             self::IDENTITY => 'Identitas',
             self::DAMAGE_REPORT => 'Lapor Kerusakan',
+            self::KOS_MODERATION => 'Moderasi Kos',
             default => 'Lainnya',
         };
     }
@@ -54,6 +57,7 @@ class NotificationType
             self::MESSAGE => self::label(self::MESSAGE),
             self::IDENTITY => self::label(self::IDENTITY),
             self::DAMAGE_REPORT => self::label(self::DAMAGE_REPORT),
+            self::KOS_MODERATION => self::label(self::KOS_MODERATION),
         ];
     }
 }

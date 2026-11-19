@@ -29,6 +29,7 @@ class Kernel extends ConsoleKernel
         }
 
         $schedule->command('notification:cleanup')->monthly();
+        $schedule->command('payments:purge-rejected-proofs')->weekly()->withoutOverlapping();
     }
 
     /**

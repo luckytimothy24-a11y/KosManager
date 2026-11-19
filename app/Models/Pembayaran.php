@@ -23,9 +23,13 @@ class Pembayaran extends Model
 
     // Refund status constants
     public const REFUND_NONE = 'none';
+
     public const REFUND_REQUESTED = 'requested';
+
     public const REFUND_APPROVED = 'approved';
+
     public const REFUND_REJECTED = 'rejected';
+
     public const REFUND_COMPLETED = 'completed';
 
     /**
@@ -188,5 +192,30 @@ class Pembayaran extends Model
     public function isFromGateway(): bool
     {
         return $this->gateway_provider !== null;
+    }
+
+    /**
+     * Kebijakan riwayat bukti bayar:
+     * - Record pembayaran TIDAK dihapus (audit trail).
+     * - Saat proof_file diganti pada record yang sama, file lama dihapus
+     *   agar tidak ada bukti yatim (orphan) di disk privat.
+     * - Purge file pembayaran rejected yang lama ditangani command
+     *   payments:purge-rejected-proofs.
+     */
+    public function setProofFileAttribute(?string $value): void
+    {
+        if ($this->exists && $value !== null) {
+            $oldProof = $this->getOriginal('proof_file');
+
+            if ($oldProof && $oldProof !== $value) {
+                try {
+                    \Storage::disk('private')->delete($oldProof);
+                } catch (\Throwable $e) {
+                    \Log::warning('Failed to delete replaced payment proof: '.$e->getMessage());
+                }
+            }
+        }
+
+        $this->attributes['proof_file'] = $value;
     }
 }

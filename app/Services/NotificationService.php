@@ -7,7 +7,6 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Support\NotificationType;
 use Illuminate\Support\Facades\Mail;
-use App\Services\PushNotificationService;
 
 class NotificationService
 {
@@ -55,7 +54,7 @@ class NotificationService
 
             // Send push notification
             try {
-                $pushService = new PushNotificationService();
+                $pushService = new PushNotificationService;
                 if ($pushService->isAvailable()) {
                     $pushService->sendToUser($userId, $title, $message, $data['url'] ?? null, $data);
                 }
@@ -114,6 +113,23 @@ class NotificationService
         foreach ($superAdminIds as $adminId) {
             self::create($adminId, NotificationType::DAMAGE_REPORT, 'Laporan Kerusakan Baru', "{$tenantName} melaporkan kerusakan di kos {$kosName} yang menunggu review.", ['url' => $url]);
         }
+    }
+
+    public static function kosCreatedForModeration(array $superAdminIds, string $ownerName, string $kosName, ?string $url = null): void
+    {
+        foreach ($superAdminIds as $adminId) {
+            self::create($adminId, NotificationType::KOS_MODERATION, 'Kos Baru Menunggu Moderasi', "{$ownerName} menambahkan kos \"{$kosName}\" yang menunggu persetujuan.", ['url' => $url]);
+        }
+    }
+
+    public static function kosApproved(int $ownerId, string $kosName): void
+    {
+        self::create($ownerId, NotificationType::KOS_MODERATION, 'Kos Disetujui', "Kos \"{$kosName}\" telah disetujui dan aktif di marketplace.");
+    }
+
+    public static function kosRejected(int $ownerId, string $kosName, string $reason): void
+    {
+        self::create($ownerId, NotificationType::KOS_MODERATION, 'Kos Ditolak', "Kos \"{$kosName}\" ditolak. Alasan: {$reason}");
     }
 
     public static function kontrakActive(int $tenantId, string $contractNumber): void

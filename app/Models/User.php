@@ -29,6 +29,9 @@ class User extends Authenticatable
         'identity_number',
         'avatar',
         'is_active',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
     ];
 
     /**
@@ -39,6 +42,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -49,7 +54,32 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'two_factor_secret' => 'encrypted',
+        'two_factor_recovery_codes' => 'encrypted:array',
+        'two_factor_confirmed_at' => 'datetime',
     ];
+
+    /**
+     * Apakah 2FA sudah aktif dan terkonfirmasi.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return $this->two_factor_confirmed_at !== null && $this->two_factor_secret !== null;
+    }
+
+    /**
+     * Role yang dianjurkan/diwajibkan memakai 2FA.
+     */
+    public function twoFactorRequired(): bool
+    {
+        if (! config('two-factor.enforce', false)) {
+            return false;
+        }
+
+        $roles = config('two-factor.enforce_roles', ['super_admin', 'admin']);
+
+        return in_array($this->role, $roles, true);
+    }
 
     public function ownedKos()
     {

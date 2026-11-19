@@ -12,6 +12,7 @@ use App\Models\Fasilitas;
 use App\Models\Favorite;
 use App\Models\Kamar;
 use App\Models\Kos;
+use App\Models\KosPhoto;
 use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\Tagihan;
@@ -75,14 +76,14 @@ class DashboardController extends Controller
         // Perlu Tindakan: agregat per jenis (scope super admin - semua)
         $actionItems = [
             'pending_kos' => [
-                'count' => Kos::where('status', 'pending')->count(),
+                'count' => Kos::where('moderation_status', 'pending')->count(),
                 'route' => 'super-admin.moderation.kos',
                 'label' => 'Kos Menunggu Persetujuan',
                 'icon' => 'ri-building-2-line',
                 'color' => 'amber',
             ],
             'pending_photos' => [
-                'count' => \App\Models\KosPhoto::where('status', 'pending')->count(),
+                'count' => KosPhoto::where('status', 'pending')->count(),
                 'route' => 'super-admin.moderation.photos',
                 'label' => 'Foto Menunggu Moderasi',
                 'icon' => 'ri-image-line',
@@ -348,7 +349,7 @@ class DashboardController extends Controller
             $kontrak = $penghuni->kontraks()->where('status', 'active')->first();
 
             // Pending bookings (menunggu pembayaran) milik tenant ini
-            $pendingBookings = \App\Models\Booking::where('user_id', $user->id)
+            $pendingBookings = Booking::where('user_id', $user->id)
                 ->where('status', 'pending')
                 ->with(['kos', 'kamar'])
                 ->latest()

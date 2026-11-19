@@ -66,7 +66,9 @@ class TransferBankPaymentTest extends TestCase
 
     public function test_tenant_can_submit_transfer_bank_payment_with_proof(): void
     {
-        $proof = UploadedFile::fake()->create('bukti-transfer.png', 200, 'image/png');
+        // PNG 1x1 valid (tanpa GD): dibutuhkan SafeImage/getimagesize.
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==');
+        $proof = UploadedFile::fake()->createWithContent('bukti-transfer.png', $png);
 
         $response = $this->actingAs($this->tenant)->post(route('tenant.pembayaran.store'), [
             'tagihan_id' => $this->tagihan->id,

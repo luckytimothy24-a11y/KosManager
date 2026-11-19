@@ -10,6 +10,7 @@ use App\Models\Fasilitas;
 use App\Models\Kos;
 use App\Models\KosPhoto;
 use App\Models\User;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -77,6 +78,8 @@ class KosController extends Controller
         $user = $request->user();
         if ($user->isOwner()) {
             $data['owner_id'] = $user->id;
+            // Kos yang dibuat owner harus melalui moderasi super admin.
+            $data['moderation_status'] = 'pending';
         } else {
             // Admin (or super_admin) must be assigned to at least one kos owned by the target owner
             $request->validate([
@@ -95,6 +98,8 @@ class KosController extends Controller
             }
 
             $data['owner_id'] = $targetOwnerId;
+            // Kos yang dibuat operator (admin/super_admin) langsung disetujui.
+            $data['moderation_status'] = 'approved';
         }
 
         // Legacy single photo backward compat
@@ -165,6 +170,23 @@ class KosController extends Controller
             }
 
             throw $e;
+        }
+
+        // Notifikasi ke super admin jika kos baru menunggu moderasi.
+        if ($data['moderation_status'] === 'pending') {
+            try {
+                $superAdminIds = User::where('role', 'super_admin')->where('is_active', true)->pluck('id')->toArray();
+                if (! empty($superAdminIds)) {
+                    NotificationService::kosCreatedForModeration(
+                        $superAdminIds,
+                        $user->name,
+                        $kos->name,
+                        route('super-admin.moderation.kos')
+                    );
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Kos moderation notification failed: '.$e->getMessage());
+            }
         }
 
         return redirect()->route($request->user()->isAdmin() ? 'admin.kos.index' : 'owner.kos.index')->with('success', 'Kos berhasil ditambahkan.');

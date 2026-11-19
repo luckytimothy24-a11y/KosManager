@@ -9,6 +9,7 @@ use App\Models\DamageReport;
 use App\Models\Kos;
 use App\Models\KosPhoto;
 use App\Services\AuditLogService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ModerationController extends Controller
@@ -135,6 +136,14 @@ class ModerationController extends Controller
 
         AuditLogService::approve('Moderation', "Kos \"{$kos->name}\" disetujui (sebelumnya: {$previousStatus})", data: ['kos_id' => $kos->id, 'previous_status' => $previousStatus]);
 
+        try {
+            if ($kos->owner_id) {
+                NotificationService::kosApproved($kos->owner_id, $kos->name);
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Kos approval notification failed: '.$e->getMessage());
+        }
+
         return redirect()->route(auth()->user()->isAdmin() ? 'admin.moderation.kos' : 'super-admin.moderation.kos')->with('success', "Kos {$kos->name} berhasil disetujui.");
     }
 
@@ -153,6 +162,14 @@ class ModerationController extends Controller
         ]);
 
         AuditLogService::reject('Moderation', "Kos \"{$kos->name}\" ditolak (sebelumnya: {$previousStatus})", data: ['kos_id' => $kos->id, 'previous_status' => $previousStatus, 'reason' => $data['reason']]);
+
+        try {
+            if ($kos->owner_id) {
+                NotificationService::kosRejected($kos->owner_id, $kos->name, $data['reason']);
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Kos rejection notification failed: '.$e->getMessage());
+        }
 
         return redirect()->route(auth()->user()->isAdmin() ? 'admin.moderation.kos' : 'super-admin.moderation.kos')->with('success', "Kos {$kos->name} berhasil ditolak.");
     }

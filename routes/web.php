@@ -1,11 +1,15 @@
 <?php
-Route::get('/offline', function () { return view('offline'); })->name('offline');
-Route::get('/health', \App\Http\Controllers\HealthCheckController::class)->name('health');
+
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+Route::get('/health', HealthCheckController::class)->name('health');
 
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
 use App\Http\Controllers\AdvertisingClickController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Owner\AdminOwnerMessageController;
@@ -27,6 +31,7 @@ use App\Http\Controllers\Owner\PayoutDisbursementController;
 use App\Http\Controllers\Owner\PembayaranController;
 use App\Http\Controllers\Owner\PenghuniController;
 use App\Http\Controllers\Owner\PropertyOwnerPayoutController;
+use App\Http\Controllers\Owner\RefundController;
 use App\Http\Controllers\Owner\TagihanController;
 use App\Http\Controllers\Owner\TenantBookingController;
 use App\Http\Controllers\Owner\TenantBookingPaymentController;
@@ -49,9 +54,12 @@ use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\SettingsController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\Tenant\BookingOccupantIdentityController;
+use App\Http\Controllers\Tenant\DisputeController;
+use App\Http\Controllers\Tenant\MarketplaceController;
 use App\Http\Controllers\Tenant\TenantBookingOccupantController;
 use App\Http\Controllers\Tenant\TenantCheckInController;
 use App\Http\Controllers\Tenant\TenantInvitationController;
+use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\Webhook\PaymentGatewayWebhookController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +85,18 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Two-factor authentication (TOTP)
+    Route::prefix('two-factor')->name('two-factor.')->group(function () {
+        Route::get('/', [TwoFactorController::class, 'index'])->name('index');
+        Route::post('enable', [TwoFactorController::class, 'enable'])->name('enable')->middleware('throttle:6,1');
+        Route::get('confirm', [TwoFactorController::class, 'showConfirm'])->name('confirm');
+        Route::post('confirm', [TwoFactorController::class, 'confirm'])->name('confirm.store')->middleware('throttle:6,1');
+        Route::post('disable', [TwoFactorController::class, 'disable'])->name('disable')->middleware('throttle:6,1');
+        Route::post('recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('recovery-codes')->middleware('throttle:6,1');
+        Route::get('challenge', [TwoFactorController::class, 'challenge'])->name('challenge');
+        Route::post('challenge', [TwoFactorController::class, 'verifyChallenge'])->name('challenge.verify')->middleware('throttle:5,1');
+    });
 
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])
         ->name('notifications.markAllRead');
@@ -273,9 +293,9 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::get('laporan/export-excel', [LaporanController::class, 'exportCombinedExcel'])->name('laporan.export-excel');
 
     // Refund management
-    Route::get('refund', [App\Http\Controllers\Owner\RefundController::class, 'index'])->name('refund.index');
-    Route::post('refund/{pembayaran}/approve', [App\Http\Controllers\Owner\RefundController::class, 'approve'])->name('refund.approve');
-    Route::post('refund/{pembayaran}/reject', [App\Http\Controllers\Owner\RefundController::class, 'reject'])->name('refund.reject');
+    Route::get('refund', [RefundController::class, 'index'])->name('refund.index');
+    Route::post('refund/{pembayaran}/approve', [RefundController::class, 'approve'])->name('refund.approve');
+    Route::post('refund/{pembayaran}/reject', [RefundController::class, 'reject'])->name('refund.reject');
 });
 
 // Admin Routes
@@ -422,24 +442,24 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
     Route::get('laporan', [TenantLaporanController::class, 'index'])->name('laporan.index');
 
     // Dispute (komplain)
-    Route::get('dispute', [App\Http\Controllers\Tenant\DisputeController::class, 'index'])->name('dispute.index');
-    Route::get('dispute/create', [App\Http\Controllers\Tenant\DisputeController::class, 'create'])->name('dispute.create');
-    Route::post('dispute', [App\Http\Controllers\Tenant\DisputeController::class, 'store'])->name('dispute.store');
-    Route::get('dispute/{dispute}', [App\Http\Controllers\Tenant\DisputeController::class, 'show'])->name('dispute.show');
+    Route::get('dispute', [DisputeController::class, 'index'])->name('dispute.index');
+    Route::get('dispute/create', [DisputeController::class, 'create'])->name('dispute.create');
+    Route::post('dispute', [DisputeController::class, 'store'])->name('dispute.store');
+    Route::get('dispute/{dispute}', [DisputeController::class, 'show'])->name('dispute.show');
 
     // Marketplace (jual barang bekas)
-    Route::get('marketplace', [App\Http\Controllers\Tenant\MarketplaceController::class, 'index'])->name('marketplace.index');
-    Route::get('marketplace/create', [App\Http\Controllers\Tenant\MarketplaceController::class, 'create'])->name('marketplace.create');
-    Route::post('marketplace', [App\Http\Controllers\Tenant\MarketplaceController::class, 'store'])->name('marketplace.store');
-    Route::get('marketplace/my-items', [App\Http\Controllers\Tenant\MarketplaceController::class, 'myItems'])->name('marketplace.my-items');
-    Route::get('marketplace/{item}', [App\Http\Controllers\Tenant\MarketplaceController::class, 'show'])->name('marketplace.show');
-    Route::post('marketplace/{item}/buy', [App\Http\Controllers\Tenant\MarketplaceController::class, 'buy'])->name('marketplace.buy');
-    Route::get('marketplace/{item}/chat', [App\Http\Controllers\Tenant\MarketplaceController::class, 'chat'])->name('marketplace.chat');
-    Route::post('marketplace/{item}/chat', [App\Http\Controllers\Tenant\MarketplaceController::class, 'chatSend'])->name('marketplace.chat.send');
-    Route::post('marketplace/transaction/{transaction}/complete', [App\Http\Controllers\Tenant\MarketplaceController::class, 'completeTransaction'])->name('marketplace.complete');
-    Route::post('marketplace/transaction/{transaction}/review', [App\Http\Controllers\Tenant\MarketplaceController::class, 'storeReview'])->name('marketplace.review');
-    Route::post('marketplace/{item}/report', [App\Http\Controllers\Tenant\MarketplaceController::class, 'report'])->name('marketplace.report');
-    Route::delete('marketplace/{item}', [App\Http\Controllers\Tenant\MarketplaceController::class, 'destroy'])->name('marketplace.destroy');
+    Route::get('marketplace', [MarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('marketplace/create', [MarketplaceController::class, 'create'])->name('marketplace.create');
+    Route::post('marketplace', [MarketplaceController::class, 'store'])->name('marketplace.store');
+    Route::get('marketplace/my-items', [MarketplaceController::class, 'myItems'])->name('marketplace.my-items');
+    Route::get('marketplace/{item}', [MarketplaceController::class, 'show'])->name('marketplace.show');
+    Route::post('marketplace/{item}/buy', [MarketplaceController::class, 'buy'])->name('marketplace.buy');
+    Route::get('marketplace/{item}/chat', [MarketplaceController::class, 'chat'])->name('marketplace.chat');
+    Route::post('marketplace/{item}/chat', [MarketplaceController::class, 'chatSend'])->name('marketplace.chat.send');
+    Route::post('marketplace/transaction/{transaction}/complete', [MarketplaceController::class, 'completeTransaction'])->name('marketplace.complete');
+    Route::post('marketplace/transaction/{transaction}/review', [MarketplaceController::class, 'storeReview'])->name('marketplace.review');
+    Route::post('marketplace/{item}/report', [MarketplaceController::class, 'report'])->name('marketplace.report');
+    Route::delete('marketplace/{item}', [MarketplaceController::class, 'destroy'])->name('marketplace.destroy');
 });
 
 // Tanya Owner — pencari kos (tenant login, tanpa perlu menghuni).
