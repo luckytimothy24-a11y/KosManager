@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\AdvertisingCampaign;
 use App\Models\AdvertisingPackage;
+use App\Models\User;
 use App\Services\AdvertisingAnalytics;
 use App\Services\AdvertisingService;
 use App\Services\AuditLogService;
 use App\Services\NotificationService;
-use App\Models\User;
 use App\Support\AdvertisingLabels;
 use Illuminate\Http\Request;
 
@@ -167,7 +167,7 @@ class AdvertisingController extends Controller
                 );
             }
         } catch (\Exception $e) {
-            \Log::warning('Advertising notification failed: ' . $e->getMessage());
+            \Log::warning('Advertising notification failed: '.$e->getMessage());
         }
 
         return redirect()->route('owner.advertising.show', $campaign)

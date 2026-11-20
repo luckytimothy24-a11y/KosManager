@@ -6,8 +6,6 @@ use App\Models\Booking;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\Pembayaran;
-use App\Models\Penghuni;
-use App\Models\Tagihan;
 use App\Models\User;
 use App\Models\WalletTransaction;
 use App\Services\EscrowService;
@@ -27,8 +25,11 @@ class KosHubPaymentFlowTest extends TestCase
     use RefreshDatabase;
 
     private User $owner;
+
     private User $pencari;
+
     private Kos $kos;
+
     private Kamar $kamar;
 
     protected function setUp(): void

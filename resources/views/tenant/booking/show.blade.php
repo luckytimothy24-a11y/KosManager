@@ -653,7 +653,7 @@
                                                : 'border-slate-200 text-slate-500 hover:border-slate-300 dark:border-white/[0.08] dark:text-slate-400 hover:shadow-sm'">
                                         <input type="radio" id="method-qris" name="payment_method" value="qris" x-model="method" class="sr-only">
                                         <i class="ri-qr-code-2-line text-lg"></i> QRIS
-                                        <span class="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg">INSTANT</span>
+                                        <span class="absolute top-0 right-0 bg-slate-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-bl-lg">MANUAL</span>
                                     </label>
                                 </div>
                                 @error('payment_method') <p class="text-red-500 text-xs mt-1.5" aria-live="polite">{{ $message }}</p> @enderror
@@ -680,59 +680,37 @@
                                 <p class="mt-2 text-[11px] font-medium text-blue-700 dark:text-blue-300">Wajib unggah bukti transfer (JPG/PNG/PDF, maks 5MB).</p>
                             </div>
 
-                            {{-- QRIS detail --}}
+                            {{-- QRIS detail: pembayaran manual + unggah bukti --}}
                             <div x-show="method === 'qris'" x-cloak
                                  x-transition:enter="transition ease-out duration-300"
                                  x-transition:enter-start="opacity-0 translate-y-2"
                                  x-transition:enter-end="opacity-100 translate-y-0"
-                                 class="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-500/5 dark:to-blue-500/5 p-5" aria-live="polite">
+                                 class="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-500/5 p-5" aria-live="polite">
                                 <div class="flex items-center gap-2 mb-3">
                                     <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
                                         <i class="ri-qr-code-2-line text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="text-sm font-bold text-emerald-800 dark:text-emerald-200">Bayar dengan QRIS</p>
-                                        <p class="text-[11px] text-emerald-600 dark:text-emerald-400">Scan & bayar instan</p>
+                                        <p class="text-sm font-bold text-emerald-800 dark:text-emerald-200">QRIS (Verifikasi Manual)</p>
+                                        <p class="text-[11px] text-emerald-600 dark:text-emerald-400">Bayar, lalu unggah bukti</p>
                                     </div>
                                 </div>
                                 <p class="text-xs leading-relaxed text-slate-600 dark:text-slate-300 mb-4">
-                                    Scan QR code di bawah menggunakan aplikasi banking atau e-wallet Anda (GoPay, OVO, Dana, ShopeePay, dll).
-                                    Pembayaran akan terverifikasi otomatis setelah berhasil.
+                                    Scan QRIS milik pemilik kos yang tercantum pada instruksi pembayaran, lalu unggah bukti pembayaran di bawah.
+                                    Pemilik kos akan memeriksa bukti tersebut secara manual.
                                 </p>
-                                <div class="flex flex-col items-center gap-3">
-                                    <div class="p-3 bg-white rounded-2xl shadow-lg border border-emerald-100 dark:border-emerald-500/20">
-                                        @php
-                                            $qrCodeData = 'QRIS|BOOKING|' . $booking->booking_code . '|' . $paymentAmount;
-                                            $qrCode = 'https://api.qrserver.com/v1/create-qr-code/?data=' . urlencode($qrCodeData) . '&size=220x220';
-                                        @endphp
-                                        <img src="{{ $qrCode }}" alt="QRIS Booking {{ $booking->booking_code }}" class="rounded-lg" style="width: 220px; height: 220px;">
-                                    </div>
-                                    <div class="text-center">
-                                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Pembayaran</p>
-                                        <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">Rp {{ number_format($paymentAmount, 0, ',', '.') }}</p>
-                                    </div>
+                                <div class="rounded-xl border border-emerald-100 dark:border-emerald-500/20 bg-white/70 dark:bg-white/5 p-4 text-center">
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Total Pembayaran</p>
+                                    <p class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">Rp {{ number_format($paymentAmount, 0, ',', '.') }}</p>
+                                    <p class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Booking {{ $booking->booking_code }}</p>
                                 </div>
-                                <div class="mt-4 grid grid-cols-3 gap-2 text-center">
-                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
-                                        <i class="ri-flashlight-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
-                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Instan</p>
-                                    </div>
-                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
-                                        <i class="ri-shield-check-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
-                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Aman</p>
-                                    </div>
-                                    <div class="bg-white/60 dark:bg-white/5 rounded-lg p-2">
-                                        <i class="ri-bank-card-line text-emerald-600 dark:text-emerald-400 text-lg"></i>
-                                        <p class="text-[10px] font-semibold text-slate-600 dark:text-slate-300 mt-0.5">Semua Bank</p>
-                                    </div>
-                                </div>
-                                <p class="mt-3 text-[11px] text-emerald-700 dark:text-emerald-300 text-center font-medium">Pembayaran QRIS otomatis tervalidasi sistem.</p>
+                                <p class="mt-3 text-[11px] text-emerald-700 dark:text-emerald-300 text-center font-medium">Booking dikonfirmasi setelah bukti pembayaran diverifikasi pemilik kos.</p>
                             </div>
 
                             <div>
                                 <label for="proof_file" class="field-label">
                                     Bukti Pembayaran
-                                    <span class="font-normal" x-text="method === 'transfer_bank' ? '(wajib — JPG/PNG/PDF, maks 5MB)' : '(opsional — JPG/PNG/PDF, maks 5MB)'"></span>
+                                    <span class="font-normal" x-text="method === 'transfer_bank' ? '(wajib — JPG/PNG/PDF, maks 5MB)' : '(disarankan — JPG/PNG/PDF, maks 5MB)'"></span>
                                 </label>
                                 <input type="file" id="proof_file" name="proof_file" x-ref="proofInput" accept=".jpg,.jpeg,.png,.pdf"
                                        x-bind:required="method === 'transfer_bank'"

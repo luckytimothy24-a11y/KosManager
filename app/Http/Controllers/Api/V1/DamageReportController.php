@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\DamageReport;
 use App\Models\Kamar;
+use App\Models\Kos;
 use App\Models\Penghuni;
 use App\Models\User;
 use App\Services\NotificationService;
@@ -101,12 +102,12 @@ class DamageReportController extends Controller
                 NotificationService::damageReportCreated(
                     $superAdminIds,
                     $user->name,
-                    \App\Models\Kos::find((int) $validated['kos_id'])?->name ?? 'kos',
+                    Kos::find((int) $validated['kos_id'])?->name ?? 'kos',
                     route('super-admin.moderation.damage-reports')
                 );
             }
         } catch (\Exception $e) {
-            \Log::warning('Damage report notification failed: ' . $e->getMessage());
+            \Log::warning('Damage report notification failed: '.$e->getMessage());
         }
 
         return response()->json([

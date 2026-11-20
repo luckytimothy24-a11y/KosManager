@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\UploadedFile;
-use App\Rules\SafeImage;
 
 class SafeUpload implements Rule
 {
@@ -24,7 +24,8 @@ class SafeUpload implements Rule
 
         // Gambar: terapkan SafeImage (content check)
         if (in_array($realMime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
-            $safeImage = new SafeImage();
+            $safeImage = new SafeImage;
+
             return $safeImage->passes($attribute, $value);
         }
 

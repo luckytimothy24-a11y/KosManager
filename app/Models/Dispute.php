@@ -29,13 +29,19 @@ class Dispute extends Model
     ];
 
     public const STATUS_OPEN = 'open';
+
     public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_RESOLVED = 'resolved';
+
     public const STATUS_CLOSED = 'closed';
 
     public const TYPE_PAYMENT = 'payment';
+
     public const TYPE_BILLING = 'billing';
+
     public const TYPE_SERVICE = 'service';
+
     public const TYPE_OTHER = 'other';
 
     public function user(): BelongsTo

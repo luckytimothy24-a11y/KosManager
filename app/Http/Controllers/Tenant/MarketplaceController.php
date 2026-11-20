@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Models\MarketplaceItem;
+use App\Models\MarketplaceReport;
+use App\Models\MarketplaceReview;
 use App\Models\MarketplaceTransaction;
+use App\Models\Message;
+use App\Rules\SafeImage;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class MarketplaceController extends Controller
@@ -58,7 +63,7 @@ class MarketplaceController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'condition' => ['required', 'in:baru,bekas,rusak_ringan'],
             'category' => ['required', 'in:elektronik,furniture,pakaian,buku,lainnya'],
-            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new \App\Rules\SafeImage],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048', new SafeImage],
         ]);
 
         $imagePath = null;
@@ -85,6 +90,7 @@ class MarketplaceController extends Controller
     public function show(MarketplaceItem $item)
     {
         $item->load(['user', 'kos']);
+
         return view('tenant.marketplace.show', compact('item'));
     }
 
@@ -95,11 +101,11 @@ class MarketplaceController extends Controller
         $sellerId = $item->user_id;
 
         $kosId = $item->kos_id;
-        if (!$kosId && $item->user->penghunis()->exists()) {
+        if (! $kosId && $item->user->penghunis()->exists()) {
             $kosId = $item->user->penghunis()->first()->kos_id;
         }
 
-        $messages = \App\Models\Message::with('sender')
+        $messages = Message::with('sender')
             ->where('kos_id', $kosId)
             ->where(function ($q) use ($buyerId, $sellerId) {
                 $q->where('sender_id', $buyerId)->where('receiver_id', $sellerId);
@@ -118,13 +124,13 @@ class MarketplaceController extends Controller
         ]);
 
         $kosId = $item->kos_id;
-        if (!$kosId && $item->user->penghunis()->exists()) {
+        if (! $kosId && $item->user->penghunis()->exists()) {
             $kosId = $item->user->penghunis()->first()->kos_id;
         }
 
         abort_unless($kosId, 404, 'Tidak dapat mengirim pesan.');
 
-        \App\Models\Message::create([
+        Message::create([
             'kos_id' => $kosId,
             'owner_id' => null, // Chat marketplace antar-tenant, bukan percakapan owner.
             'sender_id' => auth()->id(),
@@ -156,11 +162,11 @@ class MarketplaceController extends Controller
 
         // Notifikasi ke seller
         try {
-            \App\Services\NotificationService::create(
+            NotificationService::create(
                 $item->user_id,
                 'marketplace_sold',
                 'Barang Dibeli',
-                "{$request->user()->name} ingin membeli {$item->title} seharga Rp " . number_format($item->price, 0, ',', '.'),
+                "{$request->user()->name} ingin membeli {$item->title} seharga Rp ".number_format($item->price, 0, ',', '.'),
                 ['url' => route('tenant.marketplace.show', $item)],
                 "marketplace-buy:{$transaction->id}"
             );
@@ -200,7 +206,7 @@ class MarketplaceController extends Controller
             ? $transaction->seller_id
             : $transaction->buyer_id;
 
-        \App\Models\MarketplaceReview::create([
+        MarketplaceReview::create([
             'transaction_id' => $transaction->id,
             'reviewer_id' => auth()->id(),
             'reviewee_id' => $revieweeId,
@@ -218,7 +224,7 @@ class MarketplaceController extends Controller
             'description' => ['nullable', 'string', 'max:500'],
         ]);
 
-        \App\Models\MarketplaceReport::create([
+        MarketplaceReport::create([
             'item_id' => $item->id,
             'reporter_id' => $request->user()->id,
             'reason' => $validated['reason'],

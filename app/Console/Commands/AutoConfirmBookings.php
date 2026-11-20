@@ -64,7 +64,7 @@ class AutoConfirmBookings extends Command
                     $result = $escrowService->settleEscrow($locked);
 
                     if (! ($result['ok'] ?? false)) {
-                        throw new \RuntimeException('Settlement gagal: ' . ($result['error'] ?? 'unknown'));
+                        throw new \RuntimeException('Settlement gagal: '.($result['error'] ?? 'unknown'));
                     }
 
                     $completed = true;

@@ -12,25 +12,40 @@ services:
       APP_NAME: KosManager
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: http://localhost:8000
+      APP_URL: ${APP_URL:-http://localhost:8000}
       DB_CONNECTION: mysql
       DB_HOST: db
       DB_PORT: 3306
       DB_DATABASE: kosmanager
       DB_USERNAME: kosmanager
-      DB_PASSWORD: secret
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
       CACHE_DRIVER: redis
       SESSION_DRIVER: redis
+      SESSION_SECURE_COOKIE: "false"
       QUEUE_CONNECTION: redis
       REDIS_HOST: redis
-      BROADCAST_DRIVER: null
+      BROADCAST_DRIVER: log
+      MAIL_MAILER: smtp
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      MAIL_FROM_ADDRESS: no-reply@kosmanager.test
+      PAYMENT_GATEWAY: sandbox
+      PAYMENT_GATEWAY_WEBHOOK_KEY: ${PAYMENT_GATEWAY_WEBHOOK_KEY:-demo-webhook-key-change-me}
     depends_on:
       db:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      mailpit:
         condition: service_started
     volumes:
       - storage_data:/var/www/html/storage
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/up"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
     restart: unless-stopped
 
   db:
@@ -39,17 +54,17 @@ services:
     environment:
       MYSQL_DATABASE: kosmanager
       MYSQL_USER: kosmanager
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: rootsecret
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootsecret}
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD:-rootsecret}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
   redis:
@@ -59,6 +74,19 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: kosmanager-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
     restart: unless-stopped
 
 volumes:

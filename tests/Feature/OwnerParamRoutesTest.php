@@ -18,6 +18,7 @@ class OwnerParamRoutesTest extends TestCase
     {
         $u = User::factory()->create();
         $u->forceFill(['role' => 'owner'])->save();
+
         return $u;
     }
 
@@ -26,7 +27,8 @@ class OwnerParamRoutesTest extends TestCase
         $this->app['auth']->forgetGuards();
         $r = $this->actingAs($user)->get($url);
         $e = $r->baseResponse->exception ?? null;
-        return [$r->getStatusCode(), $e ? get_class($e) . ': ' . $e->getMessage() : ''];
+
+        return [$r->getStatusCode(), $e ? get_class($e).': '.$e->getMessage() : ''];
     }
 
     private function check(string $label, User $owner, User $other, string $url): void
@@ -43,7 +45,7 @@ class OwnerParamRoutesTest extends TestCase
         $a = $this->makeOwner();
         $b = $this->makeOwner();
 
-        $kos   = Kos::factory()->create(['owner_id' => $a->id]);
+        $kos = Kos::factory()->create(['owner_id' => $a->id]);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $booking = Booking::factory()->create(['kos_id' => $kos->id, 'kamar_id' => $kamar->id]);
         $kontrak = Kontrak::factory()->create(['kos_id' => $kos->id, 'kamar_id' => $kamar->id]);

@@ -85,7 +85,7 @@ class WebhookTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $gateway = \App\Services\PaymentGateway\PaymentGatewayManager::driver();
+        $gateway = PaymentGatewayManager::driver();
         $payload = [
             'gateway_reference' => 'NONEXISTENT-REF',
             'status' => 'success',

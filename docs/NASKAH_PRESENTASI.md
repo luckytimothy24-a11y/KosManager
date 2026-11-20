@@ -15,11 +15,11 @@ Assalamualaikum warahmatullahi wabarakatuh / selamat pagi Bapak-Ibu penguji, Bap
 
 Perkenalkan, saya **[nama lengkap]**, dari **[kampus/divisi/universitas]**. Pada kesempatan kali ini, izinkan saya mempresentasikan hasil project yang saya kerjakan, yaitu **KosManager — Sistem Manajemen Kos Berbasis Web**.
 
-Project ini dibangun menggunakan framework **Laravel versi 10**, dengan database **MySQL**, frontend **Blade + Tailwind CSS**, dan dilengkapi **246 automated test** yang seluruhnya lulus, serta pipeline **CI/CD GitHub Actions** yang berjalan otomatis.
+Project ini dibangun menggunakan framework **Laravel versi 10**, dengan database **MySQL**, frontend **Blade + Tailwind CSS**, dan dilengkapi **2355 automated test** yang seluruhnya lulus, serta pipeline **CI/CD GitHub Actions** yang berjalan otomatis.
 
 Selama presentasi berikutnya, saya akan menjelaskan lima hal: pertama, latar belakang mengapa aplikasi ini dibuat; kedua, arsitektur dan struktur database-nya; ketiga, logika di balik setiap fitur; keempat, sisi keamanan dan testing; dan kelima, demonstrasi singkat aplikasi secara live.
 
-*Kiat penyampaian: sebut angka "246 test" sejak awal — ini langsung memberi kesan project ini serius, bukan sekadar CRUD biasa.*
+*Kiat penyampaian: sebut angka "2355 test" sejak awal — ini langsung memberi kesan project ini serius, bukan sekadar CRUD biasa.*
 
 ---
 
@@ -108,7 +108,7 @@ Sekarang sisi teknologi. Saya jelaskan bukan hanya *apa*-nya, tapi *kenapa*-nya.
 
 **MySQL** sebagai database production karena relasional dan cocok dengan struktur data kos yang sangat relasional: kos–kamar–kontrak–tagihan–pembayaran.
 
-Menariknya, **automated test dijalankan di SQLite in-memory** — bukan MySQL. Alasannya: SQLite in-memory membuat test suite berjalan sangat cepat dan tanpa setup server database. SQL yang digunakan aplikasi adalah SQL standar yang kompatibel di kedua engine, dan ini sudah dibuktikan oleh suite test itu sendiri.
+Menariknya, **automated test dijalankan di SQLite in-memory** - bukan MySQL. Alasannya: SQLite in-memory membuat test suite tidak membutuhkan server database dan tetap cepat untuk ribuan test. SQL yang digunakan aplikasi adalah SQL standar yang kompatibel di kedua engine, dan ini sudah dibuktikan oleh suite test itu sendiri. Pada mesin lokal, seluruh suite (± 2.355 test) selesai dalam sekitar 15-20 menit.
 
 Untuk frontend, saya memilih **Blade + Tailwind CSS + Alpine.js** yang di-build dengan **Vite**. Blade server-rendered membuat keamanan state tidak tersebar ke client; Tailwind memberi konsistensi desain dengan sistem utility; dan Alpine.js cukup untuk interaktivitas ringan seperti **preview foto real-time**, **modal konfirmasi**, **toggle show/hide password**, **dropdown notifikasi**, dan **estimasi biaya booking** — tanpa perlu kompleksitas SPA framework. Icon menggunakan **Remix Icon** yang di-load via CDN, dan font menggunakan **Lato** via Bunny CDN.
 
@@ -178,7 +178,7 @@ Database KosManager terdiri dari tabel-tabel berikut — saya sebutkan beserta k
 **Tabel keuangan:**
 
 11. **tagihans** — bill_number unik (`TB-{uniqid}`), bill_type (sewa_kamar, listrik, air, internet, kebersihan, lainnya), period_start, period_end, subtotal, discount, penalty, total, due_date, dan status: unpaid, pending_verification, paid, overdue, cancelled.
-12. **pembayarans** — payment_number unik (`PY-{uniqid}`), tagihan_id, penghuni_id, amount, payment_date, payment_method (transfer_bank, e_wallet, cash), proof_file, verification_status (pending/approved/rejected), admin_notes alasan penolakan, verified_by, dan verified_at.
+12. **pembayarans** - payment_number unik (`PY-{uniqid}`), tagihan_id, penghuni_id, amount, payment_date, payment_method (transfer_bank, qris), proof_file, verification_status (pending/approved/rejected), admin_notes alasan penolakan, verified_by, dan verified_at.
 
 **Tabel pendukung:**
 
@@ -316,7 +316,7 @@ Di halaman detail tagihan, tenant melihat rincian lengkap: breakdown subtotal-di
 
 Ini fitur yang paling sensitif, karena menyangkut uang. Saya jelaskan alurnya lengkap.
 
-Ketika tagihan belum lunas, tenant menekan "Bayar". Halaman menampilkan **instruksi pembayaran dari pengelola** — nomor rekening yang sudah diatur di data kos. Tenant memilih metode — transfer bank, e-wallet/QRIS, atau tunai — lalu meng-upload bukti berupa gambar atau PDF (maksimal 5MB).
+Ketika tagihan belum lunas, tenant menekan "Bayar". Halaman menampilkan **instruksi pembayaran dari pengelola** - nomor rekening yang sudah diatur di data kos. Tenant memilih metode **transfer bank** atau **QRIS**, lalu meng-upload bukti berupa gambar atau PDF (maksimal 5MB) untuk diverifikasi owner. Verifikasi bersifat manual; tidak ada klaim pembayaran otomatis pada demo ini.
 
 Di titik ini ada **empat proteksi**:
 
@@ -370,7 +370,7 @@ SuperAdmin melihat rekap global seluruh kos; owner melihat rekap miliknya saja. 
 
 Tiga komponen membuat aplikasi ini terasa "hidup".
 
-**Pertama, notifikasi.** Melalui NotificationService, setiap peristiwa penting memicu notifikasi — ada **12 tipe notifikasi**:
+**Pertama, notifikasi.** Melalui NotificationService, setiap peristiwa penting memicu notifikasi - ada **11 tipe notifikasi**:
 - Booking baru untuk owner
 - Booking disetujui/ditolak/diexpirasi untuk tenant
 - Kontrak aktif untuk tenant
@@ -423,13 +423,13 @@ Dan poin terpenting yang ingin saya tekankan: **semua klaim keamanan ini tidak b
 ---
 
 ## SLIDE 18 — Automated Testing
-**Judul slide:** 246 Test · 704 Assertion · Hijau
+**Judul slide:** 2355 Test · 8027 Assertion · Hijau
 
 ### Teks Narasi
 
 Ini bagian yang paling membedakan project ini dari kebanyakan aplikasi serupa: **automated testing yang sungguh-sungguh**.
 
-Angka terbaru: **246 test, 704 assertion, semuanya lulus**, dieksekusi di SQLite in-memory sehingga selesai dalam waktu di bawah satu menit.
+Angka terbaru: **2.355 test, 8.027 assertion, semuanya lulus**, dieksekusi di SQLite in-memory. Pada mesin lokal seluruh suite selesai dalam sekitar 15-20 menit; angka ini terus bertambah setiap kali ada perbaikan.
 
 Cakupannya terbagi dalam beberapa kategori:
 
@@ -456,7 +456,7 @@ Filosofinya sederhana: **setiap bug yang ditemukan, ditutup dengan test baru** �
 
 Untuk menjaga kualitas tetap terjaga setelah project selesai, saya pasang pipeline **CI/CD dengan GitHub Actions** di `.github/workflows/ci.yml`.
 
-Pipeline berjalan otomatis pada dua kejadian: **setiap push ke branch develop** dan **setiap pull request menuju develop**.
+Pipeline berjalan otomatis pada dua kejadian: **setiap push ke branch mana pun** dan **setiap pull request**. Branch utama `develop` selalu menjadi acuan versi final.
 
 Langkah-langkahnya di runner Ubuntu:
 
@@ -464,7 +464,7 @@ Satu — checkout repository. Dua — install PHP 8.2 dengan extension yang dibu
 
 Aturannya keras: **pipeline gagal jika salah satu saja gagal** — test gagal, build gagal, atau gaya kode menyimpang. Artinya, kode yang rusak tidak akan pernah diam-diam masuk ke branch develop.
 
-Pipeline ini sudah berjalan dan **berhasil hijau pada run pertama** — badge statusnya terpasang di README repository. Untuk pengembangan tim ke depan, langkah naturalnya adalah branch protection rule agar merge hanya boleh jika CI hijau.
+Pipeline ini sudah berjalan dan **menjaga setiap perubahan tetap tervalidasi** - badge statusnya terpasang di README repository. Untuk pengembangan tim ke depan, langkah naturalnya adalah branch protection rule agar merge hanya boleh jika CI hijau.
 
 ---
 
@@ -493,7 +493,7 @@ Sekarang saya tunjukkan aplikasinya secara langsung. Saya akan mengikuti alur bi
 
 Itu satu siklus lengkap: **booking sampai lunas, dalam hitungan menit.**
 
-*Akun demo dari seeder: superadmin@ / owner@ / admin@ / tenant@example.com, password: password.*
+*Akun demo dari seeder: superadmin@example.com / owner@example.com / admin@example.com / pencari@example.com, password: password.*
 
 ---
 
@@ -506,7 +506,7 @@ Sebagai penutup, izinkan saya merangkum tiga hal.
 
 **Pertama, dari sisi produk** — KosManager menyelesaikan empat masalah nyata pengelolaan kos: pencatatan tersebar, booking bentrok, tagihan tak terpantau, dan bukti bayar tidak aman — dalam satu alur terintegrasi yang menjaga konsistensi status kamar dan keuangan. Empat peran dengan hak akses berbeda memastikan setiap pengguna hanya melihat dan mengelola apa yang menjadi tanggung jawabnya.
 
-**Kedua, dari sisi engineering** — project ini menerapkan praktik pengembangan modern secara utuh: 13 model Eloquent dengan migrasi ber-index, 14 FormRequest validation, 9 Policy authorization, 2 Service class, 4 scheduled command, 12 tipe notifikasi, queue email, 246 automated test dengan coverage race condition dan security, code style PSR-12, dan pipeline CI/CD yang hijau.
+**Kedua, dari sisi engineering** - project ini menerapkan praktik pengembangan modern secara utuh: 43 model Eloquent dengan migrasi ber-index, 33 FormRequest validation, 30 Policy authorization, 30 Service class, 11 scheduled task, 11 tipe notifikasi, queue email, 2.355 automated test dengan coverage race condition dan security, code style PSR-12, dan pipeline CI/CD yang hijau.
 
 **Ketiga, dari sisi ke depan** — pengembangan berikutnya sudah terpetakan: REST API untuk integrasi mobile, notifikasi realtime via WebSocket, integrasi payment gateway agar verifikasi otomatis, deployment automation dengan container, backup database otomatis, serta master data untuk tipe kamar dan tipe tagihan. Semua ini tercatat sebagai roadmap di dokumentasi — bukan klaim fitur.
 
@@ -522,7 +522,7 @@ Wassalamualaikum warahmatullahi wabarakatuh.
 | # | Kemungkinan pertanyaan | Jawaban ringkas |
 |---|------------------------|-----------------|
 | 1 | Kenapa Blade, bukan React/Vue? | Scope fokus ke business logic, keamanan, dan testing. Blade + Alpine ringan, SEO-friendly, tanpa kompleksitas SPA dan tanpa API layer yang belum dibutuhkan. |
-| 2 | Kenapa test pakai SQLite, production MySQL? | SQLite in-memory membuat test cepat (<1 menit) tanpa setup DB. SQL yang dipakai standar ANSI — terbukti kompatibel karena suite yang sama memvalidasi logic yang jalan di MySQL. |
+| 2 | Kenapa test pakai SQLite, production MySQL? | SQLite in-memory tidak membutuhkan server DB dan tetap cepat untuk ribuan test. SQL yang dipakai standar ANSI - terbukti kompatibel karena suite yang sama memvalidasi logic yang jalan di MySQL. |
 | 3 | Bagaimana mencegah satu kamar dibooking dobel? | Validasi server-side: cek status kamar + query overlap periode terhadap booking approved pada kamar yang sama, termasuk kasus rentang terkandung. |
 | 4 | Bagaimana mencegah dobel bayar / dobel verifikasi? | Satu submission aktif per tagihan, nominal divalidasi ulang saat verifikasi, dan semua aksi approve/reject dalam transaction + lockForUpdate. |
 | 5 | Kalau admin "nakal" akses kos lain? | Tidak bisa — penugasan via pivot kos_user, query ter-scope, dan policy menolak level record. Ada isolation test khusus untuk skenario ini. |
@@ -533,7 +533,7 @@ Wassalamualaikum warahmatullahi wabarakatuh.
 | 10 | Bagaimana onboarding developer baru? | README berisi instalasi lengkap + akun demo seeder + ERD di docs/ERD.md + naskah presentasi ini; CI memastikan kontribusi baru tidak merusak apapun. |
 | 11 | Apakah bisa deploy sekarang? | Ya untuk skala kecil (VPS + MySQL + queue worker + cron scheduler). Deployment automation tercatat di roadmap. |
 | 12 | Kenapa ada dark mode? | UX — banyak pengelola kos bekerja malam hari. Persistensi via localStorage, deteksi preferensi sistem di kunjungan pertama. |
-| 13 | Bagaimana cara kerja notifikasi? | 12 tipe notifikasi via NotificationService: in-app (bell icon) + email berqueue. Setiap peristiwa penting memicu notifikasi otomatis ke pihak terkait. |
+| 13 | Bagaimana cara kerja notifikasi? | 11 tipe notifikasi via NotificationService: in-app (bell icon) + email berqueue. Setiap peristiwa penting memicu notifikasi otomatis ke pihak terkait. |
 | 14 | Format export laporan apa yang tersedia? | PDF via DomPDF (layout branded) dan CSV via native PHP (BOM UTF-8 untuk Excel). Filter tanggal dan kos tersedia sebelum export. |
 | 15 | Bagaimana penanganan user yang dinonaktifkan? | LoginRequest mengecek `is_active` setelah password valid. Jika false, session langsung di-destroy dengan pesan "Akun Anda telah dinonaktifkan." |
 
@@ -542,19 +542,19 @@ Wassalamualaikum warahmatullahi wabarakatuh.
 | Fakta | Nilai |
 |-------|-------|
 | Framework | Laravel 10, PHP 8.2 |
-| Test | **246 passed, 704 assertions** |
+| Test | **2355 passed, 8027 assertions** |
 | Code style | Pint clean (PSR-12) |
-| Routes | ±120 routes terdaftar |
-| Model | 13 model Eloquent |
-| Database | 15 tabel + 3 performance indexes |
-| Policy | 9 policy |
-| FormRequest | 14 class validasi |
-| Service | 2 (AuditLogService, NotificationService) |
-| Notifikasi | 12 tipe (booking/payment/billing/checkin/checkout/kontrak) |
-| Scheduled commands | 4 (overdue, remind, expire booking, expire kontrak) |
-| Role | 4 (super_admin, owner, admin, tenant) |
+| Routes | 428 route terdaftar |
+| Model | 43 model Eloquent |
+| Database | 52 tabel + migrasi ber-index |
+| Policy | 30 policy |
+| FormRequest | 33 class validasi |
+| Service | 30 class service |
+| Notifikasi | 11 tipe (booking/payment/billing/checkin/checkout/kontrak, dll.) |
+| Scheduled tasks | 11 (overdue, remind, expire booking, expire kontrak, auto-generate, backup, dll.) |
+| Role | 4 (super_admin, owner, admin, tenant/pencari) |
 | Export | 2 format (PDF via DomPDF, CSV via native PHP) |
 | Landing page | Hero + search + property grid + features + stats |
-| CI | GitHub Actions — push/PR ke develop, hijau di run pertama |
+| CI | GitHub Actions - push/PR, test + build + Pint |
 | Dark mode | localStorage persistence + system preference detection |
-| Commit terakhir | `chore: add CI pipeline and finalize project documentation` |
+| Branch final | `develop` (versi final) |

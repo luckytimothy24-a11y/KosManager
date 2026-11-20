@@ -119,7 +119,7 @@ class Phase32InvitationDiscoverabilityTest extends TestCase
         $b = $this->book();
         $res = $this->actingAs($this->primary)->postJson(route('tenant.booking.invite', $b), ['email' => 'secondary@example.com']);
         $res->assertStatus(403);
-        
+
         $secondary_count = BookingOccupant::where('booking_id', $b->id)->where('occupant_index', '>', 1)->count();
         $this->assertSame(0, $secondary_count);
     }

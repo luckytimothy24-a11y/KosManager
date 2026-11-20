@@ -260,7 +260,6 @@ class AdvertisingCampaign extends Model
         return (int) now()->startOfDay()->diffInDays($this->ends_at->copy()->startOfDay(), false);
     }
 
-
     public function displayCta(): string
     {
         return $this->cta_label ?: ($this->isThirdParty() ? 'Lihat Penawaran' : 'Lihat Detail');

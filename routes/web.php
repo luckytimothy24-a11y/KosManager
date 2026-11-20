@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
 use App\Http\Controllers\AdvertisingClickController;
+use App\Http\Controllers\Api\V1\DeviceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\NotificationController;
@@ -67,9 +68,28 @@ Route::get('/ad/click/{campaign}', [AdvertisingClickController::class, 'track'])
 Route::get('/health', HealthController::class)->name('health');
 Route::get('/up', HealthController::class)->name('up');
 
+// Service worker disajikan dari root agar scope-nya mencakup seluruh aplikasi.
+// File build tetap di public/build/sw.js; header Service-Worker-Allowed
+// diperlukan saat registrasi memakai scope "/".
+Route::get('/sw.js', function () {
+    $path = public_path('build/sw.js');
+    abort_unless(is_file($path), 404);
+
+    return response()->file($path, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+        'Service-Worker-Allowed' => '/',
+        'Cache-Control' => 'no-cache, no-store, must-revalidate',
+    ]);
+})->name('service-worker');
+
 Route::get('/offline', function () {
     return view('offline');
 })->name('offline');
+
+// Registrasi perangkat untuk push notification dari browser (sesi + CSRF).
+Route::post('/devices/register', [DeviceController::class, 'register'])
+    ->middleware(['auth', 'active'])
+    ->name('devices.register');
 
 Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'active', 'verified'])

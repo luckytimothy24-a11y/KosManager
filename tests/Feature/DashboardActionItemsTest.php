@@ -3,13 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Booking;
-use App\Models\CheckIn;
-use App\Models\CheckOut;
 use App\Models\Kamar;
 use App\Models\Kos;
-use App\Models\Pembayaran;
-use App\Models\Penghuni;
-use App\Models\Tagihan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

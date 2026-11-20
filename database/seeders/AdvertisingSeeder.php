@@ -281,7 +281,7 @@ class AdvertisingSeeder extends Seeder
             ],
             // Shopee: iklan marketplace untuk belanja kebutuhan kos (homepage).
             [
-                           'campaign_number' => 'AD-SHOPEE-1',
+                'campaign_number' => 'AD-SHOPEE-1',
                 'advertiser_name' => 'Shopee',
                 'headline' => 'Lengkapi kebutuhan kos tanpa bikin kantong boncos.',
                 'advertiser_description' => 'Mulai dari perlengkapan kamar sampai kebutuhan harian, temukan pilihan menarik untuk anak kos.',

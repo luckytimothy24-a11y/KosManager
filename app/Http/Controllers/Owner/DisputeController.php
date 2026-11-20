@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Dispute;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class DisputeController extends Controller
@@ -31,6 +32,7 @@ class DisputeController extends Controller
     public function show(Dispute $dispute)
     {
         $dispute->load(['user', 'pembayaran', 'tagihan', 'booking']);
+
         return view('owner.dispute.show', compact('dispute'));
     }
 
@@ -50,7 +52,7 @@ class DisputeController extends Controller
 
         // Notifikasi ke tenant
         try {
-            \App\Services\NotificationService::create(
+            NotificationService::create(
                 $dispute->user_id,
                 'dispute_update',
                 'Dispute Diperbarui',

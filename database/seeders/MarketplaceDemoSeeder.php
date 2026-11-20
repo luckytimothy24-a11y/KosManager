@@ -12,8 +12,9 @@ class MarketplaceDemoSeeder extends Seeder
     public function run(): void
     {
         $tenant = User::where('role', 'pencari')->first();
-        if (!$tenant) {
+        if (! $tenant) {
             $this->command->warn('No tenant user found. Skipping marketplace seeding.');
+
             return;
         }
 
@@ -89,7 +90,7 @@ class MarketplaceDemoSeeder extends Seeder
             $sourcePath = base_path($data['image']);
             if (file_exists($sourcePath)) {
                 $ext = pathinfo($sourcePath, PATHINFO_EXTENSION);
-                $filename = 'marketplace/' . uniqid() . '.' . $ext;
+                $filename = 'marketplace/'.uniqid().'.'.$ext;
                 Storage::disk('public')->put($filename, file_get_contents($sourcePath));
                 $imagePath = $filename;
             }
@@ -107,6 +108,6 @@ class MarketplaceDemoSeeder extends Seeder
             ]);
         }
 
-        $this->command->info('Marketplace demo items seeded: ' . count($items));
+        $this->command->info('Marketplace demo items seeded: '.count($items));
     }
 }

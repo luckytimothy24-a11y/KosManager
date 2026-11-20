@@ -19,7 +19,7 @@ class StoreDisbursementRequest extends FormRequest
         return [
             'amount' => ['required', 'numeric', 'min:0.01'],
             'idempotency_key' => ['required', 'string', 'min:8', 'max:64'],
-            'proof_file' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120', new SafeUpload()],
+            'proof_file' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120', new SafeUpload],
             'proof_path' => ['prohibited'],
             'transferred_at' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],

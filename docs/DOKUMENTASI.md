@@ -339,7 +339,7 @@ Migrasi: existing `2026_09_10_000003` (`confirmed_at`) + `2026_09_11_000001` (`i
 
 ### F. Verifikasi C.4 (ringkas, detail lihat laporan C.4)
 
-Target suite: **47 passed / 174 assertions** (`IdentityConfirmationTest 20`, `CheckInSecurityTest 12`, `CheckInOutTest 9`, `BusinessFlowTest 2`, `PasswordResetTest 4`). `npm run build` PASS, `pint --test` PASS (C.3). Full suite tidak diselesaikan dalam window 120 detik (timeout, bukan failure). Browser/HTTP C.4 pada `390×844`: tenant own PASS, tenant other 403, tenant self-confirm 403, owner scoped review PASS (masking, confirm/reject), owner cross-scope 403, reject/resubmit/confirm semua PASS, responsive no overflow/clipping. Catatan C4-10: final `process` via browser reuse dataset terblokir oleh `kamar/penghuni` state reuse — bukan bug identity (identity prerequisite PASS, `BusinessFlowTest` dengan DB fresh memverifikasi final process).
+Hasil full suite terbaru: **2.355 passed / 8.027 assertions** (SQLite in-memory, sekitar 15-20 menit pada mesin lokal). `npm run build` PASS (termasuk service worker PWA), `pint --test` PASS. Cakupan mencakup identity ownership, isolation boundary, payment security, race condition, PWA, dan command otomasi.
 
 ## 10. Tagihan & Monitoring Sisa Sewa
 
@@ -522,12 +522,14 @@ terdeteksi di repo. `[PARTIALLY IMPLEMENTED]` terkait cakupan API (belum semua f
 2. Marketplace: cari kos/kamar → favorit/klik iklan (tracking) → `booking.create`.
 3. Booking → **langsung approved** → kamar `booked` → notifikasi ke owner & tenant.
 4. Datang ke kos → pengelola **check-in** (data identitas) → Penghuni active + Kontrak (`KT-…`) → kamar `occupied`.
-5. Tagihan dibuat (otomatis/manual) → tenant lihat tagihan → bayar (**transfer ke rekening Owner** / cash / e-wallet, opsional bukti) → status `pending_verification`.
+5. Tagihan dibuat (otomatis/manual) → tenant lihat tagihan → bayar (**transfer ke rekening Owner** atau QRIS, unggah bukti) → status `pending_verification`.
 6. Owner/Admin **verifikasi** → `paid`, kamar/statistik ter-update (termasuk pemulihan overdue bila perlu).
 7. Sewa berakhir → tenant/pengelola **request check-out** → approve → kamar `available`, kontrak berakhir.
 
 > **Rekening Pembayaran Owner**: setiap Owner mengatur satu rekening bank tujuan (`owner_bank_accounts`, 1:1 per owner) melalui menu sidebar **Keuangan → Rekening Pembayaran**. Saat tenant membayar (tagihan/booking), rekening Owner ditampilkan server-side melalui relasi `Kos → owner → bankAccount` (fallback: `kos.payment_info` free-text). Nomor rekening lengkap tampil di halaman pembayaran tenant; di dashboard Owner hanya versi masked. KosManager tidak memegang dana tenant — transfer langsung Tenant → rekening Owner; KosManager hanya mencatat instruksi, menerima bukti, dan mencatat status pembayaran.
 
+> **Status demo:** fitur payout ke pemilik asli **disembunyikan dari navigasi** dan tidak termasuk alur presentasi. Route/controller masih tersedia untuk pengembangan lanjutan; jangan ditampilkan saat demo.
+>
 > **Payout ke Pemilik Kos Asli** (`Keuangan → Payout Pemilik`): model bisnis membedakan **Owner (pengelola/partner/perantara)** dari **Pemilik Kos Asli (property owner)** — pihak yang benar-benar memiliki properti dan berhak menerima hasil pendapatan. Alur: pendapatan kos (pembayaran approved) → payout `pending` → Owner **transfer manual di luar aplikasi** ke rekening pemilik asli (`property_owner_bank_accounts`) → upload bukti → `transferred` → **Super Admin verifikasi** → `verified` (atau `rejected` → Owner resubmit record yang sama). Nominal dihitung **server-side** dari `pembayarans` approved (tagihan chain + booking chain) yang `payment_date` masuk periode payout; `platform_fee` MVP = 0 dan tidak editable Owner (Hak Pemilik = seluruh pendapatan eligible). Anti duplicate: `UNIQUE(kos_id, period_start, period_end)`. `property_owner_id` di-resolve dari `kos.property_owner_id` — bukan dari request. KosManager **tidak memegang dana** dan **tidak melakukan transfer otomatis** — hanya mencatat kewajiban, bukti, dan status. Fitur ini **terpisah** dari `payment_distributions` (distribusi booking → hak role Owner) dan dari `owner_bank_accounts` (rekening tujuan pembayaran tenant).
 
 ### B. Mitra pengiklan (super admin / partner / owner)
@@ -623,7 +625,7 @@ Rekomendasi prioritas:
 | Super Admin | superadmin@example.com | password | super_admin |
 | Admin | admin@example.com | password | admin |
 | Owner | owner@example.com | password | owner |
-| Tenant | tenant@example.com | password | tenant |
+| Pencari Kos | pencari@example.com | password | pencari |
 (+ factory: 2 owner, 5 tenant — :60-68)
 
 ### Data demo

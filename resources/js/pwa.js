@@ -1,7 +1,7 @@
 ﻿const sw = import.meta.env.MODE === "production" ? "/sw.js" : "/dev-sw.js";
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", function() {
-        navigator.serviceWorker.register(sw)
+        navigator.serviceWorker.register(sw, { scope: "/" })
             .then(function(registration) {
                 console.log("SW registered:", registration.scope);
                 // Check for push subscription
@@ -31,10 +31,15 @@ function urlBase64ToUint8Array(base64String) {
     return outputArray;
 }
 
+// Push subscription hanya relevan untuk pengguna yang sudah login.
+function isAuthenticated() {
+    return !!document.querySelector('meta[name="auth-user"]');
+}
+
 // Check if user has push subscription
 async function checkPushSubscription(registration) {
-    if (!("PushManager" in window)) {
-        console.log("Push not supported");
+    if (!isAuthenticated() || !("PushManager" in window) || !("Notification" in window)) {
+        console.log("Push not available for this page");
         return;
     }
     var subscription = await registration.pushManager.getSubscription();
@@ -101,8 +106,9 @@ async function subscribeToPush(registration) {
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(vapidKey)
         });
-        // Send subscription to server
-        await fetch("/api/v1/devices/register", {
+        // Send subscription to server. Endpoint web memakai sesi + CSRF,
+        // sehingga tidak bergantung pada Sanctum stateful API.
+        var response = await fetch("/devices/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -115,6 +121,9 @@ async function subscribeToPush(registration) {
                 subscription_data: subscription.toJSON()
             })
         });
+        if (!response.ok) {
+            throw new Error("Device registration failed: " + response.status);
+        }
         console.log("Push subscription registered");
     } catch (error) {
         console.error("Push subscription failed:", error);

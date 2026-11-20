@@ -15,6 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="KosManager">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="auth-user" content="{{ auth()->id() }}">
     <meta name="vapid-public-key" content="{{ config('services.vapid.public_key') }}">
     @php
         $routeName = optional(request()->route())->getName();

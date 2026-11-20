@@ -50,8 +50,12 @@ COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 # Supervisor config
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Entrypoint: siapkan .env/APP_KEY, migrate, cache config, lalu jalankan supervisor
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Expose port
 EXPOSE 80
 
-# Start supervisor
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

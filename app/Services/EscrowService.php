@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Pembayaran;
-use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
 
@@ -141,6 +140,7 @@ class EscrowService
                     ->get()
                     ->first(function (WalletTransaction $transaction) {
                         $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                         return isset($metadata['settled_from_escrow_id'], $metadata['settlement_entry_role'])
                             && in_array($metadata['settlement_entry_role'], ['commission', 'owner_entitlement'], true);
                     });
@@ -160,18 +160,21 @@ class EscrowService
                 ->get()
                 ->filter(function (WalletTransaction $transaction) use ($sourceEscrowId) {
                     $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                     return (int) ($metadata['settled_from_escrow_id'] ?? 0) === $sourceEscrowId
                         && in_array($metadata['settlement_entry_role'] ?? null, ['commission', 'owner_entitlement'], true);
                 });
 
             $commissionMarker = $markers->first(function (WalletTransaction $transaction) {
                 $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                 return ($metadata['settlement_entry_role'] ?? null) === 'commission'
                     && $transaction->status === 'completed';
             });
 
             $ownerMarker = $markers->first(function (WalletTransaction $transaction) {
                 $metadata = is_array($transaction->metadata) ? $transaction->metadata : [];
+
                 return ($metadata['settlement_entry_role'] ?? null) === 'owner_entitlement'
                     && $transaction->type === 'escrow_in'
                     && $transaction->status === 'completed';

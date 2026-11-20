@@ -22,7 +22,7 @@ class TransferPayoutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'proof_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120', new SafeUpload()],
+            'proof_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120', new SafeUpload],
             'transferred_at' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];

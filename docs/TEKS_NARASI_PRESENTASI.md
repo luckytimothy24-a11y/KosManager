@@ -8,7 +8,7 @@ Assalamualaikum warahmatullahi wabarakatuh, selamat pagi Bapak-Ibu penguji, Bapa
 
 Perkenalkan, saya **[nama lengkap]**, dari **[kampus/universitas]**. Pada kesempatan kali ini, izinkan saya mempresentasikan hasil project yang saya kerjakan, yaitu KosManager — Sistem Manajemen Kos Berbasis Web.
 
-Project ini dibangun menggunakan framework Laravel versi 10, dengan database MySQL, frontend Blade plus Tailwind CSS, dan dilengkapi 246 automated test yang seluruhnya lulus, serta pipeline CI/CD GitHub Actions yang berjalan otomatis.
+Project ini dibangun menggunakan framework Laravel versi 10, dengan database MySQL, frontend Blade plus Tailwind CSS, dan dilengkapi 2355 automated test yang seluruhnya lulus, serta pipeline CI/CD GitHub Actions yang berjalan otomatis.
 
 Selama presentasi berikutnya, saya akan menjelaskan lima hal: pertama, latar belakang mengapa aplikasi ini dibuat; kedua, arsitektur dan struktur database-nya; ketiga, logika di balik setiap fitur; keempat, sisi keamanan dan testing; dan kelima, demonstrasi singkat aplikasi secara live.
 
@@ -68,7 +68,7 @@ Laravel 10 dengan PHP 8.2 dipilih karena menyediakan ekosistem lengkap out-of-th
 
 MySQL sebagai database production karena relasional dan cocok dengan struktur data kos yang sangat relasional: kos, kamar, kontrak, tagihan, pembayaran.
 
-Menariknya, automated test dijalankan di SQLite in-memory — bukan MySQL. Alasannya: SQLite in-memory membuat test suite berjalan sangat cepat dan tanpa setup server database. SQL yang digunakan aplikasi adalah SQL standar yang kompatibel di kedua engine, dan ini sudah dibuktikan oleh suite test itu sendiri.
+Menariknya, automated test dijalankan di SQLite in-memory - bukan MySQL. Alasannya: SQLite in-memory tidak membutuhkan server database dan tetap cepat untuk ribuan test. SQL yang digunakan aplikasi adalah SQL standar yang kompatibel di kedua engine, dan ini sudah dibuktikan oleh suite test itu sendiri. Pada mesin lokal, seluruh suite selesai dalam sekitar 15-20 menit.
 
 Untuk frontend, saya memilih Blade plus Tailwind CSS plus Alpine.js yang di-build dengan Vite. Blade server-rendered membuat keamanan state tidak tersebar ke client; Tailwind memberi konsistensi desain dengan sistem utility; dan Alpine.js cukup untuk interaktivitas ringan seperti preview foto real-time, modal konfirmasi, toggle show-hide password, dropdown notifikasi, dan estimasi biaya booking — tanpa perlu kompleksitas SPA framework. Icon menggunakan Remix Icon yang di-load via CDN, dan font menggunakan Lato via Bunny CDN.
 
@@ -220,7 +220,7 @@ SuperAdmin melihat rekap global seluruh kos; owner melihat rekap miliknya saja. 
 
 Tiga komponen membuat aplikasi ini terasa hidup.
 
-Pertama, notifikasi. Melalui NotificationService, setiap peristiwa penting memicu notifikasi — ada 12 tipe notifikasi: booking baru untuk owner; booking disetujui, ditolak, atau diexpirasi untuk tenant; kontrak aktif untuk tenant; pembayaran dikirim untuk owner; pembayaran diverifikasi atau ditolak untuk tenant; tagihan terbit untuk tenant; tagihan mendekati jatuh tempo untuk tenant; tagihan terlambat untuk tenant; check-in berhasil untuk tenant; check-out diajukan untuk owner; dan check-out disetujui untuk tenant. Notifikasi masuk ke bell notification in-app dengan badge unread, dan sekaligus dikirim sebagai email melalui queue — pengguna tidak perlu refresh mencari tahu apa yang berubah. Tombol Tandai semua sudah dibaca tersedia di dropdown notifikasi.
+Pertama, notifikasi. Melalui NotificationService, setiap peristiwa penting memicu notifikasi - ada 11 tipe notifikasi: booking baru untuk owner; booking disetujui, ditolak, atau diexpirasi untuk tenant; kontrak aktif untuk tenant; pembayaran dikirim untuk owner; pembayaran diverifikasi atau ditolak untuk tenant; tagihan terbit untuk tenant; tagihan mendekati jatuh tempo untuk tenant; tagihan terlambat untuk tenant; check-in berhasil untuk tenant; check-out diajukan untuk owner; dan check-out disetujui untuk tenant. Notifikasi masuk ke bell notification in-app dengan badge unread, dan sekaligus dikirim sebagai email melalui queue — pengguna tidak perlu refresh mencari tahu apa yang berubah. Tombol Tandai semua sudah dibaca tersedia di dropdown notifikasi.
 
 Kedua, audit log. Setiap aksi signifikan — login, logout, create, update, delete, approve, reject — dicatat oleh AuditLogService: siapa, melakukan apa, pada modul apa, kapan, dan dari IP berapa. SuperAdmin dapat menelusuri seluruh jejak ini di halaman timeline yang terpaginasi. Setiap entri menampilkan badge aksi berwarna, timestamp dalam zona WIB, dan metadata JSON yang bisa di-expand. Ini penting untuk akuntabilitas: kalau suatu hari ada sengketa soal pembayaran yang ditolak, jejaknya bisa ditelusuri.
 
@@ -252,7 +252,7 @@ Dan poin terpenting yang ingin saya tekankan: semua klaim keamanan ini tidak ber
 
 Ini bagian yang paling membedakan project ini dari kebanyakan aplikasi serupa: automated testing yang sungguh-sungguh.
 
-Angka terbaru: 246 test, 704 assertion, semuanya lulus, dieksekusi di SQLite in-memory sehingga selesai dalam waktu di bawah satu menit.
+Angka terbaru: 2.355 test, 8.027 assertion, semuanya lulus, dieksekusi di SQLite in-memory. Pada mesin lokal seluruh suite selesai dalam sekitar 15-20 menit.
 
 Cakupannya terbagi dalam beberapa kategori. Unit test menguji logika murni: perhitungan total tagihan dengan diskon dan denda termasuk kasus edge seperti diskon sama dengan subtotal, total negatif, ceiling months untuk periode parsial; transisi status booking; pembangkitan kode booking dan nomor bill unik; perilaku service notifikasi dan audit log.
 
@@ -306,7 +306,7 @@ Sebagai penutup, izinkan saya merangkum tiga hal.
 
 Pertama, dari sisi produk — KosManager menyelesaikan empat masalah nyata pengelolaan kos: pencatatan tersebar, booking bentrok, tagihan tak terpantau, dan bukti bayar tidak aman — dalam satu alur terintegrasi yang menjaga konsistensi status kamar dan keuangan. Empat peran dengan hak akses berbeda memastikan setiap pengguna hanya melihat dan mengelola apa yang menjadi tanggung jawabnya.
 
-Kedua, dari sisi engineering — project ini menerapkan praktik pengembangan modern secara utuh: 13 model Eloquent dengan migrasi ber-index, 14 FormRequest validation, 9 Policy authorization, 2 Service class, 4 scheduled command, 12 tipe notifikasi, queue email, 246 automated test dengan coverage race condition dan security, code style PSR-12, dan pipeline CI/CD yang hijau.
+Kedua, dari sisi engineering - project ini menerapkan praktik pengembangan modern secara utuh: 43 model Eloquent dengan migrasi ber-index, 33 FormRequest validation, 30 Policy authorization, 30 Service class, 11 scheduled task, 11 tipe notifikasi, queue email, 2.355 automated test dengan coverage race condition dan security, code style PSR-12, dan pipeline CI/CD yang hijau.
 
 Ketiga, dari sisi ke depan — pengembangan berikutnya sudah terpetakan: REST API untuk integrasi mobile, notifikasi realtime via WebSocket, integrasi payment gateway agar verifikasi otomatis, deployment automation dengan container, backup database otomatis, serta master data untuk tipe kamar dan tipe tagihan. Semua ini tercatat sebagai roadmap di dokumentasi — bukan klaim fitur.
 

@@ -16,7 +16,7 @@ class ManualPayoutService implements PayoutServiceContract
         // Service ini hanya mencatat/mengembalikan reference.
         return [
             'ok' => true,
-            'reference' => $data['reference'] ?? 'MANUAL-' . uniqid(),
+            'reference' => $data['reference'] ?? 'MANUAL-'.uniqid(),
             'error' => null,
         ];
     }

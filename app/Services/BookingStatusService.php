@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Booking;
 use App\Models\BookingCancellationRequest;
 use App\Models\Kamar;
+use App\Models\Pembayaran;
 use App\Models\Penghuni;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -284,31 +285,31 @@ class BookingStatusService
         });
     }
 
-/**
+    /**
      * Tandai pembayaran yang sudah approved sebagai refund requested
      * saat booking dibatalkan oleh owner.
      */
     private function requestRefundForCancelledBooking(Booking $booking, User $actor): void
     {
-        $pembayarans = \App\Models\Pembayaran::where('booking_id', $booking->id)
+        $pembayarans = Pembayaran::where('booking_id', $booking->id)
             ->where('verification_status', 'approved')
             ->where('refund_status', 'none')
             ->get();
 
         foreach ($pembayarans as $pembayaran) {
             $pembayaran->update([
-                'refund_status' => \App\Models\Pembayaran::REFUND_REQUESTED,
+                'refund_status' => Pembayaran::REFUND_REQUESTED,
                 'refund_amount' => $pembayaran->amount,
-                'refund_reason' => 'Booking dibatalkan oleh owner: ' . ($booking->booking_code ?? ''),
+                'refund_reason' => 'Booking dibatalkan oleh owner: '.($booking->booking_code ?? ''),
             ]);
 
             // Notifikasi ke tenant
             try {
-                \App\Services\NotificationService::create(
+                NotificationService::create(
                     $booking->user_id,
                     'refund',
                     'Refund Diminta',
-                    "Booking {$booking->booking_code} dibatalkan. Refund sebesar Rp " . number_format($pembayaran->amount, 0, ',', '.') . " akan diproses.",
+                    "Booking {$booking->booking_code} dibatalkan. Refund sebesar Rp ".number_format($pembayaran->amount, 0, ',', '.').' akan diproses.',
                     ['url' => route('tenant.pembayaran.show', $pembayaran)],
                     "refund:{$pembayaran->id}"
                 );

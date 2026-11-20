@@ -19,28 +19,31 @@ class OwnerParamRoutes2Test extends TestCase
     {
         $u = User::factory()->create();
         $u->forceFill(['role' => $role])->save();
+
         return $u;
     }
 
     private function hit(User $user, string $url)
     {
         $this->app['auth']->forgetGuards();
+
         return $this->actingAs($user)->get($url);
     }
 
     private function err($r): string
     {
         $e = $r->baseResponse->exception ?? null;
-        return $e ? get_class($e) . ': ' . $e->getMessage() : '';
+
+        return $e ? get_class($e).': '.$e->getMessage() : '';
     }
 
     private function check(string $label, User $owner, User $other, string $url): void
     {
         $r = $this->hit($owner, $url);
-        $this->assertSame(200, $r->getStatusCode(), "$label pemilik: " . $r->getStatusCode() . ' ' . $this->err($r) . " ($url)");
+        $this->assertSame(200, $r->getStatusCode(), "$label pemilik: ".$r->getStatusCode().' '.$this->err($r)." ($url)");
 
         $r2 = $this->hit($other, $url);
-        $this->assertContains($r2->getStatusCode(), [403, 404], "$label IDOR: owner lain mendapat " . $r2->getStatusCode() . ' ' . $this->err($r2) . " ($url)");
+        $this->assertContains($r2->getStatusCode(), [403, 404], "$label IDOR: owner lain mendapat ".$r2->getStatusCode().' '.$this->err($r2)." ($url)");
     }
 
     public function test_kontrak_tagihan_and_damage(): void
@@ -49,8 +52,8 @@ class OwnerParamRoutes2Test extends TestCase
         $b = $this->makeUser('owner');
         $tenant = $this->makeUser('pencari');
 
-        $kos     = Kos::factory()->create(['owner_id' => $a->id]);
-        $kamar   = Kamar::factory()->create(['kos_id' => $kos->id]);
+        $kos = Kos::factory()->create(['owner_id' => $a->id]);
+        $kamar = Kamar::factory()->create(['kos_id' => $kos->id]);
         $kontrak = Kontrak::factory()->create(['kos_id' => $kos->id, 'kamar_id' => $kamar->id]);
         $tagihan = Tagihan::factory()->create([
             'kontrak_id' => $kontrak->id,

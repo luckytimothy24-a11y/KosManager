@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CheckoutController;
 use App\Http\Controllers\Api\V1\ContractController;
 use App\Http\Controllers\Api\V1\DamageReportController;
+use App\Http\Controllers\Api\V1\DeviceController;
 use App\Http\Controllers\Api\V1\FavoriteController;
 use App\Http\Controllers\Api\V1\InquiryController;
 use App\Http\Controllers\Api\V1\KosController;
@@ -45,8 +46,8 @@ Route::prefix('v1')->group(function () {
         Route::put('/me', [MeController::class, 'update'])->name('api.v1.me.update');
 
         // Device registration for push notifications
-        Route::post('/devices/register', [App\Http\Controllers\Api\V1\DeviceController::class, 'register'])->name('api.v1.devices.register');
-        Route::post('/devices/unregister', [App\Http\Controllers\Api\V1\DeviceController::class, 'unregister'])->name('api.v1.devices.unregister');
+        Route::post('/devices/register', [DeviceController::class, 'register'])->name('api.v1.devices.register');
+        Route::post('/devices/unregister', [DeviceController::class, 'unregister'])->name('api.v1.devices.unregister');
     });
 
     Route::middleware(['auth:sanctum', 'active', 'role:pencari'])->group(function () {

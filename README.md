@@ -149,7 +149,7 @@ Aturan:
 
 | Kolom | Tujuan |
 |---|---|
-| `identity_number` | Nomor KTP tenant (disimpan penuh, tampil masked ke owner) |
+| `identity_number` | Nomor KTP tenant (terenkripsi at-rest; hash SHA-256 untuk pencarian; tampil masked ke owner) |
 | `phone` | Nomor WhatsApp (dinormalisasi) |
 | `address` | Alamat sesuai KTP |
 | `identity_data_submitted_at` | Waktu pengajuan (set saat submit) |
@@ -206,26 +206,26 @@ Fitur keamanan yang sudah diimplementasikan dan diuji:
 
 ## Automated Testing
 
-Hasil test terbaru (terverifikasi C.3/C.4 — identity ownership):
+Hasil full suite terbaru:
 
 ```
-Target identity/security suite: 47 passed / 174 assertions
-  - IdentityConfirmationTest: 20 passed (68 assertions)
-  - CheckInSecurityTest:      12 passed (46 assertions)
-  - CheckInOutTest:            9 passed (24 assertions)
-  - BusinessFlowTest:          2 passed (28 assertions)
-  - PasswordResetTest:         4 passed (8 assertions)
+2355 passed, 8027 assertions
 Pint:     passed (code style PSR-12)
-Build:    sukses (Vite — 57 modules, 174.98 kB css)
+Build:    sukses (Vite + PWA service worker)
 ```
 
-Target suite di atas **PASS** penuh. Catatan:
+Full suite berjalan di SQLite in-memory dan memakan waktu sekitar 15-20 menit
+pada mesin lokal. Sebelum deploy pastikan seluruh suite lolos:
 
-> `Full suite was not completed within the configured 120-second execution window.` — timeout `php artisan test` (skala >1300 test, bukan failure). Browser/HTTP verification C.4 pada `390×844`: tenant own booking PASS, tenant other booking 403, tenant self-confirm 403, owner scoped review PASS (masking, confirm/reject), owner cross-scope 403, reject/reason PASS, resubmit PASS, confirm PASS, confirmed state PASS, responsive no overflow/clipping — PASS. Catatan C4-10: final `process` via browser reuse dataset terblokir oleh `kamar/penghuni` state reuse — bukan bug identity (identity prerequisite PASS, `BusinessFlowTest` dengan DB fresh memverifikasi final process).
+```bash
+php artisan test
+vendor/bin/pint --test
+npm run build
+```
 
-> Sebelum deploy pastikan seluruh suite lolos: `php artisan test`, `vendor/bin/pint --test`, `npm run build`.
-
-Cakupan meliputi unit test logika bisnis, feature test seluruh modul, race condition, security/isolation boundary (termasuk **identity ownership**), hingga command otomasi.
+Cakupan meliputi unit test logika bisnis, feature test seluruh modul, race
+condition, security/isolation boundary (termasuk **identity ownership**),
+PWA, hingga command otomasi.
 
 ## Installation
 
@@ -276,7 +276,7 @@ Akun demo berikut dibuat otomatis oleh seeder (`php artisan migrate --seed`) dan
 | Super Admin | superadmin@example.com | password |
 | Owner | owner@example.com | password |
 | Admin | admin@example.com | password |
-| Tenant | tenant@example.com | password |
+| Pencari Kos | pencari@example.com | password |
 
 > Jangan gunakan kredensial ini di production.
 
@@ -290,7 +290,7 @@ npm run build                 # Frontend production build
 
 ## CI/CD
 
-Project menggunakan **GitHub Actions** (`.github/workflows/ci.yml`) yang berjalan otomatis pada setiap push dan pull request menuju branch `develop`. Pipeline menjalankan:
+Project menggunakan **GitHub Actions** (`.github/workflows/ci.yml`) yang berjalan otomatis pada setiap push ke branch mana pun dan setiap pull request. Pipeline menjalankan:
 
 1. Instalasi dependency Composer & NPM
 2. Build aset frontend (Vite)
@@ -311,27 +311,23 @@ Project menyediakan `Dockerfile` dan `docker-compose.yml` untuk deployment produ
 ### Menjalankan dengan Docker Compose
 
 ```bash
-# Copy .env.docker sebagai .env (sesuaikan nilai)
-cp .env.docker .env
-php artisan key:generate
-
-# Build dan jalankan
+# Build dan jalankan. Entrypoint otomatis menyiapkan .env/APP_KEY,
+# storage:link, migrasi, dan cache config/view.
 docker-compose up -d --build
 
-# Jalankan migrasi & seeder
-docker-compose exec app php artisan migrate --seed
-
-docker-compose exec app php artisan storage:link
+# (Opsional) seed data demo
+docker-compose exec app php artisan db:seed
 ```
 
-Aplikasi berjalan di `http://localhost:8000`.
+Aplikasi berjalan di `http://localhost:8000`, Mailpit di `http://localhost:8025`.
 
 ### Layanan yang Dijalankan
 | Service | Port | Keterangan |
 |---------|------|------------|
-| app (Nginx + PHP-FPM) | 8000 | Web server + PHP-FPM + queue worker |
+| app (Nginx + PHP-FPM) | 8000 | Web server + PHP-FPM + queue worker + scheduler |
 | db (MySQL 8.0) | 3306 | Database |
 | redis (Redis 7) | 6379 | Cache, session, queue |
+| mailpit | 8025 / 1025 | Email development |
 
 ### Perintah Berguna
 

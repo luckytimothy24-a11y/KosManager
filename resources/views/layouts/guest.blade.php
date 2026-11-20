@@ -17,9 +17,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="KosManager">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="vapid-public-key" content="{{ config('services.vapid.public_key') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/pwa.js'])
     <script>
         (function () {
             const stored = localStorage.getItem('theme');

@@ -21,6 +21,7 @@ class WhatsAppNotificationService
 
         if (empty($apiUrl) || empty($apiToken)) {
             Log::info("WhatsApp (no-op): to {$phone}: {$message}");
+
             return false;
         }
 
@@ -33,13 +34,16 @@ class WhatsAppNotificationService
 
             if ($response->successful()) {
                 Log::info("WhatsApp sent to {$phone}");
+
                 return true;
             }
 
-            Log::warning("WhatsApp failed to {$phone}: " . $response->body());
+            Log::warning("WhatsApp failed to {$phone}: ".$response->body());
+
             return false;
         } catch (\Exception $e) {
-            Log::warning("WhatsApp exception to {$phone}: " . $e->getMessage());
+            Log::warning("WhatsApp exception to {$phone}: ".$e->getMessage());
+
             return false;
         }
     }

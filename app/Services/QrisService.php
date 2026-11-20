@@ -12,8 +12,8 @@ class QrisService
      * Format QRIS: staticnya atau dynamic dengan ref pembayaran
      */
     public static function generateQrCode(
-        string $reference = null,
-        float $amount = null,
+        ?string $reference = null,
+        ?float $amount = null,
         int $size = 300
     ): string {
         // QRIS static string (bisa diganti dengan dynamic merchant code dari gateway)
@@ -23,18 +23,18 @@ class QrisService
             ->setSize($size)
             ->setMargin(10);
 
-        $writer = new PngWriter();
+        $writer = new PngWriter;
         $result = $writer->write($qrCode);
 
         // Return base64 encoded image untuk ditampilkan di browser
-        return 'data:image/png;base64,' . base64_encode($result->getString());
+        return 'data:image/png;base64,'.base64_encode($result->getString());
     }
 
     /**
      * Build QRIS string
      * Format minimal: static merchant QRIS atau dynamic dengan referensi pembayaran
      */
-    private static function buildQrisString(string $reference = null, float $amount = null): string
+    private static function buildQrisString(?string $reference = null, ?float $amount = null): string
     {
         // Opsi 1: Static QRIS merchant code
         $merchantCode = env('QRIS_MERCHANT_CODE', '000201011230');
@@ -54,6 +54,6 @@ class QrisService
      */
     public static function formatAmount(float $amount): string
     {
-        return 'Rp ' . number_format($amount, 0, ',', '.');
+        return 'Rp '.number_format($amount, 0, ',', '.');
     }
 }

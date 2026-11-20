@@ -32,6 +32,7 @@ class WalletTransaction extends Model
         if ($this->exists) {
             throw new \RuntimeException('WalletTransaction is append-only and cannot be updated.');
         }
+
         return parent::save($options);
     }
 

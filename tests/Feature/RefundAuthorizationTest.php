@@ -16,21 +16,37 @@ class RefundAuthorizationTest extends TestCase
     use RefreshDatabase;
 
     private User $owner1;
+
     private User $owner2;
+
     private User $tenant1;
+
     private User $tenant2;
+
     private User $superAdmin;
+
     private Kos $kos1;
+
     private Kos $kos2;
+
     private Kamar $kamar1;
+
     private Kamar $kamar2;
+
     private Penghuni $penghuni1;
+
     private Penghuni $penghuni2;
+
     private Booking $booking1;
+
     private Booking $booking2;
+
     private Pembayaran $pembayaranRequested;
+
     private Pembayaran $pembayaranApproved;
+
     private Pembayaran $pembayaranRejected;
+
     private Pembayaran $pembayaranCompleted;
 
     protected function setUp(): void
@@ -208,7 +224,7 @@ class RefundAuthorizationTest extends TestCase
     public function test_approval_changes_status_to_approved_not_completed(): void
     {
         $this->actingAs($this->owner1)->post(route('owner.refund.approve', $this->pembayaranRequested));
-        
+
         $this->pembayaranRequested->refresh();
         $this->assertEquals(Pembayaran::REFUND_APPROVED, $this->pembayaranRequested->refund_status);
         $this->assertNotEquals(Pembayaran::REFUND_COMPLETED, $this->pembayaranRequested->refund_status);
@@ -239,10 +255,10 @@ class RefundAuthorizationTest extends TestCase
     {
         $this->actingAs($this->owner1)->post(route('owner.refund.approve', $this->pembayaranRequested));
         $this->pembayaranRequested->refresh();
-        
+
         $response = $this->actingAs($this->owner1)->post(route('owner.refund.approve', $this->pembayaranRequested));
         $response->assertSessionHasErrors();
-        
+
         $this->pembayaranRequested->refresh();
         $this->assertEquals(Pembayaran::REFUND_APPROVED, $this->pembayaranRequested->refund_status);
     }
@@ -353,7 +369,7 @@ class RefundAuthorizationTest extends TestCase
     {
         $response = $this->actingAs($this->owner1)->post(route('owner.refund.reject', $this->pembayaranRequested), []);
         $response->assertSessionHasErrors('reason');
-        
+
         $this->pembayaranRequested->refresh();
         $this->assertEquals(Pembayaran::REFUND_REQUESTED, $this->pembayaranRequested->refund_status);
     }
@@ -413,11 +429,11 @@ class RefundAuthorizationTest extends TestCase
         // In a real concurrent scenario, row locking would serialize them
         $this->actingAs($this->owner1)->post(route('owner.refund.approve', $this->pembayaranRequested));
         $this->pembayaranRequested->refresh();
-        
+
         // Second attempt should fail
         $this->actingAs($this->owner1)->post(route('owner.refund.approve', $this->pembayaranRequested));
         $this->pembayaranRequested->refresh();
-        
+
         // Only one approval should have succeeded
         $this->assertEquals(Pembayaran::REFUND_APPROVED, $this->pembayaranRequested->refund_status);
     }

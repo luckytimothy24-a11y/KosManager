@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Booking;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\Pembayaran;
@@ -173,7 +174,7 @@ class SecurityAuditTest extends TestCase
         $tenant = User::factory()->create(['role' => 'pencari']);
         $kos = Kos::factory()->create(['status' => 'active']);
         $kamar = Kamar::factory()->create(['kos_id' => $kos->id, 'status' => 'available']);
-        $booking = \App\Models\Booking::factory()->create([
+        $booking = Booking::factory()->create([
             'user_id' => $tenant->id,
             'kos_id' => $kos->id,
             'kamar_id' => $kamar->id,
@@ -253,7 +254,7 @@ class SecurityAuditTest extends TestCase
             'address' => 'Jl. Test No 1',
         ]);
 
-        $booking = \App\Models\Booking::where('user_id', $tenant->id)->first();
+        $booking = Booking::where('user_id', $tenant->id)->first();
         $this->assertNotNull($booking);
         $this->assertEquals('pending', $booking->status);
     }

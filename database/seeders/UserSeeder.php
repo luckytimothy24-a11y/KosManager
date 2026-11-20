@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\OwnerProfile;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -66,7 +67,7 @@ class UserSeeder extends Seeder
 
         $owner = User::where('email', 'owner@example.com')->first();
         if ($owner) {
-            \App\Models\OwnerProfile::firstOrCreate(
+            OwnerProfile::firstOrCreate(
                 ['user_id' => $owner->id],
                 [
                     'bank_name' => 'BCA',

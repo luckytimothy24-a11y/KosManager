@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\PaymentGateway\MidtransSnapGateway;
 use App\Services\PaymentGateway\SandboxGateway;
 
 return [
@@ -63,7 +64,7 @@ return [
             'lifetime_hours' => 24,
         ],
         'midtrans' => [
-            'driver' => \App\Services\PaymentGateway\MidtransSnapGateway::class,
+            'driver' => MidtransSnapGateway::class,
             'payment_method' => 'midtrans_snap',
             'payment_label' => 'Midtrans Snap (VA/QRIS)',
             'server_key' => env('MIDTRANS_SERVER_KEY'),

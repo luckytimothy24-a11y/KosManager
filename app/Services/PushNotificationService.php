@@ -47,7 +47,7 @@ class PushNotificationService
 
     public function sendToDevice(UserDevice $device, string $title, string $body, ?string $url = null, ?array $data = null): void
     {
-        if (!$this->webPush || !$device->subscription_data) {
+        if (! $this->webPush || ! $device->subscription_data) {
             return;
         }
 
@@ -67,7 +67,7 @@ class PushNotificationService
 
             $device->update(['last_active_at' => now()]);
         } catch (\Exception $e) {
-            Log::warning('Push notification failed for device ' . $device->id . ': ' . $e->getMessage());
+            Log::warning('Push notification failed for device '.$device->id.': '.$e->getMessage());
 
             // Mark device as inactive if subscription expired
             if (str_contains($e->getMessage(), '410') || str_contains($e->getMessage(), 'expired')) {

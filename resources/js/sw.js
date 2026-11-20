@@ -1,10 +1,20 @@
-﻿import { precacheAndRoute } from "workbox-precaching";
-import { registerRoute } from "workbox-routing";
+﻿import { matchPrecache, precacheAndRoute } from "workbox-precaching";
+import { registerRoute, setCatchHandler } from "workbox-routing";
 import { CacheFirst, NetworkOnly } from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
 
-// Precache assets
-precacheAndRoute(self.__WB_MANIFEST);
+// Precache assets + halaman offline statis.
+precacheAndRoute([...self.__WB_MANIFEST, { url: "/offline", revision: "1" }]);
+
+// Fallback navigasi saat offline: tampilkan halaman /offline, bukan error browser.
+setCatchHandler(async ({ event }) => {
+    if (event.request.mode === "navigate") {
+        const offlinePage = await matchPrecache("/offline");
+        if (offlinePage) return offlinePage;
+    }
+
+    return Response.error();
+});
 
 // Push notification handler
 self.addEventListener("push", function(event) {
@@ -54,23 +64,6 @@ self.addEventListener("notificationclick", function(event) {
         })
     );
 });
-
-// Background sync handler
-self.addEventListener("sync", function(event) {
-    if (event.tag === "sync-bookings") {
-        event.waitUntil(syncPendingBookings());
-    }
-});
-
-function syncPendingBookings() {
-    return fetch("/api/v1/sync/pending", { method: "POST" })
-        .then(function(response) {
-            console.log("Sync completed:", response.status);
-        })
-        .catch(function(error) {
-            console.error("Sync failed:", error);
-        });
-}
 
 // Clear all runtime caches on logout message
 self.addEventListener("message", function(event) {

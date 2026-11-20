@@ -2,7 +2,6 @@
 
 namespace App\Services\PaymentGateway;
 
-use Illuminate\Support\Str;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 
@@ -64,7 +63,7 @@ class MidtransSnapGateway implements PaymentGatewayContract
         return [
             'reference' => $order['payment_number'],
             'snap_token' => $snapToken,
-            'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/' . $snapToken,
+            'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/'.$snapToken,
             'instructions' => 'Bayar melalui Midtrans Snap (VA/QRIS/E-Wallet).',
         ];
     }
@@ -81,7 +80,7 @@ class MidtransSnapGateway implements PaymentGatewayContract
             return false;
         }
 
-        $expected = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        $expected = hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
 
         return hash_equals($expected, $signature);
     }
@@ -96,6 +95,6 @@ class MidtransSnapGateway implements PaymentGatewayContract
         $grossAmount = $payload['gross_amount'] ?? '';
         $serverKey = (string) ($this->config['server_key'] ?? config('services.payment_gateway.midtrans.server_key', ''));
 
-        return hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        return hash('sha512', $orderId.$statusCode.$grossAmount.$serverKey);
     }
 }

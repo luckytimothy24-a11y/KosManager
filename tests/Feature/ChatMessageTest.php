@@ -182,7 +182,7 @@ class ChatMessageTest extends TestCase
             'kos_id' => $this->kos->id,
             'receiver_id' => $this->owner->id,
         ]);
-        $this->assertNotNull(\App\Models\Message::where('kos_id', $this->kos->id)->where('receiver_id', $this->owner->id)->first()->read_at);
+        $this->assertNotNull(Message::where('kos_id', $this->kos->id)->where('receiver_id', $this->owner->id)->first()->read_at);
     }
 
     public function test_messages_to_different_owners_stay_in_separate_threads(): void

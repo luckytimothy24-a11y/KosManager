@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Models\Pembayaran;
 use App\Services\AuditLogService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -84,11 +85,11 @@ class RefundController extends Controller
 
             if ($notifyUserId !== null) {
                 try {
-                    \App\Services\NotificationService::create(
+                    NotificationService::create(
                         (int) $notifyUserId,
                         'refund_approved',
                         'Refund Disetujui',
-                        "Refund sebesar Rp " . number_format($locked->refund_amount ?? $locked->amount, 0, ',', '.') . " telah disetujui pemilik dan sedang diproses.",
+                        'Refund sebesar Rp '.number_format($locked->refund_amount ?? $locked->amount, 0, ',', '.').' telah disetujui pemilik dan sedang diproses.',
                         ['url' => route('tenant.pembayaran.show', $locked)],
                         "refund-approved:{$locked->id}"
                     );
@@ -143,7 +144,7 @@ class RefundController extends Controller
 
             if ($notifyUserId !== null) {
                 try {
-                    \App\Services\NotificationService::create(
+                    NotificationService::create(
                         (int) $notifyUserId,
                         'refund_rejected',
                         'Refund Ditolak',

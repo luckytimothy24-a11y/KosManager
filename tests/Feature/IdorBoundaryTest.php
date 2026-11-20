@@ -346,7 +346,7 @@ class IdorBoundaryTest extends TestCase
         $this->get(route('owner.kos.show', $kos))->assertRedirect('/login');
         $this->get(route('tenant.booking.show', $booking))->assertRedirect('/login');
         $this->get(route('admin.kamar.index'))->assertRedirect('/login');
-}
+    }
 
     public function test_owner_cannot_delete_another_owner_kos(): void
     {

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Dispute;
 use App\Models\Pembayaran;
 use App\Models\Tagihan;
-use App\Models\Booking;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class DisputeController extends Controller
@@ -57,7 +58,7 @@ class DisputeController extends Controller
 
         // Notifikasi ke owner/admin
         try {
-            \App\Services\NotificationService::create(
+            NotificationService::create(
                 1, // admin
                 'dispute',
                 'Dispute Baru',
@@ -76,6 +77,7 @@ class DisputeController extends Controller
     public function show(Dispute $dispute)
     {
         abort_unless($dispute->user_id === auth()->id(), 403);
+
         return view('tenant.dispute.show', compact('dispute'));
     }
 }

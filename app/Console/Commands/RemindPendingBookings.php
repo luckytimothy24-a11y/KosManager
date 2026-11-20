@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Booking;
 use App\Services\NotificationService;
+use App\Support\NotificationType;
 use Illuminate\Console\Command;
 
 class RemindPendingBookings extends Command
@@ -37,7 +38,7 @@ class RemindPendingBookings extends Command
                 NotificationService::bookingPendingReminder(
                     $booking->user_id,
                     $booking->booking_code,
-                    "booking-pending-reminder:{$booking->id}:" . today()->toDateString()
+                    "booking-pending-reminder:{$booking->id}:".today()->toDateString()
                 );
                 $count++;
 
@@ -46,11 +47,11 @@ class RemindPendingBookings extends Command
                     try {
                         NotificationService::create(
                             $booking->kos->owner_id,
-                            \App\Support\NotificationType::BOOKING,
+                            NotificationType::BOOKING,
                             'Booking Pending Menunggu Pembayaran',
                             "Booking {$booking->booking_code} dari {$booking->user->name} menunggu pembayaran. Segera verifikasi atau ingatkan tenant.",
                             null,
-                            "booking-pending-owner:{$booking->id}:" . today()->toDateString()
+                            "booking-pending-owner:{$booking->id}:".today()->toDateString()
                         );
                     } catch (\Exception $e) {
                         \Log::warning("booking:remind-pending owner notification failed for booking {$booking->id}: {$e->getMessage()}");
@@ -62,6 +63,7 @@ class RemindPendingBookings extends Command
         }
 
         $this->info("{$count} pengingat booking pending dikirim.");
+
         return self::SUCCESS;
     }
 }

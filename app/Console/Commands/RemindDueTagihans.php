@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\KosManagerMail;
 use App\Models\Tagihan;
 use App\Services\NotificationService;
+use App\Services\WhatsAppNotificationService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Mail;
 
 class RemindDueTagihans extends Command
 {
@@ -41,9 +44,9 @@ class RemindDueTagihans extends Command
                 // WhatsApp reminder
                 $tenantPhone = $tenantUser?->phone ?? $tagihan->penghuni->phone ?? null;
                 if ($tenantPhone) {
-                    \App\Services\WhatsAppNotificationService::send(
+                    WhatsAppNotificationService::send(
                         $tenantPhone,
-                        "Pengingat: Tagihan {$tagihan->bill_number} jatuh tempo {$tagihan->due_date->format('d/m/Y')}. Total: Rp " . number_format($tagihan->total, 0, ',', '.') . ". Segera bayar di KosManager."
+                        "Pengingat: Tagihan {$tagihan->bill_number} jatuh tempo {$tagihan->due_date->format('d/m/Y')}. Total: Rp ".number_format($tagihan->total, 0, ',', '.').'. Segera bayar di KosManager.'
                     );
                 }
             } catch (\Exception $e) {
@@ -63,10 +66,10 @@ class RemindDueTagihans extends Command
 
                     // Email reminder to owner
                     if ($ownerEmail) {
-                        \Illuminate\Support\Facades\Mail::to($ownerEmail)->send(
-                            new \App\Mail\KosManagerMail(
+                        Mail::to($ownerEmail)->send(
+                            new KosManagerMail(
                                 "Pengingat: Tagihan {$tagihan->bill_number} Tenant Mendekati Jatuh Tempo",
-                                "Tagihan {$tagihan->bill_number} milik {$tagihan->penghuni->user->name} akan jatuh tempo pada {$tagihan->due_date->format('d/m/Y')}. Total: Rp " . number_format($tagihan->total, 0, ',', '.') . ".",
+                                "Tagihan {$tagihan->bill_number} milik {$tagihan->penghuni->user->name} akan jatuh tempo pada {$tagihan->due_date->format('d/m/Y')}. Total: Rp ".number_format($tagihan->total, 0, ',', '.').'.',
                                 route('owner.tagihan.show', $tagihan),
                                 'Lihat Tagihan'
                             )

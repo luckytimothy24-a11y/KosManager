@@ -254,12 +254,12 @@ class PropertyOwnerPayoutController extends Controller
 
         if ($isImage) {
             return $disk->response($path, $filename, array_merge($headers, [
-                'Content-Disposition' => 'inline; filename="' . $filename . '"',
+                'Content-Disposition' => 'inline; filename="'.$filename.'"',
             ]));
         }
 
         return $disk->download($path, $filename, array_merge($headers, [
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]));
     }
 
