@@ -2,13 +2,21 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#f97316">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
+    <meta name="color-scheme" content="light dark">
     <title>{{ config('app.name', 'KosManager') }}</title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="mask-icon" href="{{ asset('favicon.svg') }}" color="#f97316">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="KosManager">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:300,400,500,600,700,800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -111,6 +119,7 @@
             {{-- Konten --}}
             <main id="main-content" tabindex="-1" class="relative z-10 flex flex-1 items-center justify-center px-5 pt-4 focus:outline-none {{ $showGuestNav ? 'pb-[calc(5.5rem+env(safe-area-inset-bottom))]' : 'pb-8' }} lg:pb-0 lg:pt-0">
                 <div class="w-full max-w-sm">
+                    <x-validation-summary />
                     {{ $slot }}
                 </div>
             </main>

@@ -27,6 +27,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // N+1 audit: aktifkan lewat PREVENT_LAZY_LOADING (default: local saja).
+        if (config('app.prevent_lazy_loading')) {
+            Model::preventLazyLoading(! $this->app->isProduction());
+        }
+
         Paginator::defaultView('vendor.pagination.custom');
         Paginator::defaultSimpleView('vendor.pagination.custom-simple');
 

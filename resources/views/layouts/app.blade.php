@@ -4,10 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#f97316">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f172a">
+    <meta name="color-scheme" content="light dark">
     <meta name="description" content="KosManager">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="mask-icon" href="{{ asset('favicon.svg') }}" color="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="KosManager">
@@ -51,7 +54,6 @@
     <title>@hasSection('title')@yield('title') · KosManager@else{{ $pageTitle ? $pageTitle.' · KosManager' : 'KosManager' }}@endif</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/pwa.js'])
@@ -370,6 +372,7 @@
              </header>
 
              <main id="main-content" tabindex="-1" class="app-main focus:outline-none flex-1 p-4 sm:p-6 lg:p-8">
+                 <x-validation-summary />
                  @if(isset($header))
                      <div class="lg:hidden mb-5">
                          {{ $header }}

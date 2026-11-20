@@ -51,11 +51,40 @@
 - [x] Butir 4: Health check endpoint /health + monitoring recommendations (commit 45b6b5b)
 - [x] Butir 5: Dockerfile, docker-compose, nginx, supervisor, .env.docker (commit 97120dc)
 
+## Tahap 7: Finalisasi Presentasi
+### Fase A — Notifikasi & Laporan
+- [x] A1: Notifikasi moderasi kos (super admin saat kos baru pending, owner saat approved/rejected)
+  - `NotificationType::KOS_MODERATION`, `NotificationService::kosCreatedForModeration/kosApproved/kosRejected`
+  - Dashboard super admin menghitung `moderation_status = pending`
+  - `KosModerationNotificationTest` (5 tests)
+- [x] A2: Export laporan sudah mendukung filter tanggal (terverifikasi di `ReportDashboardHardeningTest`)
+
+### Fase B — Keamanan Lanjutan
+- [x] B1: Kebijakan riwayat bukti bayar
+  - Record pembayaran tetap disimpan (audit trail); file lama dihapus saat replace
+  - Command `payments:purge-rejected-proofs --days=180 [--dry-run]`, dijadwalkan mingguan
+  - `PaymentProofRetentionTest` (3 tests)
+- [x] B2: Enkripsi NIK at-rest
+  - Trait `HasEncryptedIdentityNumber` (accessor/mutator + hash SHA-256 + masking)
+  - Migration `2026_11_19_000002_encrypt_identity_numbers` (users, penghunis, bookings, booking_occupants)
+  - Pencarian NIK exact-match via hash; endpoint reveal dengan throttle + audit log
+  - `IdentityEncryptionTest` (10 tests)
+- [x] B3: 2FA TOTP
+  - `TwoFactorService` (RFC 6238, Base32, QR), `TwoFactorController`, middleware `EnsureTwoFactorVerified`
+  - Halaman setup/konfirmasi/challenge + recovery codes; enforcement opsional `TWO_FACTOR_ENFORCE`
+  - `TwoFactorAuthTest` (12 tests)
+- [x] B4: Backup database — sudah tersedia lengkap (`BackupDatabase`, `config/backup.php`, scheduler)
+
+### Fase C — UX & Performa
+- [x] C1: Ringkasan validasi form global (`x-validation-summary`) di layout app & guest
+- [x] C2: Loading state global untuk form server-rendered (anti double-submit, spinner, `aria-busy`)
+- [x] C3: Audit N+1 — `Model::preventLazyLoading()` (aktif default di local) + `LazyLoadingAuditTest` untuk halaman utama semua role
+- [x] C4: Polish iOS/Lighthouse — manifest `id`, `color-scheme`, theme-color dark, apple-touch-icon 180x180, mask-icon, meta PWA di layout guest
+
 ## Catatan
 - Branch: feature/alur-dana-2-tahap
-- Tests terakhir: 112 passed (341 assertions) + 9 SecurityAuditTest
+- Tests terakhir: 2364 passed (seluruh suite; 1 kegagalan lama pada tema iklan sudah diperbaiki)
 - Build Vite: sukses
 - Audit temuan: file sensitif sudah di disk private + policy check. Rate limiting ditambahkan. SafeUpload rule dibuat. .env.example diperbarui.
-- TODO: Kebijakan riwayat bukti bayar (hapus file lama atau simpan riwayat) - belum ditentukan
-- TODO: Enkripsi identity_number - audit saja, belum diubah (sesuai instruksi)
-- TODO: 2FA dan backup database - hanya rekomendasi, tidak diimplementasi
+- Semua TODO keamanan sebelumnya (bukti bayar, enkripsi NIK, 2FA, backup) sudah diselesaikan.
+

@@ -542,3 +542,41 @@
         flex: 1 1 auto;
     }
 }
+
+/* ---------------------------------------------------------------------------
+   Submit feedback (global)
+   --------------------------------------------------------------------------- */
+form[aria-busy='true'] {
+    cursor: progress;
+}
+
+form[aria-busy='true'] button[type='submit'],
+form[aria-busy='true'] input[type='submit'] {
+    cursor: progress;
+    opacity: 0.7;
+}
+
+form[aria-busy='true'] button[type='submit']::after {
+    content: '';
+    display: inline-block;
+    width: 0.85em;
+    height: 0.85em;
+    margin-left: 0.5em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 9999px;
+    vertical-align: -0.1em;
+    animation: submit-spin 0.7s linear infinite;
+}
+
+@keyframes submit-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    form[aria-busy='true'] button[type='submit']::after {
+        animation: none;
+    }
+}

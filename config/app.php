@@ -114,6 +114,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Prevent Lazy Loading (N+1 audit)
+    |--------------------------------------------------------------------------
+    |
+    | Saat aktif, Eloquent melempar exception ketika relasi diakses tanpa
+    | eager loading. Default aktif di environment local agar N+1 cepat
+    | terdeteksi saat pengembangan; mati di production & testing.
+    |
+    */
+
+    'prevent_lazy_loading' => env('PREVENT_LAZY_LOADING', env('APP_ENV', 'production') === 'local'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |
