@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Booking;
 use App\Models\CheckOut;
 use App\Models\DamageReport;
+use App\Models\Favorite;
 use App\Models\Kamar;
 use App\Models\Kontrak;
 use App\Models\Kos;
@@ -135,6 +136,20 @@ class LazyLoadingAuditTest extends TestCase
             'receiver_id' => $this->owner->id,
             'read_at' => null,
         ]);
+
+        // Favorit memaksa dashboard tenant merender section "Kos yang Kamu Simpan"
+        // sehingga eager loading pada query favorit ikut teraudit.
+        Favorite::create([
+            'user_id' => $this->tenant->id,
+            'kos_id' => $this->kos->id,
+        ]);
+    }
+
+    protected function tearDown(): void
+    {
+        Model::preventLazyLoading(false);
+
+        parent::tearDown();
     }
 
     public function test_super_admin_pages_do_not_lazy_load(): void

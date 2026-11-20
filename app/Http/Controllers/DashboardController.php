@@ -432,7 +432,11 @@ class DashboardController extends Controller
                 ->withCount(['kamar as kamar_tersedia' => fn ($q) => $q->where('status', 'available')])
                 ->withMin(['kamar as harga_mulai' => fn ($q) => $q->where('status', 'available')], 'monthly_price')
                 ->withCount('favorites')
-                ->with(['kamar' => fn ($q) => $q->where('status', 'available')->with('fasilitas')->limit(1)])
+                ->with([
+                    'coverPhoto',
+                    'fasilitas',
+                    'kamar' => fn ($q) => $q->where('status', 'available')->with('fasilitas')->limit(1),
+                ])
                 ->get()
                 ->sortBy(fn ($k) => array_search($k->id, $favoriteKosIds))
                 ->values();

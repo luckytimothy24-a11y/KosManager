@@ -5,6 +5,7 @@ namespace Tests;
 use App\Models\Booking;
 use App\Models\Pembayaran;
 use App\Models\WalletTransaction;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -51,6 +52,11 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Static flag Eloquent ini bertahan lintas test dalam satu proses.
+        // Reset agar test yang mengaktifkan preventLazyLoading() (mis. audit N+1)
+        // tidak membuat test berikutnya gagal karena kebocoran state.
+        Model::preventLazyLoading(false);
 
         app('cache')->flush();
     }

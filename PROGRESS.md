@@ -78,12 +78,12 @@
 ### Fase C — UX & Performa
 - [x] C1: Ringkasan validasi form global (`x-validation-summary`) di layout app & guest
 - [x] C2: Loading state global untuk form server-rendered (anti double-submit, spinner, `aria-busy`)
-- [x] C3: Audit N+1 — `Model::preventLazyLoading()` (aktif default di local) + `LazyLoadingAuditTest` untuk halaman utama semua role
+- [x] C3: Audit N+1 — `Model::preventLazyLoading()` (aktif default di local) + `LazyLoadingAuditTest` untuk halaman utama semua role (termasuk section favorit tenant; static flag di-reset antar-test)
 - [x] C4: Polish iOS/Lighthouse — manifest `id`, `color-scheme`, theme-color dark, apple-touch-icon 180x180, mask-icon, meta PWA di layout guest
 
 ## Catatan
 - Branch: feature/alur-dana-2-tahap
-- Tests terakhir: 2364 passed (seluruh suite; 1 kegagalan lama pada tema iklan sudah diperbaiki)
+- Tests terakhir: 2355 passed, 8027 assertions (seluruh suite hijau)
 - Build Vite: sukses
 - Audit temuan: file sensitif sudah di disk private + policy check. Rate limiting ditambahkan. SafeUpload rule dibuat. .env.example diperbarui.
 - Semua TODO keamanan sebelumnya (bukti bayar, enkripsi NIK, 2FA, backup) sudah diselesaikan.
