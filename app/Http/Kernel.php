@@ -6,6 +6,7 @@ use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\BillingGuard;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureTwoFactorVerified;
+use App\Http\Middleware\HideForDemo;
 use App\Http\Middleware\IsActive;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\PreventStaleFormCache;
@@ -95,5 +96,6 @@ class Kernel extends HttpKernel
         'active' => IsActive::class,
         'billing' => BillingGuard::class,
         'role' => RoleMiddleware::class,
+        'hide.demo' => HideForDemo::class,
     ];
 }

@@ -288,7 +288,7 @@ class PaymentGatewayTest extends TestCase
         $response->assertOk();
         $response->assertSee('Instruksi Pembayaran Online');
         $response->assertSee($payment->gateway_reference, false);
-        $response->assertSee('memverifikasi otomatis', false);
+        $response->assertSee('status akan diperbarui setelah pembayaran terkonfirmasi', false);
     }
 
     public function test_owner_pembayaran_show_marks_legacy_gateway_source(): void

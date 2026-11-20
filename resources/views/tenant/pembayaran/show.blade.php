@@ -75,7 +75,7 @@
                             <p class="text-sm text-red-700 dark:text-red-200 leading-relaxed whitespace-pre-line">{{ $pembayaran->admin_notes }}</p>
                         </div>
                     @endif
-                    {{-- Gateway online (verifikasi otomatis) --}}
+                    {{-- Gateway online (jika diaktifkan) --}}
                     @if($pembayaran->isFromGateway() && $pembayaran->verification_status === 'pending' && $pembayaran->gateway_instructions)
                         <div class="p-4 rounded-xl bg-primary-50/70 dark:bg-primary-500/10 border border-primary-100 dark:border-primary-500/20">
                             <p class="text-label text-primary-700 dark:text-primary-300 mb-1.5"><i class="ri-qr-code-line mr-1"></i>Instruksi Pembayaran Online</p>
@@ -86,7 +86,7 @@
                                 </p>
                             @endif
                             <p class="mt-2 text-meta flex items-center gap-1">
-                                <i class="ri-checkbox-circle-line"></i> Setelah Anda membayar, sistem akan <strong>memverifikasi otomatis</strong>.
+                                <i class="ri-checkbox-circle-line"></i> Setelah Anda membayar, status akan diperbarui setelah pembayaran terkonfirmasi.
                             </p>
                         </div>
                     @elseif($pembayaran->isFromGateway() && $pembayaran->verification_status === 'pending')
@@ -94,7 +94,7 @@
                             <i class="ri-time-line mt-0.5 shrink-0"></i>
                             <div>
                                 <p class="font-semibold">Pembayaran Online Menunggu</p>
-                                <p class="mt-0.5 text-xs opacity-80">Selesaikan pembayaran untuk diverifikasi otomatis.</p>
+                                <p class="mt-0.5 text-xs opacity-80">Selesaikan pembayaran sesuai instruksi yang tersedia.</p>
                             </div>
                         </div>
                     @elseif($pembayaran->verification_status === 'pending')
@@ -110,9 +110,6 @@
                             <i class="ri-checkbox-circle-line mt-0.5"></i>
                             <span>
                                 Pembayaran telah <strong>Terverifikasi</strong>
-                                @if($pembayaran->isFromGateway())
-                                    secara otomatis
-                                @endif
                                 pada {{ $pembayaran->verified_at?->translatedFormat('d M Y H:i') ?? '-' }}.
                             </span>
                         </div>

@@ -239,27 +239,30 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::get('bank-account', [OwnerBankAccountController::class, 'edit'])->name('bank-account.edit');
     Route::put('bank-account', [OwnerBankAccountController::class, 'update'])->name('bank-account.update');
 
-    // Distribusi pembayaran booking → hak Owner
-    Route::get('distribution', [OwnerPaymentDistributionController::class, 'index'])->name('distribution.index');
-    Route::post('distribution/{distribution}/mark-processed', [OwnerPaymentDistributionController::class, 'markProcessed'])->name('distribution.mark-processed');
+    // Tersembunyi dari demo/UI (tetap aktif saat test untuk menjaga suite hijau).
+    Route::middleware('hide.demo')->group(function () {
+        // Distribusi pembayaran booking → hak Owner
+        Route::get('distribution', [OwnerPaymentDistributionController::class, 'index'])->name('distribution.index');
+        Route::post('distribution/{distribution}/mark-processed', [OwnerPaymentDistributionController::class, 'markProcessed'])->name('distribution.mark-processed');
 
-    // Payout/Settlement ke Pemilik Kos Asli (property owner).
-    // Transfer manual di luar aplikasi; KosManager hanya mencatat.
-    // TERPISAH dari distribution (booking → hak role Owner).
-    Route::get('payouts', [PropertyOwnerPayoutController::class, 'index'])->name('payouts.index');
-    Route::post('payouts', [PropertyOwnerPayoutController::class, 'store'])->name('payouts.store');
-    Route::get('payouts/{payout}', [PropertyOwnerPayoutController::class, 'show'])->name('payouts.show');
-    Route::get('payouts/{payout}/recipient-account', [PropertyOwnerPayoutController::class, 'revealRecipientAccount'])->name('payouts.recipient-account');
-    Route::post('payouts/{payout}/transfer', [PropertyOwnerPayoutController::class, 'markTransferred'])->name('payouts.transfer');
-    Route::post('payouts/{payout}/verify', [PropertyOwnerPayoutController::class, 'verify'])->name('payouts.verify');
-    Route::post('payouts/{payout}/reject', [PropertyOwnerPayoutController::class, 'reject'])->name('payouts.reject');
-    Route::get('payouts/{payout}/proof', [PropertyOwnerPayoutController::class, 'downloadProof'])->name('payouts.proof')->middleware('throttle:30,1');
-    Route::post('kos/{kos}/property-owner', [PropertyOwnerPayoutController::class, 'setPropertyOwner'])->name('payouts.set-property-owner');
-    Route::post('payouts/{payout}/disbursements', [PayoutDisbursementController::class, 'store'])->name('payouts.disbursements.store');
-    Route::get('disbursements/{disbursement}/proof', [PayoutDisbursementController::class, 'downloadProof'])->name('disbursements.proof')->middleware('throttle:30,1');
-    Route::post('disbursements/{disbursement}/verify', [PayoutDisbursementController::class, 'verify'])->name('disbursements.verify');
-    Route::post('disbursements/{disbursement}/reject', [PayoutDisbursementController::class, 'reject'])->name('disbursements.reject');
-    Route::post('adjustments', [PayoutAdjustmentController::class, 'store'])->name('adjustments.store');
+        // Payout/Settlement ke Pemilik Kos Asli (property owner).
+        // Transfer manual di luar aplikasi; KosManager hanya mencatat.
+        // TERPISAH dari distribution (booking → hak role Owner).
+        Route::get('payouts', [PropertyOwnerPayoutController::class, 'index'])->name('payouts.index');
+        Route::post('payouts', [PropertyOwnerPayoutController::class, 'store'])->name('payouts.store');
+        Route::get('payouts/{payout}', [PropertyOwnerPayoutController::class, 'show'])->name('payouts.show');
+        Route::get('payouts/{payout}/recipient-account', [PropertyOwnerPayoutController::class, 'revealRecipientAccount'])->name('payouts.recipient-account');
+        Route::post('payouts/{payout}/transfer', [PropertyOwnerPayoutController::class, 'markTransferred'])->name('payouts.transfer');
+        Route::post('payouts/{payout}/verify', [PropertyOwnerPayoutController::class, 'verify'])->name('payouts.verify');
+        Route::post('payouts/{payout}/reject', [PropertyOwnerPayoutController::class, 'reject'])->name('payouts.reject');
+        Route::get('payouts/{payout}/proof', [PropertyOwnerPayoutController::class, 'downloadProof'])->name('payouts.proof')->middleware('throttle:30,1');
+        Route::post('kos/{kos}/property-owner', [PropertyOwnerPayoutController::class, 'setPropertyOwner'])->name('payouts.set-property-owner');
+        Route::post('payouts/{payout}/disbursements', [PayoutDisbursementController::class, 'store'])->name('payouts.disbursements.store');
+        Route::get('disbursements/{disbursement}/proof', [PayoutDisbursementController::class, 'downloadProof'])->name('disbursements.proof')->middleware('throttle:30,1');
+        Route::post('disbursements/{disbursement}/verify', [PayoutDisbursementController::class, 'verify'])->name('disbursements.verify');
+        Route::post('disbursements/{disbursement}/reject', [PayoutDisbursementController::class, 'reject'])->name('disbursements.reject');
+        Route::post('adjustments', [PayoutAdjustmentController::class, 'store'])->name('adjustments.store');
+    });
 
     Route::get('agreements', [ManagementAgreementController::class, 'index'])->name('agreements.index');
     Route::post('agreements', [ManagementAgreementController::class, 'store'])->name('agreements.store');
@@ -296,11 +299,13 @@ Route::middleware(['auth', 'role:super_admin,owner'])->prefix('owner')->name('ow
     Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm')->middleware('throttle:10,60');
     Route::post('check-in/{booking}/reject', [CheckInController::class, 'rejectIdentity'])->name('checkin.reject')->middleware('throttle:10,60');
 
-    // Booking occupants — owner manages per-orang identity & check-in
-    Route::get('booking/{booking}/occupants', [OwnerBookingOccupantController::class, 'index'])->name('booking-occupants.index');
-    Route::post('booking-occupants/{occupant}/confirm', [OwnerBookingOccupantController::class, 'confirmIdentity'])->name('booking-occupants.confirm')->middleware('throttle:10,60');
-    Route::post('booking-occupants/{occupant}/reject', [OwnerBookingOccupantController::class, 'rejectIdentity'])->name('booking-occupants.reject')->middleware('throttle:10,60');
-    Route::post('booking-occupants/{occupant}/checkin', [OwnerBookingOccupantController::class, 'checkIn'])->name('booking-occupants.checkin')->middleware('throttle:10,60');
+    // Booking occupants — owner manages per-orang identity & check-in (tersembunyi dari demo/UI)
+    Route::middleware('hide.demo')->group(function () {
+        Route::get('booking/{booking}/occupants', [OwnerBookingOccupantController::class, 'index'])->name('booking-occupants.index');
+        Route::post('booking-occupants/{occupant}/confirm', [OwnerBookingOccupantController::class, 'confirmIdentity'])->name('booking-occupants.confirm')->middleware('throttle:10,60');
+        Route::post('booking-occupants/{occupant}/reject', [OwnerBookingOccupantController::class, 'rejectIdentity'])->name('booking-occupants.reject')->middleware('throttle:10,60');
+        Route::post('booking-occupants/{occupant}/checkin', [OwnerBookingOccupantController::class, 'checkIn'])->name('booking-occupants.checkin')->middleware('throttle:10,60');
+    });
 
     Route::get('check-out', [CheckOutController::class, 'index'])->name('checkout.index');
     Route::post('check-out/bulk-approve', [CheckOutController::class, 'bulkApprove'])->name('checkout.bulk-approve')->middleware('throttle:5,60');
@@ -339,8 +344,10 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::post('booking/{booking}/reject', [BookingController::class, 'reject'])->name('booking.reject');
     Route::post('booking-cancellation/{cancellationRequest}/approve', [BookingController::class, 'approveCancellation'])->name('booking.cancellation.approve');
     Route::post('booking-cancellation/{cancellationRequest}/reject', [BookingController::class, 'rejectCancellation'])->name('booking.cancellation.reject');
-    Route::get('distribution', [OwnerPaymentDistributionController::class, 'index'])->name('distribution.index');
-    Route::post('distribution/{distribution}/mark-processed', [OwnerPaymentDistributionController::class, 'markProcessed'])->name('distribution.mark-processed');
+    Route::middleware('hide.demo')->group(function () {
+        Route::get('distribution', [OwnerPaymentDistributionController::class, 'index'])->name('distribution.index');
+        Route::post('distribution/{distribution}/mark-processed', [OwnerPaymentDistributionController::class, 'markProcessed'])->name('distribution.mark-processed');
+    });
 
     Route::resource('kos', KosController::class)->parameter('kos', 'kos');
     Route::resource('kamar', KamarController::class);
@@ -444,20 +451,23 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
     Route::post('messages', [TenantMessageController::class, 'store'])->middleware('throttle:30,1')->name('messages.store');
     Route::get('messages/latest', [TenantMessageController::class, 'latest'])->name('messages.latest');
 
-    // Undangan tinggal bersama — orange modern
-    Route::get('invitations', [TenantInvitationController::class, 'index'])->name('invitations.index');
-    Route::get('invitations/{token}', [TenantInvitationController::class, 'show'])->where('token', '[a-f0-9]{64}')->name('invitations.show');
-    Route::post('invitations/{token}/accept', [TenantInvitationController::class, 'accept'])->where('token', '[a-f0-9]{64}')->name('invitations.accept');
-    Route::post('invitations/{token}/decline', [TenantInvitationController::class, 'decline'])->where('token', '[a-f0-9]{64}')->name('invitations.decline');
-    Route::post('invitations/{occupant}/accept', [TenantInvitationController::class, 'acceptById'])->where('occupant', '[0-9]+')->name('invitations.acceptId');
-    Route::post('invitations/{occupant}/decline', [TenantInvitationController::class, 'declineById'])->where('occupant', '[0-9]+')->name('invitations.declineId');
-    Route::get('invitations/{token}/identity', [BookingOccupantIdentityController::class, 'show'])->where('token', '[a-f0-9]{64}')->name('invitations.identity');
-    Route::post('invitations/{token}/identity', [BookingOccupantIdentityController::class, 'submit'])->where('token', '[a-f0-9]{64}')->name('invitations.identity.submit');
+    // Tersembunyi dari demo/UI: undangan & multi-occupant (satu kamar = satu penghuni).
+    Route::middleware('hide.demo')->group(function () {
+        // Undangan tinggal bersama
+        Route::get('invitations', [TenantInvitationController::class, 'index'])->name('invitations.index');
+        Route::get('invitations/{token}', [TenantInvitationController::class, 'show'])->where('token', '[a-f0-9]{64}')->name('invitations.show');
+        Route::post('invitations/{token}/accept', [TenantInvitationController::class, 'accept'])->where('token', '[a-f0-9]{64}')->name('invitations.accept');
+        Route::post('invitations/{token}/decline', [TenantInvitationController::class, 'decline'])->where('token', '[a-f0-9]{64}')->name('invitations.decline');
+        Route::post('invitations/{occupant}/accept', [TenantInvitationController::class, 'acceptById'])->where('occupant', '[0-9]+')->name('invitations.acceptId');
+        Route::post('invitations/{occupant}/decline', [TenantInvitationController::class, 'declineById'])->where('occupant', '[0-9]+')->name('invitations.declineId');
+        Route::get('invitations/{token}/identity', [BookingOccupantIdentityController::class, 'show'])->where('token', '[a-f0-9]{64}')->name('invitations.identity');
+        Route::post('invitations/{token}/identity', [BookingOccupantIdentityController::class, 'submit'])->where('token', '[a-f0-9]{64}')->name('invitations.identity.submit');
 
-    // Booking occupants — kelola penghuni tambahan dalam 1 booking
-    Route::get('booking/{booking}/occupants', [TenantBookingOccupantController::class, 'index'])->name('booking.occupants.index');
-    Route::post('booking/{booking}/invite', [TenantBookingOccupantController::class, 'invite'])->name('booking.invite');
-    Route::delete('booking/{booking}/occupants/{occupant}', [TenantBookingOccupantController::class, 'cancel'])->name('booking.occupants.cancel');
+        // Booking occupants — kelola penghuni tambahan dalam 1 booking
+        Route::get('booking/{booking}/occupants', [TenantBookingOccupantController::class, 'index'])->name('booking.occupants.index');
+        Route::post('booking/{booking}/invite', [TenantBookingOccupantController::class, 'invite'])->name('booking.invite');
+        Route::delete('booking/{booking}/occupants/{occupant}', [TenantBookingOccupantController::class, 'cancel'])->name('booking.occupants.cancel');
+    });
 
     Route::get('pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');

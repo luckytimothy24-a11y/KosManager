@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Fasilitas;
 use App\Models\Kamar;
-use App\Models\Kos;
 use Illuminate\Console\Command;
 
 class SeedSharingRooms extends Command
@@ -53,75 +51,9 @@ class SeedSharingRooms extends Command
 
     public function handle(): int
     {
-        $kosNames = $this->resolveKosNames();
-        $allFacilities = Fasilitas::all();
+        $this->warn('Command dinonaktifkan: kebijakan saat ini adalah satu kamar = satu penghuni (tanpa shared/multi-occupant).');
 
-        $created = 0;
-        $skipped = 0;
-
-        foreach ($kosNames as $kosName) {
-            $kos = Kos::where('name', $kosName)->first();
-            if (! $kos) {
-                $this->warn("Kos tidak ditemukan: {$kosName}");
-
-                continue;
-            }
-
-            $avgMonthly = $this->averageMonthlyPrice($kos->id);
-            $maxFloor = $this->maxFloor($kos->id) ?? 1;
-
-            foreach (self::ROOM_TEMPLATES as $template) {
-                if (Kamar::where('kos_id', $kos->id)->where('room_number', $template['room_number'])->exists()) {
-                    $this->line("  SKIP  {$kosName} — {$template['room_number']} sudah ada");
-                    $skipped++;
-
-                    continue;
-                }
-
-                $monthly = max(
-                    $template['price_floor'],
-                    (int) round($avgMonthly * $template['price_ratio'])
-                );
-                $weekly = (int) round($monthly * 0.26);
-                $daily = (int) ceil($monthly / 30);
-
-                $kamar = Kamar::create([
-                    'kos_id' => $kos->id,
-                    'room_number' => $template['room_number'],
-                    'room_name' => $template['room_name'],
-                    'room_type' => $template['room_type'],
-                    'capacity' => $template['capacity'],
-                    'billing_mode' => 'shared',
-                    'floor' => $maxFloor + 1,
-                    'daily_price' => $daily,
-                    'weekly_price' => $weekly,
-                    'monthly_price' => $monthly,
-                    'area' => $template['area'],
-                    'description' => "{$template['room_name']} untuk {$template['capacity']} orang. Biaya kamar dapat dibagi antar penghuni.",
-                    'photo' => $template['photo'],
-                    'status' => 'available',
-                ]);
-
-                $facilityCount = match ($template['room_type']) {
-                    'Family' => min(6, $allFacilities->count()),
-                    default => min(4, $allFacilities->count()),
-                };
-
-                if ($facilityCount > 0 && $allFacilities->count() > 0) {
-                    $kamar->fasilitas()->sync(
-                        $allFacilities->random($facilityCount)->pluck('id')->toArray()
-                    );
-                }
-
-                $this->info("  + {$kosName} — {$template['room_number']} {$template['room_name']} (cap {$template['capacity']}, shared, Rp ".number_format($monthly).')');
-                $created++;
-            }
-        }
-
-        $this->newLine();
-        $this->info("Selesai: {$created} kamar baru, {$skipped} dilewati.");
-
-        return self::SUCCESS;
+        return self::FAILURE;
     }
 
     /**
