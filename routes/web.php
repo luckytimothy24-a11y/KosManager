@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdvertisingController as AdminAdvertisingController;
+use App\Http\Controllers\Admin\CsController as AdminCsController;
 use App\Http\Controllers\Admin\OwnerController as AdminOwnerController;
 use App\Http\Controllers\AdvertisingClickController;
 use App\Http\Controllers\Api\V1\DeviceController;
@@ -49,6 +50,7 @@ use App\Http\Controllers\SuperAdmin\PartnerController;
 use App\Http\Controllers\SuperAdmin\SettingsController;
 use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\Tenant\BookingOccupantIdentityController;
+use App\Http\Controllers\Tenant\CsController as TenantCsController;
 use App\Http\Controllers\Tenant\DisputeController;
 use App\Http\Controllers\Tenant\MarketplaceController;
 use App\Http\Controllers\Tenant\TenantBookingOccupantController;
@@ -384,6 +386,12 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('owner-messages/{kos}/{owner}', [AdminOwnerMessageController::class, 'show'])->name('owner-messages.show');
     Route::post('owner-messages/{kos}/{owner}', [AdminOwnerMessageController::class, 'store'])->middleware('throttle:5,60')->name('owner-messages.store');
 
+    // Customer Service — inbox bersama Admin/Super Admin ↔ Tenant (terpisah dari pesan owner).
+    Route::get('cs', [AdminCsController::class, 'index'])->name('cs.index');
+    Route::get('cs/{conversation}', [AdminCsController::class, 'show'])->name('cs.show');
+    Route::post('cs/{conversation}/messages', [AdminCsController::class, 'reply'])->middleware('throttle:30,1')->name('cs.reply');
+    Route::patch('cs/{conversation}/status', [AdminCsController::class, 'updateStatus'])->name('cs.status');
+
     Route::get('check-in', [CheckInController::class, 'index'])->name('checkin.index');
     Route::post('check-in/{booking}', [CheckInController::class, 'process'])->name('checkin.process');
     Route::post('check-in/{booking}/confirm', [CheckInController::class, 'confirmIdentity'])->name('checkin.confirm')->middleware('throttle:10,60');
@@ -450,6 +458,13 @@ Route::middleware(['auth', 'role:pencari', 'billing'])->prefix('tenant')->name('
     Route::get('messages', [TenantMessageController::class, 'index'])->name('messages.index');
     Route::post('messages', [TenantMessageController::class, 'store'])->middleware('throttle:30,1')->name('messages.store');
     Route::get('messages/latest', [TenantMessageController::class, 'latest'])->name('messages.latest');
+
+    // Customer Service — kanal terpisah dari "Hubungi Owner" (tenant ↔ Admin/Super Admin).
+    Route::get('cs', [TenantCsController::class, 'index'])->name('cs.index');
+    Route::get('cs/create', [TenantCsController::class, 'create'])->name('cs.create');
+    Route::post('cs', [TenantCsController::class, 'store'])->middleware('throttle:10,60')->name('cs.store');
+    Route::get('cs/{conversation}', [TenantCsController::class, 'show'])->name('cs.show');
+    Route::post('cs/{conversation}/messages', [TenantCsController::class, 'reply'])->middleware('throttle:30,1')->name('cs.reply');
 
     // Tersembunyi dari demo/UI: undangan & multi-occupant (satu kamar = satu penghuni).
     Route::middleware('hide.demo')->group(function () {

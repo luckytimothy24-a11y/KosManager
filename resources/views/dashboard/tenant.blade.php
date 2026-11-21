@@ -274,34 +274,47 @@
                 </div>
             </section>
 
-            {{-- Aksi bantuan premium — Chat Owner + Undangan (selalu tampil, bahkan sebelum check-in) --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <a href="{{ route('tenant.messages.index') }}"
-                   class="group relative overflow-hidden flex items-center gap-3 rounded-xl border border-orange-100 dark:border-orange-500/20 bg-white dark:bg-slate-900 p-4 hover:shadow-md transition-all">
-                    
-                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-orange-500 text-white dark:bg-orange-500/20 dark:text-orange-300">
-                        <i class="ri-customer-service-2-line text-xl"></i>
-                    </span>
-                    <span class="min-w-0 flex-1 text-left">
-                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Hubungi Owner @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-orange-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadMessages'] }}</span>@endif</span>
-                        <span class="block text-xs text-slate-500 dark:text-slate-400">Chat langsung — kamar, tagihan, fasilitas</span>
-                    </span>
-                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
-                </a>
-                <a href="{{ route('tenant.invitations.index') }}"
-                   class="group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:border-amber-200 dark:hover:border-amber-500/30 hover:shadow-md transition-all">
-                    
-                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
-                        <i class="ri-mail-send-line text-xl"></i>
-                    </span>
-                    <span class="min-w-0 flex-1 text-left">
-                        <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="text-[11px] font-medium text-slate-500">Belum ada undangan</span>@endif</span>
-                        <span class="block text-xs text-slate-500 dark:text-slate-400">Ajakan tinggal bersama dari teman</span>
-                    </span>
-                    <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition"><i class="ri-arrow-right-line"></i></span>
-                </a>
-            </div>
         @endif
+
+        {{-- Aksi bantuan premium — Hubungi Owner + Customer Service + Undangan.
+             Customer Service sengaja terpisah dari Hubungi Owner (tim Admin KosManager). --}}
+        <div class="grid grid-cols-1 {{ $penghuni ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }} gap-3">
+            <a href="{{ route('tenant.messages.index') }}"
+               class="group relative overflow-hidden flex items-center gap-3 rounded-xl border border-orange-100 dark:border-orange-500/20 bg-white dark:bg-slate-900 p-4 hover:shadow-md transition-all">
+                <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-orange-500 text-white dark:bg-orange-500/20 dark:text-orange-300">
+                    <i class="ri-customer-service-2-line text-xl"></i>
+                </span>
+                <span class="min-w-0 flex-1 text-left">
+                    <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Hubungi Owner @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-orange-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadMessages'] }}</span>@endif</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-400">Chat langsung — kamar, tagihan, fasilitas</span>
+                </span>
+                <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-500 group-hover:bg-orange-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
+            </a>
+            <a href="{{ route('tenant.cs.index') }}"
+               class="group relative overflow-hidden flex items-center gap-3 rounded-xl border border-sky-100 dark:border-sky-500/20 bg-white dark:bg-slate-900 p-4 hover:shadow-md transition-all">
+                <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-500 text-white dark:bg-sky-500/20 dark:text-sky-300">
+                    <i class="ri-question-answer-line text-xl"></i>
+                </span>
+                <span class="min-w-0 flex-1 text-left">
+                    <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Customer Service @if(($sidebarBadges['unreadCsMessages'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-sky-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['unreadCsMessages'] }}</span>@endif</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-400">Bantuan akun, pembayaran & aplikasi</span>
+                </span>
+                <span class="grid h-8 w-8 place-items-center rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 text-slate-500 group-hover:bg-sky-500 group-hover:text-white transition"><i class="ri-arrow-right-line"></i></span>
+            </a>
+            @if($penghuni)
+            <a href="{{ route('tenant.invitations.index') }}"
+               class="group flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:border-amber-200 dark:hover:border-amber-500/30 hover:shadow-md transition-all">
+                <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900">
+                    <i class="ri-mail-send-line text-xl"></i>
+                </span>
+                <span class="min-w-0 flex-1 text-left">
+                    <span class="block text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">Undangan Kos @if(($sidebarBadges['invitationPending'] ?? 0) > 0)<span class="inline-flex items-center rounded-full bg-amber-500 text-white px-2 py-0.5 text-[10px] font-black">{{ $sidebarBadges['invitationPending'] }} Menunggu</span>@else<span class="text-[11px] font-medium text-slate-500">Belum ada undangan</span>@endif</span>
+                    <span class="block text-xs text-slate-500 dark:text-slate-400">Ajakan tinggal bersama dari teman</span>
+                </span>
+                <span class="grid h-8 w-8 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-slate-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-slate-900 transition"><i class="ri-arrow-right-line"></i></span>
+            </a>
+            @endif
+        </div>
 
         {{-- Undangan — selalu tampil untuk discoverability (Phase32) bahkan jika belum punya penghuni --}}
         @if(!$penghuni)

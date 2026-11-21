@@ -79,6 +79,8 @@
 .ri-eye-line:before { content: "\ecb5";}
 
 .ri-chat-3-line:before { content: "\eb51";}
+.ri-chat-3-fill:before { content: "\eb50";}
+.ri-question-answer-fill:before { content: "\f042";}
 
 .ri-send-plane-line:before { content: "\f0da";}
 
@@ -295,6 +297,7 @@
 .ri-message-3-line:before { content: "\ef46";}
 
 .ri-question-answer-line:before { content: "\f043";}
+.ri-search-fill:before { content: "\f0d0";}
 
 .ri-dashboard-line:before { content: "\ec14";}
 

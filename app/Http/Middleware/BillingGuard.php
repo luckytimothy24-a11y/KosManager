@@ -24,7 +24,7 @@ class BillingGuard
         }
 
         // Izinkan akses ke halaman yang tidak terkait billing
-        $allowedPrefixes = ['/tenant/tagihan', '/tenant/pembayaran', '/tenant/messages', '/tenant/damage-reports', '/tenant/inquiries', '/tenant/invitations', '/tenant/kontrak', '/messages'];
+        $allowedPrefixes = ['/tenant/tagihan', '/tenant/pembayaran', '/tenant/messages', '/tenant/cs', '/tenant/damage-reports', '/tenant/inquiries', '/tenant/invitations', '/tenant/kontrak', '/messages'];
         $path = $request->path();
 
         foreach ($allowedPrefixes as $prefix) {

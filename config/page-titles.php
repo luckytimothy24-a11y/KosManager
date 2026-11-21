@@ -37,6 +37,7 @@ return [
     'admin.owners.index' => 'Manajemen Owner',
     'admin.moderation.index' => 'Moderation',
     'admin.messages.index' => 'Audit Pesan', 'admin.owner-messages.index' => 'Hubungi Owner',
+    'admin.cs.index' => 'Customer Service', 'admin.cs.show' => 'Detail Customer Service',
     'admin.damage-reports.index' => 'Laporan Kerusakan',
     'admin.fasilitas.index' => 'Fasilitas', 'admin.fasilitas.create' => 'Tambah Fasilitas', 'admin.fasilitas.edit' => 'Edit Fasilitas',
     'admin.advertising.index' => 'Pendapatan',
@@ -48,6 +49,7 @@ return [
     'tenant.tagihan.index' => 'Tagihan Saya', 'tenant.tagihan.show' => 'Detail Tagihan',
     'tenant.pembayaran.index' => 'Pembayaran Saya', 'tenant.pembayaran.show' => 'Detail Pembayaran',
     'tenant.messages.index' => 'Pesan', 'tenant.inquiries.index' => 'Pertanyaan Saya',
+    'tenant.cs.index' => 'Customer Service', 'tenant.cs.create' => 'Percakapan Baru', 'tenant.cs.show' => 'Customer Service',
     'tenant.damage-reports.index' => 'Laporan Kerusakan', 'tenant.damage-reports.show' => 'Detail Laporan',
     'tenant.invitations.index' => 'Undangan Kos',
 ];

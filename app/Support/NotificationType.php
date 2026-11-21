@@ -20,6 +20,8 @@ class NotificationType
 
     public const MESSAGE = 'message';
 
+    public const CUSTOMER_SERVICE = 'customer_service';
+
     public const IDENTITY = 'identity';
 
     public const DAMAGE_REPORT = 'damage_report';
@@ -37,6 +39,7 @@ class NotificationType
             self::CHECKOUT => 'Check-Out',
             self::ADVERTISING => 'Advertising',
             self::MESSAGE => 'Pesan',
+            self::CUSTOMER_SERVICE => 'Customer Service',
             self::IDENTITY => 'Identitas',
             self::DAMAGE_REPORT => 'Lapor Kerusakan',
             self::KOS_MODERATION => 'Moderasi Kos',
@@ -55,6 +58,7 @@ class NotificationType
             self::CHECKOUT => self::label(self::CHECKOUT),
             self::ADVERTISING => self::label(self::ADVERTISING),
             self::MESSAGE => self::label(self::MESSAGE),
+            self::CUSTOMER_SERVICE => self::label(self::CUSTOMER_SERVICE),
             self::IDENTITY => self::label(self::IDENTITY),
             self::DAMAGE_REPORT => self::label(self::DAMAGE_REPORT),
             self::KOS_MODERATION => self::label(self::KOS_MODERATION),

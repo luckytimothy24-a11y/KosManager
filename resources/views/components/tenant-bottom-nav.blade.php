@@ -66,6 +66,14 @@
                     ],
                 ],
                 [
+                    'label' => 'Owner',
+                    'route' => 'tenant.messages.index',
+                    'icon' => 'ri-chat-3',
+                    'active' => request()->routeIs('tenant.messages.*'),
+                    'badge' => (int) ($sidebarData['unreadMessages'] ?? 0),
+                    'badgeClass' => 'bg-orange-500',
+                ],
+                [
                     'label' => 'Tagihan',
                     'route' => 'tenant.tagihan.index',
                     'icon' => 'ri-file-list-3',
@@ -77,7 +85,7 @@
                     'label' => 'Profil',
                     'route' => 'profile.edit',
                     'icon' => 'ri-user-3',
-                    'active' => request()->routeIs('profile.*', 'tenant.favorites.*', 'tenant.messages.*', 'tenant.dispute.*', 'tenant.damage-reports.*', 'tenant.laporan.*'),
+                    'active' => request()->routeIs('profile.*', 'tenant.favorites.*', 'tenant.dispute.*', 'tenant.damage-reports.*', 'tenant.laporan.*'),
                 ],
             ];
         } else {

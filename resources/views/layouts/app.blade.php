@@ -171,13 +171,22 @@
 
                         {{-- Ikon Komunikasi --}}
                          @if(auth()->check() && auth()->user()->isTenant())
-                             {{-- Tenant Chat: Direct Link to Messages --}}
+                             {{-- Customer Service: kanal terpisah dari Hubungi Owner --}}
+                             <a href="{{ route('tenant.cs.index') }}"
+                                class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                                aria-label="Customer Service">
+                                 <i class="ri-question-answer-line text-xl"></i>
+                                 @if(($sidebarBadges['unreadCsMessages'] ?? 0) > 0)
+                                     <span class="absolute -top-0.5 -right-0.5 inline-flex min-w-[16px] h-4 items-center justify-center rounded-full bg-sky-500 px-1 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900">{{ ($sidebarBadges['unreadCsMessages'] ?? 0) > 99 ? '99+' : $sidebarBadges['unreadCsMessages'] }}</span>
+                                 @endif
+                             </a>
+                             {{-- Hubungi Owner: chat tenant dengan pemilik kos --}}
                              <a href="{{ route('tenant.messages.index') }}"
                                 class="relative inline-flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                                aria-label="Chat">
+                                aria-label="Hubungi Owner">
                                  <i class="ri-chat-3-line text-xl"></i>
                                  @if(($sidebarBadges['unreadMessages'] ?? 0) > 0)
-                                     <span class="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full ring-2 ring-white"></span>
+                                     <span class="absolute -top-0.5 -right-0.5 inline-flex min-w-[16px] h-4 items-center justify-center rounded-full bg-primary-500 px-1 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900">{{ ($sidebarBadges['unreadMessages'] ?? 0) > 99 ? '99+' : $sidebarBadges['unreadMessages'] }}</span>
                                  @endif
                              </a>
                          @elseif(auth()->check() && auth()->user()->isOwner())

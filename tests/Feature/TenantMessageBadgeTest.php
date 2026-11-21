@@ -127,4 +127,36 @@ class TenantMessageBadgeTest extends TestCase
 
         $this->assertEquals(0, Message::where('receiver_id', $this->tenant->id)->whereNull('read_at')->count());
     }
+
+    public function test_tenant_without_penghuni_still_sees_cs_card_on_dashboard(): void
+    {
+        $newTenant = User::factory()->create(['role' => 'pencari']);
+
+        $response = $this->actingAs($newTenant)->get(route('dashboard'));
+
+        $response->assertOk();
+        // Teks unik kartu CS di dashboard (bukan menu sidebar/topbar).
+        $response->assertSee('Chat langsung — kamar, tagihan, fasilitas');
+        $response->assertSee(route('tenant.messages.index'), false);
+    }
+
+    public function test_tenant_bottom_nav_has_owner_chat_entry(): void
+    {
+        $response = $this->actingAs($this->tenant)->get(route('dashboard'));
+
+        $response->assertOk();
+        // Bottom nav memberi akses "Owner"; topbar memberi akses "Hubungi Owner".
+        $response->assertSee('aria-label="Owner"', false);
+        $response->assertSee('aria-label="Hubungi Owner"', false);
+        $response->assertSee('aria-label="Navigasi utama"', false);
+    }
+
+    public function test_tenant_topbar_has_customer_service_entry(): void
+    {
+        $response = $this->actingAs($this->tenant)->get(route('dashboard'));
+
+        $response->assertOk();
+        $response->assertSee('aria-label="Customer Service"', false);
+        $response->assertSee(route('tenant.cs.index'), false);
+    }
 }

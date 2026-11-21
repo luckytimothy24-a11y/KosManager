@@ -11,6 +11,7 @@ use App\Models\BookingCancellationRequest;
 use App\Models\BookingOccupant;
 use App\Models\CheckIn;
 use App\Models\CheckOut;
+use App\Models\CsConversation;
 use App\Models\DamageReport;
 use App\Models\Fasilitas;
 use App\Models\Favorite;
@@ -39,6 +40,7 @@ use App\Policies\BookingOccupantPolicy;
 use App\Policies\BookingPolicy;
 use App\Policies\CheckInPolicy;
 use App\Policies\CheckOutPolicy;
+use App\Policies\CsConversationPolicy;
 use App\Policies\DamageReportPolicy;
 use App\Policies\FasilitasPolicy;
 use App\Policies\FavoritePolicy;
@@ -77,6 +79,7 @@ class AuthServiceProvider extends ServiceProvider
         Pembayaran::class => PembayaranPolicy::class,
         CheckIn::class => CheckInPolicy::class,
         CheckOut::class => CheckOutPolicy::class,
+        CsConversation::class => CsConversationPolicy::class,
         DamageReport::class => DamageReportPolicy::class,
         Favorite::class => FavoritePolicy::class,
         Message::class => MessagePolicy::class,

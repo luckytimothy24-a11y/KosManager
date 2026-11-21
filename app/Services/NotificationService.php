@@ -296,6 +296,35 @@ class NotificationService
         self::create($tenantId, NotificationType::MESSAGE, 'Balasan Pesan', "{$ownerName} membalas pesan Anda", ['url' => $url]);
     }
 
+    /**
+     * Pesan CS baru dari tenant ke inbox Admin/Super Admin.
+     *
+     * @param  array<int, int>  $adminIds
+     */
+    public static function csMessageToAdmins(array $adminIds, string $tenantName, string $subject, string $url): void
+    {
+        foreach ($adminIds as $adminId) {
+            self::create(
+                (int) $adminId,
+                NotificationType::CUSTOMER_SERVICE,
+                'Pesan Customer Service Baru',
+                "{$tenantName} mengirim pesan Customer Service: {$subject}",
+                ['url' => $url]
+            );
+        }
+    }
+
+    public static function csReplyToTenant(int $tenantId, string $adminName, string $url): void
+    {
+        self::create(
+            $tenantId,
+            NotificationType::CUSTOMER_SERVICE,
+            'Balasan Customer Service',
+            "{$adminName} membalas pesan Customer Service Anda.",
+            ['url' => $url]
+        );
+    }
+
     public static function cleanup(int $olderThanDays = 90): int
     {
         return Notification::where('created_at', '<', now()->subDays($olderThanDays))->delete();

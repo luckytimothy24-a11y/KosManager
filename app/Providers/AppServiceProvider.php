@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Booking;
 use App\Models\BookingOccupant;
 use App\Models\CheckOut;
+use App\Models\CsMessage;
 use App\Models\DamageReport;
 use App\Models\Kos;
 use App\Models\Message;
@@ -62,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
                 'unreadNotif' => 0,
                 'activeBooking' => 0,
                 'unreadMessages' => 0,
+                'unreadCsMessages' => 0,
                 'invitationPending' => 0,
                 'pendingDamageReports' => 0,
                 'unreadInquiries' => 0,
@@ -97,6 +99,21 @@ class AppServiceProvider extends ServiceProvider
                     $badges['unreadMessages'] = Message::where('receiver_id', $user->id)->whereNull('read_at')->count();
                 } catch (\Throwable $e) {
                     $badges['unreadMessages'] = 0;
+                }
+                try {
+                    if ($user->isTenant()) {
+                        $badges['unreadCsMessages'] = CsMessage::whereNull('read_at')
+                            ->whereHas('conversation', fn ($q) => $q->where('tenant_id', $user->id))
+                            ->where('sender_id', '!=', $user->id)
+                            ->count();
+                    } elseif ($user->isAdmin() || $user->isSuperAdmin()) {
+                        $badges['unreadCsMessages'] = CsMessage::whereNull('cs_messages.read_at')
+                            ->join('cs_conversations', 'cs_conversations.id', '=', 'cs_messages.cs_conversation_id')
+                            ->whereColumn('cs_messages.sender_id', 'cs_conversations.tenant_id')
+                            ->count();
+                    }
+                } catch (\Throwable $e) {
+                    $badges['unreadCsMessages'] = 0;
                 }
                 try {
                     if ($user->isSuperAdmin()) {

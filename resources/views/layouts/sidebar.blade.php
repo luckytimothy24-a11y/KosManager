@@ -35,6 +35,7 @@
     $bookingPending = $sidebarData['bookingPending'] ?? 0;
     $tagihanBelum = $sidebarData['tagihanBelum'] ?? 0;
     $unreadMessages = $sidebarData['unreadMessages'] ?? 0;
+    $unreadCsMessages = $sidebarData['unreadCsMessages'] ?? 0;
     $invitationPending = $sidebarData['invitationPending'] ?? 0;
     $unreadNotif = $sidebarData['unreadNotif'] ?? 0;
     $unreadAdminMessages = $sidebarData['unreadAdminMessages'] ?? 0;
@@ -136,6 +137,9 @@
                         $navItem('super-admin.moderation.advertising', 'Moderasi Iklan', 'ri-megaphone-line'),
                         $navItem('super-admin.moderation.damage-reports', 'Damage Report', 'ri-tools-line'),
                     ];
+                    $groups['Komunikasi'] = [
+                        $navItem('admin.cs.index', 'Customer Service', 'ri-question-answer-line', $unreadCsMessages),
+                    ];
                     $groups['Sistem'] = [
                         $navItem('super-admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
                         $navItem('super-admin.audit-log.index', 'Activity Log', 'ri-history-line'),
@@ -183,6 +187,9 @@
                     $groups['Keuangan'] = [
                         $navItem('admin.tagihan.index', 'Tagihan', 'ri-file-list-3-line'),
                         $navItem('admin.pembayaran.index', 'Pembayaran', 'ri-money-dollar-circle-line'),
+                    ];
+                    $groups['Komunikasi'] = [
+                        $navItem('admin.cs.index', 'Customer Service', 'ri-question-answer-line', $unreadCsMessages),
                     ];
                     $groups['Lainnya'] = [
                         $navItem('admin.laporan.index', 'Laporan', 'ri-bar-chart-grouped-line'),
@@ -241,6 +248,7 @@
                     ],
                     'Bantuan' => [
                         ['route' => 'tenant.messages*', 'label' => 'Hubungi Owner', 'icon' => 'ri-customer-service-2-line', 'badge' => $unreadMessages, 'badgeClass' => 'bg-gradient-to-br from-orange-500 to-orange-600'],
+                        ['route' => 'tenant.cs*', 'label' => 'Customer Service', 'icon' => 'ri-question-answer-line', 'badge' => $unreadCsMessages, 'badgeClass' => 'bg-gradient-to-br from-sky-500 to-blue-600'],
                         ['route' => 'tenant.invitations*', 'label' => 'Undangan Kos', 'icon' => 'ri-mail-send-line', 'badge' => $invitationPending, 'badgeClass' => 'bg-amber-500'],
                     ],
                 ];

@@ -50,6 +50,7 @@ class NotificationLink
             NotificationType::BILLING => "{$prefix}.tagihan.index",
             NotificationType::KONTRAK => "{$prefix}.kontrak.index",
             NotificationType::MESSAGE => "{$prefix}.messages.index",
+            NotificationType::CUSTOMER_SERVICE => $prefix === 'pencari' ? 'tenant.cs.index' : 'admin.cs.index',
             NotificationType::CHECKIN => $prefix === 'pencari' ? 'tenant.checkin.index' : "{$prefix}.checkin.index",
             NotificationType::CHECKOUT => $prefix === 'pencari' ? 'dashboard' : "{$prefix}.checkout.index",
             NotificationType::DAMAGE_REPORT => "{$prefix}.damage-reports.index",

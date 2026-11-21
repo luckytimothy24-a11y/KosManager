@@ -16,6 +16,7 @@
         'checkin' => ['ri-login-box-line', 'bg-blue-100 dark:bg-blue-500/15', 'text-blue-600 dark:text-blue-400'],
         'checkout' => ['ri-logout-box-line', 'bg-rose-100 dark:bg-rose-500/15', 'text-rose-600 dark:text-rose-400'],
         'message' => ['ri-chat-3-line', 'bg-sky-100 dark:bg-sky-500/15', 'text-sky-600 dark:text-sky-400'],
+        'customer_service' => ['ri-question-answer-line', 'bg-cyan-100 dark:bg-cyan-500/15', 'text-cyan-600 dark:text-cyan-400'],
         'identity' => ['ri-shield-check-line', 'bg-slate-200/70 dark:bg-white/[0.06]', 'text-slate-500 dark:text-slate-400'],
         'damage_report' => ['ri-tools-line', 'bg-orange-100 dark:bg-orange-500/15', 'text-orange-600 dark:text-orange-400'],
         'advertising' => ['ri-megaphone-line', 'bg-purple-100 dark:bg-purple-500/15', 'text-purple-600 dark:text-purple-400'],
