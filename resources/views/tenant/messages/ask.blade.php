@@ -19,22 +19,23 @@
 
             <div x-data="{ category: '{{ old('category', '') }}' }">
                 <p class="field-label">Topik Pertanyaan <span class="font-normal">(opsional)</span></p>
-                <div class="mt-2 flex flex-wrap gap-1.5" role="radiogroup" aria-label="Topik pertanyaan">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="category" value="" x-model="category" class="sr-only">
-                        <span class="inline-flex items-center rounded-full border px-3.5 py-2 text-xs font-bold transition"
-                              :class="category === '' ? 'border-primary-500 bg-primary-500 text-white shadow' : 'border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated/60 text-slate-600 dark:text-slate-300 hover:border-primary-300 hover:text-primary-600'">
-                            Umum
-                        </span>
-                    </label>
+                <input type="hidden" name="category" :value="category">
+                <div class="mt-2 flex flex-wrap gap-1.5" role="group" aria-label="Topik pertanyaan">
+                    <button type="button"
+                            @click="category = ''"
+                            :aria-pressed="category === ''"
+                            class="inline-flex items-center rounded-full border px-3.5 py-2 text-xs font-bold transition"
+                            :class="category === '' ? 'border-primary-500 bg-primary-500 text-white shadow' : 'border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated/60 text-slate-600 dark:text-slate-300 hover:border-primary-300 hover:text-primary-600'">
+                        Umum
+                    </button>
                     @foreach(['kamar' => 'Kamar', 'fasilitas' => 'Fasilitas', 'booking' => 'Booking', 'lainnya' => 'Lainnya'] as $key => $label)
-                        <label class="cursor-pointer">
-                            <input type="radio" name="category" value="{{ $key }}" x-model="category" class="sr-only">
-                            <span class="inline-flex items-center gap-1 rounded-full border px-3.5 py-2 text-xs font-bold transition"
-                                  :class="category === '{{ $key }}' ? 'border-primary-500 bg-primary-500 text-white shadow' : 'border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated/60 text-slate-600 dark:text-slate-300 hover:border-primary-300 hover:text-primary-600'">
-                                <i class="ri-price-tag-3-line"></i> {{ $label }}
-                            </span>
-                        </label>
+                        <button type="button"
+                                @click="category = (category === '{{ $key }}' ? '' : '{{ $key }}')"
+                                :aria-pressed="category === '{{ $key }}'"
+                                class="inline-flex items-center gap-1 rounded-full border px-3.5 py-2 text-xs font-bold transition"
+                                :class="category === '{{ $key }}' ? 'border-primary-500 bg-primary-500 text-white shadow' : 'border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated/60 text-slate-600 dark:text-slate-300 hover:border-primary-300 hover:text-primary-600'">
+                            <i class="ri-price-tag-3-line"></i> {{ $label }}
+                        </button>
                     @endforeach
                 </div>
                 @error('category')<p role="alert" class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror

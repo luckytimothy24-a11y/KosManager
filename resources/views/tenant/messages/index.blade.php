@@ -147,15 +147,16 @@
 
                         <div class="mb-3">
                             <p class="mb-2 field-label"><i class="ri-price-tag-3-line text-primary-500 mr-1"></i> Topik (opsional)</p>
-                            <div class="flex flex-wrap gap-1.5">
+                            <input type="hidden" name="category" :value="category">
+                            <div class="flex flex-wrap gap-1.5" role="group" aria-label="Pilih topik pesan">
                                 @foreach(\App\Models\Message::CATEGORIES as $key => $label)
-                                    <label class="cursor-pointer">
-                                        <input type="radio" name="category" value="{{ $key }}" x-model="category" class="sr-only">
-                                        <span class="inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-bold transition"
-                                              :class="category === '{{ $key }}' ? 'border-primary-500 bg-primary-500 text-white shadow' : 'border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-600 dark:text-slate-300 hover:border-primary-300 hover:text-primary-600 dark:hover:border-primary-500/30'">
-                                            {{ $label }}
-                                        </span>
-                                    </label>
+                                    <button type="button"
+                                            @click="category = (category === '{{ $key }}' ? '' : '{{ $key }}')"
+                                            :aria-pressed="category === '{{ $key }}'"
+                                            class="inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-bold transition"
+                                            :class="category === '{{ $key }}' ? 'border-primary-500 bg-primary-500 text-white shadow' : 'border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated text-slate-600 dark:text-slate-300 hover:border-primary-300 hover:text-primary-600 dark:hover:border-primary-500/30'">
+                                        {{ $label }}
+                                    </button>
                                 @endforeach
                                 <button type="button" x-show="category" x-cloak @click="category = ''" class="inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-white/[0.08] bg-white dark:bg-surface-elevated px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-red-600 transition">Hapus topik <i class="ri-close-line"></i></button>
                             </div>

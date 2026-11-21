@@ -60,6 +60,10 @@ class ChatMessageTest extends TestCase
         $response->assertSee('Chat dengan Owner');
         $response->assertSee($this->owner->name);
         $response->assertSee('AC kamar saya rusak');
+        $response->assertSee('Topik (opsional)');
+        $response->assertSee('aria-label="Pilih topik pesan"', false);
+        $response->assertSee('<input type="hidden" name="category"', false);
+        $response->assertDontSee('<input type="radio" name="category"', false);
     }
 
     public function test_tenant_can_send_message_to_owner(): void
@@ -418,7 +422,11 @@ class ChatMessageTest extends TestCase
             ->get(route('tenant.kos.ask', $this->kos))
             ->assertOk()
             ->assertSee($this->owner->name)
-            ->assertDontSee($this->otherOwner->name);
+            ->assertDontSee($this->otherOwner->name)
+            ->assertSee('Topik Pertanyaan')
+            ->assertSee('aria-label="Topik pertanyaan"', false)
+            ->assertSee('<input type="hidden" name="category"', false)
+            ->assertDontSee('<input type="radio" name="category"', false);
     }
 
     public function test_owner_inbox_unread_excludes_owner_own_reply(): void

@@ -42,7 +42,9 @@ class TenantInquiryTest extends TestCase
         $response->assertOk();
         $response->assertSee('Umum');
         $response->assertSee('Fasilitas');
-        $response->assertSee('type="radio" name="category"', escape: false);
+        $response->assertSee('<input type="hidden" name="category"', false);
+        $response->assertSee('aria-label="Topik pertanyaan"', false);
+        $response->assertDontSee('type="radio" name="category"', false);
     }
 
     public function test_seeker_can_send_inquiry_to_kos_owner(): void
