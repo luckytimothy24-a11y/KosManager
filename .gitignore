@@ -59,3 +59,7 @@ test-results/
 
 # Debug
 cookies.txt
+
+# root clutter
+/*.txt
+/*.log
