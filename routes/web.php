@@ -525,3 +525,6 @@ require __DIR__.'/auth.php';
 if (file_exists(__DIR__.'/damage-report.php')) {
     require __DIR__.'/damage-report.php';
 }
+if (file_exists(__DIR__.'/work-order.php')) {
+    require __DIR__.'/work-order.php';
+}
