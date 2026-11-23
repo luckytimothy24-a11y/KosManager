@@ -8,9 +8,58 @@ return new class extends Migration
 {
     /**
      * Tambahkan 'weekly' ke enum rental_type pada tabel bookings dan kontraks.
-     * Rebuild tabel untuk mendukung both MySQL dan SQLite.
+     *
+     * Cross-driver:
+     * - SQLite: rebuild tabel (SQLite tidak mendukung ALTER untuk enum/check).
+     * - MySQL/MariaDB: ALTER TABLE ... MODIFY COLUMN.
      */
     public function up(): void
+    {
+        $driver = DB::getDriverName();
+
+        if ($driver === 'sqlite') {
+            $this->upSqlite();
+
+            return;
+        }
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("ALTER TABLE bookings MODIFY COLUMN rental_type ENUM('daily','weekly','monthly') NOT NULL DEFAULT 'monthly'");
+            DB::statement("ALTER TABLE kontraks MODIFY COLUMN rental_type ENUM('daily','weekly','monthly') NOT NULL DEFAULT 'monthly'");
+
+            return;
+        }
+
+        // Fallback generik: biarkan Laravel Schema menangani (best effort).
+        Schema::table('bookings', function ($table) {
+            $table->enum('rental_type', ['daily', 'weekly', 'monthly'])->default('monthly')->change();
+        });
+        Schema::table('kontraks', function ($table) {
+            $table->enum('rental_type', ['daily', 'weekly', 'monthly'])->default('monthly')->change();
+        });
+    }
+
+    public function down(): void
+    {
+        $driver = DB::getDriverName();
+
+        if ($driver === 'sqlite') {
+            $this->downSqlite();
+
+            return;
+        }
+
+        if (in_array($driver, ['mysql', 'mariadb'], true)) {
+            DB::statement("UPDATE bookings SET rental_type = 'monthly' WHERE rental_type = 'weekly'");
+            DB::statement("UPDATE kontraks SET rental_type = 'monthly' WHERE rental_type = 'weekly'");
+            DB::statement("ALTER TABLE bookings MODIFY COLUMN rental_type ENUM('daily','monthly') NOT NULL DEFAULT 'monthly'");
+            DB::statement("ALTER TABLE kontraks MODIFY COLUMN rental_type ENUM('daily','monthly') NOT NULL DEFAULT 'monthly'");
+
+            return;
+        }
+    }
+
+    private function upSqlite(): void
     {
         Schema::disableForeignKeyConstraints();
 
@@ -39,10 +88,7 @@ return new class extends Migration
         Schema::enableForeignKeyConstraints();
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    private function downSqlite(): void
     {
         Schema::disableForeignKeyConstraints();
 

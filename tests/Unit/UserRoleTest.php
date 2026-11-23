@@ -9,7 +9,7 @@ class UserRoleTest extends TestCase
 {
     public function test_values_match_database_enum(): void
     {
-        $this->assertSame(['super_admin', 'admin', 'owner', 'pencari'], UserRole::values());
+        $this->assertSame(['super_admin', 'admin', 'owner', 'pencari', 'technician'], UserRole::values());
     }
 
     public function test_try_from_role(): void
@@ -26,6 +26,7 @@ class UserRoleTest extends TestCase
         $this->assertFalse(UserRole::ADMIN->isSystemLevel());
         $this->assertFalse(UserRole::OWNER->isSystemLevel());
         $this->assertFalse(UserRole::PENCARI->isSystemLevel());
+        $this->assertFalse(UserRole::TECHNICIAN->isSystemLevel());
     }
 
     public function test_only_admin_is_operational_manager(): void
@@ -34,6 +35,7 @@ class UserRoleTest extends TestCase
         $this->assertFalse(UserRole::SUPER_ADMIN->isOperationalManager());
         $this->assertFalse(UserRole::OWNER->isOperationalManager());
         $this->assertFalse(UserRole::PENCARI->isOperationalManager());
+        $this->assertFalse(UserRole::TECHNICIAN->isOperationalManager());
     }
 
     public function test_labels_are_defined(): void

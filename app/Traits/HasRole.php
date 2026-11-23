@@ -34,6 +34,11 @@ trait HasRole
         return $this->isPencari();
     }
 
+    public function isTechnician(): bool
+    {
+        return $this->role === UserRole::TECHNICIAN->value;
+    }
+
     public function hasRole(string ...$roles): bool
     {
         return in_array($this->role, $roles);

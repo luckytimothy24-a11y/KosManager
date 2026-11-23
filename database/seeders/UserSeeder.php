@@ -65,6 +65,18 @@ class UserSeeder extends Seeder
             'is_active' => true,
         ]);
 
+        // Teknisi (demo, hanya non-production; lihat config/roles.php)
+        User::create([
+            'name' => config('roles.demo.technician.name', 'Teknisi Demo'),
+            'email' => config('roles.demo.technician.email', 'teknisi@kosmanager.test'),
+            'email_verified_at' => now(),
+            'password' => Hash::make(config('roles.demo.technician.password', 'password')),
+            'role' => 'technician',
+            'phone' => '081234567894',
+            'address' => 'Jl. Teknisi No. 5',
+            'is_active' => true,
+        ]);
+
         $owner = User::where('email', 'owner@example.com')->first();
         if ($owner) {
             OwnerProfile::firstOrCreate(

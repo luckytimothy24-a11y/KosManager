@@ -25,20 +25,20 @@ class DomainValuesCharacterizationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_current_user_roles_are_four_and_tenant_is_not_a_db_value_yet(): void
+    public function test_current_user_roles_include_technician_and_tenant_is_not_a_db_value_yet(): void
     {
         $this->assertSame(
-            ['super_admin', 'admin', 'owner', 'pencari'],
+            ['super_admin', 'admin', 'owner', 'pencari', 'technician'],
             $this->enumValues('users', 'role')
         );
 
         $this->assertSame(
-            ['super_admin', 'admin', 'owner', 'pencari'],
+            ['super_admin', 'admin', 'owner', 'pencari', 'technician'],
             UserRole::values()
         );
 
         $this->assertNull(UserRole::tryFrom('tenant'));
-        $this->assertNull(UserRole::tryFrom('technician'));
+        $this->assertNotNull(UserRole::tryFrom('technician'));
     }
 
     public function test_current_role_labels(): void
@@ -47,6 +47,7 @@ class DomainValuesCharacterizationTest extends TestCase
         $this->assertSame('Admin Kos', UserRole::ADMIN->label());
         $this->assertSame('Owner', UserRole::OWNER->label());
         $this->assertSame('Pencari Kos', UserRole::PENCARI->label());
+        $this->assertSame('Teknisi', UserRole::TECHNICIAN->label());
     }
 
     public function test_current_kamar_statuses_have_no_needs_cleaning(): void
