@@ -37,18 +37,26 @@ class AdminKosKamarCapabilityTest extends TestCase
         $this->foreignAdmin = User::factory()->create(['role' => 'admin']);
         $this->tenant = User::factory()->create(['role' => 'pencari']);
 
-        $this->assignedKos = Kos::factory()->create(['owner_id' => $this->owner->id]);
-        $this->foreignKos = Kos::factory()->create(['owner_id' => $this->owner->id]);
+        $this->assignedKos = Kos::factory()->create([
+            'owner_id' => $this->owner->id,
+            'name' => 'Kos Assigned Capability',
+        ]);
+        $this->foreignKos = Kos::factory()->create([
+            'owner_id' => $this->owner->id,
+            'name' => 'Kos Foreign Capability',
+        ]);
 
         $this->assignedKos->admins()->attach($this->admin->id);
 
         $this->assignedKamar = Kamar::factory()->create([
             'kos_id' => $this->assignedKos->id,
+            'room_number' => 'A-101',
             'status' => 'available',
             'capacity' => 1,
         ]);
         $this->foreignKamar = Kamar::factory()->create([
             'kos_id' => $this->foreignKos->id,
+            'room_number' => 'B-202',
             'status' => 'available',
             'capacity' => 1,
         ]);
