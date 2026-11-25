@@ -20,13 +20,13 @@ class SettlementReportService
             return $this->emptyReport();
         }
 
-        $received = (float) Pembayaran::where('verification_status', Pembayaran::STATUS_APPROVED)
+        $received = (float) Pembayaran::query()->settlementEligible()
             ->where(function ($q) use ($kosIds) {
                 $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereIn('id', $kosIds))
                     ->orWhereHas('booking.kos', fn ($qq) => $qq->whereIn('id', $kosIds));
             })->sum(DB::raw('COALESCE(rent_amount, amount)'));
 
-        $penaltyExcluded = (float) Pembayaran::where('verification_status', Pembayaran::STATUS_APPROVED)
+        $penaltyExcluded = (float) Pembayaran::query()->settlementEligible()
             ->where(function ($q) use ($kosIds) {
                 $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereIn('id', $kosIds))
                     ->orWhereHas('booking.kos', fn ($qq) => $qq->whereIn('id', $kosIds));
@@ -99,7 +99,7 @@ class SettlementReportService
             $kosPayoutIds = Payout::where('kos_id', $kos->id)->pluck('id');
             $kosNet = (float) PayoutItem::whereIn('payout_id', $kosPayoutIds)->sum('net_amount');
             $kosCommission = (float) PayoutItem::whereIn('payout_id', $kosPayoutIds)->sum('commission_amount');
-            $kosReceived = (float) Pembayaran::where('verification_status', Pembayaran::STATUS_APPROVED)
+            $kosReceived = (float) Pembayaran::query()->settlementEligible()
                 ->where(function ($q) use ($kos) {
                     $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereKey($kos->id))
                         ->orWhereHas('booking.kos', fn ($qq) => $qq->whereKey($kos->id));

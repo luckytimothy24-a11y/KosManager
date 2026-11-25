@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,9 +24,13 @@ class Pembayaran extends Model
 
     // Refund status constants
     public const REFUND_NONE = 'none';
+
     public const REFUND_REQUESTED = 'requested';
+
     public const REFUND_APPROVED = 'approved';
+
     public const REFUND_REJECTED = 'rejected';
+
     public const REFUND_COMPLETED = 'completed';
 
     /**
@@ -188,5 +193,27 @@ class Pembayaran extends Model
     public function isFromGateway(): bool
     {
         return $this->gateway_provider !== null;
+    }
+
+    /**
+     * Pembayaran yang boleh dihitung sebagai kewajiban payout baru.
+     *
+     * Pembayaran yang sedang/done refund tidak boleh dipakai untuk payout
+     * karena dananya sudah dialokasikan kembali ke tenant. Refund yang
+     * ditolak tetap eligible; DP non-refundable tetap eligible karena
+     * status refund-nya tidak pernah berubah dari "none".
+     */
+    public function scopeSettlementEligible(Builder $query): Builder
+    {
+        return $query
+            ->where('verification_status', self::STATUS_APPROVED)
+            ->where(function (Builder $q) {
+                $q->whereNull('refund_status')
+                    ->orWhereNotIn('refund_status', [
+                        self::REFUND_REQUESTED,
+                        self::REFUND_APPROVED,
+                        self::REFUND_COMPLETED,
+                    ]);
+            });
     }
 }

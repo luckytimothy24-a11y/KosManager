@@ -36,7 +36,7 @@ class PropertyOwnerPayoutService
         $kosId = (int) $kos->id;
 
         return (float) Pembayaran::query()
-            ->where('verification_status', Pembayaran::STATUS_APPROVED)
+            ->settlementEligible()
             ->whereBetween('payment_date', [$periodStart, $periodEnd])
             ->where(function ($q) use ($kosId) {
                 $q->whereHas('penghuni.kos', fn ($qq) => $qq->whereKey($kosId))

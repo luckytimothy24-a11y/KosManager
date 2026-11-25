@@ -3,7 +3,7 @@
 - **Tanggal:** 17 November 2026
 - **Branch:** `fix/cancel-dp-refund`
 - **Commit batch ini:** `02f8346` (dependency npm), lalu commit mitigasi CRLF/allowlist/laporan setelahnya
-- **Lingkup:** C3 DP non-refundable, verifikasi full suite, audit dependency npm/Composer, mitigasi CRLF email, dan inventaris TODO C2.
+- **Lingkup:** C3 DP non-refundable, verifikasi full suite, audit dependency npm/Composer, mitigasi CRLF email, inventaris TODO C2, dan C2 FASE 1 slice A.
 
 ## Ringkasan
 
@@ -15,7 +15,7 @@
 | `npm run build` (Vite 6.4.6) | Sukses |
 | `composer audit` | **exit 0** — 5 advisory di-allowlist dengan alasan |
 | Mitigasi CRLF email Laravel 10 | Selesai + 5 test |
-| TODO C2 | Didokumentasikan, belum diubah |
+| TODO C2 | Slice A selesai; slice B (escrow/refund completion) tertunda |
 
 ## 1. C3 — DP non-refundable saat booking batal
 
@@ -114,21 +114,36 @@ Bukti red → green: sebelum implementasi 3 test gagal; setelah implementasi 5 t
 
 **Persyaratan operasional:** produksi wajib `APP_DEBUG=false`. Ini juga menjadi alasan allowlist advisory debug-page XSS.
 
-## 5. TODO C2 — Escrow/refund lanjutan (belum diubah)
+## 5. Status C2 — Escrow/refund lanjutan
 
-Sesuai keputusan, `EscrowService`, alur `approved → completed`, dan `PayoutAdjustment` tidak diubah pada batch ini. Status C2 FASE 1 (slice yang sudah selesai):
+`EscrowService`, alur `approved → completed`, dan `PayoutAdjustment` tidak diubah pada batch awal. Status C2 FASE 1:
 
 1. `PropertyOwnerPayoutService::createAdjustment()` cap refund sekarang hanya menjumlahkan adjustment dengan `type = 'refund'` (commit C2 FASE 1a).
 2. `EscrowService::processRefund()` (dead code yang melewati guard append-only) dihapus (commit C2 FASE 1b). Guard append-only `WalletTransaction` diverifikasi oleh test.
 3. `Pembayaran::REFUND_COMPLETED` tetap belum di-set oleh aplikasi; alur `approved → completed` dengan bukti transfer tetap ditunda.
-4. `SettlementService`/`SettlementReportService` tanpa filter refund/DP non-refundable masih tertunda (slice A) sampai sumber kebenaran DP ditetapkan.
+4. **Slice A selesai:** `SettlementService`, `PropertyOwnerPayoutService::resolveGross()`, dan `SettlementReportService` memakai scope `Pembayaran::settlementEligible()`. Pembayaran approved dengan refund `requested`/`approved`/`completed` tidak dihitung untuk payout baru; refund `rejected` dan DP non-refundable (`refund_status = none`) tetap eligible.
 5. Escrow pending pada booking batal yang di-settle ke owner masih tertunda (slice B).
+
+### C2 FASE 1 slice A — filter refund settlement
+
+Perubahan:
+
+- Scope `Pembayaran::settlementEligible()` menjadi satu sumber aturan eligible payout.
+- Dipakai oleh `SettlementService`, `PropertyOwnerPayoutService::resolveGross()`, dan seluruh agregat `SettlementReportService` (`received`, `penalty_excluded`, per-kos).
+- Payout baru ditolak dengan `no_eligible_income` bila semua pembayaran di periode sedang/done refund.
+- DP tetap eligible karena C3 tidak pernah mengubah `refund_status` DP dari `none`.
+
+Verifikasi:
+
+- `tests/Feature/SettlementRefundFilterTest.php`: **8 passed / 27 assertions** (sebelum implementasi 6 test gagal).
+- Regresi settlement/refund/payout/report: **134 passed / 555 assertions**.
+- Pint: passed.
 
 ## 6. Sisa backlog release-wide
 
 Belum dikerjakan pada batch ini:
 
-- C2 FASE 1 (escrow/refund di atas).
+- C2 FASE 1 slice B (escrow pending saat booking batal + alur refund `approved → completed`).
 - CI H3.
 - H1/H2 mode.
 - H5 verifikasi MySQL lokal.
