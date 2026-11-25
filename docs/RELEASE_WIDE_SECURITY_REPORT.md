@@ -3,6 +3,7 @@
 - **Tanggal:** 17 November 2026
 - **Branch:** `fix/cancel-dp-refund`
 - **Commit batch ini:** `02f8346` (dependency npm), lalu commit mitigasi CRLF/allowlist/laporan setelahnya
+- **Commit C2 slice A:** `8a6c336`
 - **Lingkup:** C3 DP non-refundable, verifikasi full suite, audit dependency npm/Composer, mitigasi CRLF email, inventaris TODO C2, dan C2 FASE 1 slice A.
 
 ## Ringkasan
@@ -11,6 +12,7 @@
 |------|--------|
 | C3 DP non-refundable saat booking batal | Selesai (`eb4444d`) |
 | Full suite | **2332 passed, 7970 assertions** |
+| Full suite setelah C2 slice A | **2344 passed, 8003 assertions** |
 | `npm audit` | **0 vulnerabilities** |
 | `npm run build` (Vite 6.4.6) | Sukses |
 | `composer audit` | **exit 0** — 5 advisory di-allowlist dengan alasan |
@@ -46,6 +48,14 @@ Duration: 955.88s
 ```
 
 Kenaikan 5 test dari baseline 2327 berasal dari `tests/Feature/SafeEmailValidationTest.php`.
+
+Setelah C2 FASE 1 slice A (commit `8a6c336`):
+
+```
+php artisan test --stop-on-failure
+Tests: 2344 passed (8003 assertions)
+Duration: 940.48s
+```
 
 ## 3. Dependency npm
 
@@ -137,6 +147,7 @@ Verifikasi:
 
 - `tests/Feature/SettlementRefundFilterTest.php`: **8 passed / 27 assertions** (sebelum implementasi 6 test gagal).
 - Regresi settlement/refund/payout/report: **134 passed / 555 assertions**.
+- Full suite: **2344 passed / 8003 assertions** (`--stop-on-failure`, 940.48s).
 - Pint: passed.
 
 ## 6. Sisa backlog release-wide
