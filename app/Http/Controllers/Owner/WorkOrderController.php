@@ -7,6 +7,7 @@ use App\Models\Kos;
 use App\Models\Penghuni;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
 class WorkOrderController extends Controller
@@ -142,6 +143,12 @@ class WorkOrderController extends Controller
                 'resolved_at' => $request->status === WorkOrder::STATUS_RESOLVED ? now() : null,
             ]);
 
+            AuditLogService::update('WorkOrder', "Work order #{$workOrder->id} status diubah ke {$request->status} oleh teknisi", [
+                'work_order_id' => $workOrder->id,
+                'status' => $request->status,
+                'technician_id' => $user->id,
+            ]);
+
             return redirect()->route('owner.work-orders.show', $workOrder)
                 ->with('success', 'Status work order diperbarui.');
         }
@@ -160,6 +167,13 @@ class WorkOrderController extends Controller
             'assigned_technician_id' => $request->assigned_technician_id,
             'resolution' => $request->resolution,
             'resolved_at' => in_array($request->status, [WorkOrder::STATUS_RESOLVED, WorkOrder::STATUS_CLOSED]) ? now() : null,
+        ]);
+
+        AuditLogService::update('WorkOrder', "Work order #{$workOrder->id} diperbarui (status: {$request->status})", [
+            'work_order_id' => $workOrder->id,
+            'status' => $request->status,
+            'assigned_technician_id' => $request->assigned_technician_id,
+            'actor_id' => $user->id,
         ]);
 
         return redirect()->route('owner.work-orders.index')

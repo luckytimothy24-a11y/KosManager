@@ -7,6 +7,7 @@ use App\Models\DamageReport;
 use App\Models\Kamar;
 use App\Models\Kos;
 use App\Models\Penghuni;
+use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
@@ -241,6 +242,12 @@ class DamageReportController extends Controller
         }
 
         $prefix = $request->user()->isAdmin() ? 'admin' : 'owner';
+
+        AuditLogService::update('DamageReport', "Status laporan kerusakan #{$report->id} diubah ke {$request->status}", [
+            'damage_report_id' => $report->id,
+            'status' => $request->status,
+            'owner_id' => $request->user()->id,
+        ]);
 
         return redirect()->route("$prefix.damage-reports.index")
             ->with('success', 'Status laporan diperbarui.');
