@@ -131,6 +131,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('pembayaran.proof')
         ->middleware('throttle:30,1');
 
+    Route::get('/pembayaran/{pembayaran}/proof/signed', [PembayaranController::class, 'downloadProofSigned'])
+        ->name('pembayaran.proof.signed')
+        ->middleware('signed');
+
     Route::get('/pembayaran/{pembayaran}/kuitansi', [PembayaranController::class, 'receipt'])
         ->name('pembayaran.receipt');
 });

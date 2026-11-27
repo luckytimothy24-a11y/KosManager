@@ -86,11 +86,65 @@ class PembayaranController extends Controller
         return view($user->isTenant() ? 'tenant.pembayaran.show' : 'owner.pembayaran.show', compact('pembayaran'));
     }
 
+    public function signedProofUrl(Pembayaran $pembayaran)
+    {
+        $this->authorize('view', $pembayaran);
+
+        abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
+
+        $url = \URL::temporarySignedRoute(
+            'pembayaran.proof.signed',
+            now()->addMinutes(15),
+            ['pembayaran' => $pembayaran->id]
+        );
+
+        AuditLogService::log('SignedUrl', 'Pembayaran', "Signed URL bukti pembayaran {$pembayaran->payment_number} dibuat", auth()->id(), [
+            'pembayaran_id' => $pembayaran->id,
+        ]);
+
+        return response()->json(['url' => $url, 'expires_in' => 900]);
+    }
+
+    public function downloadProofSigned(Pembayaran $pembayaran)
+    {
+        // Accessed via signed URL; signature already verified by middleware.
+        abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
+
+        AuditLogService::log('Download', 'Pembayaran', "Bukti pembayaran {$pembayaran->payment_number} diunduh via signed URL", null, [
+            'pembayaran_id' => $pembayaran->id,
+        ]);
+
+        $path = $pembayaran->proof_file;
+        $disk = \Storage::disk('private');
+        $mime = $disk->mimeType($path);
+        $filename = basename($path);
+        $isImage = str_starts_with($mime, 'image/');
+
+        $headers = [
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store, max-age=0',
+        ];
+
+        if ($isImage) {
+            return $disk->response($path, $filename, array_merge($headers, [
+                'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            ]));
+        }
+
+        return $disk->download($path, $filename, array_merge($headers, [
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]));
+    }
+
     public function downloadProof(Pembayaran $pembayaran)
     {
         $this->authorize('view', $pembayaran);
 
         abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
+
+        AuditLogService::log('Download', 'Pembayaran', "Bukti pembayaran {$pembayaran->payment_number} diunduh", auth()->id(), [
+            'pembayaran_id' => $pembayaran->id,
+        ]);
 
         $path = $pembayaran->proof_file;
         $disk = \Storage::disk('private');
