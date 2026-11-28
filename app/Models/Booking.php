@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasEncryptedIdentityNumber;
+use App\Traits\HasIntegerRupiah;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class Booking extends Model
 {
-    use HasEncryptedIdentityNumber, HasFactory, SoftDeletes;
+    use HasEncryptedIdentityNumber, HasFactory, HasIntegerRupiah, SoftDeletes;
 
     public const STATUS_PENDING = 'pending';
 
@@ -68,9 +69,39 @@ class Booking extends Model
         'identity_data_submitted_at' => 'datetime',
         'price' => 'decimal:2',
         'down_payment_amount' => 'decimal:2',
+        'price_rp' => 'integer',
+        'down_payment_amount_rp' => 'integer',
         'billing_mode' => 'string',
         'requested_occupants' => 'integer',
     ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $rupiahColumns = [
+        'price' => 'price_rp',
+        'down_payment_amount' => 'down_payment_amount_rp',
+    ];
+
+    public function getPriceAttribute($value): ?int
+    {
+        return $this->getRupiahValue('price', $value);
+    }
+
+    public function setPriceAttribute($value): void
+    {
+        $this->setRupiahValue('price', $value);
+    }
+
+    public function getDownPaymentAmountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('down_payment_amount', $value);
+    }
+
+    public function setDownPaymentAmountAttribute($value): void
+    {
+        $this->setRupiahValue('down_payment_amount', $value);
+    }
 
     protected static function booted(): void
     {

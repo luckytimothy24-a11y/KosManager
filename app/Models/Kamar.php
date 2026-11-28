@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasIntegerRupiah;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kamar extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasIntegerRupiah, SoftDeletes;
 
     protected $table = 'kamar';
 
@@ -42,9 +43,51 @@ class Kamar extends Model
         'daily_price' => 'decimal:2',
         'weekly_price' => 'decimal:2',
         'monthly_price' => 'decimal:2',
+        'daily_price_rp' => 'integer',
+        'weekly_price_rp' => 'integer',
+        'monthly_price_rp' => 'integer',
         'capacity' => 'integer',
         'billing_mode' => 'string',
     ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $rupiahColumns = [
+        'daily_price' => 'daily_price_rp',
+        'weekly_price' => 'weekly_price_rp',
+        'monthly_price' => 'monthly_price_rp',
+    ];
+
+    public function getDailyPriceAttribute($value): ?int
+    {
+        return $this->getRupiahValue('daily_price', $value);
+    }
+
+    public function setDailyPriceAttribute($value): void
+    {
+        $this->setRupiahValue('daily_price', $value);
+    }
+
+    public function getWeeklyPriceAttribute($value): ?int
+    {
+        return $this->getRupiahValue('weekly_price', $value);
+    }
+
+    public function setWeeklyPriceAttribute($value): void
+    {
+        $this->setRupiahValue('weekly_price', $value);
+    }
+
+    public function getMonthlyPriceAttribute($value): ?int
+    {
+        return $this->getRupiahValue('monthly_price', $value);
+    }
+
+    public function setMonthlyPriceAttribute($value): void
+    {
+        $this->setRupiahValue('monthly_price', $value);
+    }
 
     public function occupancy(): int
     {

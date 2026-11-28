@@ -23,6 +23,10 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $this->seedExtraTenants();
         $this->seedExtraOwnerData();
         $this->seedBookingVariety();

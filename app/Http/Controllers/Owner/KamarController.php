@@ -208,6 +208,7 @@ class KamarController extends Controller
         $data['billing_mode'] = 'personal';
 
         $newStatus = $data['status'] ?? null;
+        $oldStatus = $kamar->status;
         $hasActivePenghuni = $kamar->penghunis()->where('status', 'active')->exists();
         $hasActiveBooking = $kamar->bookings()->whereIn('status', Booking::activeStatuses())->exists();
 
@@ -241,6 +242,18 @@ class KamarController extends Controller
         }
 
         $kamar->update($data);
+
+        if ($newStatus !== null && $newStatus !== $oldStatus) {
+            try {
+                AuditLogService::update('Kamar', "Status kamar {$kamar->room_number} diubah dari {$oldStatus} ke {$newStatus}", [
+                    'kamar_id' => $kamar->id,
+                    'from' => $oldStatus,
+                    'to' => $newStatus,
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning('Kamar status audit failed: '.$e->getMessage());
+            }
+        }
 
         if ($request->has('fasilitas')) {
             $kamar->fasilitas()->sync($fasilitasIds);

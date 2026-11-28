@@ -30,6 +30,7 @@ use App\Models\Penghuni;
 use App\Models\PropertyOwner;
 use App\Models\Tagihan;
 use App\Models\User;
+use App\Models\WorkOrder;
 use App\Policies\AdminPolicy;
 use App\Policies\AdvertisingCampaignPolicy;
 use App\Policies\AdvertisingOrderPolicy;
@@ -59,6 +60,7 @@ use App\Policies\PenghuniPolicy;
 use App\Policies\PropertyOwnerPolicy;
 use App\Policies\TagihanPolicy;
 use App\Policies\UserPolicy;
+use App\Policies\WorkOrderPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -81,6 +83,7 @@ class AuthServiceProvider extends ServiceProvider
         CheckOut::class => CheckOutPolicy::class,
         CsConversation::class => CsConversationPolicy::class,
         DamageReport::class => DamageReportPolicy::class,
+        WorkOrder::class => WorkOrderPolicy::class,
         Favorite::class => FavoritePolicy::class,
         Message::class => MessagePolicy::class,
         BookingOccupant::class => BookingOccupantPolicy::class,

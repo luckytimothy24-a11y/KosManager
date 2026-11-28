@@ -105,6 +105,16 @@ class PaymentGatewayWebhookController extends Controller
                 NotificationService::paymentVerified($payment->penghuni->user_id, $payment->tagihan->bill_number);
                 AuditLogService::approve('Pembayaran', "Pembayaran {$payment->payment_number} terverifikasi otomatis (gateway {$payment->gateway_provider})", ['pembayaran_id' => $payment->id]);
             }
+            if ($payment->tagihan) {
+                try {
+                    AuditLogService::update('Tagihan', "Tagihan {$payment->tagihan->bill_number} ditandai lunas (webhook {$payment->gateway_provider})", [
+                        'tagihan_id' => $payment->tagihan->id,
+                        'pembayaran_id' => $payment->id,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Tagihan webhook audit failed: '.$e->getMessage());
+                }
+            }
         } catch (\Exception $e) {
             \Log::warning('Payment webhook verification notification/audit failed: '.$e->getMessage());
         }

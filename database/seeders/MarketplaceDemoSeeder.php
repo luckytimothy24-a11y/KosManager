@@ -11,6 +11,10 @@ class MarketplaceDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $tenant = User::where('role', 'pencari')->first();
         if (! $tenant) {
             $this->command->warn('No tenant user found. Skipping marketplace seeding.');

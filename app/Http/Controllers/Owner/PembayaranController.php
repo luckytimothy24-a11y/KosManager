@@ -86,11 +86,65 @@ class PembayaranController extends Controller
         return view($user->isTenant() ? 'tenant.pembayaran.show' : 'owner.pembayaran.show', compact('pembayaran'));
     }
 
+    public function signedProofUrl(Pembayaran $pembayaran)
+    {
+        $this->authorize('view', $pembayaran);
+
+        abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
+
+        $url = \URL::temporarySignedRoute(
+            'pembayaran.proof.signed',
+            now()->addMinutes(15),
+            ['pembayaran' => $pembayaran->id]
+        );
+
+        AuditLogService::log('SignedUrl', 'Pembayaran', "Signed URL bukti pembayaran {$pembayaran->payment_number} dibuat", auth()->id(), [
+            'pembayaran_id' => $pembayaran->id,
+        ]);
+
+        return response()->json(['url' => $url, 'expires_in' => 900]);
+    }
+
+    public function downloadProofSigned(Pembayaran $pembayaran)
+    {
+        // Accessed via signed URL; signature already verified by middleware.
+        abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
+
+        AuditLogService::log('Download', 'Pembayaran', "Bukti pembayaran {$pembayaran->payment_number} diunduh via signed URL", null, [
+            'pembayaran_id' => $pembayaran->id,
+        ]);
+
+        $path = $pembayaran->proof_file;
+        $disk = \Storage::disk('private');
+        $mime = $disk->mimeType($path);
+        $filename = basename($path);
+        $isImage = str_starts_with($mime, 'image/');
+
+        $headers = [
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store, max-age=0',
+        ];
+
+        if ($isImage) {
+            return $disk->response($path, $filename, array_merge($headers, [
+                'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            ]));
+        }
+
+        return $disk->download($path, $filename, array_merge($headers, [
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]));
+    }
+
     public function downloadProof(Pembayaran $pembayaran)
     {
         $this->authorize('view', $pembayaran);
 
         abort_unless($pembayaran->proof_file && \Storage::disk('private')->exists($pembayaran->proof_file), 404);
+
+        AuditLogService::log('Download', 'Pembayaran', "Bukti pembayaran {$pembayaran->payment_number} diunduh", auth()->id(), [
+            'pembayaran_id' => $pembayaran->id,
+        ]);
 
         $path = $pembayaran->proof_file;
         $disk = \Storage::disk('private');
@@ -199,6 +253,16 @@ class PembayaranController extends Controller
                     NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
                     AuditLogService::approve('Pembayaran', "Pembayaran {$pembayaran->payment_number} disetujui (bulk)", ['pembayaran_id' => $pembayaran->id]);
                 }
+                if ($pembayaran->tagihan) {
+                    try {
+                        AuditLogService::update('Tagihan', "Tagihan {$pembayaran->tagihan->bill_number} ditandai lunas (pembayaran {$pembayaran->payment_number})", [
+                            'tagihan_id' => $pembayaran->tagihan->id,
+                            'pembayaran_id' => $pembayaran->id,
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::warning('Bulk tagihan audit failed: '.$e->getMessage());
+                    }
+                }
             } catch (\Exception $e) {
                 \Log::warning('Bulk payment verification notification/audit failed: '.$e->getMessage());
             }
@@ -281,6 +345,17 @@ class PembayaranController extends Controller
                     );
                 }
             }
+
+            if ($pembayaran->tagihan) {
+                try {
+                    AuditLogService::update('Tagihan', "Tagihan {$pembayaran->tagihan->bill_number} ditandai lunas (pembayaran {$pembayaran->payment_number})", [
+                        'tagihan_id' => $pembayaran->tagihan->id,
+                        'pembayaran_id' => $pembayaran->id,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Tagihan audit failed: '.$e->getMessage());
+                }
+            }
         } catch (\Exception $e) {
             \Log::warning('Payment verification notification/audit failed: '.$e->getMessage());
         }
@@ -332,6 +407,19 @@ class PembayaranController extends Controller
             } else {
                 AuditLogService::reject('Pembayaran', "Pembayaran {$pembayaran->payment_number} ditolak", ['pembayaran_id' => $pembayaran->id]);
                 NotificationService::paymentRejected($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
+            }
+            if ($pembayaran->tagihan) {
+                try {
+                    $restored = $pembayaran->tagihan->due_date && $pembayaran->tagihan->due_date->startOfDay()->lt(now()->startOfDay())
+                        ? Tagihan::STATUS_OVERDUE
+                        : Tagihan::STATUS_UNPAID;
+                    AuditLogService::update('Tagihan', "Tagihan {$pembayaran->tagihan->bill_number} dikembalikan ke {$restored} (pembayaran ditolak)", [
+                        'tagihan_id' => $pembayaran->tagihan->id,
+                        'pembayaran_id' => $pembayaran->id,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Tagihan audit failed: '.$e->getMessage());
+                }
             }
         } catch (\Exception $e) {
             \Log::warning('Payment rejection notification/audit failed: '.$e->getMessage());

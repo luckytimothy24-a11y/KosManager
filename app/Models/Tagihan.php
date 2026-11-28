@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasIntegerRupiah;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tagihan extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasIntegerRupiah, SoftDeletes;
 
     public const STATUS_UNPAID = 'unpaid';
 
@@ -92,7 +93,85 @@ class Tagihan extends Model
         'penalty' => 'decimal:2',
         'total' => 'decimal:2',
         'total_room_bill' => 'decimal:2',
+        'subtotal_rp' => 'integer',
+        'discount_rp' => 'integer',
+        'down_payment_discount_rp' => 'integer',
+        'penalty_rp' => 'integer',
+        'total_rp' => 'integer',
+        'total_room_bill_rp' => 'integer',
     ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $rupiahColumns = [
+        'subtotal' => 'subtotal_rp',
+        'discount' => 'discount_rp',
+        'down_payment_discount' => 'down_payment_discount_rp',
+        'penalty' => 'penalty_rp',
+        'total' => 'total_rp',
+        'total_room_bill' => 'total_room_bill_rp',
+    ];
+
+    public function getSubtotalAttribute($value): ?int
+    {
+        return $this->getRupiahValue('subtotal', $value);
+    }
+
+    public function setSubtotalAttribute($value): void
+    {
+        $this->setRupiahValue('subtotal', $value);
+    }
+
+    public function getDiscountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('discount', $value);
+    }
+
+    public function setDiscountAttribute($value): void
+    {
+        $this->setRupiahValue('discount', $value);
+    }
+
+    public function getDownPaymentDiscountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('down_payment_discount', $value);
+    }
+
+    public function setDownPaymentDiscountAttribute($value): void
+    {
+        $this->setRupiahValue('down_payment_discount', $value);
+    }
+
+    public function getPenaltyAttribute($value): ?int
+    {
+        return $this->getRupiahValue('penalty', $value);
+    }
+
+    public function setPenaltyAttribute($value): void
+    {
+        $this->setRupiahValue('penalty', $value);
+    }
+
+    public function getTotalAttribute($value): ?int
+    {
+        return $this->getRupiahValue('total', $value);
+    }
+
+    public function setTotalAttribute($value): void
+    {
+        $this->setRupiahValue('total', $value);
+    }
+
+    public function getTotalRoomBillAttribute($value): ?int
+    {
+        return $this->getRupiahValue('total_room_bill', $value);
+    }
+
+    public function setTotalRoomBillAttribute($value): void
+    {
+        $this->setRupiahValue('total_room_bill', $value);
+    }
 
     public function penghuni()
     {

@@ -20,6 +20,10 @@ class PartnerSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         $partners = [
             [
                 'name' => 'DANA',

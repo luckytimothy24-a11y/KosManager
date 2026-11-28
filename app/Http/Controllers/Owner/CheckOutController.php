@@ -123,13 +123,14 @@ class CheckOutController extends Controller
                 ->where('status', 'active')
                 ->lockForUpdate()
                 ->first();
+            $kontrakStatus = null;
             if ($kontrak) {
                 // Keluar sebelum kontrak berakhir = terminated, sesuai/di akhir masa sewa = expired (PRD §6).
                 $kontrakStatus = now()->startOfDay()->lt($kontrak->end_date) ? 'terminated' : 'expired';
                 $kontrak->update(['status' => $kontrakStatus]);
             }
 
-            return ['type' => 'approved', 'checkOut' => $locked, 'penghuni' => $penghuni];
+            return ['type' => 'approved', 'checkOut' => $locked, 'penghuni' => $penghuni, 'kontrak' => $kontrak, 'kontrak_status' => $kontrakStatus];
         });
     }
 
@@ -164,6 +165,9 @@ class CheckOutController extends Controller
                 try {
                     NotificationService::checkoutApproved($outcome['penghuni']->user_id, $outcome['checkOut']->kamar->room_number);
                     AuditLogService::approve('Check-Out', "Check-out disetujui untuk {$outcome['penghuni']->user->name} (bulk)", ['check_out_id' => $outcome['checkOut']->id]);
+                    if (! empty($outcome['kontrak']) && $outcome['kontrak_status']) {
+                        AuditLogService::update('Kontrak', "Kontrak {$outcome['kontrak']->contract_number} diubah menjadi {$outcome['kontrak_status']} (check-out, bulk)", ['kontrak_id' => $outcome['kontrak']->id, 'status' => $outcome['kontrak_status']]);
+                    }
                 } catch (\Exception $e) {
                     \Log::warning('Bulk check-out approval notification/audit failed: '.$e->getMessage());
                 }
@@ -208,6 +212,9 @@ class CheckOutController extends Controller
         try {
             NotificationService::checkoutApproved($outcome['penghuni']->user_id, $outcome['checkOut']->kamar->room_number);
             AuditLogService::approve('Check-Out', "Check-out disetujui untuk {$outcome['penghuni']->user->name}", ['check_out_id' => $outcome['checkOut']->id]);
+            if (! empty($outcome['kontrak']) && $outcome['kontrak_status']) {
+                AuditLogService::update('Kontrak', "Kontrak {$outcome['kontrak']->contract_number} diubah menjadi {$outcome['kontrak_status']} (check-out)", ['kontrak_id' => $outcome['kontrak']->id, 'status' => $outcome['kontrak_status']]);
+            }
         } catch (\Exception $e) {
             \Log::warning('Check-out approval notification/audit failed: '.$e->getMessage());
         }

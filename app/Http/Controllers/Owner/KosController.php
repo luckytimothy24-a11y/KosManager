@@ -10,6 +10,7 @@ use App\Models\Fasilitas;
 use App\Models\Kos;
 use App\Models\KosPhoto;
 use App\Models\User;
+use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -170,6 +171,12 @@ class KosController extends Controller
             }
 
             throw $e;
+        }
+
+        try {
+            AuditLogService::create('Kos', "Kos {$kos->name} dibuat (moderasi: {$data['moderation_status']})", ['kos_id' => $kos->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Kos create audit failed: '.$e->getMessage());
         }
 
         // Notifikasi ke super admin jika kos baru menunggu moderasi.
@@ -409,6 +416,12 @@ class KosController extends Controller
             throw $e;
         }
 
+        try {
+            AuditLogService::update('Kos', "Kos {$kos->name} diperbarui", ['kos_id' => $kos->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Kos update audit failed: '.$e->getMessage());
+        }
+
         return redirect()->route($request->user()->isAdmin() ? 'admin.kos.index' : 'owner.kos.index')->with('success', 'Kos berhasil diperbarui.');
     }
 
@@ -442,6 +455,12 @@ class KosController extends Controller
         if ($hasHistory) {
             return redirect()->route("$prefix.kos.index")
                 ->with('error', 'Kos tidak dapat dihapus karena masih memiliki riwayat kamar, penghuni, atau booking.');
+        }
+
+        try {
+            AuditLogService::delete('Kos', "Kos {$kos->name} dihapus", ['kos_id' => $kos->id]);
+        } catch (\Exception $e) {
+            \Log::warning('Kos delete audit failed: '.$e->getMessage());
         }
 
         $kos->delete();
