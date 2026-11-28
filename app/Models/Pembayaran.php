@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasIntegerRupiah;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Pembayaran extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasIntegerRupiah, SoftDeletes;
 
     /**
      * Source of truth status pembayaran (verification_status di DB).
@@ -74,7 +75,61 @@ class Pembayaran extends Model
         'gateway_expires_at' => 'datetime',
         'refunded_at' => 'datetime',
         'refund_amount' => 'decimal:2',
+        'amount_rp' => 'integer',
+        'rent_amount_rp' => 'integer',
+        'penalty_amount_rp' => 'integer',
+        'refund_amount_rp' => 'integer',
     ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $rupiahColumns = [
+        'amount' => 'amount_rp',
+        'rent_amount' => 'rent_amount_rp',
+        'penalty_amount' => 'penalty_amount_rp',
+        'refund_amount' => 'refund_amount_rp',
+    ];
+
+    public function getAmountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('amount', $value);
+    }
+
+    public function setAmountAttribute($value): void
+    {
+        $this->setRupiahValue('amount', $value);
+    }
+
+    public function getRentAmountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('rent_amount', $value);
+    }
+
+    public function setRentAmountAttribute($value): void
+    {
+        $this->setRupiahValue('rent_amount', $value);
+    }
+
+    public function getPenaltyAmountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('penalty_amount', $value);
+    }
+
+    public function setPenaltyAmountAttribute($value): void
+    {
+        $this->setRupiahValue('penalty_amount', $value);
+    }
+
+    public function getRefundAmountAttribute($value): ?int
+    {
+        return $this->getRupiahValue('refund_amount', $value);
+    }
+
+    public function setRefundAmountAttribute($value): void
+    {
+        $this->setRupiahValue('refund_amount', $value);
+    }
 
     public function tagihan()
     {

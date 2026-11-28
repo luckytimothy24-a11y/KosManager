@@ -60,10 +60,10 @@ class MoneyMathCharacterizationTest extends TestCase
         ]);
     }
 
-    public function test_money_attributes_are_cast_to_two_decimal_strings(): void
+    public function test_money_attributes_are_exposed_as_integer_rupiah(): void
     {
-        // karakterisasi, bukan perilaku yang diinginkan.
-        $this->assertSame('1500000.00', $this->kamar->monthly_price);
+        // Fase 1D: cutover accessor ke integer rupiah (kolom decimal tetap ada).
+        $this->assertSame(1500000, $this->kamar->monthly_price);
 
         $tagihan = Tagihan::factory()->create([
             'penghuni_id' => $this->penghuni->id,
@@ -75,8 +75,8 @@ class MoneyMathCharacterizationTest extends TestCase
             'total' => 950000,
         ]);
 
-        $this->assertSame('1000000.00', $tagihan->subtotal);
-        $this->assertSame('950000.00', $tagihan->total);
+        $this->assertSame(1000000, $tagihan->subtotal);
+        $this->assertSame(950000, $tagihan->total);
     }
 
     public function test_down_payment_is_100000_and_capped_forfeit_at_first_bill(): void

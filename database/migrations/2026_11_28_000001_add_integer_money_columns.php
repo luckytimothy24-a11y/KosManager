@@ -44,6 +44,7 @@ return new class extends Migration
         // bookings
         Schema::table('bookings', function (Blueprint $table) {
             $table->bigInteger('price_rp')->nullable()->after('price');
+            $table->bigInteger('down_payment_amount_rp')->nullable()->after('down_payment_amount');
         });
 
         // Backfill from decimal columns (rupiah = whole units).
@@ -73,13 +74,14 @@ return new class extends Migration
         ]);
         $this->backfill('bookings', [
             'price' => 'price_rp',
+            'down_payment_amount' => 'down_payment_amount_rp',
         ]);
     }
 
     public function down(): void
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->dropColumn('price_rp');
+            $table->dropColumn(['price_rp', 'down_payment_amount_rp']);
         });
         Schema::table('kontraks', function (Blueprint $table) {
             $table->dropColumn(['rental_price_rp', 'custom_share_amount_rp', 'down_payment_amount_rp']);
@@ -97,8 +99,13 @@ return new class extends Migration
 
     private function backfill(string $table, array $map): void
     {
+        // SQLite memakai INTEGER, MySQL/MariaDB memakai SIGNED.
+        $cast = DB::getDriverName() === 'sqlite' ? 'INTEGER' : 'SIGNED';
+
         foreach ($map as $from => $to) {
-            DB::statement("UPDATE {$table} SET {$to} = CAST(ROUND(COALESCE({$from}, 0)) AS INTEGER) WHERE {$from} IS NOT NULL");
+            DB::statement(
+                "UPDATE `{$table}` SET `{$to}` = CAST(ROUND(COALESCE(`{$from}`, 0)) AS {$cast}) WHERE `{$from}` IS NOT NULL"
+            );
         }
     }
 };

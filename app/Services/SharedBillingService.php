@@ -46,7 +46,8 @@ class SharedBillingService
             default => (float) $kamar->monthly_price,
         };
 
-        return round($price * max($units, 1), 2);
+        // Rupiah tidak memiliki pecahan: bulatkan ke satuan penuh.
+        return round($price * max($units, 1), 0);
     }
 
     /**
@@ -78,22 +79,21 @@ class SharedBillingService
             return 0.0;
         }
 
-        // Equal split: total / active occupants
-        // Use integer math to avoid floating-point drift
-        $totalCents = (int) round($totalRoomBill * 100);
-        $baseShareCents = (int) floor($totalCents / $activeOccupants);
-        $remainderCents = $totalCents - ($baseShareCents * $activeOccupants);
+        // Equal split dalam satuan rupiah penuh (tanpa sen).
+        $totalRupiah = (int) round($totalRoomBill);
+        $baseShare = intdiv($totalRupiah, $activeOccupants);
+        $remainder = $totalRupiah - ($baseShare * $activeOccupants);
 
         // Find this kontrak's position among all kontraks
         if ($allKontraks) {
-            $position = $allKontraks->pluck('id')->search($kontrak->id);
-            $shareCents = $baseShareCents + ($position < $remainderCents ? 1 : 0);
+            $position = (int) $allKontraks->pluck('id')->search($kontrak->id);
+            $share = $baseShare + ($position < $remainder ? 1 : 0);
         } else {
             // Fallback: if we don't have the collection, just return base share
-            $shareCents = $baseShareCents;
+            $share = $baseShare;
         }
 
-        return round($shareCents / 100, 2);
+        return (float) $share;
     }
 
     /**
@@ -103,12 +103,12 @@ class SharedBillingService
      */
     public function validateCustomShares(float $totalRoomBill, array $shares): bool
     {
-        $totalShares = 0.0;
+        $totalShares = 0;
         foreach ($shares as $item) {
-            $totalShares += (float) $item['share'];
+            $totalShares += (int) round($item['share']);
         }
 
-        return abs($totalShares - $totalRoomBill) < 0.01;
+        return abs($totalShares - (int) round($totalRoomBill)) < 1;
     }
 
     /**
@@ -196,22 +196,22 @@ class SharedBillingService
      */
     private function balanceShares(array &$shares, float $totalRoomBill): void
     {
-        $totalCents = (int) round($totalRoomBill * 100);
-        $sumCents = 0;
+        $totalRupiah = (int) round($totalRoomBill);
+        $sumRupiah = 0;
         foreach ($shares as $item) {
-            $sumCents += (int) round($item['share'] * 100);
+            $sumRupiah += (int) round($item['share']);
         }
 
-        $diff = $totalCents - $sumCents;
+        $diff = $totalRupiah - $sumRupiah;
         if ($diff === 0) {
             return;
         }
 
-        // Distribusikan selisih ke item pertama yang bukan custom
+        // Distribusikan selisih per satuan rupiah ke item non-custom.
         foreach ($shares as &$item) {
             if (! $item['is_custom'] && $diff !== 0) {
                 $adjustment = $diff > 0 ? 1 : -1;
-                $item['share'] = round($item['share'] + ($adjustment / 100), 2);
+                $item['share'] = (float) ((int) round($item['share']) + $adjustment);
                 $diff -= $adjustment;
             }
             if ($diff === 0) {
@@ -280,7 +280,7 @@ class SharedBillingService
 
                     $downPayment = app(DownPaymentService::class);
                     $downPaymentDiscount = $downPayment->discountForNewBill($lockedKontrak, $shareAmount);
-                    $total = max(0, round($shareAmount - $discount - $downPaymentDiscount + $penalty, 2));
+                    $total = max(0, (int) round($shareAmount - $discount - $downPaymentDiscount + $penalty));
                     $status = $total <= 0 ? Tagihan::STATUS_PAID : Tagihan::STATUS_UNPAID;
 
                     $tagihan = Tagihan::create([
@@ -353,7 +353,7 @@ class SharedBillingService
             if ($tagihan) {
                 $tagihan->update([
                     'subtotal' => $shareData['share'],
-                    'total' => max(0, round($shareData['share'] - $tagihan->discount - $tagihan->down_payment_discount + $tagihan->penalty, 2)),
+                    'total' => max(0, (int) round($shareData['share'] - $tagihan->discount - $tagihan->down_payment_discount + $tagihan->penalty)),
                     'total_room_bill' => $totalRoomBill,
                 ]);
                 $updated++;
