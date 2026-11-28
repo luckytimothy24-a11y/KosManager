@@ -1,8 +1,8 @@
 # Laporan Pekanan — KosManager (23–28 Nov 2026)
 
 **Branch:** `chore/fase-0-baseline`
-**HEAD terakhir:** `b0c524a`
-**CI terakhir:** run #46098111828 — ✅ success (semua run hijau)
+**HEAD terakhir:** `634df99`
+**CI terakhir:** run #29 — ✅ success (semua run hijau)
 
 ---
 
@@ -15,11 +15,11 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 | Metrik | Nilai |
 |---|---:|
 | Test terdaftar (awal) | 2368 |
-| Test terdaftar (akhir) | 2428 |
-| Penambahan test | +60 |
+| Test terdaftar (akhir) | 2435 |
+| Penambahan test | +67 |
 | Assertion (awal) | 8086 |
-| Assertion (akhir) | 8383 |
-| CI runs | 8 run, semua success |
+| Assertion (akhir) | 8411 |
+| CI runs | 10 run, semua success |
 | Pint | passed (setiap commit) |
 | Vite build | passed |
 
@@ -113,13 +113,22 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 - Route `pembayaran.proof.signed` dengan middleware `signed`.
 
 #### Slice 3: Integer Rupiah ✅
-**Commit:** `b0c524a` · CI #26 (success)
-- Migrasi additive `2026_11_28_000001_add_integer_money_columns.php`.
-- Kolom integer rupiah paralel (`*_rp`) pada tabel: `kamar`, `tagihans`, `pembayarans`, `kontraks`, `bookings`.
-- Backfill otomatis dari kolom decimal (`CAST(ROUND(COALESCE(...)) AS INTEGER)`).
-- Kolom decimal tetap (rollback-able, cutover bertahap).
-- SQLite full suite: 2428 passed; Pint passed.
-- MySQL: migration standard (Schema::table), tidak diverifikasi (DB corrupt di environment).
+**Commit:** `b0c524a` (kolom) + `634df99` (cutover)
+
+- Migrasi additive `2026_11_28_000001_add_integer_money_columns.php`:
+  kolom integer rupiah paralel (`*_rp`) pada `kamar`, `tagihans`, `pembayarans`,
+  `kontraks`, `bookings` (termasuk `bookings.down_payment_amount_rp`).
+- Backfill driver-aware: `CAST(... AS INTEGER)` untuk SQLite,
+  `CAST(... AS SIGNED)` untuk MySQL/MariaDB.
+- Trait `HasIntegerRupiah`: accessor membaca `*_rp` (fallback decimal untuk baris
+  legacy), mutator menulis kedua kolom, `null` tetap `null`.
+- Cutover model: `Kamar`, `Tagihan`, `Pembayaran`, `Kontrak`, `Booking`.
+- `SharedBillingService`: pembagian biaya bersama dalam rupiah penuh (sisa
+  1 rupiah dibagikan adil, total tetap sama).
+- Kolom decimal tetap (rollback-able; drop kolom belum dilakukan).
+- SQLite full suite: **2435 passed**, 8411 assertion (3x hijau); Pint passed;
+  `npm run build` passed.
+- MySQL: migration standard, belum diverifikasi end-to-end (DB lokal corrupt).
 
 ---
 
@@ -132,9 +141,10 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 | Setelah Fase 1A | 2416 | 8365 |
 | Setelah Fase 1B | 2423 | 8376 |
 | Setelah Fase 1C | 2428 | 8383 |
-| Setelah Fase 1D (semua slice) | 2428 | 8383 |
+| Setelah Fase 1D (audit + file) | 2428 | 8383 |
+| Setelah Fase 1D (cutover integer) | 2435 | 8411 |
 
-**3x full suite SQLite** hijau pada Fase 0 (2410 passed). Setiap commit diverifikasi dengan full suite (exit 0) dan CI success.
+**3x full suite SQLite** hijau pada kondisi final Fase 1D (2435 passed). Setiap commit diverifikasi dengan full suite (exit 0) dan CI success.
 
 ---
 
@@ -159,6 +169,9 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 - `tests/Feature/TechnicianRoleTest.php`
 - `tests/Feature/RbacPhase1bTest.php`
 - `tests/Feature/WorkOrderTest.php`
+- `app/Traits/HasIntegerRupiah.php`
+- `tests/Feature/MoneyIntegerCutoverTest.php`
+- `docs/baseline/FASE-1D.md`
 
 ### Dimodifikasi
 - `database/migrations/2026_09_11_000003_add_weekly_to_rental_type_enum.php` (cross-driver)
@@ -168,7 +181,11 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 - `app/Http/Controllers/Owner/DamageReportController.php` (audit log)
 - `app/Http/Controllers/Owner/PembayaranController.php` (audit + signed URL)
 - `app/Http/Controllers/Owner/WorkOrderController.php` (audit log)
+- `app/Models/Kamar.php`, `Tagihan.php`, `Pembayaran.php`, `Kontrak.php`, `Booking.php`
+- `app/Services/SharedBillingService.php` (pembagian rupiah penuh)
+- `database/migrations/2026_11_28_000001_add_integer_money_columns.php` (driver-aware + DP booking)
 - `tests/Feature/Characterization/DomainValuesCharacterizationTest.php`
+- `tests/Feature/Characterization/MoneyMathCharacterizationTest.php`
 - `tests/Unit/UserRoleTest.php`
 
 ---
@@ -186,6 +203,8 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 | #25 | `b40a346` | feat(fase-1d-audit): audit log | ✅ |
 | #26 | `8aa0104` | feat(fase-1d-file): signed URL | ✅ |
 | #27 | `b0c524a` | feat(fase-1d-money): integer columns | ✅ |
+| #28 | `ab15317` | docs: weekly report | ✅ |
+| #29 | `634df99` | feat(fase-1d-money): cutover integer rupiah | ✅ |
 
 ---
 
@@ -193,16 +212,18 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 
 1. **Global role scope** belum diaktifkan otomatis (deferred).
 2. **Isu pre-existing MySQL** pada suite penuh (FK enforcement, backup driver SQLite-only, LIKE escaping) belum dibersihkan. MySQL server juga corrupt di environment (innodb_force_recovery).
-3. **Cutover integer rupiah** belum dilakukan (kolom paralel ada, tapi service masih pakai decimal).
+3. **Cutover integer rupiah** sudah untuk lima model inti; tabel payout/advertising/marketplace/wallet masih decimal, dan kolom decimal lama belum di-drop.
 4. **Untracked file refund** (dari branch `fix/cancel-dp-refund`) tersimpan di working tree dan di-backup ke temp. Tidak ikut commit.
 
 ---
 
 ## 7. Langkah Berikutnya (butuh persetujuan eksplisit)
 
-- Review keseluruhan Fase 1 (1A–1D).
-- Pertimbangkan merge `chore/fase-0-baseline` ke `develop`.
-- Fase 2: WhatsApp notification, QRIS/VA payment, cutover integer rupiah, global role scope enablement.
+- **Slice B:** lengkapi audit log untuk Tagihan, CheckOut, Booking, Kontrak, Kamar, Kos.
+- **Slice C:** aktifkan global role scope + update ekspektasi test 403→404.
+- **Slice D:** audit seeder production guard, queue/notification, perbaikan environment MySQL.
+- Review keseluruhan Fase 1, lalu pertimbangkan merge `chore/fase-0-baseline` ke `develop`.
+- Fase 2: WhatsApp notification, QRIS/VA payment, cutover tabel uang lainnya.
 
 ---
 
