@@ -10,6 +10,10 @@ class KosPhotoBackfillSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->environment('production')) {
+            return;
+        }
+
         Kos::whereNotNull('photo')->cursor()->each(function (Kos $kos) {
             if ($kos->photos()->exists()) {
                 return;
