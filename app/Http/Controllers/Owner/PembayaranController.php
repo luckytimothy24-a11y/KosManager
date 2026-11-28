@@ -253,6 +253,16 @@ class PembayaranController extends Controller
                     NotificationService::paymentVerified($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
                     AuditLogService::approve('Pembayaran', "Pembayaran {$pembayaran->payment_number} disetujui (bulk)", ['pembayaran_id' => $pembayaran->id]);
                 }
+                if ($pembayaran->tagihan) {
+                    try {
+                        AuditLogService::update('Tagihan', "Tagihan {$pembayaran->tagihan->bill_number} ditandai lunas (pembayaran {$pembayaran->payment_number})", [
+                            'tagihan_id' => $pembayaran->tagihan->id,
+                            'pembayaran_id' => $pembayaran->id,
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::warning('Bulk tagihan audit failed: '.$e->getMessage());
+                    }
+                }
             } catch (\Exception $e) {
                 \Log::warning('Bulk payment verification notification/audit failed: '.$e->getMessage());
             }
@@ -335,6 +345,17 @@ class PembayaranController extends Controller
                     );
                 }
             }
+
+            if ($pembayaran->tagihan) {
+                try {
+                    AuditLogService::update('Tagihan', "Tagihan {$pembayaran->tagihan->bill_number} ditandai lunas (pembayaran {$pembayaran->payment_number})", [
+                        'tagihan_id' => $pembayaran->tagihan->id,
+                        'pembayaran_id' => $pembayaran->id,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Tagihan audit failed: '.$e->getMessage());
+                }
+            }
         } catch (\Exception $e) {
             \Log::warning('Payment verification notification/audit failed: '.$e->getMessage());
         }
@@ -386,6 +407,19 @@ class PembayaranController extends Controller
             } else {
                 AuditLogService::reject('Pembayaran', "Pembayaran {$pembayaran->payment_number} ditolak", ['pembayaran_id' => $pembayaran->id]);
                 NotificationService::paymentRejected($pembayaran->penghuni->user_id, $pembayaran->tagihan->bill_number);
+            }
+            if ($pembayaran->tagihan) {
+                try {
+                    $restored = $pembayaran->tagihan->due_date && $pembayaran->tagihan->due_date->startOfDay()->lt(now()->startOfDay())
+                        ? Tagihan::STATUS_OVERDUE
+                        : Tagihan::STATUS_UNPAID;
+                    AuditLogService::update('Tagihan', "Tagihan {$pembayaran->tagihan->bill_number} dikembalikan ke {$restored} (pembayaran ditolak)", [
+                        'tagihan_id' => $pembayaran->tagihan->id,
+                        'pembayaran_id' => $pembayaran->id,
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Tagihan audit failed: '.$e->getMessage());
+                }
             }
         } catch (\Exception $e) {
             \Log::warning('Payment rejection notification/audit failed: '.$e->getMessage());

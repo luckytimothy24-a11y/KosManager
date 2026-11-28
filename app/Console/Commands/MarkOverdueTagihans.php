@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Pembayaran;
 use App\Models\Tagihan;
+use App\Services\AuditLogService;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 
@@ -76,6 +77,14 @@ class MarkOverdueTagihans extends Command
 
             $marked++;
             $tagihan = $updated;
+
+            try {
+                AuditLogService::update('Tagihan', "Tagihan {$tagihan->bill_number} ditandai overdue (denda Rp ".number_format($tagihan->penalty, 0, ',', '.').')', [
+                    'tagihan_id' => $tagihan->id,
+                ]);
+            } catch (\Exception $e) {
+                \Log::warning('MarkOverdue audit failed: '.$e->getMessage());
+            }
 
             if ($tagihan->penghuni) {
                 try {

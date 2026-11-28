@@ -240,12 +240,13 @@ class PaymentGatewayTest extends TestCase
         $headers = ['X-Gateway-Signature' => $this->sign($payload)];
 
         $this->postJson(route('webhook.payment-gateway'), $payload, $headers)->assertOk();
-        $this->assertSame(1, \DB::table('audit_logs')->count());
+        // 1 audit Pembayaran + 1 audit Tagihan (status -> paid)
+        $this->assertSame(2, \DB::table('audit_logs')->count());
         $second = $this->postJson(route('webhook.payment-gateway'), $payload, $headers);
 
         $second->assertOk();
         $this->assertSame(Pembayaran::STATUS_APPROVED, $payment->fresh()->verification_status);
-        $this->assertSame(1, \DB::table('audit_logs')->count(), 'Webhook kedua tidak boleh menambah audit log.');
+        $this->assertSame(2, \DB::table('audit_logs')->count(), 'Webhook kedua tidak boleh menambah audit log.');
     }
 
     public function test_webhook_passes_through_for_non_success_status(): void
