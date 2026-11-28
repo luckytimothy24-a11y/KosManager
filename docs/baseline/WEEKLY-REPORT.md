@@ -112,6 +112,16 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 - Method `downloadProofSigned` (stream via signed URL).
 - Route `pembayaran.proof.signed` dengan middleware `signed`.
 
+#### Slice 4: Production Hardening ✅
+**Commit:** `ae4396e`
+
+- Production guard pada seeder demo: `DemoDataSeeder`, `MarketplaceDemoSeeder`,
+  `PartnerSeeder`, `KosPhotoBackfillSeeder`.
+- `DatabaseSeeder` sudah meng-conditional-kan demo seeders.
+- Queue `database`, mail queued, notifikasi in-app + email + push.
+- `storage/app/private` tersedia; `AUDIT_LOG_HMAC_SECRET` documented (fail-closed).
+- Cross-driver: migrasi inti hijau di MySQL/MariaDB 10.4 (fresh instance).
+
 #### Slice 3: Integer Rupiah ✅
 **Commit:** `b0c524a` (kolom) + `634df99` (cutover)
 
@@ -213,17 +223,17 @@ MVP), dan **seluruh Fase 1D** (audit log + private file/signed URL + integer rup
 1. **Global role scope** belum diaktifkan otomatis (deferred).
 2. **Isu pre-existing MySQL** pada suite penuh (FK enforcement, backup driver SQLite-only, LIKE escaping) belum dibersihkan. MySQL server juga corrupt di environment (innodb_force_recovery).
 3. **Cutover integer rupiah** sudah untuk lima model inti; tabel payout/advertising/marketplace/wallet masih decimal, dan kolom decimal lama belum di-drop.
-4. **Untracked file refund** (dari branch `fix/cancel-dp-refund`) tersimpan di working tree dan di-backup ke temp. Tidak ikut commit.
+4. **Global role scope** belum diaktifkan (deferred — memecah ~302 test).
+5. **Untracked file refund** (dari branch `fix/cancel-dp-refund`) tersimpan di working tree dan di-backup ke temp. Tidak ikut commit.
 
 ---
 
 ## 7. Langkah Berikutnya (butuh persetujuan eksplisit)
 
-- **Slice B:** lengkapi audit log untuk Tagihan, CheckOut, Booking, Kontrak, Kamar, Kos.
-- **Slice C:** aktifkan global role scope + update ekspektasi test 403→404.
-- **Slice D:** audit seeder production guard, queue/notification, perbaikan environment MySQL.
+- **Fase 1 selesai** (1A–1D, termasuk Slice D production hardening).
 - Review keseluruhan Fase 1, lalu pertimbangkan merge `chore/fase-0-baseline` ke `develop`.
-- Fase 2: WhatsApp notification, QRIS/VA payment, cutover tabel uang lainnya.
+- Fase 2: WhatsApp notification, QRIS/VA payment, cutover tabel uang lainnya
+  (payout/ads/marketplace/wallet), aktifkan global role scope.
 
 ---
 

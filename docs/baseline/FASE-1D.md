@@ -1,7 +1,7 @@
 # Fase 1D — Hardening Data (Hasil)
 
 **Branch:** `chore/fase-0-baseline` @ `634df99`
-**Status:** Selesai (3 slice). Menunggu persetujuan eksplisit sebelum Slice B / Fase 2.
+**Status:** Selesai (4 slice). Menunggu persetujuan eksplisit sebelum Fase 2.
 
 ## Ringkasan
 
@@ -44,6 +44,22 @@ Fase 1D terdiri dari tiga slice additive yang tidak menghapus data legacy:
 - `signedProofUrl` membuat temporary signed URL berlaku 15 menit.
 - `downloadProofSigned` mengalirkan file melalui route bertanda tangan.
 - Route `pembayaran.proof.signed` dilindungi middleware `signed`.
+
+## Slice 4 — Production Hardening
+
+**Commit:** `ae4396e`
+
+- Production guard ditambahkan pada seeder demo: `DemoDataSeeder`, `MarketplaceDemoSeeder`,
+  `PartnerSeeder`, `KosPhotoBackfillSeeder` (early return di `app()->environment('production')`).
+- `DatabaseSeeder` sudah meng-conditional-kan demo seeders.
+- Queue: `QUEUE_CONNECTION=database` (queued mail via `Mail::queue`).
+- Notifikasi: in-app (`Notification` model) + email queued + push. Channel abstraction
+  (WhatsApp/QRIS-VA) ditunda ke Fase 2.
+- `storage/app/private` tersedia untuk bukti pembayaran.
+- `AUDIT_LOG_HMAC_SECRET` documented di `.env.example` (fail-closed jika kosong).
+- Cross-driver: migrasi inti (termasuk integer money) berhasil dijalankan di MySQL/MariaDB
+  10.4 (fresh instance) — `WorkOrderTest`, `MoneyIntegerCutoverTest`, `TechnicianRoleTest`,
+  `RbacPhase1bTest` hijau.
 
 ## Slice 3 — Cutover Integer Rupiah
 
@@ -130,5 +146,5 @@ Fase 1D terdiri dari tiga slice additive yang tidak menghapus data legacy:
 
 ## Gate berikutnya
 
-Slice B — melengkapi audit log untuk seluruh perubahan status/approval
-(Tagihan, CheckOut, Booking, Kontrak, Kamar, Kos). Butuh persetujuan eksplisit.
+Fase 2 — WhatsApp notification, QRIS/VA payment, cutover tabel uang lainnya
+(payout/ads/marketplace/wallet), aktifkan global role scope. Butuh persetujuan eksplisit.
