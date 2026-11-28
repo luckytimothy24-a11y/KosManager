@@ -14,12 +14,27 @@ Fase 1D terdiri dari tiga slice additive yang tidak menghapus data legacy:
 
 ## Slice 1 — Audit Log
 
-**Commit:** `b40a346`
+**Commit:** `b40a346` (awal) + `b6cae21` (pelengkapan)
 
 - `DamageReportController::update` mencatat perubahan status damage report.
 - `WorkOrderController::update` mencatat perubahan status untuk jalur teknisi dan
   admin/owner.
+- `KamarController::update` mencatat perubahan status kamar.
+- `KosController` mencatat create/update/delete kos.
+- `PembayaranController` (verify/reject/bulk) dan webhook mencatat perubahan
+  status Tagihan (paid / dikembalikan).
+- `CheckOutController` mencatat perubahan status Kontrak (terminated/expired).
+- `MarkOverdueTagihans` mencatat Tagihan yang ditandai overdue (denda).
 - Menggunakan `AuditLogService` dengan rantai HMAC yang sudah ada.
+
+**File terkait:** `app/Http/Controllers/Owner/DamageReportController.php`,
+`app/Http/Controllers/Owner/WorkOrderController.php`,
+`app/Http/Controllers/Owner/KamarController.php`,
+`app/Http/Controllers/Owner/KosController.php`,
+`app/Http/Controllers/Owner/PembayaranController.php`,
+`app/Http/Controllers/Owner/CheckOutController.php`,
+`app/Http/Controllers/Webhook/PaymentGatewayWebhookController.php`,
+`app/Console/Commands/MarkOverdueTagihans.php`.
 
 ## Slice 2 — File Privat + Signed URL
 
